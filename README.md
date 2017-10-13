@@ -31,13 +31,13 @@ _Note_: this is a Docker environment and has all services running on one host. T
 1. Since this repository uses submodules, `git clone` with the `--recursive` option:
 
 ```
-$ git clone --recursive git@github.com:confluentinc/cp-demo.git
+$ git clone --recursive https://github.com/confluentinc/cp-demo
 ```
 
 Otherwise, `git clone` and then use the `submodule` commands to initialize and update:
 
 ```
-$ git clone git@github.com:confluentinc/cp-demo.git
+$ git clone https://github.com/confluentinc/cp-demo
 $ cd cp-demo
 $ git submodule init
 Submodule 'kafka-connect-irc' (https://github.com/cjmatta/kafka-connect-irc) registered for path 'kafka-connect-irc'
