@@ -1,0 +1,6 @@
+[submodule "kafka-connect-irc"]
+	path = kafka-connect-irc
+	url = https://github.com/cjmatta/kafka-connect-irc
+[submodule "kafka-connect-transform-wikiedit"]
+	path = kafka-connect-transform-wikiedit
+	url = https://github.com/cjmatta/kafka-connect-transform-wikiedit
