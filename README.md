@@ -94,16 +94,16 @@ $ docker-compose logs -f control-center | grep -e HTTP
 control-center_1       | [2017-09-06 16:37:33,133] INFO Started NetworkTrafficServerConnector@26a529dc{HTTP/1.1}{0.0.0.0:9021} (org.eclipse.jetty.server.NetworkTrafficServerConnector)
 ```
 
-4. Decide how you want to run the rest of the demo, without or with KSQL. The reason there are two ways to run the demo is because KSQL does not support Avro with [Schema Registry](http://docs.confluent.io/current/schema-registry/docs/index.html) at this time. When KSQL supports Avro with Schema Registry, we will collapse the workflows into one.
+4. Decide how you want to run the rest of the demo, with or without KSQL. The reason there are two ways to run the demo is because KSQL does not support Avro with [Schema Registry](http://docs.confluent.io/current/schema-registry/docs/index.html) at this time. When KSQL supports Avro with Schema Registry, we will collapse the workflows into one.
+
+```bash
+# With KSQL: data streams from Wikipedia IRC to KSQL to Elasticsearch. The Kafka source and sink connectors use Json
+$ export DEMOPATH=scripts_ksql
+```
 
 ```bash
 # Without KSQL: data streams straight through Kafka from Wikipedia IRC to Elasticsearch without KSQL. The Kafka source and sink connectors use Avro with Confluent Schema Registry
 $ export DEMOPATH=scripts_pipeline
-```
-
-```bash
-# With KSQL: data streams from Wikipedia IRC to KSQL to Elasticsearch. The Kafka source and sink connectors use Json instead of Avro
-$ export DEMOPATH=scripts_ksql
 ```
 
 5. Setup the cluster and connectors
@@ -247,7 +247,7 @@ $ ./$DEMOPATH/throttle_consumer.sh 1 delete
 
 ### Over consumption
 
-Streams monitoring in Control Center can highlight consumers that are over-consuming some messages. This is an indication that consumers may be processing a set of messages more than once which may have impact on their applications. To simulate this, we will use Kafka's consumer offset reset tool to set the offset of the consumer group `app` to an earlier offset, thereby forcing the consumer group to reconsume messages it has previously read.
+Streams monitoring in Control Center can highlight consumers that are over consuming some messages, which is an indication that consumers are processing a set of messages more than once. This may happen intentionally, for example an application with a software bug consumed and processed Kafka messages incorrectly, got a fix, and then reprocesses previous messages correctly. This may also happen unintentionally if an application crashes before committing processed messages. To simulate this, we will use Kafka's consumer offset reset tool to set the offset of the consumer group `app` to an earlier offset, thereby forcing the consumer group to reconsume messages it has previously read.
 
 1. Click on Data Streams, and "View Details" for the consumer group `app`. Click on the blue circle on the consumption line on the left to verify there are two consumers `consumer_app_1` and `consumer_app_2`, that were created in an earlier section. If these two consumers are not running and were never started, start them as described in the section [consumer rebalances](#consumer-rebalances).
 
