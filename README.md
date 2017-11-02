@@ -47,7 +47,7 @@ $ git submodule update
 
 2. In the advanced Docker preferences settings, increase the memory available to Docker to at least 8GB (default is 2GB).
 
-3. Run `make clean all` to build the IRC connector and the transformer that will parse the Wikipedia edit messages to data. These are saved to `connect-plugins` path, which is a shared volume to the `connect` docker container.
+3. From the `cp-demo` directory, run `make clean all` to build the IRC connector and the transformer that will parse the Wikipedia edit messages to data. These are saved to `connect-plugins` path, which is a shared volume to the `connect` docker container.
 
 ```bash
 $ make clean all
