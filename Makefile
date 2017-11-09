@@ -2,6 +2,8 @@
 
 # Script to build the kafka-connect-irc connector and move them to the plugin path directory
 export PLUGINPATH:="connect-plugins"
+# fix for ubuntu sid sometimes linking /bin/sh to /bin/dash
+SHELL:=/bin/bash
 
 all: install irc transform
 
