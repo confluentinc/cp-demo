@@ -123,7 +123,7 @@ $ ./$DEMOPATH/setup.sh
 
 ### Tour of Confluent Control Center
 
-Follow along with the video [![Demo 2: Tour | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/D9nzAxxIv7A).
+Follow along with the video [![Demo 2: Tour | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/D9nzAxxIv7A)
 
 1. __**Monitoring --> System Health**__: Confluent Control Center landing page shows the overall [system health](https://docs.confluent.io/current/control-center/docs/systemhealth.html) of a given Kafka cluster. For capacity planning activities, view cluster utilization:
 
@@ -160,7 +160,7 @@ Follow along with the video [![Demo 2: Tour | Monitoring Kafka in Confluent Cont
 
 ### KSQL
 
-Follow along with the video [![Demo 3: KSQL | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/U_ntFVXWBPc).
+Follow along with the video [![Demo 3: KSQL | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/U_ntFVXWBPc)
 
 If you ran the demo with KSQL, i.e. `DEMOPATH=scripts_ksql`, then there are additional things you can look at. If you did not run the demo with KSQL, skip this section.
 
@@ -189,7 +189,7 @@ $ docker-compose exec ksql-cli ksql-cli remote http://localhost:8080 --exec "sho
 
 ### Consumer rebalances
 
-Follow along with the video [![Demo 4: Consumer Rebalances | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/2Egh3I0q4dE).
+Follow along with the video [![Demo 4: Consumer Rebalances | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/2Egh3I0q4dE)
 
 Control Center shows which consumers in a consumer group are consuming from which partitions and on which brokers those partitions reside. Control Center updates as consumer rebalances occur in a consumer group.
 
@@ -216,7 +216,7 @@ $ ./$DEMOPATH/start_consumer_app.sh 2
 
 ### Slow consumers
 
-Follow along with the video [![Demo 5: Slow Consumers | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/HPIskKJjmNU).
+Follow along with the video [![Demo 5: Slow Consumers | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/HPIskKJjmNU)
 
 Streams monitoring in Control Center can highlight consumers that are slow to keep up with the producers. This is critial to monitor for real-time applications where consumers should consume produced messages with as low latency as possible. To simulate a slow consumer, we will use Kafka's [quota feature](https://docs.confluent.io/current/kafka/post-deployment.html#enforcing-client-quotas) to rate-limit consumption from the broker side, for just one of two consumers in a consumer group.
 
@@ -257,7 +257,7 @@ $ ./$DEMOPATH/throttle_consumer.sh 1 delete
 
 ### Over consumption
 
-Follow along with the video [![Demo 6: Over Consumption | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/ZYnoG59xNCI).
+Follow along with the video [![Demo 6: Over Consumption | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/ZYnoG59xNCI)
 
 Streams monitoring in Control Center can highlight consumers that are over consuming some messages, which is an indication that consumers are processing a set of messages more than once. This may happen intentionally, for example an application with a software bug consumed and processed Kafka messages incorrectly, got a fix, and then reprocesses previous messages correctly. This may also happen unintentionally if an application crashes before committing processed messages. To simulate over consumption, we will use Kafka's consumer offset reset tool to set the offset of the consumer group `app` to an earlier offset, thereby forcing the consumer group to reconsume messages it has previously read.
 
@@ -305,7 +305,7 @@ $ ./$DEMOPATH/start_consumer_app.sh 2
 
 ### Under consumption
 
-Follow along with the video [![Demo 7: Under Consumption | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/d0tZS5FxdM0).
+Follow along with the video [![Demo 7: Under Consumption | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/d0tZS5FxdM0)
 
 Streams monitoring in Control Center can highlight consumers that are under consuming some messages. This may happen intentionally when consumers stop and restart and operators change the consumer offsets to the latest offset. This avoids delay processing messages that were produced while the consumers were stopped, especially when they care about real-time. This may also happen unintentionally if a consumer is offline for longer than the log retention period, or if a producer is configured for `acks=0` and a broker suddenly fails before having a chance to replicate data to other brokers. To simulate under consumption, we will use Kafka's consumer offset reset tool to set the offset of the consumer group `app` to the latest offset, thereby skipping messages that will never be read.
 
@@ -353,7 +353,7 @@ $ ./$DEMOPATH/start_consumer_app.sh 2
 
 ### Failed broker
 
-Follow along with the video [![Demo 8: Failed Broker | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/oxr1X0t5pLg).
+Follow along with the video [![Demo 8: Failed Broker | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/oxr1X0t5pLg)
 
 To simulate a failed broker, stop the Docker container running one of the two Kafka brokers.
 
@@ -388,7 +388,7 @@ $ docker-compose start kafka2
 
 ### Alerting
 
-Follow along with the video [![Demo 9: Alerting | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/523o_S8OOGo).
+Follow along with the video [![Demo 9: Alerting | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/523o_S8OOGo)
 
 There are many types of Control Center [alerts](https://docs.confluent.io/current/control-center/docs/alerts.html) and many ways to configure them. Use the Alerts management page to define triggers and actions, or click on a streams monitoring graph for consumer groups or topics to setup alerts from there.
 
