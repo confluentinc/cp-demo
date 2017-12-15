@@ -32,9 +32,9 @@ Follow along with the video [![Demo 1: Install + Run | Monitoring Kafka in Confl
 
 1. Clone this repo:
 
-```
-$ git clone https://github.com/confluentinc/cp-demo
-```
+        ```
+        $ git clone https://github.com/confluentinc/cp-demo
+        ```
 
 2. In the advanced Docker preferences settings, increase the memory available to Docker to at least 8GB (default is 2GB).
 
