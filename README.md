@@ -32,12 +32,11 @@ Follow along with the video [![Demo 1: Install + Run | Monitoring Kafka in Confl
 
 _Note_: we have verified this demo works with the following environment:
 
-	```bash
-        MacOS 10.12
-        Docker 17.06.1-ce
-        Docker Compose 1.14.0
-        Java 1.8.0_92
-	```
+* MacOS 10.12
+* Docker 17.06.1-ce
+* Docker Compose 1.14.0
+* Java 1.8.0_92
+
 
 1. Clone this repo:
 
