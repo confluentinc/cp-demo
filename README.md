@@ -30,6 +30,15 @@ _Note_: this is a Docker environment and has all services running on one host. T
 
 Follow along with the video [![Demo 1: Install + Run | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/a4B5Oer1j2A)
 
+_Note_: we have verified this demo works with the following environment:
+
+        ```
+        MacOS 10.12
+        Docker 17.06.1-ce
+        Docker Compose 1.14.0
+        Java 1.8.0_92
+        ```
+
 1. Clone this repo:
 
         ```
