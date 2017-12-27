@@ -7,8 +7,8 @@ services:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: "2181"
       ZOOKEEPER_TICK_TIME: "2000"
-      ZOOKEEPER_SERVERS: "zookeeper:22888:23888"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_jaas.conf
+                  -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
     ports:
       - "2181:2181"
     volumes:
@@ -51,11 +51,12 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: broker1_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker1.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker1_truststore_creds
+      # enables 2-way authentication
       KAFKA_SSL_CLIENT_AUTH: "required"
+      KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   kafka2:
     image: confluentinc/cp-enterprise-kafka:3.3.1
-    restart: always
     depends_on:
       - zookeeper
     ports:
@@ -92,6 +93,9 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: broker2_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker2.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker2_truststore_creds
+      # enables 2-way authentication
+      KAFKA_SSL_CLIENT_AUTH: "required"
+      KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   connect:
     image: confluentinc/cp-kafka-connect:3.3.1
@@ -214,14 +218,13 @@ services:
       CONTROL_CENTER_STREAMS_PRODUCER_SSL_KEYSTORE_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_PRODUCER_SSL_KEY_PASSWORD: confluent
   schemaregistry:
-    image: confluentinc/cp-schema-registry:3.3.1
+    image: confluentinc/cp-schema-registry:4.0.0
     restart: always
     depends_on:
       - zookeeper
     volumes:
       - $PWD/security:/etc/kafka/secrets
     environment:
-      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "SSL://kafka1:9092,SSL://kafka2:9093"
       SCHEMA_REGISTRY_HOST_NAME: schemaregistry
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
@@ -268,6 +271,7 @@ services:
       KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
       KAFKA_SSL_KEYSTORE_PASSWORD: confluent
       KAFKA_SSL_KEY_PASSWORD: confluent
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
     ports:
       - "7073:7073"
   ksql-cli:
