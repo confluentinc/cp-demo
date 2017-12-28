@@ -50,7 +50,7 @@ Follow along with the video [![Demo 1: Install + Run | Monitoring Kafka in Confl
 	$ git submodule update
 	```
 
-2. In the advanced Docker preferences settings, increase the memory available to Docker to at least 8GB (default is 2GB).
+2. In the advanced Docker preferences settings, increase the memory available to Docker to at least 12GB (default is 2GB).
 
 3. From the `cp-demo` directory, run `make clean all` to build the IRC connector and the transformer that will parse the Wikipedia edit messages to data. These are saved to `connect-plugins` path, which is a shared volume to the `connect` docker container.
 
@@ -74,7 +74,7 @@ Follow along with the video [![Demo 1: Install + Run | Monitoring Kafka in Confl
 	$ docker-compose up -d
 	```
 
-2. Verify the status of the Docker containers show "Up" state, except for the `kafka-client` container which is expected to have "Exit 0" state. If any containers are not up, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8GB (default is 2GB).
+2. Verify the status of the Docker containers show "Up" state, except for the `kafka-client` container which is expected to have "Exit 0" state. If any containers are not up, verify in the advanced Docker preferences settings that the memory available to Docker is at least 12GB (default is 2GB).
 
 	```bash
 	$ docker-compose ps

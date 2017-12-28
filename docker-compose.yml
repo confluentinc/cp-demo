@@ -3,6 +3,8 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper:3.3.1
     restart: always
+    hostname: zookeeper
+    domainname: confluent.io
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: "2181"
@@ -15,6 +17,8 @@ services:
       - $PWD/security:/etc/kafka/secrets
   kafka1:
     image: confluentinc/cp-enterprise-kafka:3.3.1
+    hostname: kafka1
+    domainname: confluent.io
     depends_on:
       - zookeeper
     volumes:
@@ -46,17 +50,20 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
       #KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
       KAFKA_JMX_PORT: 9991
-      KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker1.keystore.jks
-      KAFKA_SSL_KEYSTORE_CREDENTIALS: broker1_keystore_creds
-      KAFKA_SSL_KEY_CREDENTIALS: broker1_sslkey_creds
-      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker1.truststore.jks
-      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker1_truststore_creds
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka1.keystore.jks
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka1_keystore_creds
+      KAFKA_SSL_KEY_CREDENTIALS: kafka1_sslkey_creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka1.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka1_truststore_creds
       # enables 2-way authentication
       KAFKA_SSL_CLIENT_AUTH: "required"
+#      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   kafka2:
     image: confluentinc/cp-enterprise-kafka:3.3.1
+    hostname: kafka2
+    domainname: confluent.io
     depends_on:
       - zookeeper
     ports:
@@ -88,13 +95,14 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
       #KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
       KAFKA_JMX_PORT: 9991
-      KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker2.keystore.jks
-      KAFKA_SSL_KEYSTORE_CREDENTIALS: broker2_keystore_creds
-      KAFKA_SSL_KEY_CREDENTIALS: broker2_sslkey_creds
-      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker2.truststore.jks
-      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker2_truststore_creds
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka2.keystore.jks
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka2_keystore_creds
+      KAFKA_SSL_KEY_CREDENTIALS: kafka2_sslkey_creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka2.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka2_truststore_creds
       # enables 2-way authentication
       KAFKA_SSL_CLIENT_AUTH: "required"
+#      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   connect:
@@ -156,6 +164,7 @@ services:
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEY_PASSWORD: confluent
+#      CONNECT_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
       CONNECT_PLUGIN_PATH: /connect-plugins
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
@@ -275,7 +284,7 @@ services:
     ports:
       - "7073:7073"
   ksql-cli:
-    image: "confluentinc/ksql-cli:0.3"
+    image: "confluentinc/ksql-cli:0.1-pre10"
     hostname: ksql-cli
     depends_on:
       - kafka1
@@ -290,14 +299,5 @@ services:
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
-      STREAMS_BOOTSTRAP_SERVERS: kafka1:9092
-      STREAMS_SCHEMA_REGISTRY_HOST: schema-registry
-      STREAMS_SCHEMA_REGISTRY_PORT: 8081
-      STREAMS_SECURITY_PROTOCOL: SSL
-      STREAMS_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
-      STREAMS_SSL_TRUSTSTORE_PASSWORD: confluent
-      STREAMS_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
-      STREAMS_SSL_KEYSTORE_PASSWORD: confluent
-      STREAMS_SSL_KEY_PASSWORD: confluent
     extra_hosts:
       - "moby:127.0.0.1"

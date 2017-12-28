@@ -1,2 +1,9 @@
 connect-plugins/WikiEditTransformation-3.3.0.jar
 connect-plugins/kafka-connect-irc/*
+security/*.crt
+security/*.csr
+security/*_creds
+security/*.jks
+security/*.srl
+security/*.key
+security/*.req
