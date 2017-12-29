@@ -25,7 +25,7 @@ The use case is a streaming pipeline built around live edits to real Wikipedia p
 
 ![image](images/drawing.png)
 
-In this demo we have chosen to enable SSL for encryption and authentication for Kafka and SASL for Kafka communications with ZooKeeper. This provides example of how a production cluster would be configured in a secured environment.
+In this demo we have chosen to enable SSL for encryption and authentication for Kafka and SASL for Kafka communications with ZooKeeper. This provides example of how components in the Confluent Platform would be configured in a secured environment.
 
 _Note_: this is a Docker environment and has all services running on one host. This demo is not to be used in production; this is exclusively to easily demo the Confluent Platform. In production, Confluent Control Center should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production traffic. Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
 
@@ -50,7 +50,7 @@ Follow along with the video [![Demo 1: Install + Run | Monitoring Kafka in Confl
 	$ git submodule update
 	```
 
-2. In the advanced Docker preferences settings, increase the memory available to Docker to at least 12GB (default is 2GB).
+2. In the advanced Docker preferences settings, increase the memory available to Docker to at least 8GB (default is 2GB).
 
 3. From the `cp-demo` directory, run `make clean all` to build the IRC connector and the transformer that will parse the Wikipedia edit messages to data. These are saved to `connect-plugins` path, which is a shared volume to the `connect` docker container.
 
@@ -74,7 +74,7 @@ Follow along with the video [![Demo 1: Install + Run | Monitoring Kafka in Confl
 	$ docker-compose up -d
 	```
 
-2. Verify the status of the Docker containers show "Up" state, except for the `kafka-client` container which is expected to have "Exit 0" state. If any containers are not up, verify in the advanced Docker preferences settings that the memory available to Docker is at least 12GB (default is 2GB).
+2. Verify the status of the Docker containers show "Up" state, except for the `kafka-client` container which is expected to have "Exit 0" state. If any containers are not up, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8GB (default is 2GB).
 
 	```bash
 	$ docker-compose ps
