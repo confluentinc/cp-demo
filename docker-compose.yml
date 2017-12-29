@@ -18,7 +18,6 @@ services:
   kafka1:
     image: confluentinc/cp-enterprise-kafka:3.3.1
     hostname: kafka1
-    domainname: confluent.io
     depends_on:
       - zookeeper
     volumes:
@@ -57,14 +56,13 @@ services:
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka1_truststore_creds
       # enables 2-way authentication
       KAFKA_SSL_CLIENT_AUTH: "required"
-#      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       # ensures only brokers can modify Kafka related znodes
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   kafka2:
     image: confluentinc/cp-enterprise-kafka:3.3.1
     hostname: kafka2
-    domainname: confluent.io
     depends_on:
       - zookeeper
     ports:
@@ -103,7 +101,7 @@ services:
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka2_truststore_creds
       # enables 2-way authentication
       KAFKA_SSL_CLIENT_AUTH: "required"
-#      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       # ensures only brokers can modify Kafka related znodes
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
@@ -166,7 +164,7 @@ services:
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEY_PASSWORD: confluent
-#      CONNECT_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
+      CONNECT_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
       CONNECT_PLUGIN_PATH: /connect-plugins
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
@@ -222,6 +220,7 @@ services:
       CONTROL_CENTER_STREAMS_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
       CONTROL_CENTER_STREAMS_SSL_KEYSTORE_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_SSL_KEY_PASSWORD: confluent
+      CONTROL_CENTER_STREAMS_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       #temp workaround until docker images are updated
       CONTROL_CENTER_STREAMS_PRODUCER_SECURITY_PROTOCOL: SSL
       CONTROL_CENTER_STREAMS_PRODUCER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
@@ -229,6 +228,7 @@ services:
       CONTROL_CENTER_STREAMS_PRODUCER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
       CONTROL_CENTER_STREAMS_PRODUCER_SSL_KEYSTORE_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_PRODUCER_SSL_KEY_PASSWORD: confluent
+      CONTROL_CENTER_STREAMS_PRODUCER_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
   schemaregistry:
     image: confluentinc/cp-schema-registry:4.0.0
     restart: always
@@ -246,6 +246,7 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
       SCHEMA_REGISTRY_KAFKASTORE_SSL_KEYSTORE_PASSWORD: confluent
       SCHEMA_REGISTRY_KAFKASTORE_SSL_KEY_PASSWORD: confluent
+      SCHEMA_REGISTRY_KAFKASTORE_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
     ports:
       - 8081:8081
   kafka-client:
