@@ -435,21 +435,18 @@ All the components in this demo are enabled with SSL for encryption and 2-way au
 
 a. Communicate with brokers via the PLAINTEXT port
 
-	```bash
+	# PLAINTEXT port
 	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10092
-	```
 
 b. Communicate with brokers via the SSL port, and SSL parameters configured via the "--command-config" argument
 
-	```bash
+	# SSL port with SSL parameters
 	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9092 --command-config /etc/kafka/secrets/command.config
-	```
 
 c. If you try communicate with brokers via the SSL port but don't specify the SSL parameters, it will fail
 
-	```bash
+	# SSL port without SSL parameters
 	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9092
-	```
 
 ## View topic data
 
