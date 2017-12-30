@@ -12,20 +12,18 @@
     * [Under consumption](#under-consumption)
     * [Failed broker](#failed-broker)
     * [Alerting](#alerting)
-    * [SSL](#ssl)
+    * [Security](#security)
 - [View topic data](#view-topic-data)
 - [Teardown](#teardown)
 
 
 ## Overview
 
-This demo shows users how to monitor Kafka streaming ETL deployments using [Confluent Control Center](http://docs.confluent.io/current/control-center/docs/index.html). Follow along with the playbook in this README and watch the video tutorials.
+This demo shows users how to monitor secure Kafka streaming ETL deployments using [Confluent Control Center](http://docs.confluent.io/current/control-center/docs/index.html). Follow along with the playbook in this README and watch the video tutorials.
 
 The use case is a streaming pipeline built around live edits to real Wikipedia pages. Wikimedia Foundation has IRC channels that publish edits happening to real wiki pages (e.g. #en.wikipedia, #en.wiktionary) in real time. Using [Kafka Connect](http://docs.confluent.io/current/connect/index.html), a Kafka source connector [kafka-connect-irc](https://github.com/cjmatta/kafka-connect-irc) streams raw messages from these IRC channels, and a custom Kafka Connect transform [kafka-connect-transform-wikiedit](https://github.com/cjmatta/kafka-connect-transform-wikiedit) transforms these messages and then the messages are written to Kafka. This demo uses [KSQL](https://github.com/confluentinc/ksql) for data enrichment, or you can optionally develop and run your own [Kafka Streams](http://docs.confluent.io/current/streams/index.html) application. Then a Kafka sink connector [kafka-connect-elasticsearch](http://docs.confluent.io/current/connect/connect-elasticsearch/docs/elasticsearch_connector.html) streams the data out of Kafka, applying another custom Kafka Connect transform called NullFilter. The data is materialized into [Elasticsearch](https://www.elastic.co/products/elasticsearch) for analysis by [Kibana](https://www.elastic.co/products/kibana).
 
 ![image](images/drawing.png)
-
-In this demo we have chosen to enable SSL for encryption and authentication for Kafka and SASL for Kafka communications with ZooKeeper. This provides example of how components in the Confluent Platform would be configured in a secured environment.
 
 _Note_: this is a Docker environment and has all services running on one host. This demo is not to be used in production; this is exclusively to easily demo the Confluent Platform. In production, Confluent Control Center should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production traffic. Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
 
@@ -422,32 +420,36 @@ There are many types of Control Center [alerts](https://docs.confluent.io/curren
 
 	<img src="images/trigger_history.png" width="500" align="center">
 
-### SSL
+### Security
 
-SSL is used to communicate with Kafka in this setup. There are a variety of configurations required to enable SSL for encryrption and authentication when working with Kafka. You can find full details in the [security docs](https://docs.confluent.io/current/security.html). This demo automatically generates simple SSL certificates and creates keystores, truststores, and secures them with a password via the script located in ``security/create_certs.sh``. After these pieces are generated, Kafka brokers and clients must be configured to use them. There are two main places to see the configuration:
+All the components in this demo are enabled with SSL for encryption and 2-way authentication, except for broker communication with ZooKeeper which uses [SASL/DIGEST-MD5](https://cwiki.apache.org/confluence/display/ZOOKEEPER/Client-Server+mutual+authentication). Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL and other security features.
 
-1. ``docker-compose.yml`` -- Look at the service ``kafka1`` or ``kafka2``. Note that there are 3 listeners configured. Two for SSL (internal and external) and one for PLAINTEXT. Clients may still communicate via PLAINTEXT in this cluster despite the SSL listeners. Without the PLAINTEXT listener, all clients would need to communicate over SSL only. Now look at the configurations starting with ``KAFKA_SSL``. These specify the location of the keystore and truststore along with credentials to use them. Finally, you will see that ``KAFKA_SSL_CLIENT_AUTH`` has been set to ``required``. This means that all clients must authenticate (i.e. have a valid keystore). This is known as 2-way SSL authentication. 
-
-2. ``security/command.config`` -- This file is passed as an argument to all command line tooling communicating with Kafka. Even when using the built-in Kafka tooling, the user must specify ``security.protocol`` matching the listener to which they are bootstrapping to and meet the requirements for communication. In this file, the keystore, truststore, and associated passwords have been specified so that the built-in tooling can be used over SSL. 
-
-All of the respective services communicating with Kafka over SSL have their own configurations specified via the ``docker-compose.yml`` file. To see how this works the built-in tooling try the following:
+1. Each broker has one PLAINTEXT port and two SSL ports (one external for broker-client communication and one internal for broker-broker communication). Broker 1 has PLAINTEXT on 10092, SSL on 9092, SSL for inter-broker communication on 29092. Broker 2 has PLAINTEXT on 10093, SSL on 9093, SSL for inter-broker communication on 29093. Verify the ports on which the Kafka brokers are listening with the following command:
 
 	```bash
-	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9092 --command-config /etc/kafka/secrets/command.config
-	```
-This will list all active consumer groups. Now try without the command configuration:
-
-	```bash
-	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9092
+	$ docker-compose logs kafka1 | grep "Registered broker 1"
+	$ docker-compose logs kafka2 | grep "Registered broker 2"
 	```
 
-Now finally try against the PLAINTEXT port without the command configuration:
+2. This demo [automatically generates](security/create-certs.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use the PLAINTEXT port or the SSL port. To use the SSL port, they must specify SSL parameters for keystores, trustores, and password, so the Kafka command line client tools pass the [SSL configuration file](security/command.config) with these SSL parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
+
+a. Communicate with brokers via the PLAINTEXT port
 
 	```bash
 	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10092
 	```
 
-Notice that you must specify the listener that matches your configuration in order to get back useful information from Kafka.
+b. Communicate with brokers via the SSL port, and SSL parameters configured via the "--command-config" argument
+
+	```bash
+	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9092 --command-config /etc/kafka/secrets/command.config
+	```
+
+c. If you try communicate with brokers via the SSL port but don't specify the SSL parameters, it will fail
+
+	```bash
+	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9092
+	```
 
 ## View topic data
 
