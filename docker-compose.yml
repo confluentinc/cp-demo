@@ -1,7 +1,7 @@
 version: "2.1"
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:3.3.1
+    image: confluentinc/cp-zookeeper:4.0.0
     restart: always
     hostname: zookeeper
     domainname: confluent.io
@@ -16,7 +16,7 @@ services:
     volumes:
       - $PWD/security:/etc/kafka/secrets
   kafka1:
-    image: confluentinc/cp-enterprise-kafka:3.3.1
+    image: confluentinc/cp-enterprise-kafka:4.0.0
     hostname: kafka1
     depends_on:
       - zookeeper
@@ -61,7 +61,7 @@ services:
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   kafka2:
-    image: confluentinc/cp-enterprise-kafka:3.3.1
+    image: confluentinc/cp-enterprise-kafka:4.0.0
     hostname: kafka2
     depends_on:
       - zookeeper
@@ -106,7 +106,7 @@ services:
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   connect:
-    image: confluentinc/cp-kafka-connect:3.3.1
+    image: confluentinc/cp-kafka-connect:4.0.0
     restart: always
     ports:
       - "8083:8083"
@@ -166,10 +166,10 @@ services:
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEY_PASSWORD: confluent
       CONNECT_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
-      CONNECT_PLUGIN_PATH: /connect-plugins
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-3.3.1.jar
+      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.0.0.jar
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
     #restart: always
@@ -192,7 +192,7 @@ services:
       xpack.security.enabled: "false"
       discovery.type: "single-node"
   control-center:
-    image: confluentinc/cp-enterprise-control-center:3.3.1
+    image: confluentinc/cp-enterprise-control-center:4.0.0
     restart: always
     depends_on:
       - zookeeper
@@ -250,7 +250,7 @@ services:
     ports:
       - 8081:8081
   kafka-client:
-    image: confluentinc/cp-enterprise-kafka:3.3.1
+    image: confluentinc/cp-enterprise-kafka:4.0.0
     depends_on:
       - kafka1
     hostname: kafka-client
@@ -295,7 +295,7 @@ services:
     ports:
       - 9098:9098
     volumes:
-      - $PWD/monitoring-interceptors/monitoring-interceptors-3.3.1.jar:/usr/share/java/ksql-cli/monitoring-interceptors-3.3.1.jar
+      - $PWD/monitoring-interceptors/monitoring-interceptors-4.0.0.jar:/usr/share/java/ksql-cli/monitoring-interceptors-4.0.0.jar
       - $PWD/scripts_ksql/ksqlproperties:/tmp/ksqlproperties
       - $PWD/scripts_ksql/ksqlcommands:/tmp/ksqlcommands
       - $PWD/security:/etc/kafka/secrets

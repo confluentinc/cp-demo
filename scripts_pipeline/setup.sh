@@ -16,8 +16,8 @@ if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
   exit 1
 fi
 
-if [[ ! $(docker-compose logs control-center) =~ "HTTP" ]]; then
-  echo -e "The logs in control-center container do not show 'HTTP' yet. Please wait a minute before running this script again.\n"
+if [[ ! $(docker-compose logs control-center) =~ "Started NetworkTrafficServerConnector" ]]; then
+  echo -e "The logs in control-center container do not show 'Started NetworkTrafficServerConnector' yet. Please wait a minute before running this script again.\n"
   exit 1
 fi
 

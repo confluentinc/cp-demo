@@ -95,7 +95,7 @@ Follow along with the video [![Demo 1: Install + Run | Monitoring Kafka in Confl
 3. Wait till Confluent Control Center is running fully. Verify when it's ready when the logs show the following event
 
 	```bash
-	$ docker-compose logs -f control-center | grep -e HTTP
+	$ docker-compose logs -f control-center | grep -e "Started NetworkTrafficServerConnector"
 	control-center_1       | [2017-09-06 16:37:33,133] INFO Started NetworkTrafficServerConnector@26a529dc{HTTP/1.1}{0.0.0.0:9021} (org.eclipse.jetty.server.NetworkTrafficServerConnector)
 	```
 
