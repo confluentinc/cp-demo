@@ -57,7 +57,7 @@ services:
       # enables 2-way authentication
       KAFKA_SSL_CLIENT_AUTH: "required"
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
-      # ensures only brokers can modify Kafka related znodes
+      # Ensures only brokers can modify Kafka related znodes
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   kafka2:
@@ -102,7 +102,7 @@ services:
       # enables 2-way authentication
       KAFKA_SSL_CLIENT_AUTH: "required"
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
-      # ensures only brokers can modify Kafka related znodes
+      # Ensures only brokers can modify Kafka related znodes
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   connect:
