@@ -55,3 +55,4 @@ curl -X POST -H "Content-Type: application/json" -d '{"name":"Email Administrato
 echo -e "\nSleeping 30 seconds"
 sleep 30
 
+echo -e "\nDONE! Connect to Confluent Control Center at http://localhost:9021\n"

@@ -14,7 +14,7 @@
     * [Alerting](#alerting)
     * [Security](#security)
     * [Replicator](#replicator)
-- [View topic data](#view-topic-data)
+- [Troubleshooting the demo](#troubleshooting-the-demo)
 - [Teardown](#teardown)
 
 
@@ -449,14 +449,6 @@ c. If you try communicate with brokers via the SSL port but don't specify the SS
 	# SSL port without SSL parameters
 	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9092
 
-## View topic data
-
-* __**Viewing topic data**__: if you want to watch the live messages from the `wikipedia.parsed` topic:
-
-	```bash
-	$ ./$DEMOPATH/listen_wikipedia.parsed.sh
-	```
-
 ### Replicator
 
 Confluent Replicator copies data from a source Kafka cluster to a destination Kafka cluster. The source and destination clusters are typically different clusters, but in this demo, Replicator is doing intra-cluster replication, _i.e._, the source and destination Kafka clusters are the same. As with the rest of the components in the solution, Confluent Replicator is also configured with security.
@@ -484,6 +476,20 @@ Confluent Replicator copies data from a source Kafka cluster to a destination Ka
         * Even though the consumer group `replicator` was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
         * The latency peaks and then gradually decreases, because this is also relative to the produce timestamp.
 
+
+## Troubleshooting the demo
+
+1. To view live messages from the `wikipedia.parsed` topic:
+
+	```bash
+	$ ./$DEMOPATH/listen_wikipedia.parsed.sh
+	```
+
+2. If the data streams monitoring appears to stop for the Kafka source connector, restart the connect container.
+
+	```bash
+	$ docker-compose restart connect
+	```
 
 ## Teardown
 
