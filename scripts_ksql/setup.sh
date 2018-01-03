@@ -52,6 +52,9 @@ echo -e "\nStart consumers for additional topics:"
 echo -e "\nSleeping 50 seconds"
 sleep 50
 
+# Needed to workaround KAFKA-6252 which affects the IRC connector
+docker-compose restart connect
+
 echo -e "\nConfigure triggers and actions in Control Center:"
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Consumption Difference","clusterId":"'$(curl -X get http://localhost:9021/2.0/clusters/kafka/ | jq --raw-output .[0].clusterId)'","group":"connect-elasticsearch-ksql","metric":"CONSUMPTION_DIFF","condition":"GREATER_THAN","longValue":"0","lagMs":"5000"}' http://localhost:9021/2.0/alerts/triggers
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Under Replicated Partitions","clusterId":"default","condition":"GREATER_THAN","longValue":"0","lagMs":"60000","brokerClusters":{"brokerClusters":["'$(curl -X get http://localhost:9021/2.0/clusters/kafka/ | jq --raw-output ".[0].clusterId")'"]},"brokerMetric":"UNDER_REPLICATED_TOPIC_PARTITIONS"}' http://localhost:9021/2.0/alerts/triggers
