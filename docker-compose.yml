@@ -106,7 +106,7 @@ services:
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   connect:
-    image: confluentinc/cp-kafka-connect:4.0.0
+    image: confluentinc/cp-kafka-connect:3.3.1
     restart: always
     ports:
       - "8083:8083"
@@ -169,6 +169,10 @@ services:
       CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
+      #CONNECT_SASL_JAAS_CONFIG: "org.apache.zookeeper.server.auth.DigestLoginModule required username=\"kafka\" password=\"kafkasecret\";"
+      #CONNECT_PRODUCER_SASL_JAAS_CONFIG: "org.apache.zookeeper.server.auth.DigestLoginModule required username=\"kafka\" password=\"kafkasecret\";"
+      #CONNECT_CONSUMER_SASL_JAAS_CONFIG: "org.apache.zookeeper.server.auth.DigestLoginModule required username=\"kafka\" password=\"kafkasecret\";"
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
       CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.0.0.jar
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
@@ -266,12 +270,12 @@ services:
                        cub kafka-ready -b kafka1:9092 1 60 --config /etc/kafka/kafka.properties && \
                        sleep 5 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed --create --replication-factor 2 --partitions 2 && \
+                       kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed.replica --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.failed --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic WIKIPEDIABOT --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic WIKIPEDIANOBOT --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic EN_WIKIPEDIA_GT_1 --create --replication-factor 2 --partitions 2 && \
-                       kafka-topics --zookeeper zookeeper:2181 --topic EN_WIKIPEDIA_GT_1_COUNTS --create --replication-factor 2 --partitions 2 && \
-                       exit'"
+                       kafka-topics --zookeeper zookeeper:2181 --topic EN_WIKIPEDIA_GT_1_COUNTS --create --replication-factor 2 --partitions 2'"
     environment:
       # The following settings are listed here only to satisfy the image's requirements.
       # We override the image's `command` anyways, hence this container will not start a broker.

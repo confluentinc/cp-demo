@@ -13,6 +13,7 @@
     * [Failed broker](#failed-broker)
     * [Alerting](#alerting)
     * [Security](#security)
+    * [Replicator](#replicator)
 - [View topic data](#view-topic-data)
 - [Teardown](#teardown)
 
@@ -455,6 +456,11 @@ c. If you try communicate with brokers via the SSL port but don't specify the SS
 	```bash
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh
 	```
+
+### Replicator
+
+Confluent Replicator copies data from a source Kafka cluster to a destination Kafka cluster. For this demo, the source and destination Kafka clusters are the same cluster. As with the rest of the components in the solution, Confluent Replicator is also configured with security.
+
 
 ## Teardown
 

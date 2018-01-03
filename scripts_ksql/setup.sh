@@ -36,6 +36,9 @@ echo -e "\nProvide data mapping to Elasticsearch:"
 echo -e "\nStart streaming to Elasticsearch sink connector:"
 ./scripts_ksql/submit_elastic_sink_config.sh
 
+echo -e "\nStart Confluent Replicator:"
+./scripts_ksql/submit_replicator_config.sh
+
 echo -e "\nConfigure Kibana dashboard:"
 ./scripts_ksql/configure_kibana_dashboard.sh
 
