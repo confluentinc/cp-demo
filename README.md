@@ -70,7 +70,7 @@ Follow along with the video [![Demo 1: Install + Run | Monitoring Kafka in Confl
 1. Start Docker Compose. It will take about 2 minutes for all containers to start and for Confluent Control Center GUI to be ready.
 
 	```bash
-	$ docker-compose up -d
+	$ docker-compose pull && docker-compose up -d
 	```
 
 2. Verify the status of the Docker containers show "Up" state, except for the `kafka-client` container which is expected to have "Exit 0" state. If any containers are not up, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8GB (default is 2GB).
