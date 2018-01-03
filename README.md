@@ -413,7 +413,7 @@ There are many types of Control Center [alerts](https://docs.confluent.io/curren
 
 3. You can also trigger the `Consumption Difference` trigger. In the Kafka Connect -> Sinks screen, edit the running Elasticsearch sink connector.
 
-4. Pause the Elasticsearch sink connector by pressing the pause icon in the top left. This will stop consumption for the related consumer group.
+4. In the Kafka Connect view, pause the Elasticsearch sink connector by pressing the pause icon in the top right. This will stop consumption for the related consumer group.
 
 	<img src="images/pause_connector.png" width="200" align="center">
 
@@ -423,7 +423,7 @@ There are many types of Control Center [alerts](https://docs.confluent.io/curren
 
 ### Security
 
-All the components in this demo are enabled with SSL for encryption and 2-way authentication, except for broker communication with ZooKeeper which uses [SASL/DIGEST-MD5](https://cwiki.apache.org/confluence/display/ZOOKEEPER/Client-Server+mutual+authentication). Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL and other security features.
+All the components in this demo are enabled with SSL for encryption and 2-way authentication, except for ZooKeeper which does not support SSL. Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL and other security features.
 
 1. Each broker has one PLAINTEXT port and two SSL ports (one external for broker-client communication and one internal for broker-broker communication). Broker 1 has PLAINTEXT on 10092, SSL on 9092, SSL for inter-broker communication on 29092. Broker 2 has PLAINTEXT on 10093, SSL on 9093, SSL for inter-broker communication on 29093. Verify the ports on which the Kafka brokers are listening with the following command:
 
@@ -459,7 +459,30 @@ c. If you try communicate with brokers via the SSL port but don't specify the SS
 
 ### Replicator
 
-Confluent Replicator copies data from a source Kafka cluster to a destination Kafka cluster. For this demo, the source and destination Kafka clusters are the same cluster. As with the rest of the components in the solution, Confluent Replicator is also configured with security.
+Confluent Replicator copies data from a source Kafka cluster to a destination Kafka cluster. The source and destination clusters are typically different clusters, but in this demo, Replicator is doing intra-cluster replication, _i.e._, the source and destination Kafka clusters are the same. As with the rest of the components in the solution, Confluent Replicator is also configured with security.
+
+1. Monitor throughput and latency of Confluent Replicator in the Data streams monitoring view. Replicator is a Kafka Connect source connector and has a corresponding consumer group `replicator`.
+
+	![image](images/replicator_consumer_group.png)
+
+2. In the Topics view, scroll down to view the topics called `wikipedia.parsed` (Replicator is consuming data from this topic) and `wikipedia.parsed.replica` (Replicator is copying data to this topic). Click on "Consumer Groups" for the topic `wikipedia.parsed` and observe that one of the consumer groups is called "replicator".
+
+	![image](images/replicator_topic_info.png)
+
+3. In the Kafka Connect view, pause the Replicator connector by pressing the pause icon in the top right. This will stop consumption for the related consumer group.
+
+	<img src="images/pause_connector.png" width="200" align="center">
+
+4. Observe that the replicator consumer group has stopped consumption.
+
+	![image](images/replicator_streams_stopped.png)
+
+5. Restart the Replicator connector.
+
+6. Observe that the replicator consumer group has resumed consumption. Notice several things:
+
+        * Even though the consumer group `replicator` was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
+        * The latency peaks and then gradually decreases, because this is also relative to the produce timestamp.
 
 
 ## Teardown

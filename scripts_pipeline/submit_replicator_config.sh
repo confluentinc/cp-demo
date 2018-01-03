@@ -26,6 +26,15 @@ DATA=$( cat << EOF
     "src.kafka.ssl.truststore.password": "confluent",
     "src.kafka.ssl.keystore.location": "/etc/kafka/secrets/kafka.client.keystore.jks",
     "src.kafka.ssl.keystore.password": "confluent",
+    "src.consumer.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor",
+    "src.consumer.confluent.monitoring.interceptor.security.protocol": "SSL",
+    "src.consumer.confluent.monitoring.interceptor.bootstrap.servers": "SSL://kafka1:9092",
+    "src.consumer.confluent.monitoring.interceptor.ssl.key.password": "confluent",
+    "src.consumer.confluent.monitoring.interceptor.ssl.truststore.location": "/etc/kafka/secrets/kafka.client.truststore.jks",
+    "src.consumer.confluent.monitoring.interceptor.ssl.truststore.password": "confluent",
+    "src.consumer.confluent.monitoring.interceptor.ssl.keystore.location": "/etc/kafka/secrets/kafka.client.keystore.jks",
+    "src.consumer.confluent.monitoring.interceptor.ssl.keystore.password": "confluent",
+    "src.consumer.group.id": "replicator",
     "tasks.max": "1"
   }
 }

@@ -96,7 +96,7 @@ services:
       KAFKA_SSL_CLIENT_AUTH: "required"
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
   connect:
-    image: confluentinc/cp-kafka-connect:3.3.1
+    image: confluentinc/cp-kafka-connect:4.0.0
     restart: always
     ports:
       - "8083:8083"
@@ -123,47 +123,46 @@ services:
       CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
+      CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
+      CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
+      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.0.0.jar
+      # Connect worker
       CONNECT_SECURITY_PROTOCOL: SSL
       CONNECT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
       CONNECT_SSL_TRUSTSTORE_PASSWORD: confluent
       CONNECT_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
       CONNECT_SSL_KEYSTORE_PASSWORD: confluent
+      # Connect producer
       CONNECT_PRODUCER_SECURITY_PROTOCOL: SSL
       CONNECT_PRODUCER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
       CONNECT_PRODUCER_SSL_TRUSTSTORE_PASSWORD: confluent
       CONNECT_PRODUCER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
       CONNECT_PRODUCER_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_PRODUCER_SSL_KEY_PASSWORD: confluent
-      CONNECT_CONSUMER_SECURITY_PROTOCOL: SSL
-      CONNECT_CONSUMER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
-      CONNECT_CONSUMER_SSL_TRUSTSTORE_PASSWORD: confluent
-      CONNECT_CONSUMER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
-      CONNECT_CONSUMER_SSL_KEYSTORE_PASSWORD: confluent
-      CONNECT_CONSUMER_SSL_KEY_PASSWORD: confluent
       CONNECT_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
-      CONNECT_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SECURITY_PROTOCOL: SSL
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_PASSWORD: confluent
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEY_PASSWORD: confluent
+      # Connect consumer
+      CONNECT_CONSUMER_SECURITY_PROTOCOL: SSL
+      CONNECT_CONSUMER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
+      CONNECT_CONSUMER_SSL_TRUSTSTORE_PASSWORD: confluent
+      CONNECT_CONSUMER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
+      CONNECT_CONSUMER_SSL_KEYSTORE_PASSWORD: confluent
+      CONNECT_CONSUMER_SSL_KEY_PASSWORD: confluent
+      CONNECT_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SECURITY_PROTOCOL: SSL
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_PASSWORD: confluent
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEY_PASSWORD: confluent
-      CONNECT_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
-      CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
-      CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
-      CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
-      CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      #CONNECT_SASL_JAAS_CONFIG: "org.apache.zookeeper.server.auth.DigestLoginModule required username=\"kafka\" password=\"kafkasecret\";"
-      #CONNECT_PRODUCER_SASL_JAAS_CONFIG: "org.apache.zookeeper.server.auth.DigestLoginModule required username=\"kafka\" password=\"kafkasecret\";"
-      #CONNECT_CONSUMER_SASL_JAAS_CONFIG: "org.apache.zookeeper.server.auth.DigestLoginModule required username=\"kafka\" password=\"kafkasecret\";"
-      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
-      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.0.0.jar
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
     #restart: always
@@ -260,7 +259,7 @@ services:
                        cub kafka-ready -b kafka1:9092 1 60 --config /etc/kafka/kafka.properties && \
                        sleep 5 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed --create --replication-factor 2 --partitions 2 && \
-                       kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed.replica --create --replication-factor 2 --partitions 2 && \
+                       kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed.replica --create --replication-factor 2 --partitions 4 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.failed --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic WIKIPEDIABOT --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic WIKIPEDIANOBOT --create --replication-factor 2 --partitions 2 && \
