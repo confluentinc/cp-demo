@@ -9,12 +9,8 @@ services:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: "2181"
       ZOOKEEPER_TICK_TIME: "2000"
-      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_jaas.conf
-                  -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
     ports:
       - "2181:2181"
-    volumes:
-      - $PWD/security:/etc/kafka/secrets
   kafka1:
     image: confluentinc/cp-enterprise-kafka:4.0.0
     hostname: kafka1
@@ -57,9 +53,6 @@ services:
       # enables 2-way authentication
       KAFKA_SSL_CLIENT_AUTH: "required"
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
-      # Ensures only brokers can modify Kafka related znodes
-      KAFKA_ZOOKEEPER_SET_ACL: "true"
-      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   kafka2:
     image: confluentinc/cp-enterprise-kafka:4.0.0
     hostname: kafka2
@@ -102,9 +95,6 @@ services:
       # enables 2-way authentication
       KAFKA_SSL_CLIENT_AUTH: "required"
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
-      # Ensures only brokers can modify Kafka related znodes
-      KAFKA_ZOOKEEPER_SET_ACL: "true"
-      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   connect:
     image: confluentinc/cp-kafka-connect:4.0.0
     restart: always
@@ -284,7 +274,6 @@ services:
       KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
       KAFKA_SSL_KEYSTORE_PASSWORD: confluent
       KAFKA_SSL_KEY_PASSWORD: confluent
-      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
     ports:
       - "7073:7073"
   ksql-cli:
