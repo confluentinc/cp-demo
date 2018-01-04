@@ -453,27 +453,27 @@ c. If you try communicate with brokers via the SSL port but don't specify the SS
 
 Confluent Replicator copies data from a source Kafka cluster to a destination Kafka cluster. The source and destination clusters are typically different clusters, but in this demo, Replicator is doing intra-cluster replication, _i.e._, the source and destination Kafka clusters are the same. As with the rest of the components in the solution, Confluent Replicator is also configured with security.
 
-1. Monitor throughput and latency of Confluent Replicator in the Data streams monitoring view. Replicator is a Kafka Connect source connector and has a corresponding consumer group `replicator`.
+1. __**Monitoring --> Data Streams --> Message Delivery**__: monitor throughput and latency of Confluent Replicator in the Data streams monitoring view. Replicator is a Kafka Connect source connector and has a corresponding consumer group `connect-replicator`.
 
 	![image](images/replicator_consumer_group.png)
 
-2. In the Topics view, scroll down to view the topics called `wikipedia.parsed` (Replicator is consuming data from this topic) and `wikipedia.parsed.replica` (Replicator is copying data to this topic). Click on "Consumer Groups" for the topic `wikipedia.parsed` and observe that one of the consumer groups is called "replicator".
+2. __**Management --> Topics**__: scroll down to view the topics called `wikipedia.parsed` (Replicator is consuming data from this topic) and `wikipedia.parsed.replica` (Replicator is copying data to this topic). Click on "Consumer Groups" box for the topic `wikipedia.parsed` and observe that one of the consumer groups is called `connect-replicator`.
 
 	![image](images/replicator_topic_info.png)
 
-3. In the Kafka Connect view, pause the Replicator connector by pressing the pause icon in the top right. This will stop consumption for the related consumer group.
+3. __**Management --> Kafka Connect**__: pause the Replicator connector by pressing the pause icon in the top right. This will stop consumption for the related consumer group.
 
 	<img src="images/pause_connector.png" width="200" align="center">
 
-4. Observe that the replicator consumer group has stopped consumption.
+4. Observe that the `connect-replicator` consumer group has stopped consumption.
 
 	![image](images/replicator_streams_stopped.png)
 
 5. Restart the Replicator connector.
 
-6. Observe that the replicator consumer group has resumed consumption. Notice several things:
+6. Observe that the `connect-replicator` consumer group has resumed consumption. Notice several things:
 
-        * Even though the consumer group `replicator` was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
+        * Even though the `connect-replicator` consumer group was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
         * The latency peaks and then gradually decreases, because this is also relative to the produce timestamp.
 
 
