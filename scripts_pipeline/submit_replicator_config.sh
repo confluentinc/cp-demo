@@ -34,7 +34,7 @@ DATA=$( cat << EOF
     "src.consumer.confluent.monitoring.interceptor.ssl.truststore.password": "confluent",
     "src.consumer.confluent.monitoring.interceptor.ssl.keystore.location": "/etc/kafka/secrets/kafka.client.keystore.jks",
     "src.consumer.confluent.monitoring.interceptor.ssl.keystore.password": "confluent",
-    "src.consumer.group.id": "replicator",
+    "src.consumer.group.id": "connect-replicator",
     "tasks.max": "1"
   }
 }
