@@ -3,7 +3,6 @@
 docker exec cpdemo_connect_1 kafka-console-consumer --bootstrap-server kafka1:9092 --topic EN_WIKIPEDIA_GT_1_COUNTS \
   --consumer-property group.id=EN_WIKIPEDIA_GT_1_COUNTS-consumer \
   --consumer-property interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor \
-  --consumer-property security.protocol=ssl \
   --consumer-property ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks \
   --consumer-property ssl.truststore.password=confluent \
   --consumer-property ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks \
@@ -13,4 +12,9 @@ docker exec cpdemo_connect_1 kafka-console-consumer --bootstrap-server kafka1:90
   --consumer-property confluent.monitoring.interceptor.ssl.truststore.password=confluent \
   --consumer-property confluent.monitoring.interceptor.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks \
   --consumer-property confluent.monitoring.interceptor.ssl.keystore.password=confluent \
-  --consumer-property confluent.monitoring.interceptor.ssl.key.password=confluent > /dev/null 2>&1 &
+  --consumer-property confluent.monitoring.interceptor.ssl.key.password=confluent \
+  --consumer-property security.protocol=SASL_SSL \
+  --consumer-property sasl.jaas.config="org.apache.kafka.common.security.plain.PlainLoginModule required \
+        username=\"client\" \
+        password=\"client-secret\";" \
+  --consumer-property sasl.mechanism=PLAIN > /dev/null 2>&1 &
