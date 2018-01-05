@@ -432,12 +432,10 @@ All the components in this demo are enabled with SSL for encryption and 2-way au
 	$ docker-compose logs kafka2 | grep "Registered broker 2"
 	```
 
-----------------------------------
 |broker |PLAINTEXT |SSL  |SSL_HOST
 |-------|----------|-----|--------
 |kafka1 |10092     |9092 |29092   
 |kafka2 |10093     |9093 |29093   
-----------------------------------
 
 
 2. This demo [automatically generates](security/create-certs.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use the PLAINTEXT port or the SSL port. To use the SSL port, they must specify SSL parameters for keystores, trustores, and password, so the Kafka command line client tools pass the [SSL configuration file](security/command.config) with these SSL parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
