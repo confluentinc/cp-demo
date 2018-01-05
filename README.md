@@ -425,7 +425,7 @@ There are many types of Control Center [alerts](https://docs.confluent.io/curren
 
 All the components in this demo are enabled with SSL for encryption and 2-way authentication, except for ZooKeeper which does not support SSL. Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL and other security features.
 
-1. Each broker has one PLAINTEXT port and two SSL ports. One SSL port called `SSL` is for communication between Docker containers and the other SSL port called `SSL_HOST` is for communication between any potential services outside of Docker that communicate to the Docker containers. Verify the ports on which the Kafka brokers are listening with the following command, and they should match the table shown below:
+1. Each broker has one PLAINTEXT port and two SSL ports. One SSL port called `SSL` is for communication between services inside Docker containers and the other SSL port called `SSL_HOST` is for communication between any potential services outside of Docker that communicate to the Docker containers. Verify the ports on which the Kafka brokers are listening with the following command, and they should match the table shown below:
 
 	```bash
 	$ docker-compose logs kafka1 | grep "Registered broker 1"
