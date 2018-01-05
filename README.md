@@ -12,13 +12,15 @@
     * [Under consumption](#under-consumption)
     * [Failed broker](#failed-broker)
     * [Alerting](#alerting)
-- [View topic data](#view-topic-data)
+    * [Security](#security)
+    * [Replicator](#replicator)
+- [Troubleshooting the demo](#troubleshooting-the-demo)
 - [Teardown](#teardown)
 
 
 ## Overview
 
-This demo shows users how to monitor Kafka streaming ETL deployments using [Confluent Control Center](http://docs.confluent.io/current/control-center/docs/index.html). Follow along with the playbook in this README and watch the video tutorials.
+This demo shows users how to monitor secure Kafka streaming ETL deployments using [Confluent Control Center](http://docs.confluent.io/current/control-center/docs/index.html). Follow along with the playbook in this README and watch the video tutorials.
 
 The use case is a streaming pipeline built around live edits to real Wikipedia pages. Wikimedia Foundation has IRC channels that publish edits happening to real wiki pages (e.g. #en.wikipedia, #en.wiktionary) in real time. Using [Kafka Connect](http://docs.confluent.io/current/connect/index.html), a Kafka source connector [kafka-connect-irc](https://github.com/cjmatta/kafka-connect-irc) streams raw messages from these IRC channels, and a custom Kafka Connect transform [kafka-connect-transform-wikiedit](https://github.com/cjmatta/kafka-connect-transform-wikiedit) transforms these messages and then the messages are written to Kafka. This demo uses [KSQL](https://github.com/confluentinc/ksql) for data enrichment, or you can optionally develop and run your own [Kafka Streams](http://docs.confluent.io/current/streams/index.html) application. Then a Kafka sink connector [kafka-connect-elasticsearch](http://docs.confluent.io/current/connect/connect-elasticsearch/docs/elasticsearch_connector.html) streams the data out of Kafka, applying another custom Kafka Connect transform called NullFilter. The data is materialized into [Elasticsearch](https://www.elastic.co/products/elasticsearch) for analysis by [Kibana](https://www.elastic.co/products/kibana).
 
@@ -92,7 +94,7 @@ Follow along with the video [![Demo 1: Install + Run | Monitoring Kafka in Confl
 3. Wait till Confluent Control Center is running fully. Verify when it's ready when the logs show the following event
 
 	```bash
-	$ docker-compose logs -f control-center | grep -e HTTP
+	$ docker-compose logs -f control-center | grep -e "Started NetworkTrafficServerConnector"
 	control-center_1       | [2017-09-06 16:37:33,133] INFO Started NetworkTrafficServerConnector@26a529dc{HTTP/1.1}{0.0.0.0:9021} (org.eclipse.jetty.server.NetworkTrafficServerConnector)
 	```
 
@@ -288,7 +290,7 @@ Streams monitoring in Control Center can highlight consumers that are over consu
 5. Reset the offset of the consumer group `app` by shifting 200 offsets backwards. The offset reset tool must be run when the consumer is completely stopped. Offset values in output shown below will vary.
 
 	```bash
-	$ docker-compose exec kafka1 kafka-consumer-groups --reset-offsets --group app --shift-by -200 --bootstrap-server kafka1:9092 --all-topics --execute
+	$ docker-compose exec kafka1 kafka-consumer-groups --reset-offsets --group app --shift-by -200 --bootstrap-server kafka1:9092 --all-topics --execute --command-config /etc/kafka/secrets/command.config
 
 	TOPIC                          PARTITION  NEW-OFFSET     
 	wikipedia.parsed               1          4071           
@@ -340,7 +342,7 @@ Streams monitoring in Control Center can highlight consumers that are under cons
 6. Reset the offset of the consumer group `app` by setting it to latest offset. The offset reset tool must be run when the consumer is completely stopped. Offset values in output shown below will vary.
 
 	```bash
-	$ docker-compose exec kafka1 kafka-consumer-groups --reset-offsets --group app --to-latest --bootstrap-server kafka1:9092 --all-topics --execute
+	$ docker-compose exec kafka1 kafka-consumer-groups --reset-offsets --group app --to-latest --bootstrap-server kafka1:9092 --all-topics --execute --command-config /etc/kafka/secrets/command.config
 
 	TOPIC                          PARTITION  NEW-OFFSET     
 	wikipedia.parsed               1          8601           
@@ -411,7 +413,7 @@ There are many types of Control Center [alerts](https://docs.confluent.io/curren
 
 3. You can also trigger the `Consumption Difference` trigger. In the Kafka Connect -> Sinks screen, edit the running Elasticsearch sink connector.
 
-4. Pause the Elasticsearch sink connector by pressing the pause icon in the top left. This will stop consumption for the related consumer group.
+4. In the Kafka Connect view, pause the Elasticsearch sink connector by pressing the pause icon in the top right. This will stop consumption for the related consumer group.
 
 	<img src="images/pause_connector.png" width="200" align="center">
 
@@ -419,13 +421,74 @@ There are many types of Control Center [alerts](https://docs.confluent.io/curren
 
 	<img src="images/trigger_history.png" width="500" align="center">
 
+### Security
 
-## View topic data
+All the components in this demo are enabled with SSL for encryption and 2-way authentication, except for ZooKeeper which does not support SSL. Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL and other security features.
 
-* __**Viewing topic data**__: if you want to watch the live messages from the `wikipedia.parsed` topic:
+1. Each broker has one PLAINTEXT port and two SSL ports (one external for broker-client communication and one internal for broker-broker communication). Broker 1 has PLAINTEXT on 10092, SSL on 9092, SSL for inter-broker communication on 29092. Broker 2 has PLAINTEXT on 10093, SSL on 9093, SSL for inter-broker communication on 29093. Verify the ports on which the Kafka brokers are listening with the following command:
+
+	```bash
+	$ docker-compose logs kafka1 | grep "Registered broker 1"
+	$ docker-compose logs kafka2 | grep "Registered broker 2"
+	```
+
+2. This demo [automatically generates](security/create-certs.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use the PLAINTEXT port or the SSL port. To use the SSL port, they must specify SSL parameters for keystores, trustores, and password, so the Kafka command line client tools pass the [SSL configuration file](security/command.config) with these SSL parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
+
+a. Communicate with brokers via the PLAINTEXT port
+
+	# PLAINTEXT port
+	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10092
+
+b. Communicate with brokers via the SSL port, and SSL parameters configured via the "--command-config" argument
+
+	# SSL port with SSL parameters
+	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9092 --command-config /etc/kafka/secrets/command.config
+
+c. If you try communicate with brokers via the SSL port but don't specify the SSL parameters, it will fail
+
+	# SSL port without SSL parameters
+	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9092
+
+### Replicator
+
+Confluent Replicator copies data from a source Kafka cluster to a destination Kafka cluster. The source and destination clusters are typically different clusters, but in this demo, Replicator is doing intra-cluster replication, _i.e._, the source and destination Kafka clusters are the same. As with the rest of the components in the solution, Confluent Replicator is also configured with security.
+
+1. __**Monitoring --> Data Streams --> Message Delivery**__: monitor throughput and latency of Confluent Replicator in the Data streams monitoring view. Replicator is a Kafka Connect source connector and has a corresponding consumer group `connect-replicator`.
+
+	![image](images/replicator_consumer_group.png)
+
+2. __**Management --> Topics**__: scroll down to view the topics called `wikipedia.parsed` (Replicator is consuming data from this topic) and `wikipedia.parsed.replica` (Replicator is copying data to this topic). Click on "Consumer Groups" box for the topic `wikipedia.parsed` and observe that one of the consumer groups is called `connect-replicator`.
+
+	![image](images/replicator_topic_info.png)
+
+3. __**Management --> Kafka Connect**__: pause the Replicator connector by pressing the pause icon in the top right. This will stop consumption for the related consumer group.
+
+	<img src="images/pause_connector.png" width="200" align="center">
+
+4. Observe that the `connect-replicator` consumer group has stopped consumption.
+
+	![image](images/replicator_streams_stopped.png)
+
+5. Restart the Replicator connector.
+
+6. Observe that the `connect-replicator` consumer group has resumed consumption. Notice several things:
+
+        * Even though the `connect-replicator` consumer group was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
+        * The latency peaks and then gradually decreases, because this is also relative to the produce timestamp.
+
+
+## Troubleshooting the demo
+
+1. To view live messages from the `wikipedia.parsed` topic:
 
 	```bash
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh
+	```
+
+2. If the data streams monitoring appears to stop for the Kafka source connector, restart the connect container.
+
+	```bash
+	$ docker-compose restart connect
 	```
 
 ## Teardown

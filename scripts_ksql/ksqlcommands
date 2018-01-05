@@ -1,6 +1,29 @@
 set 'producer.interceptor.classes'='io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor';
 set 'consumer.interceptor.classes'='io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor';
 set 'application.id'='ksql-demo';
+set 'producer.ssl.truststore.location'='/etc/kafka/secrets/kafka.client.truststore.jks';
+set 'producer.ssl.truststore.password'='confluent';
+set 'producer.ssl.keystore.location'='/etc/kafka/secrets/kafka.client.keystore.jks';
+set 'producer.ssl.keystore.password'='confluent';
+set 'producer.ssl.key.password'='confluent';
+set 'consumer.ssl.truststore.location'='/etc/kafka/secrets/kafka.client.truststore.jks';
+set 'consumer.ssl.truststore.password'='confluent';
+set 'consumer.ssl.keystore.location'='/etc/kafka/secrets/kafka.client.keystore.jks';
+set 'consumer.ssl.keystore.password'='confluent';
+set 'consumer.ssl.key.password'='confluent';
+set 'producer.confluent.monitoring.interceptor.security.protocol'='ssl';
+set 'producer.confluent.monitoring.interceptor.ssl.truststore.location'='etc/kafka/secrets/kafka.client.truststore.jks';
+set 'producer.confluent.monitoring.interceptor.ssl.truststore.password'='confluent';
+set 'producer.confluent.monitoring.interceptor.ssl.keystore.location'='etc/kafka/secrets/kafka.client.keystore.jks';
+set 'producer.confluent.monitoring.interceptor.ssl.keystore.password'='confluent';
+set 'producer.confluent.monitoring.interceptor.ssl.key.password'='confluent';
+set 'consumer.confluent.monitoring.interceptor.security.protocol'='ssl';
+set 'consumer.confluent.monitoring.interceptor.ssl.truststore.location'='etc/kafka/secrets/kafka.client.truststore.jks';
+set 'consumer.confluent.monitoring.interceptor.ssl.truststore.password'='confluent';
+set 'consumer.confluent.monitoring.interceptor.ssl.keystore.location'='etc/kafka/secrets/kafka.client.keystore.jks';
+set 'consumer.confluent.monitoring.interceptor.ssl.keystore.password'='confluent';
+set 'consumer.confluent.monitoring.interceptor.ssl.key.password'='confluent';
+
 
 CREATE STREAM wikipedia_source (schema string, payload string) WITH (kafka_topic='wikipedia.parsed', value_format='JSON');
 CREATE STREAM wikipedia WITH (PARTITIONS=2,REPLICATIONS=2) AS SELECT extractJsonField(payload, '$.wikipage') AS wikipage, extractJsonField(payload, '$.username') AS username, extractJsonField(payload, '$.commitmessage') AS commitmessage, CAST(extractJsonField(payload, '$.bytechange') AS BIGINT) AS bytechange, extractJsonField(payload, '$.diffurl') AS diffurl, CAST(extractJsonField(payload, '$.createdat') AS BIGINT) AS createdat, extractJsonField(payload, '$.channel') AS channel, extractJsonField(payload, '$.isnew') AS isnew, extractJsonField(payload, '$.isminor') AS isminor, extractJsonField(payload, '$.isbot') AS isbot, extractJsonField(payload, '$.isunpatrolled') AS isunpatrolled from wikipedia_source where payload <> 'null';

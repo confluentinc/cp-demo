@@ -11,7 +11,7 @@ ACTION=$2
 
 if [ "$ACTION" == "add" ]; then
   # Rate should be low enough to create lag but high enough to not stall the consumer
-  CONFIG="--add-config consumer_byte_rate=4096"
+  CONFIG="--add-config consumer_byte_rate=1024"
 else
   CONFIG="--delete-config consumer_byte_rate"
 fi
@@ -19,11 +19,11 @@ fi
 CONSUMER_GROUP="app"
 
 echo "docker-compose exec kafka1 kafka-configs --zookeeper zookeeper:2181 --entity-type clients --entity-name consumer_app_$ID --alter $CONFIG"
-docker-compose exec kafka1 kafka-configs --zookeeper zookeeper:2181 --entity-type clients --entity-name consumer_app_$ID --alter $CONFIG
+docker-compose exec kafka1 bash -c "kafka-configs --zookeeper zookeeper:2181 --entity-type clients --entity-name consumer_app_$ID --alter $CONFIG"
 
 echo "docker-compose exec kafka1 kafka-configs --zookeeper zookeeper:2181 --entity-type clients --describe"
-docker-compose exec kafka1 kafka-configs --zookeeper zookeeper:2181 --entity-type clients --describe
+docker-compose exec kafka1 bash -c 'kafka-configs --zookeeper zookeeper:2181 --entity-type clients --describe'
 
 echo "docker-compose exec kafka1 kafka-consumer-groups --bootstrap-server kafka1:9092 --describe --group $CONSUMER_GROUP"
-docker-compose exec kafka1 kafka-consumer-groups --bootstrap-server kafka1:9092 --describe --group $CONSUMER_GROUP
+docker-compose exec kafka1 kafka-consumer-groups --bootstrap-server kafka1:9092 --describe --group $CONSUMER_GROUP --command-config /etc/kafka/secrets/command.config
 
