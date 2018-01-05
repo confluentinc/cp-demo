@@ -425,12 +425,18 @@ There are many types of Control Center [alerts](https://docs.confluent.io/curren
 
 All the components in this demo are enabled with SSL for encryption and 2-way authentication, except for ZooKeeper which does not support SSL. Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL and other security features.
 
-1. Each broker has one PLAINTEXT port and two SSL ports (one external for broker-client communication and one internal for broker-broker communication). Broker 1 has PLAINTEXT on 10092, SSL on 9092, SSL for inter-broker communication on 29092. Broker 2 has PLAINTEXT on 10093, SSL on 9093, SSL for inter-broker communication on 29093. Verify the ports on which the Kafka brokers are listening with the following command:
+1. Each broker has one PLAINTEXT port and two SSL ports. One SSL port called `SSL` is for communication between services inside Docker containers and the other SSL port called `SSL_HOST` is for communication between any potential services outside of Docker that communicate to the Docker containers. Verify the ports on which the Kafka brokers are listening with the following command, and they should match the table shown below:
 
 	```bash
 	$ docker-compose logs kafka1 | grep "Registered broker 1"
 	$ docker-compose logs kafka2 | grep "Registered broker 2"
 	```
+
+|broker |PLAINTEXT |SSL  |SSL_HOST
+|-------|----------|-----|--------
+|kafka1 |10092     |9092 |29092   
+|kafka2 |10093     |9093 |29093   
+
 
 2. This demo [automatically generates](security/create-certs.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use the PLAINTEXT port or the SSL port. To use the SSL port, they must specify SSL parameters for keystores, trustores, and password, so the Kafka command line client tools pass the [SSL configuration file](security/command.config) with these SSL parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
 
