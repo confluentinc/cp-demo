@@ -290,7 +290,7 @@ Streams monitoring in Control Center can highlight consumers that are over consu
 5. Reset the offset of the consumer group `app` by shifting 200 offsets backwards. The offset reset tool must be run when the consumer is completely stopped. Offset values in output shown below will vary.
 
 	```bash
-	$ docker-compose exec kafka1 kafka-consumer-groups --reset-offsets --group app --shift-by -200 --bootstrap-server kafka1:9092 --all-topics --execute --command-config /etc/kafka/secrets/command.config
+	$ docker-compose exec kafka1 kafka-consumer-groups --reset-offsets --group app --shift-by -200 --bootstrap-server kafka1:9092 --all-topics --execute --command-config /etc/kafka/secrets/clients_without_interceptors.config
 
 	TOPIC                          PARTITION  NEW-OFFSET     
 	wikipedia.parsed               1          4071           
@@ -342,7 +342,7 @@ Streams monitoring in Control Center can highlight consumers that are under cons
 6. Reset the offset of the consumer group `app` by setting it to latest offset. The offset reset tool must be run when the consumer is completely stopped. Offset values in output shown below will vary.
 
 	```bash
-	$ docker-compose exec kafka1 kafka-consumer-groups --reset-offsets --group app --to-latest --bootstrap-server kafka1:9092 --all-topics --execute --command-config /etc/kafka/secrets/command.config
+	$ docker-compose exec kafka1 kafka-consumer-groups --reset-offsets --group app --to-latest --bootstrap-server kafka1:9092 --all-topics --execute --command-config /etc/kafka/secrets/clients_without_interceptors.config
 
 	TOPIC                          PARTITION  NEW-OFFSET     
 	wikipedia.parsed               1          8601           
@@ -438,7 +438,7 @@ All the components in this demo are enabled with SSL for encryption and 2-way au
 |kafka2 |10093     |9093 |29093   
 
 
-2. This demo [automatically generates](security/create-certs.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use the PLAINTEXT port or the SSL port. To use the SSL port, they must specify SSL parameters for keystores, trustores, and password, so the Kafka command line client tools pass the [SSL configuration file](security/command.config) with these SSL parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
+2. This demo [automatically generates](security/create-certs.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use the PLAINTEXT port or the SSL port. To use the SSL port, they must specify SSL parameters for keystores, trustores, and password, so the Kafka command line client tools pass the SSL configuration file [with interceptors](security/clients_with_interceptors.config) or [without interceptors](security/clients_without_interceptors.config) with these SSL parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
 
 a. Communicate with brokers via the PLAINTEXT port
 
@@ -448,7 +448,7 @@ a. Communicate with brokers via the PLAINTEXT port
 b. Communicate with brokers via the SSL port, and SSL parameters configured via the "--command-config" argument
 
 	# SSL port with SSL parameters
-	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9092 --command-config /etc/kafka/secrets/command.config
+	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9092 --command-config /etc/kafka/secrets/clients_without_interceptors.config
 
 c. If you try communicate with brokers via the SSL port but don't specify the SSL parameters, it will fail
 

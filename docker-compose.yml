@@ -244,6 +244,8 @@ services:
       CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS: 2
       CONTROL_CENTER_CONNECT_CLUSTER: "connect:8083"
       CONTROL_CENTER_STREAMS_CONSUMER_REQUEST_TIMEOUT_MS: "960032"
+      # Until https://github.com/confluentinc/cp-docker-images/pull/372 is merged
+      # Control Center security features require CONTROL_CENTER_STREAMS_PRODUCER_* instead of CONTROL_CENTER_STREAMS_*
       CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SSL
       CONTROL_CENTER_STREAMS_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
         username=\"client\" \
@@ -255,7 +257,6 @@ services:
       CONTROL_CENTER_STREAMS_SSL_KEYSTORE_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_SSL_KEY_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
-      #temp workaround until docker images are updated
       CONTROL_CENTER_STREAMS_PRODUCER_SECURITY_PROTOCOL: SASL_SSL
       CONTROL_CENTER_STREAMS_PRODUCER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
         username=\"client\" \
