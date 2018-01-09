@@ -423,36 +423,43 @@ There are many types of Control Center [alerts](https://docs.confluent.io/curren
 
 ### Security
 
-All the components in this demo are enabled with SSL for encryption and 2-way authentication, except for ZooKeeper which does not support SSL. Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL and other security features.
+All the components in this demo are enabled with SSL for encryption and SASL/PLAIN for authentication, except for ZooKeeper which does not support SSL. Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL and other security features.
 
-1. Each broker has one PLAINTEXT port and two SSL ports. One SSL port called `SSL` is for communication between services inside Docker containers and the other SSL port called `SSL_HOST` is for communication between any potential services outside of Docker that communicate to the Docker containers. Verify the ports on which the Kafka brokers are listening with the following command, and they should match the table shown below:
+1. Each broker has four listener ports:
+
+* PLAINTEXT port called `PLAINTEXT` for clients with no security enabled
+* SSL port port called `SSL` for clients with just SSL without SASL
+* SASL_SSL port called `SASL_SSL` for communication between services inside Docker containers
+* SASL_SSL port called `SASL_SSL_HOST` for communication between any potential services outside of Docker that communicate to the Docker containers
+
+|port |kafka1 |kafka2
+|PLAINTEXT |10091 |10092
+|SSL |11091 |11092
+|SASL_SSL |9091 |9092
+|SASL_SSL_HOST |29091 |29092
+
+Verify the ports on which the Kafka brokers are listening with the following command, and they should match the table shown below:
 
 	```bash
 	$ docker-compose logs kafka1 | grep "Registered broker 1"
 	$ docker-compose logs kafka2 | grep "Registered broker 2"
 	```
 
-|broker |PLAINTEXT |SSL  |SSL_HOST
-|-------|----------|-----|--------
-|kafka1 |10091     |9091 |29091   
-|kafka2 |10092     |9092 |29092   
-
-
-2. This demo [automatically generates](security/create-certs.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use the PLAINTEXT port or the SSL port. To use the SSL port, they must specify SSL parameters for keystores, trustores, and password, so the Kafka command line client tools pass the SSL configuration file [with interceptors](security/client_with_interceptors.config) or [without interceptors](security/client_without_interceptors.config) with these SSL parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
+2. This demo [automatically generates](security/create-certs.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use any of the ports on which the brokers are listening. To use a security-enabled port, they must specify security parameters for keystores, trustores, password, or authentication so the Kafka command line client tools pass the security configuration file [with interceptors](security/client_with_interceptors.config) or [without interceptors](security/client_without_interceptors.config) with these security parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
 
 a. Communicate with brokers via the PLAINTEXT port
 
 	# PLAINTEXT port
 	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091
 
-b. Communicate with brokers via the SSL port, and SSL parameters configured via the "--command-config" argument
+b. Communicate with brokers via the SASL_SSL port, and SASL_SSL parameters configured via the "--command-config" argument
 
-	# SSL port with SSL parameters
+	# SASL_SSL port with SASL_SSL parameters
 	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 --command-config /etc/kafka/secrets/client_without_interceptors.config
 
-c. If you try communicate with brokers via the SSL port but don't specify the SSL parameters, it will fail
+c. If you try communicate with brokers via the SASL_SSL port but don't specify the SASL_SSL parameters, it will fail
 
-	# SSL port without SSL parameters
+	# SASL_SSL port without SASL_SSL parameters
 	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091
 
 ### Replicator
