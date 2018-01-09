@@ -79,12 +79,12 @@ Follow along with the video [![Demo 1: Install + Run | Monitoring Kafka in Confl
 	$ docker-compose ps
 	         Name                        Command               State                              Ports                            
 	------------------------------------------------------------------------------------------------------------------------------
-	cpdemo_connect_1          /etc/confluent/docker/run        Up       0.0.0.0:8083->8083/tcp, 9092/tcp                           
+	cpdemo_connect_1          /etc/confluent/docker/run        Up       0.0.0.0:8083->8083/tcp, 9091/tcp                           
 	cpdemo_control-center_1   /etc/confluent/docker/run        Up       0.0.0.0:9021->9021/tcp                                     
 	cpdemo_elasticsearch_1    /bin/bash bin/es-docker          Up       0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp             
 	cpdemo_kafka-client_1     bash -c echo Waiting for K ...   Exit 0                                                              
-	cpdemo_kafka1_1           /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp           
-	cpdemo_kafka2_1           /etc/confluent/docker/run        Up       0.0.0.0:29093->29093/tcp, 9092/tcp, 0.0.0.0:9093->9093/tcp 
+	cpdemo_kafka1_1           /etc/confluent/docker/run        Up       0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp           
+	cpdemo_kafka2_1           /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 9091/tcp, 0.0.0.0:9092->9092/tcp 
 	cpdemo_kibana_1           /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp                                     
 	cpdemo_ksql-cli_1         perl -e while(1){ sleep 99 ...   Up       0.0.0.0:9098->9098/tcp                                     
 	cpdemo_schemaregistry_1   /etc/confluent/docker/run        Up       0.0.0.0:8081->8081/tcp                                     
@@ -290,7 +290,7 @@ Streams monitoring in Control Center can highlight consumers that are over consu
 5. Reset the offset of the consumer group `app` by shifting 200 offsets backwards. The offset reset tool must be run when the consumer is completely stopped. Offset values in output shown below will vary.
 
 	```bash
-	$ docker-compose exec kafka1 kafka-consumer-groups --reset-offsets --group app --shift-by -200 --bootstrap-server kafka1:9092 --all-topics --execute --command-config /etc/kafka/secrets/client_without_interceptors.config
+	$ docker-compose exec kafka1 kafka-consumer-groups --reset-offsets --group app --shift-by -200 --bootstrap-server kafka1:9091 --all-topics --execute --command-config /etc/kafka/secrets/client_without_interceptors.config
 
 	TOPIC                          PARTITION  NEW-OFFSET     
 	wikipedia.parsed               1          4071           
@@ -342,7 +342,7 @@ Streams monitoring in Control Center can highlight consumers that are under cons
 6. Reset the offset of the consumer group `app` by setting it to latest offset. The offset reset tool must be run when the consumer is completely stopped. Offset values in output shown below will vary.
 
 	```bash
-	$ docker-compose exec kafka1 kafka-consumer-groups --reset-offsets --group app --to-latest --bootstrap-server kafka1:9092 --all-topics --execute --command-config /etc/kafka/secrets/client_without_interceptors.config
+	$ docker-compose exec kafka1 kafka-consumer-groups --reset-offsets --group app --to-latest --bootstrap-server kafka1:9091 --all-topics --execute --command-config /etc/kafka/secrets/client_without_interceptors.config
 
 	TOPIC                          PARTITION  NEW-OFFSET     
 	wikipedia.parsed               1          8601           
@@ -434,8 +434,8 @@ All the components in this demo are enabled with SSL for encryption and 2-way au
 
 |broker |PLAINTEXT |SSL  |SSL_HOST
 |-------|----------|-----|--------
-|kafka1 |10092     |9092 |29092   
-|kafka2 |10093     |9093 |29093   
+|kafka1 |10091     |9091 |29091   
+|kafka2 |10092     |9092 |29092   
 
 
 2. This demo [automatically generates](security/create-certs.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use the PLAINTEXT port or the SSL port. To use the SSL port, they must specify SSL parameters for keystores, trustores, and password, so the Kafka command line client tools pass the SSL configuration file [with interceptors](security/client_with_interceptors.config) or [without interceptors](security/client_without_interceptors.config) with these SSL parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
@@ -443,17 +443,17 @@ All the components in this demo are enabled with SSL for encryption and 2-way au
 a. Communicate with brokers via the PLAINTEXT port
 
 	# PLAINTEXT port
-	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10092
+	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091
 
 b. Communicate with brokers via the SSL port, and SSL parameters configured via the "--command-config" argument
 
 	# SSL port with SSL parameters
-	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9092 --command-config /etc/kafka/secrets/client_without_interceptors.config
+	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 --command-config /etc/kafka/secrets/client_without_interceptors.config
 
 c. If you try communicate with brokers via the SSL port but don't specify the SSL parameters, it will fail
 
 	# SSL port without SSL parameters
-	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9092
+	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091
 
 ### Replicator
 

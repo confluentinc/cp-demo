@@ -22,18 +22,18 @@ services:
     volumes:
       - $PWD/security:/etc/kafka/secrets
     ports:
-      - "9092:9092"
-      - "29092:29092"
+      - "9091:9091"
+      - "29091:29091"
     environment:
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_SSL:SASL_SSL,SSL:SSL,SASL_SSL_HOST:SASL_SSL,PLAINTEXT:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: SASL_SSL
-      KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka1:9092,SASL_SSL_HOST://localhost:29092,PLAINTEXT://kafka1:10092,SSL://kafka1:11092
+      KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka1:9091,SASL_SSL_HOST://localhost:29091,PLAINTEXT://kafka1:10091,SSL://kafka1:11091
       KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       KAFKA_BROKER_ID: 1
       KAFKA_BROKER_RACK: "r1"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
-      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka1:9092"
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka1:9091"
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SASL_SSL
       CONFLUENT_METRICS_REPORTER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
         username=\"client\" \
@@ -69,20 +69,20 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9093:9093"
-      - "29093:29093"
+      - "9092:9092"
+      - "29092:29092"
     volumes:
       - $PWD/security:/etc/kafka/secrets
     environment:
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_SSL:SASL_SSL,SASL_SSL_HOST:SASL_SSL,PLAINTEXT:PLAINTEXT,SSL:SSL
       KAFKA_INTER_BROKER_LISTENER_NAME: SASL_SSL
-      KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka2:9093,SASL_SSL_HOST://localhost:29093,PLAINTEXT://kafka2:10093,SSL://kafka2:11093
+      KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka2:9092,SASL_SSL_HOST://localhost:29092,PLAINTEXT://kafka2:10092,SSL://kafka2:11092
       KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       KAFKA_BROKER_ID: 2
       KAFKA_BROKER_RACK: "r1"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
-      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka2:9093"
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka2:9092"
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SASL_SSL
       CONFLUENT_METRICS_REPORTER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
         username=\"client\" \
@@ -126,7 +126,7 @@ services:
       - $PWD/connect-plugins/kafka-connect-transform-nullfilter/null-filter-4.0.0-SNAPSHOT.jar:/usr/share/java/kafka-connect-elasticsearch/null-filter-4.0.0-SNAPSHOT.jar
       - $PWD/security:/etc/kafka/secrets
     environment:
-      CONNECT_BOOTSTRAP_SERVERS: "kafka1:9092,kafka2:9093"
+      CONNECT_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       CONNECT_REST_PORT: 8083
       CONNECT_GROUP_ID: "connect"
       CONNECT_CONFIG_STORAGE_TOPIC: connect-config
@@ -234,7 +234,7 @@ services:
     volumes:
       - $PWD/security:/etc/kafka/secrets
     environment:
-      CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka1:9092,kafka2:9093"
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       CONTROL_CENTER_ZOOKEEPER_CONNECT: "zookeeper:2181"
       CONTROL_CENTER_REPLICATION_FACTOR: 2
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_REPLICATION: 2
@@ -276,7 +276,7 @@ services:
     volumes:
       - $PWD/security:/etc/kafka/secrets
     environment:
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "SASL_SSL://kafka1:9092,SASL_SSL://kafka2:9093"
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "SASL_SSL://kafka1:9091,SASL_SSL://kafka2:9092"
       SCHEMA_REGISTRY_HOST_NAME: schemaregistry
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
       SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: SASL_SSL
@@ -306,7 +306,7 @@ services:
     # See https://docs.docker.com/compose/startup-order/
     command: "bash -c -a 'echo Waiting for Kafka to be ready... && \
                        /etc/confluent/docker/configure && \
-                       cub kafka-ready -b kafka1:9092 1 60 --config /etc/kafka/kafka.properties && \
+                       cub kafka-ready -b kafka1:9091 1 60 --config /etc/kafka/kafka.properties && \
                        sleep 5 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed.replica --create --replication-factor 2 --partitions 4 && \

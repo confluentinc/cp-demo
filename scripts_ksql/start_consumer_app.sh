@@ -9,6 +9,6 @@ fi
 ID=$1
 
 docker exec cpdemo_connect_1 kafka-console-consumer \
-   --bootstrap-server kafka1:9092 --topic wikipedia.parsed \
+   --bootstrap-server kafka1:9091 --topic wikipedia.parsed \
    --consumer-property group.id=app --consumer-property client.id=consumer_app_$ID \
    --consumer.config /etc/kafka/secrets/client_with_interceptors.config > /dev/null 2>&1 &

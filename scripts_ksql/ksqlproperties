@@ -1,4 +1,4 @@
-bootstrap.servers=kafka1:9092,kafka2:9093
+bootstrap.servers=kafka1:9091,kafka2:9092
 application.id=c3demo
 listeners=http://localhost:8080
 cache.max.bytes.buffering=0
