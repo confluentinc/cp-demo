@@ -38,7 +38,7 @@ DATA=$( cat << EOF
     "src.consumer.confluent.monitoring.interceptor.ssl.keystore.password": "confluent",
     "src.consumer.confluent.monitoring.interceptor.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required \nusername=\"client\" \npassword=\"client-secret\";",
     "src.consumer.confluent.monitoring.interceptor.sasl.mechanism": "PLAIN",   
-    "src.consumer.group.id": "replicator",
+    "src.consumer.group.id": "connect-replicator",
     "tasks.max": "1"
   }
 }
