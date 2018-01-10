@@ -26,7 +26,7 @@ DATA=$( cat << EOF
     "src.kafka.ssl.truststore.password": "confluent",
     "src.kafka.ssl.keystore.location": "/etc/kafka/secrets/kafka.client.keystore.jks",
     "src.kafka.ssl.keystore.password": "confluent",
-    "src.kafka.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required \nusername=\"client\" \npassword=\"client-secret\";",
+    "src.kafka.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"client\" password=\"client-secret\";",
     "src.kafka.sasl.mechanism": "PLAIN",
     "src.consumer.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor",
     "src.consumer.confluent.monitoring.interceptor.security.protocol": "SASL_SSL",
@@ -36,7 +36,7 @@ DATA=$( cat << EOF
     "src.consumer.confluent.monitoring.interceptor.ssl.truststore.password": "confluent",
     "src.consumer.confluent.monitoring.interceptor.ssl.keystore.location": "/etc/kafka/secrets/kafka.client.keystore.jks",
     "src.consumer.confluent.monitoring.interceptor.ssl.keystore.password": "confluent",
-    "src.consumer.confluent.monitoring.interceptor.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required \nusername=\"client\" \npassword=\"client-secret\";",
+    "src.consumer.confluent.monitoring.interceptor.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"client\" password=\"client-secret\";",
     "src.consumer.confluent.monitoring.interceptor.sasl.mechanism": "PLAIN",   
     "src.consumer.group.id": "connect-replicator",
     "tasks.max": "1"
