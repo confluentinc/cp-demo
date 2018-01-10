@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ ! -d connect-plugins/kafka-connect-irc ]]; then
-  echo -e "There is no connect-plugins path. Did you remember to run 'make clean all'\n"
+  echo -e "There is no connect-plugins path. Did you remember to run 'make clean all'?\n"
   exit 1
 fi
 
@@ -12,12 +12,17 @@ if (( $(echo "$DOCKER_MEMORY 7.0" | awk '{print ($1 < $2)}') )); then
 fi
 
 if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
-  echo -e "At least one Docker container did not start properly, see 'docker-compose ps'. Did you remember to increase the memory available to Docker to at least 8GB (default is 2GB).\n"
+  echo -e "At least one Docker container did not start properly, see 'docker-compose ps'. Did you remember to increase the memory available to Docker to at least 8GB (default is 2GB)?\n"
   exit 1
 fi
 
 if [[ ! $(docker-compose logs control-center) =~ "Started NetworkTrafficServerConnector" ]]; then
-  echo -e "The logs in control-center container do not show 'Started NetworkTrafficServerConnector' yet. Please wait a minute before running this script again.\n"
+  echo -e "The logs in control-center container do not show 'Started NetworkTrafficServerConnector' yet. Please wait a minute before running this script again. Did you remember to run 'make clean all'?\n"
+  exit 1
+fi
+
+if [[ $(docker-compose logs connect) =~ "server returned information about unknown correlation ID" ]]; then
+  echo -e "Please update the cp-kafka-connect image with 'docker-compose pull'\n"
   exit 1
 fi
 
