@@ -32,6 +32,8 @@ _Note_: this is a Docker environment and has all services running on one host. T
 
 Follow along with the video [![Demo 1: Install + Run | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/a4B5Oer1j2A)
 
+This demo has been verified with Docker version 17.06.1-ce and Docker Compose version 1.14.0, and it uses Docker Compose file format 2.1.
+
 1. Since this repository uses submodules, `git clone` with the `--recursive` option:
 
 	```
