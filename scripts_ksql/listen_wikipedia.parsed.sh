@@ -1,9 +1,5 @@
 #!/bin/bash
 
 docker exec cpdemo_connect_1 kafka-console-consumer \
-  --bootstrap-server kafka1:9092 --topic wikipedia.parsed \
-  --consumer-property security.protocol=ssl \
-  --consumer-property ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks \
-  --consumer-property ssl.truststore.password=confluent \
-  --consumer-property ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks \
-  --consumer-property ssl.keystore.password=confluent --consumer-property ssl.key.password=confluent
+  --bootstrap-server kafka1:9091 --topic wikipedia.parsed \
+  --consumer.config /etc/kafka/secrets/client_without_interceptors.config

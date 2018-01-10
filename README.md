@@ -73,18 +73,18 @@ Follow along with the video [![Demo 1: Install + Run | Monitoring Kafka in Confl
 	$ docker-compose up -d
 	```
 
-2. Verify the status of the Docker containers show "Up" state, except for the `kafka-client` container which is expected to have "Exit 0" state. If any containers are not up, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8GB (default is 2GB).
+2. Verify the status of the Docker containers show `Up` state, except for the `kafka-client` container which is expected to have `Exit 0` state. If any containers are not up, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8GB (default is 2GB).
 
 	```bash
 	$ docker-compose ps
 	         Name                        Command               State                              Ports                            
 	------------------------------------------------------------------------------------------------------------------------------
-	cpdemo_connect_1          /etc/confluent/docker/run        Up       0.0.0.0:8083->8083/tcp, 9092/tcp                           
+	cpdemo_connect_1          /etc/confluent/docker/run        Up       0.0.0.0:8083->8083/tcp, 9091/tcp                           
 	cpdemo_control-center_1   /etc/confluent/docker/run        Up       0.0.0.0:9021->9021/tcp                                     
 	cpdemo_elasticsearch_1    /bin/bash bin/es-docker          Up       0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp             
 	cpdemo_kafka-client_1     bash -c echo Waiting for K ...   Exit 0                                                              
-	cpdemo_kafka1_1           /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp           
-	cpdemo_kafka2_1           /etc/confluent/docker/run        Up       0.0.0.0:29093->29093/tcp, 9092/tcp, 0.0.0.0:9093->9093/tcp 
+	cpdemo_kafka1_1           /etc/confluent/docker/run        Up       0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp           
+	cpdemo_kafka2_1           /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 9091/tcp, 0.0.0.0:9092->9092/tcp 
 	cpdemo_kibana_1           /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp                                     
 	cpdemo_ksql-cli_1         perl -e while(1){ sleep 99 ...   Up       0.0.0.0:9098->9098/tcp                                     
 	cpdemo_schemaregistry_1   /etc/confluent/docker/run        Up       0.0.0.0:8081->8081/tcp                                     
@@ -139,11 +139,11 @@ Follow along with the video [![Demo 2: Tour | Monitoring Kafka in Confluent Cont
 
 2. __**Management --> Kafka Connect**__: Confluent Control Center uses the Kafka Connect API to manage [Kafka connectors](https://docs.confluent.io/current/control-center/docs/connect.html). 
 
-	* Kafka Connect **Sources** tab shows the connector `wikipedia-irc`. Click "Edit" to see the details of the connector configuration and custom transforms.
+	* Kafka Connect **Sources** tab shows the connector `wikipedia-irc`. Click `Edit` to see the details of the connector configuration and custom transforms.
 
 		![image](images/connect_source.png)
 
-	* Kafka Connect **Sinks** tab shows the connector `elasticsearch-ksql` (or `elasticsearch-pipeline` if you are running without KSQL). Click "Edit" to see the details of the connector configuration and custom transforms.
+	* Kafka Connect **Sinks** tab shows the connector `elasticsearch-ksql` (or `elasticsearch-pipeline` if you are running without KSQL). Click `Edit` to see the details of the connector configuration and custom transforms.
 
 		![image](images/connect_sink.png)
 
@@ -155,11 +155,11 @@ Follow along with the video [![Demo 2: Tour | Monitoring Kafka in Confluent Cont
 
 	![image](images/connect_consumer_group.png)
 
-5. __**Management --> Topics --> Topic Information**__: For a given topic, click on the three dots "..." next to the topic name and click on "View details". View which brokers are leaders for which partitions and the number of consumer groups currently consuming from this topic. Click on the boxed consumer group count to select a consumer group for which to monitor its data streams and jump to it.
+5. __**Management --> Topics --> Topic Information**__: For a given topic, click on the three dots `...` next to the topic name and click on `View details`. View which brokers are leaders for which partitions and the number of consumer groups currently consuming from this topic. Click on the boxed consumer group count to select a consumer group for which to monitor its data streams and jump to it.
 
 	<img src="images/topic_info.png" width="700" align="center">
 
-7. __**Monitoring --> System Health**__: to identify bottlenecks, you can see a breakdown of produce and fetch latencies through the entire [request lifecycle](https://docs.confluent.io/current/control-center/docs/systemhealth.html). Click on the line graph in the "Request latency" chart. The request latency values can be shown at the median, 95th, 99th, or 99.9th percentile. Depending on where the bottlenecks are, you can tune your brokers and clients appropriately.
+7. __**Monitoring --> System Health**__: to identify bottlenecks, you can see a breakdown of produce and fetch latencies through the entire [request lifecycle](https://docs.confluent.io/current/control-center/docs/systemhealth.html). Click on the line graph in the `Request latency` chart. The request latency values can be shown at the median, 95th, 99th, or 99.9th percentile. Depending on where the bottlenecks are, you can tune your brokers and clients appropriately.
 
 	![image](images/request_latencies.png)
 
@@ -209,7 +209,7 @@ Control Center shows which consumers in a consumer group are consuming from whic
 	$ ./$DEMOPATH/start_consumer_app.sh 1
 	```
 
-2. Let this consumer group run for 2 minutes until Control Center stream monitoring shows the consumer group `app` with steady consumption. Click on the box "View Details" above the bar graph to drill down into consumer group details. This consumer group `app` has a single consumer `consumer_app_1` consuming all of the partitions in the topic `wikipedia.parsed`. The first bar may be red because the consumer started in the middle of a time window and did not receive all messages produced during that window. This does not mean messages were lost.
+2. Let this consumer group run for 2 minutes until Control Center stream monitoring shows the consumer group `app` with steady consumption. Click on the box `View Details` above the bar graph to drill down into consumer group details. This consumer group `app` has a single consumer `consumer_app_1` consuming all of the partitions in the topic `wikipedia.parsed`. The first bar may be red because the consumer started in the middle of a time window and did not receive all messages produced during that window. This does not mean messages were lost.
 
 	![image](images/consumer_start_one.png)
 
@@ -230,7 +230,7 @@ Follow along with the video [![Demo 5: Slow Consumers | Monitoring Kafka in Conf
 
 Streams monitoring in Control Center can highlight consumers that are slow to keep up with the producers. This is critial to monitor for real-time applications where consumers should consume produced messages with as low latency as possible. To simulate a slow consumer, we will use Kafka's [quota feature](https://docs.confluent.io/current/kafka/post-deployment.html#enforcing-client-quotas) to rate-limit consumption from the broker side, for just one of two consumers in a consumer group.
 
-1. Click on "Data streams", and "View Details" for the consumer group `app`. Click on the left-hand blue circle on the consumption line to verify there are two consumers `consumer_app_1` and `consumer_app_2`, that were created in an earlier section. If these two consumers are not running, start them as described in the section [consumer rebalances](#consumer-rebalances).
+1. Click on `Data streams`, and `View Details` for the consumer group `app`. Click on the left-hand blue circle on the consumption line to verify there are two consumers `consumer_app_1` and `consumer_app_2`, that were created in an earlier section. If these two consumers are not running, start them as described in the section [consumer rebalances](#consumer-rebalances).
 
 	<img src="images/verify_two_consumers.png" width="400" align="center">
 
@@ -271,7 +271,7 @@ Follow along with the video [![Demo 6: Over Consumption | Monitoring Kafka in Co
 
 Streams monitoring in Control Center can highlight consumers that are over consuming some messages, which is an indication that consumers are processing a set of messages more than once. This may happen intentionally, for example an application with a software bug consumed and processed Kafka messages incorrectly, got a fix, and then reprocesses previous messages correctly. This may also happen unintentionally if an application crashes before committing processed messages. To simulate over consumption, we will use Kafka's consumer offset reset tool to set the offset of the consumer group `app` to an earlier offset, thereby forcing the consumer group to reconsume messages it has previously read.
 
-1. Click on "Data streams", and "View Details" for the consumer group `app`. Click on the blue circle on the consumption line on the left to verify there are two consumers `consumer_app_1` and `consumer_app_2`, that were created in an earlier section. If these two consumers are not running and were never started, start them as described in the section [consumer rebalances](#consumer-rebalances).
+1. Click on `Data streams`, and `View Details` for the consumer group `app`. Click on the blue circle on the consumption line on the left to verify there are two consumers `consumer_app_1` and `consumer_app_2`, that were created in an earlier section. If these two consumers are not running and were never started, start them as described in the section [consumer rebalances](#consumer-rebalances).
 
 	<img src="images/verify_two_consumers.png" width="400" align="center">
 
@@ -290,7 +290,7 @@ Streams monitoring in Control Center can highlight consumers that are over consu
 5. Reset the offset of the consumer group `app` by shifting 200 offsets backwards. The offset reset tool must be run when the consumer is completely stopped. Offset values in output shown below will vary.
 
 	```bash
-	$ docker-compose exec kafka1 kafka-consumer-groups --reset-offsets --group app --shift-by -200 --bootstrap-server kafka1:9092 --all-topics --execute --command-config /etc/kafka/secrets/command.config
+	$ docker-compose exec kafka1 kafka-consumer-groups --reset-offsets --group app --shift-by -200 --bootstrap-server kafka1:10091 --all-topics --execute
 
 	TOPIC                          PARTITION  NEW-OFFSET     
 	wikipedia.parsed               1          4071           
@@ -319,7 +319,7 @@ Follow along with the video [![Demo 7: Under Consumption | Monitoring Kafka in C
 
 Streams monitoring in Control Center can highlight consumers that are under consuming some messages. This may happen intentionally when consumers stop and restart and operators change the consumer offsets to the latest offset. This avoids delay processing messages that were produced while the consumers were stopped, especially when they care about real-time. This may also happen unintentionally if a consumer is offline for longer than the log retention period, or if a producer is configured for `acks=0` and a broker suddenly fails before having a chance to replicate data to other brokers. To simulate under consumption, we will use Kafka's consumer offset reset tool to set the offset of the consumer group `app` to the latest offset, thereby skipping messages that will never be read.
 
-1. Click on Data Streams, and "View Details" for the consumer group `app`. Click on the blue circle on the consumption line on the left to verify there are two consumers `consumer_app_1` and `consumer_app_2`, that were created in an earlier section. If these two consumers are not running and were never started, start them as described in the section [consumer rebalances](#consumer-rebalances).
+1. Click on Data Streams, and `View Details` for the consumer group `app`. Click on the blue circle on the consumption line on the left to verify there are two consumers `consumer_app_1` and `consumer_app_2`, that were created in an earlier section. If these two consumers are not running and were never started, start them as described in the section [consumer rebalances](#consumer-rebalances).
 
 	<img src="images/verify_two_consumers.png" width="400" align="center">
 
@@ -342,7 +342,7 @@ Streams monitoring in Control Center can highlight consumers that are under cons
 6. Reset the offset of the consumer group `app` by setting it to latest offset. The offset reset tool must be run when the consumer is completely stopped. Offset values in output shown below will vary.
 
 	```bash
-	$ docker-compose exec kafka1 kafka-consumer-groups --reset-offsets --group app --to-latest --bootstrap-server kafka1:9092 --all-topics --execute --command-config /etc/kafka/secrets/command.config
+	$ docker-compose exec kafka1 kafka-consumer-groups --reset-offsets --group app --to-latest --bootstrap-server kafka1:10091 --all-topics --execute
 
 	TOPIC                          PARTITION  NEW-OFFSET     
 	wikipedia.parsed               1          8601           
@@ -402,7 +402,7 @@ Follow along with the video [![Demo 9: Alerting | Monitoring Kafka in Confluent 
 
 There are many types of Control Center [alerts](https://docs.confluent.io/current/control-center/docs/alerts.html) and many ways to configure them. Use the Alerts management page to define triggers and actions, or click on a streams monitoring graph for consumer groups or topics to setup alerts from there.
 
-1. This demo already has pre-configured triggers and actions. View the Alerts "Triggers" screen, and click "Edit" against each trigger to see configuration details.
+1. This demo already has pre-configured triggers and actions. View the Alerts `Triggers` screen, and click `Edit` against each trigger to see configuration details.
 
 	* The trigger `Under Replicated Partitions` happens when a broker reports non-zero under replicated partitions, and it causes an action `Email Administrator`.
 	* The trigger `Consumption Difference` happens when consumption difference for the Elasticsearch connector consumer group is greater than `0`, and it causes an action `Email Administrator`.
@@ -423,37 +423,44 @@ There are many types of Control Center [alerts](https://docs.confluent.io/curren
 
 ### Security
 
-All the components in this demo are enabled with SSL for encryption and 2-way authentication, except for ZooKeeper which does not support SSL. Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL and other security features.
+All the components in this demo are enabled with SSL for encryption and SASL/PLAIN for authentication, except for ZooKeeper which does not support SSL. Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL and other security features.
 
-1. Each broker has one PLAINTEXT port and two SSL ports. One SSL port called `SSL` is for communication between services inside Docker containers and the other SSL port called `SSL_HOST` is for communication between any potential services outside of Docker that communicate to the Docker containers. Verify the ports on which the Kafka brokers are listening with the following command, and they should match the table shown below:
+1. Each broker has four listener ports:
+
+* PLAINTEXT port called `PLAINTEXT` for clients with no security enabled
+* SSL port port called `SSL` for clients with just SSL without SASL
+* SASL_SSL port called `SASL_SSL` for communication between services inside Docker containers
+* SASL_SSL port called `SASL_SSL_HOST` for communication between any potential services outside of Docker that communicate to the Docker containers
+
+|port |kafka1 |kafka2
+|PLAINTEXT |10091 |10092
+|SSL |11091 |11092
+|SASL_SSL |9091 |9092
+|SASL_SSL_HOST |29091 |29092
+
+Verify the ports on which the Kafka brokers are listening with the following command, and they should match the table shown below:
 
 	```bash
 	$ docker-compose logs kafka1 | grep "Registered broker 1"
 	$ docker-compose logs kafka2 | grep "Registered broker 2"
 	```
 
-|broker |PLAINTEXT |SSL  |SSL_HOST
-|-------|----------|-----|--------
-|kafka1 |10092     |9092 |29092   
-|kafka2 |10093     |9093 |29093   
-
-
-2. This demo [automatically generates](security/create-certs.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use the PLAINTEXT port or the SSL port. To use the SSL port, they must specify SSL parameters for keystores, trustores, and password, so the Kafka command line client tools pass the [SSL configuration file](security/command.config) with these SSL parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
+2. This demo [automatically generates](security/create-certs.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use any of the ports on which the brokers are listening. To use a security-enabled port, they must specify security parameters for keystores, trustores, password, or authentication so the Kafka command line client tools pass the security configuration file [with interceptors](security/client_with_interceptors.config) or [without interceptors](security/client_without_interceptors.config) with these security parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
 
 a. Communicate with brokers via the PLAINTEXT port
 
 	# PLAINTEXT port
-	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10092
+	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091
 
-b. Communicate with brokers via the SSL port, and SSL parameters configured via the "--command-config" argument
+b. Communicate with brokers via the SASL_SSL port, and SASL_SSL parameters configured via the `--command-config` argument for command line tools or `--consumer.config` for kafka-console-consumer.
 
-	# SSL port with SSL parameters
-	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9092 --command-config /etc/kafka/secrets/command.config
+	# SASL_SSL port with SASL_SSL parameters
+	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 --command-config /etc/kafka/secrets/client_without_interceptors.config
 
-c. If you try communicate with brokers via the SSL port but don't specify the SSL parameters, it will fail
+c. If you try communicate with brokers via the SASL_SSL port but don't specify the SASL_SSL parameters, it will fail
 
-	# SSL port without SSL parameters
-	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9092
+	# SASL_SSL port without SASL_SSL parameters
+	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091
 
 ### Replicator
 
@@ -463,7 +470,7 @@ Confluent Replicator copies data from a source Kafka cluster to a destination Ka
 
 	![image](images/replicator_consumer_group.png)
 
-2. __**Management --> Topics**__: scroll down to view the topics called `wikipedia.parsed` (Replicator is consuming data from this topic) and `wikipedia.parsed.replica` (Replicator is copying data to this topic). Click on "Consumer Groups" box for the topic `wikipedia.parsed` and observe that one of the consumer groups is called `connect-replicator`.
+2. __**Management --> Topics**__: scroll down to view the topics called `wikipedia.parsed` (Replicator is consuming data from this topic) and `wikipedia.parsed.replica` (Replicator is copying data to this topic). Click on `Consumer Groups` for the topic `wikipedia.parsed` and observe that one of the consumer groups is called `connect-replicator`.
 
 	![image](images/replicator_topic_info.png)
 
@@ -479,7 +486,7 @@ Confluent Replicator copies data from a source Kafka cluster to a destination Ka
 
 6. Observe that the `connect-replicator` consumer group has resumed consumption. Notice several things:
 
-        * Even though the `connect-replicator` consumer group was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
+        * Even though the consumer group `connect-replicator` was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
         * The latency peaks and then gradually decreases, because this is also relative to the produce timestamp.
 
 
