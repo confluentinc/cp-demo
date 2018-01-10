@@ -433,6 +433,7 @@ All the components in this demo are enabled with SSL for encryption and SASL/PLA
 * SASL_SSL port called `SASL_SSL_HOST` for communication between any potential services outside of Docker that communicate to the Docker containers
 
 |port |kafka1 |kafka2
+|-----|-------|------
 |PLAINTEXT |10091 |10092
 |SSL |11091 |11092
 |SASL_SSL |9091 |9092
