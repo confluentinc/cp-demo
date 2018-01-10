@@ -13,7 +13,7 @@ install:
 irc:
 	make install
 	mvn clean package -f kafka-connect-irc/pom.xml
-	cp -R kafka-connect-irc/target/kafka-connect-irc-3.3.0-package/share/java/kafka-connect-irc $(PLUGINPATH)
+	cp -R kafka-connect-irc/target/kafka-connect-irc-4.0.0-package/share/java/kafka-connect-irc $(PLUGINPATH)
 
 transform:
 	make install
