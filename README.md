@@ -505,6 +505,8 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 
 	```bash
 	$ docker-compose logs kafka1 | grep SUPER_USERS
+
+	KAFKA_SUPER_USERS=User:client;User:broker;User:ANONYMOUS
 	```
 
 4. Verify that an authorized super user, that has been authenticated via SASL, can connect. Consume some messages from topic ``wikipedia.parsed`` using the authorized super user ``client``. It should return some messages.
@@ -513,7 +515,7 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh SASL
 	```
 
-5. Verify that an unauthorized user, even one that has been authenticated via SSL, cannot connect. This denial happens because the principal in SSL, e.g. ``CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US``, is different than the principal in SASL, e.g. ``client``, and was not configured as a super user. Consume some messages from topic ``wikipedia.parsed`` with a client that authenticates to the SSL port 11091 instead of 9091. The client should fail with an exception ``org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]``.
+5. Verify that an unauthorized user, even one that has been authenticated via SSL, cannot connect. This denial happens because the principal in SSL, i.e. ``CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US``, is different than the principal in SASL, e.g. ``client``, and is unauthorized. Consume some messages from topic ``wikipedia.parsed`` with a client that authenticates to the SSL port 11091 instead of the SASL_SSL port 9091. The client fails with an exception ``org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]``.
 
 	```bash
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh SSL
@@ -532,7 +534,7 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 	[2018-01-12 21:13:18,464] INFO Principal = User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US is Denied Operation = Describe from host = 172.23.0.7 on resource = Group:test (kafka.authorizer.logger)
 	```
 
-7. Add an ACL that authorizes username ``CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US``, and then list the updated ACL configuration.
+7. Add an ACL that authorizes user ``CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US``, and then list the updated ACL configuration.
 
 	```bash
 	$ docker-compose exec connect /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
@@ -548,7 +550,7 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
  		User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US has Allow permission for operations: Read from hosts: * 
 	```
 
-8. Again consume some messages from topic ``wikipedia.parsed`` using the now-authorized username that authenticates via SSL. It should now return messages.
+8. Again consume some messages from topic ``wikipedia.parsed`` using the now-authorized user that authenticates via SSL. It should now return messages.
 
 	```bash
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh SSL
