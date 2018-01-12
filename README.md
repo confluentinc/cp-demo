@@ -473,28 +473,26 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 	$ docker-compose logs kafka1 | grep SUPER_USERS
 	```
 
-4. Verify that authorized users can connect and unauthorized users cannot connect.
-
-a. Consume some messages from topic ``wikipedia.parsed`` using the authorized user ``client``. It should return some messages.
+4. Verify that an authorized super user can connect. Consume some messages from topic ``wikipedia.parsed`` using the authorized super user ``client``. It should return some messages.
 
 	```bash
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh client
 	```
 
-b. Consume some messages from topic ``wikipedia.parsed`` using the unauthorized user ``badclient``. The client should fail with an exception ``org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]``.
+5. Verify that an unauthorized user cannot connect. Consume some messages from topic ``wikipedia.parsed`` using the unauthorized user ``badclient``. The client should fail with an exception ``org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]``.
 
 	```bash
         # The `badclient` access to Kafka fails because `badclient` is unauthorized
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh badclient
 	```
 
-c. Verify that the broker's Authorizer logger logs the event.
+6. Verify that the broker's Authorizer logger logs the event.
 
         # Authorizer logger logs an event that `badclient` tried to access Kafka
         $ docker-compose logs kafka1 | grep kafka.authorizer.logger
 	```
 
-5. Add an ACL that authorizes user ``badclient``, and list the updated ACLs.
+7. Add an ACL that authorizes user ``badclient``, and then list the updated ACL configuration.
 
 	```bash
 	$ docker exec cpdemo_connect_1 /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
@@ -503,7 +501,7 @@ c. Verify that the broker's Authorizer logger logs the event.
 	    --list --topic wikipedia.parsed
 	```
 
-6. Again consume some messages from topic ``wikipedia.parsed`` using the now-authorized user ``badclient``. It should now return some messages.
+8. Again consume some messages from topic ``wikipedia.parsed`` using the now-authorized user ``badclient``. It should now return messages.
 
 	```bash
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh badclient
