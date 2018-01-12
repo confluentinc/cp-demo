@@ -495,14 +495,13 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 
         # Authorizer logger logs an event that `badclient` tried to access Kafka
         $ docker-compose logs kafka1 | grep kafka.authorizer.logger
-	```
 
 7. Add an ACL that authorizes user ``badclient``, and then list the updated ACL configuration.
 
 	```bash
 	$ docker exec cpdemo_connect_1 /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
             --add --topic wikipedia.parsed --allow-principal User:badclient --operation Read --group test
-        $ docker exec cpdemo_connect_1 /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
+	$ docker exec cpdemo_connect_1 /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
 	    --list --topic wikipedia.parsed
 	```
 
