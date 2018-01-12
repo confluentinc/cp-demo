@@ -454,7 +454,7 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091
 
 
-3. All authenticated clients in this demo authenticate with the username ``client`` which is authorized per ACLS ``super.users``. Any other client will not be authenticated and will not be allowed to communicate with the cluster.
+3. All the components in this demo authenticate with the username ``client``, which is authorized to communicate with the cluster per the ACL configuration parameter ``super.users``. All other clients are not authorized to communicate with the cluster.
 
 a. Consume some messages from topic ``wikipedia.parsed`` using the authorized user ``client``. It should return some messages.
 
