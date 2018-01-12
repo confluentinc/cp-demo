@@ -489,6 +489,9 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 	```bash
         # The `badclient` access to Kafka fails because `badclient` is unauthorized
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh badclient
+
+	[2018-01-12 19:28:33,975] ERROR Unknown error when running consumer:  (kafka.tools.ConsoleConsumer$)
+	org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]
 	```
 
 6. Verify that the broker's Authorizer logger logs the event.
@@ -496,13 +499,23 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
         # Authorizer logger logs an event that `badclient` tried to access Kafka
         $ docker-compose logs kafka1 | grep kafka.authorizer.logger
 
+	[2018-01-12 19:28:33,968] INFO Principal = User:badclient is Denied Operation = Describe from host = 172.23.0.8 on resource = Topic:wikipedia.parsed (kafka.authorizer.logger)
+	[2018-01-12 19:28:33,969] INFO Principal = User:badclient is Denied Operation = Describe from host = 172.23.0.8 on resource = Group:test (kafka.authorizer.logger)
+
 7. Add an ACL that authorizes user ``badclient``, and then list the updated ACL configuration.
 
 	```bash
 	$ docker-compose exec connect /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
             --add --topic wikipedia.parsed --allow-principal User:badclient --operation Read --group test
+
 	$ docker-compose exec connect /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
-	    --list --topic wikipedia.parsed
+	    --list --topic wikipedia.parsed --group test
+
+	Current ACLs for resource `Topic:wikipedia.parsed`: 
+ 		User:badclient has Allow permission for operations: Read from hosts: * 
+
+	Current ACLs for resource `Group:test`: 
+ 		User:badclient has Allow permission for operations: Read from hosts: * 
 	```
 
 8. Again consume some messages from topic ``wikipedia.parsed`` using the now-authorized user ``badclient``. It should now return messages.
