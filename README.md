@@ -32,40 +32,28 @@ _Note_: this is a Docker environment and has all services running on one host. T
 
 Follow along with the video [![Demo 1: Install + Run | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/a4B5Oer1j2A)
 
-This demo has been verified with Docker version 17.06.1-ce and Docker Compose version 1.14.0, and it uses Docker Compose file format 2.1.
+This demo has been verified with:
 
-1. Since this repository uses submodules, `git clone` with the `--recursive` option:
+* Docker version 17.06.1-ce
+* Docker Compose version 1.14.0 with Docker Compose file format 2.1
+* Java version 1.8.0_92
+* MacOS 10.12
 
-	```
-	$ git clone --recursive https://github.com/confluentinc/cp-demo
-	```
 
-	Otherwise, `git clone` and then use the `submodule` commands to initialize and update:
+1. Download the repository with `git clone`:
 
 	```
 	$ git clone https://github.com/confluentinc/cp-demo
-	$ cd cp-demo
-	$ git submodule init
-	Submodule 'kafka-connect-irc' (https://github.com/cjmatta/kafka-connect-irc) registered for path 'kafka-connect-irc'
-	Submodule 'kafka-connect-transform-wikiedit' (https://github.com/cjmatta/kafka-connect-transform-wikiedit) registered for path 'kafka-connect-transform-wikiedit'
-	$ git submodule update
 	```
 
-2. In the advanced Docker preferences settings, increase the memory available to Docker to at least 8GB (default is 2GB).
-
-3. From the `cp-demo` directory, run `make clean all` to build the IRC connector and the transformer that will parse the Wikipedia edit messages to data. These are saved to `connect-plugins` path, which is a shared volume to the `connect` docker container.
+2. From the `cp-demo` directory, generate certs used for security.
 
 	```bash
-	$ make clean all
-	...
-	$ ls connect-plugins
+        $ (cd security && ./create-certs.sh)
 	```
 
-	_Note_: If `make` has a `FATAL` error as shown below, it means this git repo was not cloned with the submodules. Please go back to step 1 above and correct this.
+3. In the advanced Docker preferences settings, increase the memory available to Docker to at least 8GB (default is 2GB).
 
-	```bash
-	[FATAL] Non-readable POM /private/tmp/cp-demo/kafka-connect-irc/pom.xml: /private/tmp/cp-demo/kafka-connect-irc/pom.xml (No such file or directory)
-	```
 
 ## Run demo
 

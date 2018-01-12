@@ -1,10 +1,5 @@
 #!/bin/bash
 
-if [[ ! -d connect-plugins/kafka-connect-irc ]]; then
-  echo -e "There is no connect-plugins path. Did you remember to run 'make clean all'?\n"
-  exit 1
-fi
-
 DOCKER_MEMORY=$(docker system info | grep Memory | grep -o "[0-9\.]\+")
 if (( $(echo "$DOCKER_MEMORY 7.0" | awk '{print ($1 < $2)}') )); then
   echo -e "\nWARNING: Did you remember to increase the memory available to Docker to at least 8GB (default is 2GB)? Demo may otherwise not work properly.\n"
@@ -17,7 +12,7 @@ if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
 fi
 
 if [[ ! $(docker-compose logs control-center) =~ "Started NetworkTrafficServerConnector" ]]; then
-  echo -e "The logs in control-center container do not show 'Started NetworkTrafficServerConnector' yet. Please wait a minute before running this script again. Did you remember to run 'make clean all'?\n"
+  echo -e "The logs in control-center container do not show 'Started NetworkTrafficServerConnector' yet. Please wait a minute before running this script again. Did you remember to run '(cd security && ./create-certs.sh)'?\n"
   exit 1
 fi
 
@@ -56,9 +51,6 @@ echo -e "\nStart consumers for additional topics:"
 
 echo -e "\nSleeping 50 seconds"
 sleep 50
-
-# Workaround for KAFKA-6252 with the IRC connector
-docker-compose restart connect
 
 echo -e "\nConfigure triggers and actions in Control Center:"
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Consumption Difference","clusterId":"'$(curl -X get http://localhost:9021/2.0/clusters/kafka/ | jq --raw-output .[0].clusterId)'","group":"connect-elasticsearch-ksql","metric":"CONSUMPTION_DIFF","condition":"GREATER_THAN","longValue":"0","lagMs":"5000"}' http://localhost:9021/2.0/alerts/triggers
