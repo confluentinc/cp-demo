@@ -12,8 +12,8 @@
     * [Under consumption](#under-consumption)
     * [Failed broker](#failed-broker)
     * [Alerting](#alerting)
-    * [Security](#security)
     * [Replicator](#replicator)
+    * [Security](#security)
 - [Troubleshooting the demo](#troubleshooting-the-demo)
 - [Teardown](#teardown)
 
@@ -413,6 +413,35 @@ There are many types of Control Center [alerts](https://docs.confluent.io/curren
 
 	<img src="images/trigger_history.png" width="500" align="center">
 
+
+### Replicator
+
+Confluent Replicator copies data from a source Kafka cluster to a destination Kafka cluster. The source and destination clusters are typically different clusters, but in this demo, Replicator is doing intra-cluster replication, _i.e._, the source and destination Kafka clusters are the same. As with the rest of the components in the solution, Confluent Replicator is also configured with security.
+
+1. __**Monitoring --> Data Streams --> Message Delivery**__: monitor throughput and latency of Confluent Replicator in the Data streams monitoring view. Replicator is a Kafka Connect source connector and has a corresponding consumer group `connect-replicator`.
+
+	![image](images/replicator_consumer_group.png)
+
+2. __**Management --> Topics**__: scroll down to view the topics called `wikipedia.parsed` (Replicator is consuming data from this topic) and `wikipedia.parsed.replica` (Replicator is copying data to this topic). Click on `Consumer Groups` for the topic `wikipedia.parsed` and observe that one of the consumer groups is called `connect-replicator`.
+
+	![image](images/replicator_topic_info.png)
+
+3. __**Management --> Kafka Connect**__: pause the Replicator connector by pressing the pause icon in the top right. This will stop consumption for the related consumer group.
+
+	<img src="images/pause_connector.png" width="200" align="center">
+
+4. Observe that the `connect-replicator` consumer group has stopped consumption.
+
+	![image](images/replicator_streams_stopped.png)
+
+5. Restart the Replicator connector.
+
+6. Observe that the `connect-replicator` consumer group has resumed consumption. Notice several things:
+
+        * Even though the consumer group `connect-replicator` was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
+        * The latency peaks and then gradually decreases, because this is also relative to the produce timestamp.
+
+
 ### Security
 
 All the components in this demo are enabled with SSL for encryption and SASL/PLAIN for authentication, except for ZooKeeper which does not support SSL. ACLs are also enabled in the cluster. Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL, SASL, ACLs, and other security features.
@@ -487,7 +516,7 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 5. Verify that an unauthorized user cannot connect. Consume some messages from topic ``wikipedia.parsed`` using the unauthorized user ``badclient``. The client should fail with an exception ``org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]``.
 
 	```bash
-        # The `badclient` access to Kafka fails because `badclient` is unauthorized
+	# The `badclient` access to Kafka is denied because `badclient` is unauthorized
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh badclient
 
 	[2018-01-12 19:28:33,975] ERROR Unknown error when running consumer:  (kafka.tools.ConsoleConsumer$)
@@ -508,7 +537,7 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 
 	```bash
 	$ docker-compose exec connect /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
-            --add --topic wikipedia.parsed --allow-principal User:badclient --operation Read --group test
+	    --add --topic wikipedia.parsed --allow-principal User:badclient --operation Read --group test
 
 	$ docker-compose exec connect /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
 	    --list --topic wikipedia.parsed --group test
@@ -525,34 +554,6 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 	```bash
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh badclient
 	```
-
-### Replicator
-
-Confluent Replicator copies data from a source Kafka cluster to a destination Kafka cluster. The source and destination clusters are typically different clusters, but in this demo, Replicator is doing intra-cluster replication, _i.e._, the source and destination Kafka clusters are the same. As with the rest of the components in the solution, Confluent Replicator is also configured with security.
-
-1. __**Monitoring --> Data Streams --> Message Delivery**__: monitor throughput and latency of Confluent Replicator in the Data streams monitoring view. Replicator is a Kafka Connect source connector and has a corresponding consumer group `connect-replicator`.
-
-	![image](images/replicator_consumer_group.png)
-
-2. __**Management --> Topics**__: scroll down to view the topics called `wikipedia.parsed` (Replicator is consuming data from this topic) and `wikipedia.parsed.replica` (Replicator is copying data to this topic). Click on `Consumer Groups` for the topic `wikipedia.parsed` and observe that one of the consumer groups is called `connect-replicator`.
-
-	![image](images/replicator_topic_info.png)
-
-3. __**Management --> Kafka Connect**__: pause the Replicator connector by pressing the pause icon in the top right. This will stop consumption for the related consumer group.
-
-	<img src="images/pause_connector.png" width="200" align="center">
-
-4. Observe that the `connect-replicator` consumer group has stopped consumption.
-
-	![image](images/replicator_streams_stopped.png)
-
-5. Restart the Replicator connector.
-
-6. Observe that the `connect-replicator` consumer group has resumed consumption. Notice several things:
-
-        * Even though the consumer group `connect-replicator` was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
-        * The latency peaks and then gradually decreases, because this is also relative to the produce timestamp.
-
 
 ## Troubleshooting the demo
 
