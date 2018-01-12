@@ -499,9 +499,9 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 7. Add an ACL that authorizes user ``badclient``, and then list the updated ACL configuration.
 
 	```bash
-	$ docker exec cpdemo_connect_1 /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
+	$ docker-compose exec connect /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
             --add --topic wikipedia.parsed --allow-principal User:badclient --operation Read --group test
-	$ docker exec cpdemo_connect_1 /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
+	$ docker-compose exec connect /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
 	    --list --topic wikipedia.parsed
 	```
 
