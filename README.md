@@ -483,7 +483,7 @@ All the brokers in this demo authenticate as ``broker``, and all other component
 	$ docker-compose logs kafka2 | grep "Registered broker 2"
 	```
 
-2. This demo [automatically generates](security/create-certs.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use any of the ports on which the brokers are listening. To use a security-enabled port, they must specify security parameters for keystores, trustores, password, or authentication so the Kafka command line client tools pass the security configuration file [with interceptors](security/client_with_interceptors.config) or [without interceptors](security/client_without_interceptors.config) with these security parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
+2. This demo [automatically generates](security/create-certs.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use any of the ports on which the brokers are listening. To use a security-enabled port, they must specify security parameters for keystores, truststores, password, or authentication so the Kafka command line client tools pass the security configuration file [with interceptors](security/client_with_interceptors.config) or [without interceptors](security/client_without_interceptors.config) with these security parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
 
 a. Communicate with brokers via the PLAINTEXT port
 
@@ -497,9 +497,12 @@ b. Communicate with brokers via the SASL_SSL port, and SASL_SSL parameters confi
 
 c. If you try to communicate with brokers via the SASL_SSL port but don't specify the SASL_SSL parameters, it will fail
 
+	```bash
 	# SASL_SSL port without SASL_SSL parameters
 	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091
 
+	Error: Executing consumer group command failed due to Request METADATA failed on brokers List(kafka1:9091 (id: -1 rack: null))
+	```
 
 3. Verify the super users are configured for the authenticated ``broker``, ``client``, and unauthenticated ``PLAINTEXT``.
 
