@@ -17,7 +17,7 @@ do
 	# Create keystores
 	keytool -genkey -noprompt \
 				 -alias $i \
-				 -dname "CN=$i, OU=TEST, O=CONFLUENT, L=PaloAlto, S=Ca, C=US" \
+				 -dname "CN=$i,OU=TEST,O=CONFLUENT,L=PaloAlto,S=Ca,C=US" \
                                  -ext san=dns:$i \
 				 -keystore kafka.$i.keystore.jks \
 				 -keyalg RSA \

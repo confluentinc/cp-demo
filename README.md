@@ -507,53 +507,53 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 	$ docker-compose logs kafka1 | grep SUPER_USERS
 	```
 
-4. Verify that an authorized super user can connect. Consume some messages from topic ``wikipedia.parsed`` using the authorized super user ``client``. It should return some messages.
+4. Verify that an authorized super user, that has been authenticated via SASL, can connect. Consume some messages from topic ``wikipedia.parsed`` using the authorized super user ``client``. It should return some messages.
 
 	```bash
-	$ ./$DEMOPATH/listen_wikipedia.parsed.sh client
+	$ ./$DEMOPATH/listen_wikipedia.parsed.sh SASL
 	```
 
-5. Verify that an unauthorized user cannot connect. Consume some messages from topic ``wikipedia.parsed`` using the unauthorized user ``badclient``. The client should fail with an exception ``org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]``.
+5. Verify that an unauthorized user, even one that has been authenticated via SSL, cannot connect. This denial happens because the principal in SSL, e.g. ``CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US``, is different than the principal in SASL, e.g. ``client``, and was not configured as a super user. Consume some messages from topic ``wikipedia.parsed`` with a client that authenticates to the SSL port 11091 instead of 9091. The client should fail with an exception ``org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]``.
 
 	```bash
-	# The `badclient` access to Kafka is denied because `badclient` is unauthorized
-	$ ./$DEMOPATH/listen_wikipedia.parsed.sh badclient
+	$ ./$DEMOPATH/listen_wikipedia.parsed.sh SSL
 
-	[2018-01-12 19:28:33,975] ERROR Unknown error when running consumer:  (kafka.tools.ConsoleConsumer$)
+	[2018-01-12 21:13:18,481] ERROR Unknown error when running consumer:  (kafka.tools.ConsoleConsumer$)
 	org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]
 	```
 
-6. Verify that the broker's Authorizer logger logs the event.
+6. Verify that the broker's Authorizer logger logs the denial event. Notice the username is ``CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US``, not just ``client``.
 
 	```bash
-        # Authorizer logger logs an event that `badclient` tried to access Kafka
+        # Authorizer logger logs the denied operation
         $ docker-compose logs kafka1 | grep kafka.authorizer.logger
 	
-	[2018-01-12 19:28:33,968] INFO Principal = User:badclient is Denied Operation = Describe from host = 172.23.0.8 on resource = Topic:wikipedia.parsed (kafka.authorizer.logger)
-	[2018-01-12 19:28:33,969] INFO Principal = User:badclient is Denied Operation = Describe from host = 172.23.0.8 on resource = Group:test (kafka.authorizer.logger)
+	[2018-01-12 21:13:18,454] INFO Principal = User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US is Denied Operation = Describe from host = 172.23.0.7 on resource = Topic:wikipedia.parsed (kafka.authorizer.logger)
+	[2018-01-12 21:13:18,464] INFO Principal = User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US is Denied Operation = Describe from host = 172.23.0.7 on resource = Group:test (kafka.authorizer.logger)
 	```
 
-7. Add an ACL that authorizes user ``badclient``, and then list the updated ACL configuration.
+7. Add an ACL that authorizes username ``CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US``, and then list the updated ACL configuration.
 
 	```bash
 	$ docker-compose exec connect /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
-	    --add --topic wikipedia.parsed --allow-principal User:badclient --operation Read --group test
+	    --add --topic wikipedia.parsed --allow-principal User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US --operation Read --group test
 
 	$ docker-compose exec connect /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
 	    --list --topic wikipedia.parsed --group test
 
 	Current ACLs for resource `Topic:wikipedia.parsed`: 
- 		User:badclient has Allow permission for operations: Read from hosts: * 
+ 		User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US has Allow permission for operations: Read from hosts: * 
 
 	Current ACLs for resource `Group:test`: 
- 		User:badclient has Allow permission for operations: Read from hosts: * 
+ 		User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US has Allow permission for operations: Read from hosts: * 
 	```
 
-8. Again consume some messages from topic ``wikipedia.parsed`` using the now-authorized user ``badclient``. It should now return messages.
+8. Again consume some messages from topic ``wikipedia.parsed`` using the now-authorized username that authenticates via SSL. It should now return messages.
 
 	```bash
-	$ ./$DEMOPATH/listen_wikipedia.parsed.sh badclient
+	$ ./$DEMOPATH/listen_wikipedia.parsed.sh SSL
 	```
+
 
 ## Troubleshooting the demo
 
