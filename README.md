@@ -415,6 +415,8 @@ There are many types of Control Center [alerts](https://docs.confluent.io/curren
 
 All the components in this demo are enabled with SSL for encryption and SASL/PLAIN for authentication, except for ZooKeeper which does not support SSL. ACLs are also enabled in the cluster. Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL, SASL, ACLs, and other security features.
 
+Encryption & Authentication: 
+
 Each broker has four listener ports:
 
 * PLAINTEXT port called `PLAINTEXT` for clients with no security enabled
@@ -428,6 +430,17 @@ Each broker has four listener ports:
 |SSL |11091 |11092
 |SASL_SSL |9091 |9092
 |SASL_SSL_HOST |29091 |29092
+
+Authorization:
+
+All the brokers in this demo authenticate as ``broker``, and all other components authenticate as ``client``. Per the ACL configuration parameter ``super.users``, as set in this demo, the only principals that can communicate with the cluster are those that authenticate as ``broker`` or ``client``, or clients that connect via the ``PLAINTEXT`` port (their username is ``ANONYMOUS``). All other clients are not authorized to communicate with the cluster.
+
+_Note_: Security differences between the demo and production:
+
+* In production, each component should have its own principal instead of all clients authenticated as ``client``
+* In production, if the ``PLAINTEXT`` security protocol is used, these ``ANONYMOUS`` usernames should not be configured as super users
+* In production, you may consider not opening the ``PLAINTEXT`` security protocol if ``SSL`` or ``SASL_SSL`` are configured
+
 
 1. Verify the ports on which the Kafka brokers are listening with the following command, and they should match the table shown below:
 
@@ -454,7 +467,13 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091
 
 
-3. All the components in this demo authenticate with the username ``client``, which is authorized to communicate with the cluster per the ACL configuration parameter ``super.users``. All other clients are not authorized to communicate with the cluster.
+3. Verify the super users are configured for the authenticated ``broker``, ``client``, and unauthenticated ``PLAINTEXT``.
+
+	```bash
+	$ docker-compose logs kafka1 | grep SUPER_USERS
+	```
+
+4. Verify that authorized users can connect and unauthorized users cannot connect.
 
 a. Consume some messages from topic ``wikipedia.parsed`` using the authorized user ``client``. It should return some messages.
 
@@ -462,17 +481,20 @@ a. Consume some messages from topic ``wikipedia.parsed`` using the authorized us
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh client
 	```
 
-b. Consume some messages from topic ``wikipedia.parsed`` using the unauthorized user ``badclient``. The client should fail with an exception ``org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]`` and broker's Authorizer logger will log the event.
+b. Consume some messages from topic ``wikipedia.parsed`` using the unauthorized user ``badclient``. The client should fail with an exception ``org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]``.
 
 	```bash
         # The `badclient` access to Kafka fails because `badclient` is unauthorized
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh badclient
+	```
+
+c. Verify that the broker's Authorizer logger logs the event.
 
         # Authorizer logger logs an event that `badclient` tried to access Kafka
         $ docker-compose logs kafka1 | grep kafka.authorizer.logger
 	```
 
-c. Add an ACL that authorizes user ``badclient``, and list the updated ACLs.
+5. Add an ACL that authorizes user ``badclient``, and list the updated ACLs.
 
 	```bash
 	$ docker exec cpdemo_connect_1 /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
@@ -481,7 +503,7 @@ c. Add an ACL that authorizes user ``badclient``, and list the updated ACLs.
 	    --list --topic wikipedia.parsed
 	```
 
-d. Again consume some messages from topic ``wikipedia.parsed`` using the now-authorized user ``badclient``. It should now return some messages.
+6. Again consume some messages from topic ``wikipedia.parsed`` using the now-authorized user ``badclient``. It should now return some messages.
 
 	```bash
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh badclient
