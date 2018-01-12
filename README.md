@@ -415,6 +415,14 @@ There are many types of Control Center [alerts](https://docs.confluent.io/curren
 
 All the components in this demo are enabled with SSL for encryption and SASL/PLAIN for authentication, except for ZooKeeper which does not support SSL. ACLs are also enabled in the cluster. Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL, SASL, ACLs, and other security features.
 
+-------------------------------------------------------------
+_Note_: this demo showcases security features and is not meant to be a guideline for best practices. In production:
+
+* Each component should have its own principal instead of all clients authenticated as ``client``
+* If the ``PLAINTEXT`` security protocol is used, these ``ANONYMOUS`` usernames should not be configured as super users
+* Consider not even opening the ``PLAINTEXT`` port if ``SSL`` or ``SASL_SSL`` are configured
+-------------------------------------------------------------
+
 Encryption & Authentication: 
 
 Each broker has four listener ports:
@@ -434,12 +442,6 @@ Each broker has four listener ports:
 Authorization:
 
 All the brokers in this demo authenticate as ``broker``, and all other components authenticate as ``client``. Per the ACL configuration parameter ``super.users``, as set in this demo, the only principals that can communicate with the cluster are those that authenticate as ``broker`` or ``client``, or clients that connect via the ``PLAINTEXT`` port (their username is ``ANONYMOUS``). All other clients are not authorized to communicate with the cluster.
-
-_Note_: Security differences between the demo and production:
-
-* In production, each component should have its own principal instead of all clients authenticated as ``client``
-* In production, if the ``PLAINTEXT`` security protocol is used, these ``ANONYMOUS`` usernames should not be configured as super users
-* In production, you may consider not opening the ``PLAINTEXT`` security protocol if ``SSL`` or ``SASL_SSL`` are configured
 
 
 1. Verify the ports on which the Kafka brokers are listening with the following command, and they should match the table shown below:
