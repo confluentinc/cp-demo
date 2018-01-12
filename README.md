@@ -413,9 +413,9 @@ There are many types of Control Center [alerts](https://docs.confluent.io/curren
 
 ### Security
 
-All the components in this demo are enabled with SSL for encryption and SASL/PLAIN for authentication, except for ZooKeeper which does not support SSL. Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL and other security features.
+All the components in this demo are enabled with SSL for encryption and SASL/PLAIN for authentication, except for ZooKeeper which does not support SSL. ACLs are also enabled in the cluster. Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL, SASL, ACLs, and other security features.
 
-1. Each broker has four listener ports:
+Each broker has four listener ports:
 
 * PLAINTEXT port called `PLAINTEXT` for clients with no security enabled
 * SSL port port called `SSL` for clients with just SSL without SASL
@@ -429,7 +429,7 @@ All the components in this demo are enabled with SSL for encryption and SASL/PLA
 |SASL_SSL |9091 |9092
 |SASL_SSL_HOST |29091 |29092
 
-Verify the ports on which the Kafka brokers are listening with the following command, and they should match the table shown below:
+1. Verify the ports on which the Kafka brokers are listening with the following command, and they should match the table shown below:
 
 	```bash
 	$ docker-compose logs kafka1 | grep "Registered broker 1"
@@ -448,10 +448,44 @@ b. Communicate with brokers via the SASL_SSL port, and SASL_SSL parameters confi
 	# SASL_SSL port with SASL_SSL parameters
 	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 --command-config /etc/kafka/secrets/client_without_interceptors.config
 
-c. If you try communicate with brokers via the SASL_SSL port but don't specify the SASL_SSL parameters, it will fail
+c. If you try to communicate with brokers via the SASL_SSL port but don't specify the SASL_SSL parameters, it will fail
 
 	# SASL_SSL port without SASL_SSL parameters
 	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091
+
+
+3. All authenticated clients in this demo authenticate with the username ``client`` which is authorized per ACLS ``super.users``. Any other client will not be authenticated and will not be allowed to communicate with the cluster.
+
+a. Consume some messages from topic ``wikipedia.parsed`` using the authorized user ``client``. It should return some messages.
+
+	```bash
+	$ ./$DEMOPATH/listen_wikipedia.parsed.sh client
+	```
+
+b. Consume some messages from topic ``wikipedia.parsed`` using the unauthorized user ``badclient``. The client should fail with an exception ``org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]`` and broker's Authorizer logger will log the event.
+
+	```bash
+        # The `badclient` access to Kafka fails because `badclient` is unauthorized
+	$ ./$DEMOPATH/listen_wikipedia.parsed.sh badclient
+
+        # Authorizer logger logs an event that `badclient` tried to access Kafka
+        $ docker-compose logs kafka1 | grep kafka.authorizer.logger
+	```
+
+c. Add an ACL that authorizes user ``badclient``, and list the updated ACLs.
+
+	```bash
+	$ docker exec cpdemo_connect_1 /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
+            --add --topic wikipedia.parsed --allow-principal User:badclient --operation Read --group test
+        $ docker exec cpdemo_connect_1 /usr/bin/kafka-acls --authorizer-properties zookeeper.connect=zookeeper:2181 \
+	    --list --topic wikipedia.parsed
+	```
+
+d. Again consume some messages from topic ``wikipedia.parsed`` using the now-authorized user ``badclient``. It should now return some messages.
+
+	```bash
+	$ ./$DEMOPATH/listen_wikipedia.parsed.sh badclient
+	```
 
 ### Replicator
 

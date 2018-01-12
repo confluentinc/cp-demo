@@ -5,6 +5,9 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
+# Cleanup files
+rm -f *.crt *.csr *_creds *.jks *.srl *.key *.req
+
 # Generate CA key
 openssl req -new -x509 -keyout snakeoil-ca-1.key -out snakeoil-ca-1.crt -days 365 -subj '/CN=ca1.test.confluent.io/OU=TEST/O=CONFLUENT/L=PaloAlto/S=Ca/C=US' -passin pass:confluent -passout pass:confluent
 
