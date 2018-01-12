@@ -449,8 +449,8 @@ All the components in this demo are enabled with SSL for encryption and SASL/PLA
 -------------------------------------------------------------
 _Note_: this demo showcases security features and is not meant to be a guideline for best practices. In production:
 
-* Each component should have its own principal instead of all clients authenticated as ``client``
-* All clients should not be super users; grant them only the operations they need
+* Each component should have its own principal, instead of authenticating all clients as ``client``
+* Authorize clients only to operations that they need, instead of making clients super users
 * If the ``PLAINTEXT`` security protocol is used, these ``ANONYMOUS`` usernames should not be configured as super users
 * Consider not even opening the ``PLAINTEXT`` port if ``SSL`` or ``SASL_SSL`` are configured
 -------------------------------------------------------------
