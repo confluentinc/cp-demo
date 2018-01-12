@@ -496,11 +496,13 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 
 6. Verify that the broker's Authorizer logger logs the event.
 
+	```bash
         # Authorizer logger logs an event that `badclient` tried to access Kafka
         $ docker-compose logs kafka1 | grep kafka.authorizer.logger
-
+	
 	[2018-01-12 19:28:33,968] INFO Principal = User:badclient is Denied Operation = Describe from host = 172.23.0.8 on resource = Topic:wikipedia.parsed (kafka.authorizer.logger)
 	[2018-01-12 19:28:33,969] INFO Principal = User:badclient is Denied Operation = Describe from host = 172.23.0.8 on resource = Group:test (kafka.authorizer.logger)
+	```
 
 7. Add an ACL that authorizes user ``badclient``, and then list the updated ACL configuration.
 
