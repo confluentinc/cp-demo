@@ -509,13 +509,13 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 	KAFKA_SUPER_USERS=User:client;User:broker;User:ANONYMOUS
 	```
 
-4. Verify that an authorized super user, that has been authenticated via SASL, can connect. Consume some messages from topic ``wikipedia.parsed`` using the authorized super user ``client``. It should return some messages.
+4. Verify that an authorized user ``client``, that has been authenticated via SASL, can connect. Consume some messages from topic ``wikipedia.parsed`` using the authorized super user ``client``. It should return some messages.
 
 	```bash
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh SASL
 	```
 
-5. Verify that an unauthorized user, even one that has been authenticated via SSL, cannot connect. This denial happens because the principal in SSL, i.e. ``CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US``, is different than the principal in SASL, e.g. ``client``, and is unauthorized. Consume some messages from topic ``wikipedia.parsed`` with a client that authenticates to the SSL port 11091 instead of the SASL_SSL port 9091. The client fails with an exception ``org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]``.
+5. Verify that this client, if it has been authenticated via SSL, cannot connect. Kafka is correctly denying it because with SSL authentication, the principal is ``CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US``, which is different from the authorized user ``client``, and thus unauthorized. Consume some messages from topic ``wikipedia.parsed`` with a client that authenticates to the SSL port 11091 instead of the SASL_SSL port 9091. The client fails with an exception ``org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]``.
 
 	```bash
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh SSL
