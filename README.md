@@ -473,7 +473,7 @@ Each broker has four listener ports:
 
 Authorization:
 
-All the brokers in this demo authenticate as ``broker``, and all other components authenticate as ``client``. Per the ACL configuration parameter ``super.users``, as set in this demo, the only principals that can communicate with the cluster are those that authenticate as ``broker`` or ``client``, or clients that connect via the ``PLAINTEXT`` port (their username is ``ANONYMOUS``). All other clients are not authorized to communicate with the cluster.
+All the brokers in this demo authenticate as ``broker``, and all other components authenticate as ``client``. Per the broker configuration parameter ``super.users``, as it is set in this demo, the only principals that can communicate with the cluster are those that authenticate as ``broker`` or ``client``, or clients that connect via the ``PLAINTEXT`` port (their username is ``ANONYMOUS``). All other clients are not authorized to communicate with the cluster.
 
 
 1. Verify the ports on which the Kafka brokers are listening with the following command, and they should match the table shown below:
