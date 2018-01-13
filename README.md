@@ -444,13 +444,13 @@ Confluent Replicator copies data from a source Kafka cluster to a destination Ka
 
 ### Security
 
-All the components in this demo are enabled with SSL for encryption and SASL/PLAIN for authentication, except for ZooKeeper which does not support SSL. ACLs are also enabled in the cluster. Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL, SASL, ACLs, and other security features.
+All the components in this demo are enabled with [SSL](https://docs.confluent.io/current/kafka/authentication_ssl.html) for encryption and [SASL/PLAIN](https://docs.confluent.io/current/kafka/authentication_sasl_plain.html) for authentication, except for ZooKeeper which does not support SSL. [Authorization](https://docs.confluent.io/current/kafka/authorization.html) is also enabled in the cluster, and if a resource has no associated ACLs, then users are not allowed to access the resource, except super users. Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL, SASL, ACLs, and other security features.
 
 -------------------------------------------------------------
-_Note_: this demo showcases security features and is not meant to be a guideline for best practices. In production:
+_Note_: this demo showcases a secure Confluent Platform for educational purposes and is not meant to be complete best practices. There are certain differences between what is shown in the demo and what you should do in production:
 
-* Each component should have its own principal, instead of authenticating all clients as ``client``
-* Authorize clients only to operations that they need, instead of making clients super users
+* Each component should have its own principal, instead of authenticating all users as ``client``
+* Authorize users only for operations that they need, instead of making all of them super users
 * If the ``PLAINTEXT`` security protocol is used, these ``ANONYMOUS`` usernames should not be configured as super users
 * Consider not even opening the ``PLAINTEXT`` port if ``SSL`` or ``SASL_SSL`` are configured
 -------------------------------------------------------------
@@ -459,8 +459,8 @@ Encryption & Authentication:
 
 Each broker has four listener ports:
 
-* PLAINTEXT port called `PLAINTEXT` for clients with no security enabled
-* SSL port port called `SSL` for clients with just SSL without SASL
+* PLAINTEXT port called `PLAINTEXT` for users with no security enabled
+* SSL port port called `SSL` for users with just SSL without SASL
 * SASL_SSL port called `SASL_SSL` for communication between services inside Docker containers
 * SASL_SSL port called `SASL_SSL_HOST` for communication between any potential services outside of Docker that communicate to the Docker containers
 
@@ -473,7 +473,7 @@ Each broker has four listener ports:
 
 Authorization:
 
-All the brokers in this demo authenticate as ``broker``, and all other components authenticate as ``client``. Per the broker configuration parameter ``super.users``, as it is set in this demo, the only principals that can communicate with the cluster are those that authenticate as ``broker`` or ``client``, or clients that connect via the ``PLAINTEXT`` port (their username is ``ANONYMOUS``). All other clients are not authorized to communicate with the cluster.
+All the brokers in this demo authenticate as ``broker``, and all other components authenticate as ``client``. Per the broker configuration parameter ``super.users``, as it is set in this demo, the only principals that can communicate with the cluster are those that authenticate as ``broker`` or ``client``, or users that connect via the ``PLAINTEXT`` port (their username is ``ANONYMOUS``). All other users are not authorized to communicate with the cluster.
 
 
 1. Verify the ports on which the Kafka brokers are listening with the following command, and they should match the table shown below:
@@ -504,7 +504,7 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 	Error: Executing consumer group command failed due to Request METADATA failed on brokers List(kafka1:9091 (id: -1 rack: null))
 	```
 
-3. Verify the super users are configured for the authenticated ``broker``, ``client``, and unauthenticated ``PLAINTEXT``.
+3. Verify the super users are configured for the authenticated users ``broker``, ``client``, and unauthenticated ``PLAINTEXT``.
 
 	```bash
 	$ docker-compose logs kafka1 | grep SUPER_USERS
@@ -512,13 +512,13 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 	KAFKA_SUPER_USERS=User:client;User:broker;User:ANONYMOUS
 	```
 
-4. Verify that an authorized user ``client``, that has been authenticated via SASL, can consume some messages from topic ``wikipedia.parsed`` using the authorized super user ``client``.
+4. Verify that a user ``client`` which authenticates via SASL can consume messages from topic ``wikipedia.parsed``:
 
 	```bash
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh SASL
 	```
 
-5. Verify that a client authenticated via SSL cannot consume messages; it fails with an exception ``org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]``.
+5. Verify that a user which authenticates via SSL cannot consume messages from topic ``wikipedia.parsed``. It fails with an exception ``org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]``.
 
 	```bash
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh SSL
@@ -527,7 +527,7 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 	org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]
 	```
 
-6. Verify that the broker's Authorizer logger logs the denial event. Notice that with SSL authentication, the username is ``CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US``, not just ``client``.
+6. Verify that the broker's Authorizer logger logs the denial event. As shown in the log message, the user which authenticates via SSL has a username ``CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US``, not just ``client``.
 
 	```bash
         # Authorizer logger logs the denied operation
@@ -553,7 +553,7 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
  		User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US has Allow permission for operations: Read from hosts: * 
 	```
 
-8. Verify that the user authenticated via SSL is now authorized and can successfully consume some messages from topic ``wikipedia.parsed``.
+8. Verify that the user which authenticates via SSL is now authorized and can successfully consume some messages from topic ``wikipedia.parsed``.
 
 	```bash
 	$ ./$DEMOPATH/listen_wikipedia.parsed.sh SSL
