@@ -149,7 +149,7 @@ services:
       CONNECT_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
       CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
-      CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
+      CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
       CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.0.0.jar
       # Connect worker
@@ -206,6 +206,11 @@ services:
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEY_PASSWORD: confluent
+      KAFKA_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.client.truststore.jks
+                  -Djavax.net.ssl.trustStorePassword=confluent
+                  -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
+                  -Djavax.net.ssl.keyStorePassword=confluent
+                  -Djavax.net.ssl.password=confluent
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
     #restart: always
@@ -311,8 +316,8 @@ services:
       #CONFLUENT_TOPIC_ACL_SUPER_USERS: client;CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US
       #SCHEMA_REGISTRY_CONFLUENT_TOPIC_ACL_SUPER_USERS: client;CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US
       #CONFLUENT_SCHEMA_REGISTRY_AUTH_MECHANISM: SSL
-      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: DEBUG
       #CLASSPATH: /usr/share/java
+      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
       #KAFKA_OPTS: "-Djavax.net.debug=all"
     ports:
       - 8081:8081
