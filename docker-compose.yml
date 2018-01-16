@@ -31,7 +31,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka1:9091,SASL_SSL_HOST://localhost:29091,PLAINTEXT://kafka1:10091,SSL://kafka1:11091
       KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.auth.SimpleAclAuthorizer
       KAFKA_SUPER_USERS: User:client;User:broker;User:ANONYMOUS
-      KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=INFO"
+      KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=DEBUG"
       KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       KAFKA_BROKER_ID: 1
       KAFKA_BROKER_RACK: "r1"
@@ -82,7 +82,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka2:9092,SASL_SSL_HOST://localhost:29092,PLAINTEXT://kafka2:10092,SSL://kafka2:11092
       KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.auth.SimpleAclAuthorizer
       KAFKA_SUPER_USERS: User:client;User:broker;User:ANONYMOUS
-      KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=INFO"
+      KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=DEBUG"
       KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       KAFKA_BROKER_ID: 2
       KAFKA_BROKER_RACK: "r1"
@@ -283,27 +283,32 @@ services:
       - $PWD/security:/etc/kafka/secrets
     environment:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "SASL_SSL://kafka1:9091,SASL_SSL://kafka2:9092"
-      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:2181
-      SCHEMA_REGISTRY_HOST_NAME: schemaregistry
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
+      #SCHEMA_REGISTRY_HOST_NAME: schemaregistry
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081,https://0.0.0.0:8082"
       SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: SASL_SSL
       SCHEMA_REGISTRY_KAFKASTORE_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
-        username=\"client\" \
-        password=\"client-secret\";"
+        username=\"schemaregistry\" \
+        password=\"schemaregistry-secret\";"
       SCHEMA_REGISTRY_KAFKASTORE_SASL_MECHANISM: PLAIN
-      SCHEMA_REGISTRY_KAFKASTORE_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
+      SCHEMA_REGISTRY_KAFKASTORE_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.schemaregistry.truststore.jks
       SCHEMA_REGISTRY_KAFKASTORE_SSL_TRUSTSTORE_PASSWORD: confluent
-      SCHEMA_REGISTRY_KAFKASTORE_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
+      SCHEMA_REGISTRY_KAFKASTORE_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.schemaregistry.keystore.jks
       SCHEMA_REGISTRY_KAFKASTORE_SSL_KEYSTORE_PASSWORD: confluent
       SCHEMA_REGISTRY_KAFKASTORE_SSL_KEY_PASSWORD: confluent
       SCHEMA_REGISTRY_KAFKASTORE_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
-      SCHEMA_REGISTRY_RESOURCE_EXTENSION_CLASS: io.confluent.kafka.schemaregistry.security.SchemaRegistrySecurityResourceExtension
+      SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.schemaregistry.truststore.jks
+      SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: confluent
+      SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.schemaregistry.keystore.jks
+      SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: confluent
+      SCHEMA_REGISTRY_SSL_KEY_PASSWORD: confluent
       SCHEMA_REGISTRY_SSL_CLIENT_AUTH: "true"
       SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: https
-      CONFLUENT_SCHEMA_REGISTRY_AUTHORIZER_CLASS: io.confluent.kafka.schemaregistry.security.authorizer.schemaregistryacl.SchemaRegistryAclAuthorizer
-      CONFLUENT_TOPIC_ACL_SUPER_USERS: client;CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US
-      SCHEMA_REGISTRY_CONFLUENT_TOPIC_ACL_SUPER_USERS: client;CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US
-      CONFLUENT_SCHEMA_REGISTRY_AUTH_MECHANISM: SSL
+      #SCHEMA_REGISTRY_RESOURCE_EXTENSION_CLASS: io.confluent.kafka.schemaregistry.security.SchemaRegistrySecurityResourceExtension
+      #CONFLUENT_SCHEMA_REGISTRY_AUTHORIZER_CLASS: io.confluent.kafka.schemaregistry.security.authorizer.schemaregistryacl.SchemaRegistryAclAuthorizer
+      #CONFLUENT_TOPIC_ACL_SUPER_USERS: client;CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US
+      #SCHEMA_REGISTRY_CONFLUENT_TOPIC_ACL_SUPER_USERS: client;CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US
+      #CONFLUENT_SCHEMA_REGISTRY_AUTH_MECHANISM: SSL
       #SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: DEBUG
       #CLASSPATH: /usr/share/java
       #KAFKA_OPTS: "-Djavax.net.debug=all"
