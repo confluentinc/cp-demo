@@ -5,3 +5,6 @@ security/*.jks
 security/*.srl
 security/*.key
 security/*.req
+security/*.pem
+security/*.der
+security/*.p12
