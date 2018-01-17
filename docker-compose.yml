@@ -282,7 +282,7 @@ services:
       CONTROL_CENTER_STREAMS_PRODUCER_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
   schemaregistry:
     image: confluentinc/cp-schema-registry:4.0.0
-    restart: always
+    #restart: always
     depends_on:
       - zookeeper
       - kafka1
@@ -293,7 +293,7 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "SASL_SSL://kafka1:9091,SASL_SSL://kafka2:9092"
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
       SCHEMA_REGISTRY_HOST_NAME: schemaregistry
-      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081,https://0.0.0.0:8082"
+      SCHEMA_REGISTRY_LISTENERS: "https://0.0.0.0:8082"
       SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: SASL_SSL
       SCHEMA_REGISTRY_KAFKASTORE_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
         username=\"schemaregistry\" \
@@ -311,10 +311,9 @@ services:
       SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: confluent
       SCHEMA_REGISTRY_SSL_KEY_PASSWORD: confluent
       SCHEMA_REGISTRY_SSL_CLIENT_AUTH: "true"
-      SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: https
+      SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "https"
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
     ports:
-      - 8081:8081
       - 8082:8082
   kafka-client:
     image: confluentinc/cp-enterprise-kafka:4.0.0
