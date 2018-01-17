@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo -e "Sample of messages from different topics:"
+echo -e "Sample message from different topics:"
 
 echo -e "\nwikipedia.parsed:"
 docker exec cpdemo_connect_1 kafka-console-consumer --bootstrap-server kafka1:9091 --topic wikipedia.parsed \
