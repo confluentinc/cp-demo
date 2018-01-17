@@ -10,10 +10,26 @@ ssl.keystore.password=confluent
 ssl.key.password=confluent
 ssl.endpoint.identification.algorithm=HTTPS
 security.protocol=SASL_SSL
-sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \
-        username="client" \
-        password="client-secret";
+sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="client" password="client-secret";
 sasl.mechanism=PLAIN
+producer.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks
+producer.ssl.truststore.password=confluent
+producer.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks
+producer.ssl.keystore.password=confluent
+producer.ssl.key.password=confluent
+producer.security.protocol=SASL_SSL
+producer.sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="client" password="client-secret";
+producer.sasl.mechanism=PLAIN
+consumer.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks
+consumer.ssl.truststore.password=confluent
+consumer.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks
+consumer.ssl.keystore.password=confluent
+consumer.ssl.key.password=confluent
+consumer.security.protocol=SASL_SSL
+consumer.sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="client" password="client-secret";
+consumer.sasl.mechanism=PLAIN
+producer.interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
+consumer.interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
 producer.confluent.monitoring.interceptor.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks
 producer.confluent.monitoring.interceptor.ssl.truststore.password=confluent
 producer.confluent.monitoring.interceptor.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks
