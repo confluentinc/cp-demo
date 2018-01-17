@@ -32,7 +32,7 @@ services:
       KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.auth.SimpleAclAuthorizer
       # Making this open for debugging
       KAFKA_SUPER_USERS: User:client;User:schemaregistry;User:broker;User:ANONYMOUS;User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US;User:CN=schemaregistry,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US
-      KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=DEBUG"
+      KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=INFO"
       KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       KAFKA_BROKER_ID: 1
       KAFKA_BROKER_RACK: "r1"
@@ -84,7 +84,7 @@ services:
       KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.auth.SimpleAclAuthorizer
       # Making this open for debugging
       KAFKA_SUPER_USERS: User:client;User:schemaregistry;User:broker;User:ANONYMOUS;User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US;User:CN=schemaregistry,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US
-      KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=DEBUG"
+      KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=INFO"
       KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       KAFKA_BROKER_ID: 2
       KAFKA_BROKER_RACK: "r1"
@@ -316,14 +316,7 @@ services:
       SCHEMA_REGISTRY_SSL_KEY_PASSWORD: confluent
       SCHEMA_REGISTRY_SSL_CLIENT_AUTH: "true"
       SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: https
-      #SCHEMA_REGISTRY_RESOURCE_EXTENSION_CLASS: io.confluent.kafka.schemaregistry.security.SchemaRegistrySecurityResourceExtension
-      #CONFLUENT_SCHEMA_REGISTRY_AUTHORIZER_CLASS: io.confluent.kafka.schemaregistry.security.authorizer.schemaregistryacl.SchemaRegistryAclAuthorizer
-      #CONFLUENT_TOPIC_ACL_SUPER_USERS: client;CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US
-      #SCHEMA_REGISTRY_CONFLUENT_TOPIC_ACL_SUPER_USERS: client;CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US
-      #CONFLUENT_SCHEMA_REGISTRY_AUTH_MECHANISM: SSL
-      #CLASSPATH: /usr/share/java
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
-      #KAFKA_OPTS: "-Djavax.net.debug=all"
     ports:
       - 8081:8081
       - 8082:8082
