@@ -1,7 +1,6 @@
 set 'producer.interceptor.classes'='io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor';
 set 'consumer.interceptor.classes'='io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor';
-set 'application.id'='c3demo';
-set 'application.id'='ksql-demo';
+set 'application.id'='cp-demo';
 set 'producer.ssl.truststore.location'='/etc/kafka/secrets/kafka.client.truststore.jks';
 set 'producer.ssl.truststore.password'='confluent';
 set 'producer.ssl.keystore.location'='/etc/kafka/secrets/kafka.client.keystore.jks';
