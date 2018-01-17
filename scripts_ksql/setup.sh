@@ -42,7 +42,7 @@ echo -e "\nStart Confluent Replicator:"
 echo -e "\nConfigure Kibana dashboard:"
 ./scripts_ksql/configure_kibana_dashboard.sh
 
-echo -e "\nStart KSQL engine and running queries:"
+echo -e "\n\nStart KSQL engine and running queries:"
 ./scripts_ksql/run_ksql.sh
 
 echo -e "\nStart consumers for additional topics:"

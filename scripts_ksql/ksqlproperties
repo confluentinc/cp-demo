@@ -2,6 +2,7 @@ bootstrap.servers=kafka1:9091,kafka2:9092
 application.id=c3demo
 listeners=http://localhost:8080
 cache.max.bytes.buffering=0
+ksql.schema.registry.url=https://schemaregistry:8082
 ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks
 ssl.truststore.password=confluent
 ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks
