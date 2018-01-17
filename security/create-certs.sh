@@ -55,3 +55,13 @@ do
 	openssl pkcs12 -in $i.keystore.p12 -nodes -nocerts -out $i.key -passin pass:confluent
 
 done
+
+for i in kafka1 kafka2 client schemaregistry
+do
+       for j in kafka1 kafka2 client schemaregistry
+       do
+               if [[ "$i" != "$j" ]]; then
+                       keytool -noprompt -keystore kafka.$i.truststore.jks -alias $j -import -file $j-ca1-signed.crt -storepass confluent -keypass confluent
+               fi
+       done
+done
