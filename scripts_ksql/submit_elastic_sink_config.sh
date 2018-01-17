@@ -6,9 +6,6 @@ if [[ $1 ]];then
     CONNECT_HOST=$1
 fi
 
-#    "topics": "WIKIPEDIABOT,EN_WIKIPEDIA_GT_1",
-#    "topic.index.map": "WIKIPEDIABOT:wikipediabot,EN_WIKIPEDIA_GT_1:en_wikipedia_gt_1",
-
 HEADER="Content-Type: application/json"
 DATA=$( cat << EOF
 {
@@ -21,11 +18,9 @@ DATA=$( cat << EOF
     "connection.url": "http://elasticsearch:9200",
     "type.name": "wikichange",
     "key.ignore": true,
-    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
-    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
-    "value.converter.schemas.enable": false,
-    "transforms": "FilterNulls",
-    "transforms.FilterNulls.type": "io.confluent.transforms.NullFilter",
+    "key.converter.schema.registry.url": "https://schemaregistry:8082",
+    "value.converter": "io.confluent.connect.avro.AvroConverter",
+    "value.converter.schema.registry.url": "https://schemaregistry:8082",
     "schema.ignore": true
 
   }

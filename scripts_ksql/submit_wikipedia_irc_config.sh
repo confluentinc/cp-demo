@@ -20,6 +20,9 @@ DATA=$( cat << EOF
     "irc.server": "irc.wikimedia.org",
     "kafka.topic": "wikipedia.parsed",
     "producer.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor",
+    "key.converter.schema.registry.url": "https://schemaregistry:8082",
+    "value.converter": "io.confluent.connect.avro.AvroConverter",
+    "value.converter.schema.registry.url": "https://schemaregistry:8082",
     "tasks.max": "1"
   }
 }
