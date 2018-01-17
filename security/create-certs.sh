@@ -65,5 +65,3 @@ do
 		fi
 	done
 done
-
-./verify-certs.sh

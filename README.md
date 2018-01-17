@@ -454,7 +454,7 @@ All the components in this demo are enabled with many [security features](https:
 -------------------------------------------------------------
 _Note_: this demo showcases a secure Confluent Platform for educational purposes and is not meant to be complete best practices. There are certain differences between what is shown in the demo and what you should do in production:
 
-* Each component should have its own principal, instead of authenticating all users as ``client``
+* Each component should have its own username, instead of authenticating all users as ``client``
 * Authorize users only for operations that they need, instead of making all of them super users
 * If the ``PLAINTEXT`` security protocol is used, these ``ANONYMOUS`` usernames should not be configured as super users
 * Consider not even opening the ``PLAINTEXT`` port if ``SSL`` or ``SASL_SSL`` are configured
@@ -478,7 +478,7 @@ Each broker has four listener ports:
 
 Authorization:
 
-All the brokers in this demo authenticate as ``broker``, and all other components authenticate as ``client``. Per the broker configuration parameter ``super.users``, as it is set in this demo, the only principals that can communicate with the cluster are those that authenticate as ``broker`` or ``client``, or users that connect via the ``PLAINTEXT`` port (their username is ``ANONYMOUS``). All other users are not authorized to communicate with the cluster.
+All the brokers in this demo authenticate as ``broker``, and all other components authenticate as ``client``. Per the broker configuration parameter ``super.users``, as it is set in this demo, the only users that can communicate with the cluster are those that authenticate as ``broker`` or ``client``, or users that connect via the ``PLAINTEXT`` port (their username is ``ANONYMOUS``). All other users are not authorized to communicate with the cluster.
 
 
 1. Verify the ports on which the Kafka brokers are listening with the following command, and they should match the table shown below:

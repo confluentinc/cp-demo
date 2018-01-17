@@ -7,4 +7,4 @@ fi
 
 docker exec cpdemo_connect_1 kafka-avro-console-consumer \
   --property schema.registry.url=https://schemaregistry:8082 \
-  --topic wikipedia.parsed $ARGS
+  --topic wikipedia.parsed --group=test $ARGS
