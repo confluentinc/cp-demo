@@ -444,7 +444,12 @@ Confluent Replicator copies data from a source Kafka cluster to a destination Ka
 
 ### Security
 
-All the components in this demo are enabled with [SSL](https://docs.confluent.io/current/kafka/authentication_ssl.html) for encryption and [SASL/PLAIN](https://docs.confluent.io/current/kafka/authentication_sasl_plain.html) for authentication, except for ZooKeeper which does not support SSL. [Authorization](https://docs.confluent.io/current/kafka/authorization.html) is also enabled in the cluster, and if a resource has no associated ACLs, then users are not allowed to access the resource, except super users. Read [details](https://docs.confluent.io/current/security.html) to deploy Confluent Platform with SSL, SASL, ACLs, and other security features.
+All the components in this demo are enabled with many [security features](https://docs.confluent.io/current/security.html):
+
+* [SSL](https://docs.confluent.io/current/kafka/authentication_ssl.html) for encryption, except for ZooKeeper which does not support SSL
+* [SASL/PLAIN](https://docs.confluent.io/current/kafka/authentication_sasl_plain.html) for authentication, except for ZooKeeper
+* [Authorization](https://docs.confluent.io/current/kafka/authorization.html). If a resource has no associated ACLs, then users are not allowed to access the resource, except super users
+* [HTTPS for Schema Registry](https://docs.confluent.io/current/schema-registry/docs/security.html)
 
 -------------------------------------------------------------
 _Note_: this demo showcases a secure Confluent Platform for educational purposes and is not meant to be complete best practices. There are certain differences between what is shown in the demo and what you should do in production:
