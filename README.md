@@ -150,8 +150,6 @@ Follow along with the video [![Demo 2: Tour | Monitoring Kafka in Confluent Cont
 
 Follow along with the video [![Demo 3: KSQL | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/U_ntFVXWBPc)
 
-If you ran the demo with KSQL, i.e. `DEMOPATH=scripts_ksql`, then there are additional things you can look at. If you did not run the demo with KSQL, skip this section.
-
 1. Run the KSQL CLI to get more information on the queries, streams, and tables.
 
 	```bash
