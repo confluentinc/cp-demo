@@ -357,7 +357,7 @@ services:
     ports:
       - "7073:7073"
   ksql-cli:
-    image: "confluentinc/ksql-cli:0.1-pre10"
+    image: "confluentinc/ksql-cli:0.3"
     hostname: ksql-cli
     depends_on:
       - kafka1
