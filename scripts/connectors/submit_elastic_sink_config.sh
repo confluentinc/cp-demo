@@ -9,11 +9,12 @@ fi
 HEADER="Content-Type: application/json"
 DATA=$( cat << EOF
 {
-  "name": "elasticsearch-pipeline",
+  "name": "elasticsearch-ksql",
   "config": {
     "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
     "consumer.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor",
-    "topics": "wikipedia.parsed",
+    "topics": "WIKIPEDIABOT",
+    "topic.index.map": "WIKIPEDIABOT:wikipediabot",
     "connection.url": "http://elasticsearch:9200",
     "type.name": "wikichange",
     "key.ignore": true,
