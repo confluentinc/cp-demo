@@ -366,8 +366,8 @@ services:
       - 9098:9098
     volumes:
       - $PWD/monitoring-interceptors/monitoring-interceptors-4.0.0.jar:/usr/share/java/ksql-cli/monitoring-interceptors-4.0.0.jar
-      - $PWD/scripts_ksql/ksqlproperties:/tmp/ksqlproperties
-      - $PWD/scripts_ksql/ksqlcommands:/tmp/ksqlcommands
+      - $PWD/scripts/ksql/ksqlproperties:/tmp/ksqlproperties
+      - $PWD/scripts/ksql/ksqlcommands:/tmp/ksqlcommands
       - $PWD/security:/etc/kafka/secrets
     command: "perl -e 'while(1){ sleep 99999 }'"
     environment:
