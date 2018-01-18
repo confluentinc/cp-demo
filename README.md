@@ -94,7 +94,7 @@ This demo has been verified with:
 	control-center_1       | [2017-09-06 16:37:33,133] INFO Started NetworkTrafficServerConnector@26a529dc{HTTP/1.1}{0.0.0.0:9021} (org.eclipse.jetty.server.NetworkTrafficServerConnector)
 	```
 
-5. Customize the Kafka cluster, Kafka source and sink connectors, Elasticsearch, and Kibana dashboard.
+5. Run the setup which which customizes the Kafka cluster, Kafka source and sink connectors, Elasticsearch, and Kibana dashboard.
 
 	```bash
 	$ ./scripts/setup.sh
@@ -123,7 +123,7 @@ Follow along with the video [![Demo 2: Tour | Monitoring Kafka in Confluent Cont
 
 2. __**Management --> Kafka Connect**__: Confluent Control Center uses the Kafka Connect API to manage [Kafka connectors](https://docs.confluent.io/current/control-center/docs/connect.html). 
 
-	* Kafka Connect **Sources** tab shows the connector `wikipedia-irc`. Click `Edit` to see the details of the connector configuration and custom transforms.
+	* Kafka Connect **Sources** tab shows the connectors `wikipedia-irc` and `replicate-topic`. Click `Edit` to see the details of the connector configuration and custom transforms.
 
 		![image](images/connect_source.png)
 
@@ -135,7 +135,7 @@ Follow along with the video [![Demo 2: Tour | Monitoring Kafka in Confluent Cont
 
 	![image](images/message_delivery.png)
 
-	The Kafka Connect sink connector has a corresponding consumer group `connect-elasticsearch-ksql` consuming from the configured Kafka topic. This consumer group will be in the consumer group statistics in the [stream monitoring](https://docs.confluent.io/current/control-center/docs/monitoring.html) charts.
+	The Kafka Connect sink connectors have corresponding consumer groups `connect-elasticsearch-ksql` and `connect-replicator`. These consumer groups will be in the consumer group statistics in the [stream monitoring](https://docs.confluent.io/current/control-center/docs/monitoring.html) charts.
 
 	![image](images/connect_consumer_group.png)
 
