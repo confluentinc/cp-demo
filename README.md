@@ -69,9 +69,9 @@ This demo has been verified with:
 	$ docker-compose up -d
 	```
 
-2a. Verify the status of the Docker containers show `Up` state, except for the `kafka-client` container which is expected to have `Exit 0` state. If any containers are not up, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8GB (default is 2GB).
+3. Verify the status of the Docker containers show `Up` state, except for the `kafka-client` container which is expected to have `Exit 0` state. If any containers are not up, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8GB (default is 2GB).
 
-	```bash
+	```
 	$ docker-compose ps
 	         Name                        Command               State                              Ports                            
 	------------------------------------------------------------------------------------------------------------------------------
@@ -87,24 +87,24 @@ This demo has been verified with:
 	cpdemo_zookeeper_1        /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 	```
 
-3. Wait till Confluent Control Center is running fully. Verify when it's ready when the logs show the following event
+4. Wait till Confluent Control Center is running fully. Verify when it's ready when the logs show the following event
 
 	```bash
 	$ docker-compose logs -f control-center | grep -e "Started NetworkTrafficServerConnector"
 	control-center_1       | [2017-09-06 16:37:33,133] INFO Started NetworkTrafficServerConnector@26a529dc{HTTP/1.1}{0.0.0.0:9021} (org.eclipse.jetty.server.NetworkTrafficServerConnector)
 	```
 
-4. Setup the cluster and connectors
+5. Customize the Kafka cluster, Kafka source and sink connectors, Elasticsearch, and Kibana dashboard.
 
 	```bash
 	$ ./scripts/setup.sh
 	```
 
-5. Use Google Chrome to view the Confluent Control Center GUI at [http://localhost:9021](http://localhost:9021). 
+6. Use Google Chrome to view the Confluent Control Center GUI at [http://localhost:9021](http://localhost:9021). 
 
 	Click on the top right button that shows the current date, and change `Last 4 hours` to `Last 30 minutes`.
 
-6. View the data in the Kibana dashboard at [http://localhost:5601/app/kibana#/dashboard/Wikipedia](http://localhost:5601/app/kibana#/dashboard/Wikipedia)
+7. View the data in the Kibana dashboard at [http://localhost:5601/app/kibana#/dashboard/Wikipedia](http://localhost:5601/app/kibana#/dashboard/Wikipedia)
 
 
 ## Playbook
