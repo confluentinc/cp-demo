@@ -87,7 +87,7 @@ This demo has been verified with:
 	cpdemo_zookeeper_1        /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 	```
 
-4. Wait till Confluent Control Center is running fully. Verify when it's ready when the logs show the following event
+4. Wait till Confluent Control Center is running fully. Verify it is ready when the logs show the following event:
 
 	```bash
 	$ docker-compose logs -f control-center | grep -e "Started NetworkTrafficServerConnector"
