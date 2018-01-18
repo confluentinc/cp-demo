@@ -26,9 +26,13 @@ The use case is a stream processing on live edits to real Wikipedia pages. Wikim
 
 ![image](images/drawing.png)
 
+
 -------------------------------------------------------------
+
 _Note_: this is a Docker environment and has all services running on one host. Do not use this demo in production. It is meant exclusively to easily demo the Confluent Platform. In production, Confluent Control Center should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production traffic. Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
+
 -------------------------------------------------------------
+
 
 ## Installation
 
@@ -56,7 +60,7 @@ This demo has been verified with:
 1. From the `cp-demo` directory, generate certs used for security.
 
 	```bash
-        $ (cd security && ./certs-create.sh)
+	$ (cd security && ./certs-create.sh)
 	```
 
 2. Start the demo. It will take about 2 minutes for all containers to start and for Confluent Control Center GUI to be ready.
@@ -491,7 +495,7 @@ c. If you try to communicate with brokers via the SASL_SSL port but don't specif
 	```bash
 	# SASL_SSL port without SASL_SSL parameters
 	$ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091
-
+	
 	Error: Executing consumer group command failed due to Request METADATA failed on brokers List(kafka1:9091 (id: -1 rack: null))
 	```
 
