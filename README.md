@@ -152,6 +152,8 @@ Follow along with the video [![Demo 2: Tour | Monitoring Kafka in Confluent Cont
 
 Follow along with the video [![Demo 3: KSQL | Monitoring Kafka in Confluent Control Center](images/play-button.png)](https://youtu.be/U_ntFVXWBPc)
 
+In this demo, KSQL is configured with [properties](scripts/ksql/ksqlproperties) to connect to the secured Kafka cluster and is already running queries.
+
 1. Run the KSQL CLI to get more information on the queries, streams, and tables.
 
 	```bash
@@ -478,7 +480,7 @@ All the brokers in this demo authenticate as ``broker``, and all other component
 	$ docker-compose logs kafka2 | grep "Registered broker 2"
 	```
 
-2. This demo [automatically generates](scripts/security/create-certs.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use any of the ports on which the brokers are listening. To use a security-enabled port, they must specify security parameters for keystores, truststores, password, or authentication so the Kafka command line client tools pass the security configuration file [with interceptors](security/client_with_interceptors.config) or [without interceptors](scripts/security/client_without_interceptors.config) with these security parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
+2. This demo [automatically generates](scripts/security/certs-create.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use any of the ports on which the brokers are listening. To use a security-enabled port, they must specify security parameters for keystores, truststores, password, or authentication so the Kafka command line client tools pass the security configuration file [with interceptors](security/client_with_interceptors.config) or [without interceptors](scripts/security/client_without_interceptors.config) with these security parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
 
 a. Communicate with brokers via the PLAINTEXT port
 
