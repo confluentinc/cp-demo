@@ -11,7 +11,7 @@ services:
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_jaas.conf
                   -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
     volumes:
-      - $PWD/security:/etc/kafka/secrets
+      - $PWD/scripts/security:/etc/kafka/secrets
     ports:
       - "2181:2181"
   kafka1:
@@ -20,7 +20,7 @@ services:
     depends_on:
       - zookeeper
     volumes:
-      - $PWD/security:/etc/kafka/secrets
+      - $PWD/scripts/security:/etc/kafka/secrets
     ports:
       - "9091:9091"
       - "29091:29091"
@@ -74,7 +74,7 @@ services:
       - "9092:9092"
       - "29092:29092"
     volumes:
-      - $PWD/security:/etc/kafka/secrets
+      - $PWD/scripts/security:/etc/kafka/secrets
     environment:
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_SSL:SASL_SSL,SASL_SSL_HOST:SASL_SSL,PLAINTEXT:PLAINTEXT,SSL:SSL
@@ -128,7 +128,7 @@ services:
     volumes:
       - $PWD/connect-plugins:/connect-plugins
       - $PWD/connect-plugins/kafka-connect-transform-nullfilter/null-filter-4.0.0-SNAPSHOT.jar:/usr/share/java/kafka-connect-elasticsearch/null-filter-4.0.0-SNAPSHOT.jar
-      - $PWD/security:/etc/kafka/secrets
+      - $PWD/scripts/security:/etc/kafka/secrets
     environment:
       CONNECT_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       CONNECT_REST_PORT: 8083
@@ -245,7 +245,7 @@ services:
     ports:
       - "9021:9021"
     volumes:
-      - $PWD/security:/etc/kafka/secrets
+      - $PWD/scripts/security:/etc/kafka/secrets
     environment:
       CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       CONTROL_CENTER_ZOOKEEPER_CONNECT: "zookeeper:2181"
@@ -289,7 +289,7 @@ services:
       - kafka1
       - kafka2
     volumes:
-      - $PWD/security:/etc/kafka/secrets
+      - $PWD/scripts/security:/etc/kafka/secrets
     environment:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "SASL_SSL://kafka1:9091,SASL_SSL://kafka2:9092"
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
@@ -322,7 +322,7 @@ services:
       - kafka1
     hostname: kafka-client
     volumes:
-      - $PWD/security:/etc/kafka/secrets
+      - $PWD/scripts/security:/etc/kafka/secrets
     # We defined a dependency on "kafka", but `depends_on` will NOT wait for the
     # dependencies to be "ready" before starting the "kafka-client"
     # container;  it waits only until the dependencies have started.  Hence we
@@ -368,7 +368,7 @@ services:
       - $PWD/monitoring-interceptors/monitoring-interceptors-4.0.0.jar:/usr/share/java/ksql-cli/monitoring-interceptors-4.0.0.jar
       - $PWD/scripts/ksql/ksqlproperties:/tmp/ksqlproperties
       - $PWD/scripts/ksql/ksqlcommands:/tmp/ksqlcommands
-      - $PWD/security:/etc/kafka/secrets
+      - $PWD/scripts/security:/etc/kafka/secrets
     command: "perl -e 'while(1){ sleep 99999 }'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"

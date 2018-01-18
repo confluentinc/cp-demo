@@ -60,7 +60,7 @@ This demo has been verified with:
 1. From the `cp-demo` directory, generate certs used for security.
 
 	```bash
-	$ (cd security && ./certs-create.sh)
+	$ (cd scripts/security && ./certs-create.sh)
 	```
 
 2. Start the demo. It will take about 2 minutes for all containers to start and for Confluent Control Center GUI to be ready.
@@ -478,7 +478,7 @@ All the brokers in this demo authenticate as ``broker``, and all other component
 	$ docker-compose logs kafka2 | grep "Registered broker 2"
 	```
 
-2. This demo [automatically generates](security/create-certs.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use any of the ports on which the brokers are listening. To use a security-enabled port, they must specify security parameters for keystores, truststores, password, or authentication so the Kafka command line client tools pass the security configuration file [with interceptors](security/client_with_interceptors.config) or [without interceptors](security/client_without_interceptors.config) with these security parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
+2. This demo [automatically generates](scripts/security/create-certs.sh) simple SSL certificates and creates keystores, truststores, and secures them with a password. To communicate with the brokers, Kafka clients may use any of the ports on which the brokers are listening. To use a security-enabled port, they must specify security parameters for keystores, truststores, password, or authentication so the Kafka command line client tools pass the security configuration file [with interceptors](security/client_with_interceptors.config) or [without interceptors](scripts/security/client_without_interceptors.config) with these security parameters. As an example, to communicate with the Kafka cluster to view all the active consumer groups:
 
 a. Communicate with brokers via the PLAINTEXT port
 
