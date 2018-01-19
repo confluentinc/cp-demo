@@ -1,3 +1,8 @@
+# Documentation build output
+/docs/_build
+
+.DS_Store
+*.idea
 scripts/security/*.crt
 scripts/security/*.csr
 scripts/security/*_creds
