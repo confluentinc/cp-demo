@@ -94,7 +94,7 @@ This demo has been verified with:
 	control-center_1       | [2017-09-06 16:37:33,133] INFO Started NetworkTrafficServerConnector@26a529dc{HTTP/1.1}{0.0.0.0:9021} (org.eclipse.jetty.server.NetworkTrafficServerConnector)
 	```
 
-5. Run the setup which which customizes the Kafka cluster, Kafka source and sink connectors, Elasticsearch, and Kibana dashboard.
+5. Run the setup script which customizes the Kafka cluster, Kafka source and sink connectors, Elasticsearch, and Kibana dashboard.
 
 	```bash
 	$ ./scripts/setup.sh
