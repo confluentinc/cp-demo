@@ -7,11 +7,6 @@ docker exec cpdemo_connect_1 kafka-avro-console-consumer --bootstrap-server kafk
   --property schema.registry.url=https://schemaregistry:8082 \
   --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 1
   
-echo -e "\nWIKIPEDIA:"
-docker exec cpdemo_connect_1 kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic WIKIPEDIA \
-  --property schema.registry.url=https://schemaregistry:8082 \
-  --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 1
-  
 echo -e "\nWIKIPEDIABOT:"
 docker exec cpdemo_connect_1 kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic WIKIPEDIABOT \
   --property schema.registry.url=https://schemaregistry:8082 \
