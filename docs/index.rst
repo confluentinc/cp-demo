@@ -253,7 +253,7 @@ Follow along with the `Demo 3: KSQL <https://youtu.be/U_ntFVXWBPc>`_ video.
     </div>
 
 In this demo, KSQL is configured with
-`properties <../scripts/ksql/ksqlproperties>`__ to connect to the secured
+`properties <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlproperties>`__ to connect to the secured
 Kafka cluster and is already running queries.
 
 1. Run the KSQL CLI to get more information on the queries, streams, and
@@ -825,16 +825,16 @@ authorized to communicate with the cluster.
         $ docker-compose logs kafka2 | grep "Registered broker 2"
 
 2. This demo `automatically
-   generates <scripts/security/certs-create.sh>`__ simple SSL
+   generates <https://github.com/confluentinc/cp-demo/blob/master/scripts/security/certs-create.sh>`__ simple SSL
    certificates and creates keystores, truststores, and secures them
    with a password. To communicate with the brokers, Kafka clients may
    use any of the ports on which the brokers are listening. To use a
    security-enabled port, they must specify security parameters for
    keystores, truststores, password, or authentication so the Kafka
    command line client tools pass the security configuration file `with
-   interceptors <security/client_with_interceptors.config>`__ or
+   interceptors <https://github.com/confluentinc/cp-demo/blob/master/scripts/security/client_with_interceptors.config>`__ or
    `without
-   interceptors <scripts/security/client_without_interceptors.config>`__
+   interceptors <https://github.com/confluentinc/cp-demo/blob/master/scripts/security/client_without_interceptors.config>`__
    with these security parameters. As an example, to communicate with
    the Kafka cluster to view all the active consumer groups:
 
