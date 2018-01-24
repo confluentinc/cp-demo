@@ -3,12 +3,9 @@
 Monitoring Kafka streaming ETL deployments
 ==========================================
 
-This demo shows users how to monitor Kafka streaming ETL deployments
-using `Confluent Control
-Center <http://docs.confluent.io/current/control-center/docs/index.html>`__.
-All the components in the |CP| have security enabled
-end-to-end. Follow along with the playbook in this README and watch the
-video tutorials.
+The Confluent Platform demo at `https://github.com/confluentinc/cp-demo <https://github.com/confluentinc/cp-demo>`__ shows users how to monitor Kafka streaming ETL deployments
+using `Confluent Control Center <http://docs.confluent.io/current/control-center/docs/index.html>`__.
+All the components in the |CP| have security enabled end-to-end. Follow along with the playbook in this README and watch the video tutorials.
 
 .. contents:: Contents
     :local:
