@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ $(type jq 2>&1) =~ "not found" ]]; then
+  echo -e "This script requires 'jq'. Please install 'jq' and run again.\n"
+  exit 1
+fi
+
 DOCKER_MEMORY=$(docker system info | grep Memory | grep -o "[0-9\.]\+")
 if (( $(echo "$DOCKER_MEMORY 7.0" | awk '{print ($1 < $2)}') )); then
   echo -e "\nWARNING: Did you remember to increase the memory available to Docker to at least 8GB (default is 2GB)? Demo may otherwise not work properly.\n"
@@ -22,8 +27,9 @@ if [[ $(docker-compose logs connect) =~ "server returned information about unkno
 fi
 
 echo -e "\nRename the cluster in Control Center:"
+# If you have 'jq'
 curl -X PATCH  -H "Content-Type: application/merge-patch+json" -d '{"displayName":"Kafka Raleigh"}' http://localhost:9021/2.0/clusters/kafka/$(curl -X get http://localhost:9021/2.0/clusters/kafka/ | jq --raw-output .[0].clusterId)
-# If you don't have `jq`
+# If you don't have 'jq'
 #curl -X PATCH  -H "Content-Type: application/merge-patch+json" -d '{"displayName":"Kafka Raleigh"}' http://localhost:9021/2.0/clusters/kafka/$(curl -X get http://localhost:9021/2.0/clusters/kafka/ | awk -v FS="(clusterId\":\"|\",\"displayName)" '{print $2}' )
 
 echo -e "\nStart streaming from the IRC source connector:"

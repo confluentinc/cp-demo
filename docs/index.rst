@@ -63,6 +63,7 @@ Follow along with the `Demo 1: Install + Run <https://www.youtube.com/watch?v=a4
 -  Java version 1.8.0_92
 -  MacOS 10.12
 -  GitHub
+-  jq
 
 1. Clone the demos GitHub repository:
 
