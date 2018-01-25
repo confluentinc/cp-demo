@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ $(type blah 2>&1) =~ "not found" ]]; then
+if [[ $(type jq 2>&1) =~ "not found" ]]; then
   echo -e "This script requires 'jq'. Please install 'jq' and run again.\n"
   exit 1
 fi
