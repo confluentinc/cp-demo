@@ -70,14 +70,14 @@ services:
     hostname: kafka2
     depends_on:
       - zookeeper
+    volumes:
+      - $PWD/scripts/security:/etc/kafka/secrets
     ports:
       - "9092:9092"
       - "29092:29092"
-    volumes:
-      - $PWD/scripts/security:/etc/kafka/secrets
     environment:
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_SSL:SASL_SSL,SASL_SSL_HOST:SASL_SSL,PLAINTEXT:PLAINTEXT,SSL:SSL
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_SSL:SASL_SSL,SSL:SSL,SASL_SSL_HOST:SASL_SSL,PLAINTEXT:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: SASL_SSL
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka2:9092,SASL_SSL_HOST://localhost:29092,PLAINTEXT://kafka2:10092,SSL://kafka2:11092
       KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.auth.SimpleAclAuthorizer
