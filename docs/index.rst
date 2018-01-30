@@ -881,7 +881,7 @@ authorized to communicate with the cluster.
 
    .. sourcecode:: bash
 
-         KAFKA_SUPER_USERS=User:client;User:broker;User:ANONYMOUS 
+         KAFKA_SUPER_USERS=User:client;User:schemaregistry;User:broker;User:ANONYMOUS
 
 4. Verify that a user ``client`` which authenticates via SASL can
    consume messages from topic ``wikipedia.parsed``:
