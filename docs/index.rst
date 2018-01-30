@@ -494,9 +494,9 @@ it has previously read.
 
    .. sourcecode:: bash
 
-       $ docker-compose exec kafka1 kafka-consumer-groups
-         –reset-offsets –group app –shift-by -200 –bootstrap-server
-         kafka1:10091 –all-topics –execute
+       $ docker-compose exec kafka1 kafka-consumer-groups \
+           --reset-offsets --group app --shift-by -200 --bootstrap-server kafka1:10091 \
+           --all-topics --execute
 
    Your output should resemble:
 
@@ -511,7 +511,8 @@ it has previously read.
 
    .. sourcecode:: bash
 
-        $ ./scripts/app/start_consumer_app.sh 1  $ ./scripts/app/start_consumer_app.sh 2
+        $ ./scripts/app/start_consumer_app.sh 1
+        $ ./scripts/app/start_consumer_app.sh 2
 
 7. Let this consumer group run for 2 minutes until Control Center stream
    monitoring shows the consumer group ``app`` with steady consumption.
@@ -589,9 +590,9 @@ skipping messages that will never be read.
 
    .. sourcecode:: bash
 
-       $ docker-compose exec kafka1 kafka-consumer-groups
-         –reset-offsets –group app –to-latest –bootstrap-server kafka1:10091
-         –all-topics –execute
+       $ docker-compose exec kafka1 kafka-consumer-groups \
+         --reset-offsets --group app --to-latest --bootstrap-server kafka1:10091 \
+         --all-topics --execute
 
    Your output should resemble:
 
@@ -839,8 +840,8 @@ authorized to communicate with the cluster.
 
        .. sourcecode:: bash
 
-           # PLAINTEXT port $ docker-compose exec kafka1 kafka-consumer-groups
-           –list –bootstrap-server kafka1:10091
+           # PLAINTEXT port
+           $ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091
 
    #.  Communicate with brokers via the SASL_SSL port, and SASL_SSL
        parameters configured via the ``--command-config`` argument for
@@ -849,17 +850,17 @@ authorized to communicate with the cluster.
 
        .. sourcecode:: bash
 
-            # SASL_SSL port with SASL_SSL parameters $ docker-compose exec kafka1
-            kafka-consumer-groups –list –bootstrap-server kafka1:9091
-            –command-config /etc/kafka/secrets/client_without_interceptors.config
+            # SASL_SSL port with SASL_SSL parameters
+            $ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 \
+               --command-config /etc/kafka/secrets/client_without_interceptors.config
 
    #.  If you try to communicate with brokers via the SASL_SSL port but
        don’t specify the SASL_SSL parameters, it will fail
 
        .. sourcecode:: bash
 
-            # SASL_SSL port without SASL_SSL parameters $ docker-compose
-            exec kafka1 kafka-consumer-groups –list –bootstrap-server kafka1:9091
+            # SASL_SSL port without SASL_SSL parameters
+            $ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091
 
        Your output should resemble:
 
@@ -900,10 +901,8 @@ authorized to communicate with the cluster.
 
    .. sourcecode:: bash
 
-       [2018-01-12 21:13:18,481] ERROR Unknown error when running consumer:
-       (kafka.tools.ConsoleConsumer$)
-       org.apache.kafka.common.errors.TopicAuthorizationException: Not
-       authorized to access topics: [wikipedia.parsed]
+       [2018-01-12 21:13:18,481] ERROR Unknown error when running consumer: (kafka.tools.ConsoleConsumer$)
+       org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]
 
 6. Verify that the broker’s Authorizer logger logs the denial event. As
    shown in the log message, the user which authenticates via SSL has a
@@ -912,22 +911,16 @@ authorized to communicate with the cluster.
 
    .. sourcecode:: bash
 
-        # Authorizer logger logs the denied operation $
-        docker-compose logs kafka1| grep kafka.authorizer.logger
+        # Authorizer logger logs the denied operation
+        $ docker-compose logs kafka1 | grep kafka.authorizer.logger
 
 
    Your output should resemble:
 
    .. sourcecode:: bash
 
-        [2018-01-12 21:13:18,454] INFO Principal =
-        User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US is Denied
-        Operation = Describe from host = 172.23.0.7 on resource =
-        Topic:wikipedia.parsed (kafka.authorizer.logger) [2018-01-12
-        21:13:18,464] INFO Principal =
-        User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US is Denied
-        Operation = Describe from host = 172.23.0.7 on resource = Group:test
-        (kafka.authorizer.logger) 
+        [2018-01-12 21:13:18,454] INFO Principal = User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US is Denied Operation = Describe from host = 172.23.0.7 on resource = Topic:wikipedia.parsed (kafka.authorizer.logger) [2018-01-12
+        21:13:18,464] INFO Principal = User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US is Denied Operation = Describe from host = 172.23.0.7 on resource = Group:test (kafka.authorizer.logger) 
 
 7. Add an ACL that authorizes user
    ``CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US``, and then
@@ -935,27 +928,25 @@ authorized to communicate with the cluster.
 
    .. sourcecode:: bash
 
-    $ docker-compose exec connect /usr/bin/kafka-acls
-      –authorizer-properties zookeeper.connect=zookeeper:2181
-      –add –topic wikipedia.parsed –allow-principal
-      User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US –operation
-      Read –group test
+    $ docker-compose exec connect /usr/bin/kafka-acls \
+        --authorizer-properties zookeeper.connect=zookeeper:2181 \
+        --add --topic wikipedia.parsed \
+        --allow-principal User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US \
+        --operation Read --group test
 
-    $ docker-compose exec connect /usr/bin/kafka-acls
-      –authorizer-properties zookeeper.connect=zookeeper:2181
-      –list –topic wikipedia.parsed –group test
+    $ docker-compose exec connect /usr/bin/kafka-acls \
+        --authorizer-properties zookeeper.connect=zookeeper:2181 \
+        --list --topic wikipedia.parsed --group test
 
    Your output should resemble:
 
    .. sourcecode:: bash
 
        Current ACLs for resource ``Topic:wikipedia.parsed``:
-       User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US has Allow
-       permission for operations: Read from hosts: \*
+       User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US has Allow permission for operations: Read from hosts: \*
 
        Current ACLs for resource ``Group:test``:
-       User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US has Allow
-       permission for operations: Read from hosts: \* 
+       User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US has Allow permission for operations: Read from hosts: \* 
 
 8. Verify that the user which authenticates via SSL is now authorized
    and can successfully consume some messages from topic
