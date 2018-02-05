@@ -14,7 +14,6 @@ DATA=$( cat << EOF
     "connector.class": "io.confluent.connect.replicator.ReplicatorSourceConnector",
     "topic.whitelist": "wikipedia.parsed",
     "topic.rename.format": "\${topic}.replica",
-    "producer.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor",
     "key.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
     "value.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
     "src.zookeeper.connect": "zookeeper:2181",
