@@ -18,8 +18,8 @@ Overview
 The use case is a stream processing on live edits to real Wikipedia
 pages. Wikimedia Foundation has IRC channels that publish edits
 happening to real wiki pages (e.g. ``#en.wikipedia``, ``#en.wiktionary``) in
-real time. Using `Kafka
-Connect <http://docs.confluent.io/current/connect/index.html>`__, a
+real time. Using :ref:`Kafka
+Connect <kafka_connect>`, a
 Kafka source connector
 `kafka-connect-irc <https://github.com/cjmatta/kafka-connect-irc>`__
 streams raw messages from these IRC channels, and a custom Kafka Connect
@@ -28,9 +28,9 @@ transform
 transforms these messages and then the messages are written to a Kafka
 cluster. This demo uses `KSQL <https://github.com/confluentinc/ksql>`__
 for data enrichment, or you can optionally develop and run your own
-`Kafka Streams <http://docs.confluent.io/current/streams/index.html>`__
+:ref:`Kafka Streams <kafka_streams>`
 application. Then a Kafka sink connector
-`kafka-connect-elasticsearch <http://docs.confluent.io/current/connect/connect-elasticsearch/docs/elasticsearch_connector.html>`__
+:ref:`kafka-connect-elasticsearch <elasticsearch-overview>`
 streams the data out of Kafka, applying another custom Kafka Connect
 transform called NullFilter. The data is materialized into
 `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for
@@ -158,8 +158,8 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
     </div>
 
 1. **Monitoring –> System Health**: |c3| landing
-   page shows the overall `system
-   health <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__
+   page shows the overall :ref:`system
+   health <controlcenter_userguide_systemhealth>`
    of a given Kafka cluster. For capacity planning activities, view
    cluster utilization:
 
@@ -268,9 +268,9 @@ Kafka cluster and is already running queries.
    - ``ksql> DESCRIBE EN_WIKIPEDIA_GT_1;``
    - ``ksql> SELECT * FROM EN_WIKIPEDIA_GT_1 LIMIT 3;``
 
-   *By default when you run a ``SELECT`` in KSQL it will return new data
+   By default when you run a ``SELECT`` in KSQL it will return new data
    that is added. If you want to view data already existing in the topic
-   run this first (once per session):*
+   run this first (once per session):
 
    .. sourcecode:: bash
 
