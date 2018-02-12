@@ -15,7 +15,7 @@ You can follow along with the playbook and video tutorials. All of the component
 Overview
 ========
 
-The use case is a stream processing on live edits to real Wikipedia
+The use case is a streaming ETL deployment for real-time edits to real Wikipedia
 pages. Wikimedia Foundation has IRC channels that publish edits
 happening to real wiki pages (e.g. ``#en.wikipedia``, ``#en.wiktionary``) in
 real time. Using `Kafka
