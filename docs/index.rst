@@ -268,9 +268,9 @@ Kafka cluster and is already running queries.
    - ``ksql> DESCRIBE EN_WIKIPEDIA_GT_1;``
    - ``ksql> SELECT * FROM EN_WIKIPEDIA_GT_1 LIMIT 3;``
 
-   *By default when you run a ``SELECT`` in KSQL it will return new data
+   By default when you run a ``SELECT`` in KSQL it will return new data
    that is added. If you want to view data already existing in the topic
-   run this first (once per session):*
+   run this first (once per session):
 
    .. sourcecode:: bash
 
