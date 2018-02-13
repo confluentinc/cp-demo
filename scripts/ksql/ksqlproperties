@@ -2,7 +2,8 @@ bootstrap.servers=kafka1:9091,kafka2:9092
 application.id=cp-demo
 listeners=http://localhost:8080
 cache.max.bytes.buffering=0
-ksql.schema.registry.url=https://schemaregistry:8082
+
+# SSL and SASL configuration
 ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks
 ssl.truststore.password=confluent
 ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks
@@ -12,22 +13,11 @@ ssl.endpoint.identification.algorithm=HTTPS
 security.protocol=SASL_SSL
 sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="client" password="client-secret";
 sasl.mechanism=PLAIN
-#producer.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks
-#producer.ssl.truststore.password=confluent
-#producer.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks
-#producer.ssl.keystore.password=confluent
-#producer.ssl.key.password=confluent
-#producer.security.protocol=SASL_SSL
-#producer.sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="client" password="client-secret";
-#producer.sasl.mechanism=PLAIN
-#consumer.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks
-#consumer.ssl.truststore.password=confluent
-#consumer.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks
-#consumer.ssl.keystore.password=confluent
-#consumer.ssl.key.password=confluent
-#consumer.security.protocol=SASL_SSL
-#consumer.sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="client" password="client-secret";
-#consumer.sasl.mechanism=PLAIN
+
+# Schema Registry using HTTPS
+ksql.schema.registry.url=https://schemaregistry:8082
+
+# Producer Confluent Monitoring Interceptors for Control Center streams monitoring
 producer.interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
 producer.confluent.monitoring.interceptor.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks
 producer.confluent.monitoring.interceptor.ssl.truststore.password=confluent
@@ -37,6 +27,8 @@ producer.confluent.monitoring.interceptor.ssl.key.password=confluent
 producer.confluent.monitoring.interceptor.security.protocol=SASL_SSL
 producer.confluent.monitoring.interceptor.sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="client" password="client-secret";
 producer.confluent.monitoring.interceptor.sasl.mechanism=PLAIN
+
+# Consumer Confluent Monitoring Interceptors for Control Center streams monitoring
 consumer.interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
 consumer.confluent.monitoring.interceptor.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks
 consumer.confluent.monitoring.interceptor.ssl.truststore.password=confluent
