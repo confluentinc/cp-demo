@@ -395,18 +395,11 @@ consumers in a consumer group.
 
         $ ./scripts/app/throttle_consumer.sh 1 add
 
-   .. note:: you are running a Docker demo environment with all services
-   running on one host, which you would never do in production.
-   Depending on your system resource availability, sometimes applying
-   the quota may stall the consumer
-   (`KAFKA-5871 <https://issues.apache.org/jira/browse/KAFKA-5871>`__),
-   thus you may need to adjust the quota rate. See the
-   ``./scripts/app/throttle_consumer.sh`` script for syntax on modifying
-   the quota rate.
+   .. note:: You are running a Docker demo environment with all services running on one host, which you would never do in production.  Depending on your system resource availability, sometimes applying the quota may stall the consumer (`KAFKA-5871 <https://issues.apache.org/jira/browse/KAFKA-5871>`__), thus you may need to adjust the quota rate. See the ``./scripts/app/throttle_consumer.sh`` script for syntax on modifying the quota rate.
 
-   -  If consumer group ``app`` does not increase latency, decrease the
-      quota rate
-   -  If consumer group ``app`` seems to stall, increase the quota rate
+      -  If consumer group ``app`` does not increase latency, decrease the quota rate
+      -  If consumer group ``app`` seems to stall, increase the quota rate
+
 
 4. View the details of the consumer group ``app`` again,
    ``consumer_app_1`` now shows high latency, and ``consumer_app_2``
