@@ -3,8 +3,8 @@
 Monitoring Kafka streaming ETL deployments
 ==========================================
 
-This demo shows you how to monitor Kafka streaming ETL deployments using :ref:`Confluent Control Center <control_center>`.
-You can follow along with the playbook and video tutorials. All of the components in |CP| have security enabled end-to-end.
+This demo shows users how to deploy a Kafka streaming ETL using `KSQL <https://www.confluent.io/product/ksql/>`__ for stream processing and `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ for monitoring. All the components in the Confluent platform have security enabled end-to-end.
+
 
 .. contents:: Contents
     :local:
@@ -26,7 +26,7 @@ streams raw messages from these IRC channels, and a custom Kafka Connect
 transform
 `kafka-connect-transform-wikiedit <https://github.com/cjmatta/kafka-connect-transform-wikiedit>`__
 transforms these messages and then the messages are written to a Kafka
-cluster. This demo uses `KSQL <https://github.com/confluentinc/ksql>`__
+cluster. This demo uses `KSQL <https://www.confluent.io/product/ksql/>`__
 for data enrichment, or you can optionally develop and run your own
 `Kafka Streams <http://docs.confluent.io/current/streams/index.html>`__
 application. Then a Kafka sink connector
@@ -55,7 +55,7 @@ Follow along with the `Demo 1: Install + Run <https://www.youtube.com/watch?v=a4
     </div>
 
 
-**Prerequisites:**
+**Demo validated with:**
 
 -  Docker version 17.06.1-ce
 -  Docker Compose version 1.14.0 with Docker Compose file format 2.1
@@ -70,77 +70,22 @@ Follow along with the `Demo 1: Install + Run <https://www.youtube.com/watch?v=a4
 
      $ git clone https://github.com/confluentinc/cp-demo
 
-2. In the advanced Docker preferences settings, increase the memory
-   available to Docker to at least 8 GB (default is 2 GB).
+2. In the advanced Docker preferences settings, increase the memory available to Docker to at least 8 GB (default is 2 GB).
 
 ========
 Run demo
 ========
 
-1. From the ``cp-demo`` directory, generate certs used for security.
+1. From the ``cp-demo`` directory, run the single command that generates the keys and certificates, brings up Docker Compose, and configures the environment. It will take less than 5 minutes to complete.
 
    .. sourcecode:: bash
 
-      $ (cd scripts/security && ./certs-create.sh)
+      $ ./scripts/run.sh
 
-2. Start the demo. It will take about 2 minutes for all containers to
-   start and for |c3| GUI to be ready.
+2. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
 
-   .. sourcecode:: bash
+3. View the data in the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
-      $ docker-compose up -d
-
-3. Verify the status of the Docker containers show ``Up`` state, except
-   for the ``kafka-client`` container which is expected to have
-   ``Exit 0`` state. If any containers are not up, verify in the
-   advanced Docker preferences settings that the memory available to
-   Docker is at least 8 GB (default is 2 GB).
-
-   .. sourcecode:: bash
-
-      $ docker-compose ps
-
-   Your output should resemble:
-
-   .. sourcecode:: bash
-
-                 Name                        Command               State                              Ports
-        ------------------------------------------------------------------------------------------------------------------------------
-        cpdemo_connect_1          /etc/confluent/docker/run        Up       0.0.0.0:8083->8083/tcp, 9092/tcp
-        cpdemo_control-center_1   /etc/confluent/docker/run        Up       0.0.0.0:9021->9021/tcp
-        cpdemo_elasticsearch_1    /bin/bash bin/es-docker          Up       0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp
-        cpdemo_kafka-client_1     bash -c -a echo Waiting fo ...   Exit 0
-        cpdemo_kafka1_1           /etc/confluent/docker/run        Up       0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp, 9092/tcp
-        cpdemo_kafka2_1           /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp
-        cpdemo_kibana_1           /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp
-        cpdemo_ksql-cli_1         perl -e while(1){ sleep 99 ...   Up       0.0.0.0:9098->9098/tcp
-        cpdemo_schemaregistry_1   /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8082->8082/tcp
-        cpdemo_zookeeper_1        /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
-
-
-4. Wait till |c3| is running fully. Verify it is
-   ready when the logs show the following event:
-
-   .. sourcecode:: bash
-
-        $ docker-compose logs -f control-center | grep -e "Started NetworkTrafficServerConnector"
-        control-center_1       | [2017-09-06 16:37:33,133] INFO Started NetworkTrafficServerConnector@26a529dc{HTTP/1.1}{0.0.0.0:9021} (org.eclipse.jetty.server.NetworkTrafficServerConnector)
-
-5. Run the setup which customizes the Kafka cluster, Kafka source
-   and sink connectors, Elasticsearch, and Kibana dashboard.
-
-   .. sourcecode:: bash
-
-      $ ./scripts/setup.sh
-
-6. Use Google Chrome to view the |c3| GUI at
-   http://localhost:9021.
-
-   Click on the top right button that shows the current date, and change
-   ``Last 4 hours`` to ``Last 30 minutes``.
-
-7. View the data in the Kibana dashboard at
-   http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
 ========
 Playbook
@@ -249,53 +194,89 @@ Follow along with the `Demo 3: KSQL <https://youtu.be/U_ntFVXWBPc>`_ video.
         <iframe src="https://www.youtube.com/embed/U_ntFVXWBPc" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
     </div>
 
-In this demo, KSQL is configured with
-`properties <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlproperties>`__ to connect to the secured
-Kafka cluster and is already running queries.
+In this demo, KSQL is configured with a `properties file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlproperties>`__ that enables it to connect to the secured Kafka cluster, and it is already running queries.
 
-1. Run the KSQL CLI to get more information on the queries, streams, and
-   tables.
+1. Run the KSQL CLI to get to the KSQL prompt.
 
    .. sourcecode:: bash
 
       $ docker-compose exec ksql-cli ksql-cli remote http://localhost:8080
 
-   For example, you can run these commands:
-
-   - ``ksql> SHOW QUERIES;``
-   - ``ksql> DESCRIBE WIKIPEDIABOT;``
-   - ``ksql> SELECT * FROM WIKIPEDIABOT LIMIT 3;``
-   - ``ksql> DESCRIBE EN_WIKIPEDIA_GT_1;``
-   - ``ksql> SELECT * FROM EN_WIKIPEDIA_GT_1 LIMIT 3;``
-
-   By default when you run a ``SELECT`` in KSQL it will return new data
-   that is added. If you want to view data already existing in the topic
-   run this first (once per session):
+2. At the KSQL prompt, view the existing KSQL streams and describe one of those streams called ``WIKIPEDIABOT``.
 
    .. sourcecode:: bash
 
-        SET 'auto.offset.reset' = 'earliest';
+      ksql> SHOW STREAMS;
+      ksql> DESCRIBE WIKIPEDIABOT;
+      
+       Field         | Type                      
+      -------------------------------------------
+       ROWTIME       | BIGINT           (system) 
+       ROWKEY        | VARCHAR(STRING)  (system) 
+       CREATEDAT     | BIGINT                    
+       WIKIPAGE      | VARCHAR(STRING)           
+       CHANNEL       | VARCHAR(STRING)           
+       USERNAME      | VARCHAR(STRING)           
+       COMMITMESSAGE | VARCHAR(STRING)           
+       BYTECHANGE    | INTEGER                   
+       DIFFURL       | VARCHAR(STRING)           
+       ISNEW         | BOOLEAN                   
+       ISMINOR       | BOOLEAN                   
+       ISBOT         | BOOLEAN                   
+       ISUNPATROLLED | BOOLEAN                   
+      -------------------------------------------
 
-2. **Monitoring –> Data Streams –> Message Delivery**: KSQL queries are materialized in |c3| as consumer groups with names ``ksql_query_``. To correlate these consumer groups to the actual KSQL query, note the query ID in the output of:
+4. View the existing KSQL tables and describe one of those tables called ``EN_WIKIPEDIA_GT_1``.
 
    .. sourcecode:: bash
 
-      $ docker-compose exec ksql-cli ksql-cli remote http://localhost:8080 --exec "show queries;"
+      ksql> SHOW TABLES;
+      ksql> DESCRIBE EN_WIKIPEDIA_GT_1;
+      
+       Field    | Type                      
+      --------------------------------------
+       ROWTIME  | BIGINT           (system) 
+       ROWKEY   | VARCHAR(STRING)  (system) 
+       USERNAME | VARCHAR(STRING)  (key)    
+       WIKIPAGE | VARCHAR(STRING)  (key)    
+       COUNT    | BIGINT                    
+      --------------------------------------
 
-3. **Monitoring –> Data Streams –> Message Delivery**: graphs for
-   consumer groups ``EN_WIKIPEDIA_GT_1_COUNTS-consumer`` and
-   ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` are displaying data at
-   intervals instead of smoothly like the other consumer groups. This is
-   because |c3| displays data based on message
-   timestamps, and this particular stream of a data is a tumbling window
-   with a window size of 5 minutes. Thus all its message timestamps are
-   marked to the beginning of each 5-minute window and this is why the
-   latency for these streams appears to be high. Kafka streaming
-   tumbling windows are working as designed and |c3|
-   is reporting them accurately.
+5. View the existing KSQL queries, which are continuously running, and explain one of those queries called ``CSAS_WIKIPEDIABOT``.
+
+   .. sourcecode:: bash
+
+      ksql> SHOW QUERIES;
+      ksql> EXPLAIN CSAS_WIKIPEDIABOT;
+      
+      Type                 : QUERY
+      SQL                  : CREATE STREAM wikipediabot WITH (PARTITIONS=2,REPLICAS=2) AS SELECT * FROM wikipedia WHERE isbot = true;
+      
+      
+      Local runtime statistics
+      ------------------------
+      messages-per-sec:      1.07   total-messages:      1210     last-message: 2/16/18 4:47:16 PM UTC
+       failed-messages:         0 failed-messages-per-sec:         0      last-failed:       n/a
+      (Statistics of the local KSQL server interaction with the Kafka topic WIKIPEDIABOT)
+
+
+6. In this demo, KSQL is run with Confluent Monitoring Interceptors configured which enables |c3| Data Streams to monitor KSQL query. The consumer group names ``ksql_query_`` correlate to the KSQL query names above. View throughput and latency of the KSQL query ``CSAS_WIKIPEDIABOT``, which is displayed as ``ksql_query_CSAS_WIKIPEDIABOT`` in |c3|.
+
+   .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT.png
+      :alt: image
+
+
+7. |c3| streams monitoring graphs for consumer groups ``ksql_query_EN_WIKIPEDIA_GT_1_COUNTS-consumer`` and ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` are displaying data at intervals instead of smoothly like the other consumer groups. This is because |c3| displays data based on message timestamps, and this particular stream of a data is a tumbling window with a window size of 5 minutes. Thus all its message timestamps are marked to the beginning of each 5-minute window and this is why the latency for these streams appears to be high. Kafka streaming tumbling windows are working as designed and |c3| is reporting them accurately.
 
    .. figure:: images/tumbling_window.png
       :alt: image
+
+8. At the KSQL prompt, view three messages from a KSQL stream and table.
+
+   .. sourcecode:: bash
+
+      ksql> SELECT * FROM WIKIPEDIABOT LIMIT 3;
+      ksql> SELECT * FROM EN_WIKIPEDIA_GT_1 LIMIT 3;
 
 
 
@@ -954,19 +935,43 @@ authorized to communicate with the cluster.
 Troubleshooting the demo
 ========================
 
-1. To view sample messages for each topic, including
+1. Verify the status of the Docker containers show ``Up`` state, except for the ``kafka-client`` container which is expected to have ``Exit 0`` state. If any containers are not up, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8 GB (default is 2 GB).
+
+   .. sourcecode:: bash
+
+      $ docker-compose ps
+
+   Your output should resemble:
+
+   .. sourcecode:: bash
+
+                 Name                        Command               State                              Ports
+        ------------------------------------------------------------------------------------------------------------------------------
+        cpdemo_connect_1          /etc/confluent/docker/run        Up       0.0.0.0:8083->8083/tcp, 9092/tcp
+        cpdemo_control-center_1   /etc/confluent/docker/run        Up       0.0.0.0:9021->9021/tcp
+        cpdemo_elasticsearch_1    /bin/bash bin/es-docker          Up       0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp
+        cpdemo_kafka-client_1     bash -c -a echo Waiting fo ...   Exit 0
+        cpdemo_kafka1_1           /etc/confluent/docker/run        Up       0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp, 9092/tcp
+        cpdemo_kafka2_1           /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp
+        cpdemo_kibana_1           /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp
+        cpdemo_ksql-cli_1         perl -e while(1){ sleep 99 ...   Up       0.0.0.0:9098->9098/tcp
+        cpdemo_schemaregistry_1   /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8082->8082/tcp
+        cpdemo_zookeeper_1        /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
+
+2. To view sample messages for each topic, including
    ``wikipedia.parsed``:
 
    .. sourcecode:: bash
 
         $ ./scripts/consumers/listen.sh
 
-2. If the data streams monitoring appears to stop for the Kafka source
+3. If the data streams monitoring appears to stop for the Kafka source
    connector, restart the connect container.
 
    .. sourcecode:: bash
 
         $ docker-compose restart connect
+
 
 ========
 Teardown
