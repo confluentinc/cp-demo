@@ -76,11 +76,11 @@ Follow along with the `Demo 1: Install + Run <https://www.youtube.com/watch?v=a4
 Run demo
 ========
 
-1. From the ``cp-demo`` directory, run the single command that generates the keys and certificates, brings up Docker Compose, and configures the environment. It will take less than 5 minutes to complete.
+1. From the ``cp-demo`` directory, start the demo with a single bash script that generates the keys and certificates, brings up Docker Compose, and configures and validates the environment. It will take less than 5 minutes to complete.
 
    .. sourcecode:: bash
 
-      $ ./scripts/run.sh
+      $ ./scripts/start.sh
 
 2. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
 
@@ -1060,5 +1060,5 @@ Teardown
 
    .. sourcecode:: bash
 
-        $ ./scripts/reset_demo.sh
+        $ ./scripts/stop.sh
 

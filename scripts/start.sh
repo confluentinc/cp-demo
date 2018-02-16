@@ -18,7 +18,7 @@ if (( $(echo "$DOCKER_MEMORY 7.0" | awk '{print ($1 < $2)}') )); then
 fi
 
 # Stop existing demo Docker containers
-./scripts/reset_demo.sh
+./scripts/stop.sh
 
 # Generate keys and certificates used for SSL
 echo -e "Generate keys and certificates used for SSL"
@@ -28,9 +28,17 @@ echo -e "Generate keys and certificates used for SSL"
 echo -e "Bringing up Docker Compose"
 docker-compose up -d
 
-# Waiting for services to be ready, sleeping 90 seconds
-echo -e "Waiting for services to be ready, sleeping 90 seconds"
-sleep 90
+# Verify Confluent Control Center has started within 120 seconds
+MAX_WAIT=120
+CUR_WAIT=0
+while [[ ! $(docker-compose logs control-center) =~ "Started NetworkTrafficServerConnector" ]]; do
+  sleep 10
+  CUR_WAIT=$(( CUR_WAIT+10 ))
+  if [[ "$CUR_WAIT" -gt "$MAX_WAIT" ]]; then
+    echo -e "\nERROR: The logs in control-center container do not show 'Started NetworkTrafficServerConnector'. Please troubleshoot with 'docker-compose ps' and 'docker-compose logs'.\n"
+    exit 1
+  fi
+done
 
 # Verify Docker containers started
 if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
@@ -38,11 +46,6 @@ if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
   exit 1
 fi
 
-# Verify Confluent Control Center has started
-if [[ ! $(docker-compose logs control-center) =~ "Started NetworkTrafficServerConnector" ]]; then
-  echo -e "\nERROR: The logs in control-center container do not show 'Started NetworkTrafficServerConnector' yet. Please wait a minute before running this script again. Did you remember to run '(cd scripts/security && ./certs-create.sh)'?\n"
-  exit 1
-fi
 
 # Verify Docker has the latest cp-kafka-connect image
 if [[ $(docker-compose logs connect) =~ "server returned information about unknown correlation ID" ]]; then
