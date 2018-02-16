@@ -293,25 +293,60 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
        failed-messages:         0 failed-messages-per-sec:         0      last-failed:       n/a
       (Statistics of the local KSQL server interaction with the Kafka topic WIKIPEDIABOT)
 
-
-6. In this demo, KSQL is run with Confluent Monitoring Interceptors configured which enables |c3| Data Streams to monitor KSQL query. The consumer group names ``ksql_query_`` correlate to the KSQL query names above. View throughput and latency of the KSQL query ``CSAS_WIKIPEDIABOT``, which is displayed as ``ksql_query_CSAS_WIKIPEDIABOT`` in |c3|.
-
-   .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT.png
-      :alt: image
-
-
-7. |c3| streams monitoring graphs for consumer groups ``ksql_query_EN_WIKIPEDIA_GT_1_COUNTS-consumer`` and ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` are displaying data at intervals instead of smoothly like the other consumer groups. This is because |c3| displays data based on message timestamps, and this particular stream of a data is a tumbling window with a window size of 5 minutes. Thus all its message timestamps are marked to the beginning of each 5-minute window and this is why the latency for these streams appears to be high. Kafka streaming tumbling windows are working as designed and |c3| is reporting them accurately.
-
-   .. figure:: images/tumbling_window.png
-      :alt: image
-
-8. At the KSQL prompt, view three messages from a KSQL stream and table.
+6. At the KSQL prompt, view three messages from different KSQL streams and tables.
 
    .. sourcecode:: bash
 
       ksql> SELECT * FROM WIKIPEDIABOT LIMIT 3;
       ksql> SELECT * FROM EN_WIKIPEDIA_GT_1 LIMIT 3;
+      ksql> SELECT * FROM EN_WIKIPEDIA_GT_1_COUNTS LIMIT 3;
 
+
+7. In this demo, KSQL is run with Confluent Monitoring Interceptors configured which enables |c3| Data Streams to monitor KSQL query. The consumer group names ``ksql_query_`` correlate to the KSQL query names above.
+
+* View throughput and latency of the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``ksql_query_CSAS_WIKIPEDIABOT`` in |c3|.
+
+   .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT.png
+      :alt: image
+
+* View throughput and latency of the persistent KSQL "Create Table As Select" query ``CTAS_EN_WIKIPEDIA_GT_1``, which is displayed as ``ksql_query_CTAS_EN_WIKIPEDIA_GT_1`` in |c3|.
+
+   .. figure:: images/ksql_query_CTAS_EN_WIKIPEDIA_GT_1.png
+      :alt: image
+
+* View throughput and latency of the persistent KSQL "Create Stream As Select" query ``CTAS_EN_WIKIPEDIA_GT_1_COUNTS``, which is displayed as ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` in |c3|.
+
+   .. figure:: images/tumbling_window.png
+      :alt: image
+
+8. In |c3| the stream monitoring graphs for consumer groups ``EN_WIKIPEDIA_GT_1_COUNTS-consumer`` and ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` are displaying data at intervals instead of smoothly like the other consumer groups. This is because |c3| displays data based on message timestamps, and this particular stream of a data is a tumbling window with a window size of 5 minutes. Thus all its message timestamps are marked to the beginning of each 5-minute window and this is why the latency for these streams appears to be high. Kafka streaming tumbling windows are working as designed and |c3| is reporting them accurately.
+
+9. Why does the demo use both ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``?  KSQL is keeping track of counts in the tumbling window by writing nulls on the first seen message before count is greater than 1.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1``  does not filter out those nulls whereas the underlying Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` does filter out those nulls.  From the bash prompt, view those underlying Kafka topics.
+
+   .. sourcecode:: bash
+
+      $ docker exec cpdemo_connect_1 kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1 \       
+        --property schema.registry.url=https://schemaregistry:8082 \
+        --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
+      null
+      {"USERNAME":"Atsme","WIKIPAGE":"Wikipedia:Articles for deletion/Metallurg Bratsk","COUNT":2}
+      null
+      null
+      null
+      {"USERNAME":"7.61.29.178","WIKIPAGE":"Tandem language learning","COUNT":2}
+      {"USERNAME":"Attar-Aram syria","WIKIPAGE":"Antiochus X Eusebes","COUNT":2}
+      ...
+
+      $ docker exec cpdemo_connect_1 kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1_COUNTS \
+        --property schema.registry.url=https://schemaregistry:8082 \
+        --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
+      {"USERNAME":"Atsme","COUNT":2,"WIKIPAGE":"Wikipedia:Articles for deletion/Metallurg Bratsk"}
+      {"USERNAME":"7.61.29.178","COUNT":2,"WIKIPAGE":"Tandem language learning"}
+      {"USERNAME":"Attar-Aram syria","COUNT":2,"WIKIPAGE":"Antiochus X Eusebes"}
+      {"USERNAME":"RonaldB","COUNT":2,"WIKIPAGE":"Wikipedia:Open proxy detection"}
+      {"USERNAME":"Dormskirk","COUNT":2,"WIKIPAGE":"Swindon Designer Outlet"}
+      {"USERNAME":"B.Bhargava Teja","COUNT":3,"WIKIPAGE":"Niluvu Dopidi"}
+      ...
 
 
 Consumer rebalances
