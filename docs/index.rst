@@ -194,7 +194,7 @@ Follow along with the `Demo 3: KSQL <https://youtu.be/U_ntFVXWBPc>`_ video.
         <iframe src="https://www.youtube.com/embed/U_ntFVXWBPc" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
     </div>
 
-In this demo, KSQL is configured with a `properties file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlproperties>`__ that enables it to connect to the secured Kafka cluster, and it is already running queries.
+In this demo, KSQL is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries.
 
 1. Run the KSQL CLI to get to the KSQL prompt.
 
@@ -202,11 +202,28 @@ In this demo, KSQL is configured with a `properties file <https://github.com/con
 
       $ docker-compose exec ksql-cli ksql-cli remote http://localhost:8080
 
-2. At the KSQL prompt, view the existing KSQL streams and describe one of those streams called ``WIKIPEDIABOT``.
+2. At the KSQL prompt, view the configured KSQL properties that were set with the `KSQL properties file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlproperties>`__.
+
+   .. sourcecode:: bash
+
+      ksql> SHOW PROPERTIES;
+
+3. View the existing KSQL streams and describe one of those streams called ``WIKIPEDIABOT``.
 
    .. sourcecode:: bash
 
       ksql> SHOW STREAMS;
+      
+       Stream Name              | Kafka Topic              | Format 
+      --------------------------------------------------------------
+       EN_WIKIPEDIA_GT_1_COUNTS | EN_WIKIPEDIA_GT_1_COUNTS | AVRO   
+       WIKIPEDIA                | wikipedia.parsed         | AVRO   
+       WIKIPEDIABOT             | WIKIPEDIABOT             | AVRO   
+       WIKIPEDIANOBOT           | WIKIPEDIANOBOT           | AVRO   
+       EN_WIKIPEDIA_GT_1_STREAM | EN_WIKIPEDIA_GT_1        | AVRO   
+      --------------------------------------------------------------
+
+
       ksql> DESCRIBE WIKIPEDIABOT;
       
        Field         | Type                      
@@ -231,6 +248,13 @@ In this demo, KSQL is configured with a `properties file <https://github.com/con
    .. sourcecode:: bash
 
       ksql> SHOW TABLES;
+
+       Table Name        | Kafka Topic       | Format | Windowed 
+      -----------------------------------------------------------
+       EN_WIKIPEDIA_GT_1 | EN_WIKIPEDIA_GT_1 | AVRO   | true     
+      -----------------------------------------------------------
+
+
       ksql> DESCRIBE EN_WIKIPEDIA_GT_1;
       
        Field    | Type                      
@@ -247,6 +271,16 @@ In this demo, KSQL is configured with a `properties file <https://github.com/con
    .. sourcecode:: bash
 
       ksql> SHOW QUERIES;
+      
+       Query ID                      | Kafka Topic              | Query String
+      --------------------------------------------------------------------------------------------------
+       CSAS_WIKIPEDIABOT             | WIKIPEDIABOT             | CREATE STREAM wikipediabot WITH (PARTITIONS=2,REPLICAS=2) AS SELECT * FROM wikipedia WHERE isbot = true;
+       CTAS_EN_WIKIPEDIA_GT_1        | EN_WIKIPEDIA_GT_1        | CREATE TABLE en_wikipedia_gt_1 WITH (PARTITIONS=2,REPLICAS=2) AS SELECT username, wikipage, count(*) AS COUNT FROM wikipedia WINDOW TUMBLING (size 300 second) WHERE channel = '#en.wikipedia' GROUP BY username, wikipage HAVING count(*) > 1;
+       CSAS_WIKIPEDIANOBOT           | WIKIPEDIANOBOT           | CREATE STREAM wikipedianobot WITH (PARTITIONS=2,REPLICAS=2) AS SELECT * FROM wikipedia WHERE isbot <> true;
+       CSAS_EN_WIKIPEDIA_GT_1_COUNTS | EN_WIKIPEDIA_GT_1_COUNTS | CREATE STREAM en_wikipedia_gt_1_counts WITH (PARTITIONS=2,REPLICAS=2) AS SELECT * FROM en_wikipedia_gt_1_stream where ROWTIME is not null;
+      --------------------------------------------------------------------------------------------------
+
+      
       ksql> EXPLAIN CSAS_WIKIPEDIABOT;
       
       Type                 : QUERY
