@@ -70,7 +70,7 @@ Follow along with the `Demo 1: Install + Run <https://www.youtube.com/watch?v=a4
 
      $ git clone https://github.com/confluentinc/cp-demo
 
-2. In the advanced Docker preferences settings, increase the memory available to Docker to at least 8 GB (default is 2 GB).
+2. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8GB (default is 2GB).
 
 ========
 Run demo
