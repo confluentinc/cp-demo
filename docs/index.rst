@@ -194,7 +194,7 @@ Follow along with the `Demo 3: KSQL <https://youtu.be/U_ntFVXWBPc>`_ video.
         <iframe src="https://www.youtube.com/embed/U_ntFVXWBPc" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
     </div>
 
-In this demo, KSQL is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries.
+In this demo, KSQL is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the `KSQL command file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlcommands>`__.
 
 1. Run the KSQL CLI to get to the KSQL prompt.
 
