@@ -302,26 +302,26 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
       ksql> SELECT * FROM EN_WIKIPEDIA_GT_1_COUNTS LIMIT 3;
 
 
-7. In this demo, KSQL is run with Confluent Monitoring Interceptors configured which enables |c3| Data Streams to monitor KSQL query. The consumer group names ``ksql_query_`` correlate to the KSQL query names above.
+7. In this demo, KSQL is run with Confluent Monitoring Interceptors configured which enables |c3| Data Streams to monitor KSQL query. The consumer group names ``ksql_query_`` correlate to the KSQL query names above, and |c3| is showing the records that are incoming to each query.
 
-* View throughput and latency of the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``ksql_query_CSAS_WIKIPEDIABOT`` in |c3|.
+* View throughput and latency of the incoming records for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``ksql_query_CSAS_WIKIPEDIABOT`` in |c3|.
 
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT.png
       :alt: image
 
-* View throughput and latency of the persistent KSQL "Create Table As Select" query ``CTAS_EN_WIKIPEDIA_GT_1``, which is displayed as ``ksql_query_CTAS_EN_WIKIPEDIA_GT_1`` in |c3|.
+* View throughput and latency of the incoming records for the persistent KSQL "Create Table As Select" query ``CTAS_EN_WIKIPEDIA_GT_1``, which is displayed as ``ksql_query_CTAS_EN_WIKIPEDIA_GT_1`` in |c3|.
 
    .. figure:: images/ksql_query_CTAS_EN_WIKIPEDIA_GT_1.png
       :alt: image
 
-* View throughput and latency of the persistent KSQL "Create Stream As Select" query ``CTAS_EN_WIKIPEDIA_GT_1_COUNTS``, which is displayed as ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` in |c3|.
+* View throughput and latency of the incoming records for the persistent KSQL "Create Stream As Select" query ``CTAS_EN_WIKIPEDIA_GT_1_COUNTS``, which is displayed as ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` in |c3|.
 
    .. figure:: images/tumbling_window.png
       :alt: image
 
-8. In |c3| the stream monitoring graphs for consumer groups ``EN_WIKIPEDIA_GT_1_COUNTS-consumer`` and ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` are displaying data at intervals instead of smoothly like the other consumer groups. This is because |c3| displays data based on message timestamps, and this particular stream of a data is a tumbling window with a window size of 5 minutes. Thus all its message timestamps are marked to the beginning of each 5-minute window and this is why the latency for these streams appears to be high. Kafka streaming tumbling windows are working as designed and |c3| is reporting them accurately.
+8. In |c3| the stream monitoring graphs for consumer groups ``EN_WIKIPEDIA_GT_1_COUNTS-consumer`` and ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` are displaying data at 5-minute intervals instead of smoothly like the other consumer groups. This is because |c3| displays data based on message timestamps, and the incoming stream for these consumer groups is a tumbling window with a window size of 5 minutes. Thus all its messages are timestamped to the beginning of each 5-minute window. This is also why the latency for these streams appears to be high. Kafka streaming tumbling windows are working as designed, and |c3| is reporting them accurately.
 
-9. Why does the demo use both ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``?  KSQL is keeping track of counts in the tumbling window by writing nulls on the first seen message before count is greater than 1.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1``  does not filter out those nulls whereas the underlying Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` does filter out those nulls.  From the bash prompt, view those underlying Kafka topics.
+9. This demo has two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS`` because of how KSQL windows work. KSQL is counting occurences in the tumbling window by writing `nulls` on the first seen message, before count is greater than 1.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, we created a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which filters out those nulls (e.g., the query has ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
    .. sourcecode:: bash
 
