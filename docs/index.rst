@@ -76,7 +76,7 @@ Follow along with the `Demo 1: Install + Run <https://www.youtube.com/watch?v=a4
 Run demo
 ========
 
-1. From the ``cp-demo`` directory, start the demo with a single bash script that generates the keys and certificates, brings up Docker Compose, and configures and validates the environment. It will take less than 5 minutes to complete.
+1. From the ``cp-demo`` directory, start the demo with a single bash script that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This will take less than 5 minutes to complete.
 
    .. sourcecode:: bash
 
