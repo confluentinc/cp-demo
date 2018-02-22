@@ -42,9 +42,9 @@ analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 
 .. note:: This is a Docker environment and has all services running on one host. Do not use this demo in production. It is meant exclusively to easily demo the |CP|. In production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production traffic. Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
 
-============
-Installation
-============
+========
+Run demo
+========
 
 Follow along with the `Demo 1: Install + Run <https://www.youtube.com/watch?v=a4B5Oer1j2A>`_ video.
 
@@ -72,26 +72,22 @@ Follow along with the `Demo 1: Install + Run <https://www.youtube.com/watch?v=a4
 
 2. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8GB (default is 2GB).
 
-========
-Run demo
-========
-
-1. From the ``cp-demo`` directory, start the entire demo by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This will take less than 5 minutes to complete.
+3. From the ``cp-demo`` directory, start the entire demo by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This will take less than 5 minutes to complete.
 
    .. sourcecode:: bash
 
       $ ./scripts/start.sh
 
-2. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
+4. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
 
-3. View the data in the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
+5. View the data in the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
 
 ========
 Playbook
 ========
 
-Tour of |c3|
+|c3|
 --------------------------------
 
 Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
@@ -302,7 +298,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
       ksql> SELECT * FROM EN_WIKIPEDIA_GT_1_COUNTS LIMIT 3;
 
 
-7. In this demo, KSQL is run with Confluent Monitoring Interceptors configured which enables |c3| Data Streams to monitor KSQL query. The consumer group names ``ksql_query_`` correlate to the KSQL query names above, and |c3| is showing the records that are incoming to each query.
+7. In this demo, KSQL is run with Confluent Monitoring Interceptors configured which enables |c3| Data Streams to monitor KSQL queries. The consumer group names ``ksql_query_`` correlate to the KSQL query names above, and |c3| is showing the records that are incoming to each query.
 
 * View throughput and latency of the incoming records for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``ksql_query_CSAS_WIKIPEDIABOT`` in |c3|.
 
@@ -319,9 +315,9 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
    .. figure:: images/tumbling_window.png
       :alt: image
 
-8. In |c3| the stream monitoring graphs for consumer groups ``EN_WIKIPEDIA_GT_1_COUNTS-consumer`` and ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` are displaying data at 5-minute intervals instead of smoothly like the other consumer groups. This is because |c3| displays data based on message timestamps, and the incoming stream for these consumer groups is a tumbling window with a window size of 5 minutes. Thus all its messages are timestamped to the beginning of each 5-minute window. This is also why the latency for these streams appears to be high. Kafka streaming tumbling windows are working as designed, and |c3| is reporting them accurately.
+   .. note:: In |c3| the stream monitoring graphs for consumer groups ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` and ``EN_WIKIPEDIA_GT_1_COUNTS-consumer`` are displaying data at 5-minute intervals instead of smoothly like the other consumer groups. This is because |c3| displays data based on message timestamps, and the incoming stream for these consumer groups is a tumbling window with a window size of 5 minutes. Thus all its messages are timestamped to the beginning of each 5-minute window. This is also why the latency for these streams appears to be high. Kafka streaming tumbling windows are working as designed, and |c3| is reporting them accurately.
 
-9. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
+8. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
    .. sourcecode:: bash
 
