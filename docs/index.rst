@@ -793,6 +793,8 @@ solution, Confluent Replicator is also configured with security.
 Security
 --------
 
+Follow along with the `Security <https://www.youtube.com/watch?v=RwuF7cYcsec>`_ video.
+
 All the components in this demo are enabled with many `security
 features <https://docs.confluent.io/current/security.html>`__:
 
