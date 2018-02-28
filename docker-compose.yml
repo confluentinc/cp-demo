@@ -224,6 +224,11 @@ services:
     environment:
       xpack.security.enabled: "false"
       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+  couchbase:
+    image: couchbase/server:enterprise-5.1.0
+    ports:
+      - "8091-8094:8091-8094"
+      - "11210-11211:11210-11211"
   kibana:
     image: docker.elastic.co/kibana/kibana:5.5.2
     restart: always
