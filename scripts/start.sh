@@ -59,19 +59,17 @@ curl -X PATCH  -H "Content-Type: application/merge-patch+json" -d '{"displayName
 # If you don't have 'jq'
 #curl -X PATCH  -H "Content-Type: application/merge-patch+json" -d '{"displayName":"Kafka Raleigh"}' http://localhost:9021/2.0/clusters/kafka/$(curl -X get http://localhost:9021/2.0/clusters/kafka/ | awk -v FS="(clusterId\":\"|\",\"displayName)" '{print $2}' )
 
-
 # Verify Kafka Connect Worker has started within 60 seconds
 MAX_WAIT=60
 CUR_WAIT=0
-while [[ ! $(docker-compose logs connect) =~ "Finished starting connectors and tasks" ]]; do
+while [[ ! $(docker-compose logs connect) =~ "Herder started" ]]; do
   sleep 10
   CUR_WAIT=$(( CUR_WAIT+10 ))
   if [[ "$CUR_WAIT" -gt "$MAX_WAIT" ]]; then
-    echo -e "\nERROR: The logs in Kafka Connect container do not show 'Finished starting connectors and tasks'. Please troubleshoot with 'docker-compose ps' and 'docker-compose logs'.\n"
+    echo -e "\nERROR: The logs in Kafka Connect container do not show 'Herder started'. Please troubleshoot with 'docker-compose ps' and 'docker-compose logs'.\n"
     exit 1
   fi
 done
-
 
 echo -e "\nStart streaming from the IRC source connector:"
 ./scripts/connectors/submit_wikipedia_irc_config.sh
