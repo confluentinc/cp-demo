@@ -1,11 +1,12 @@
-TODO: Work out how to make the connector generate guids, rather than using message keys when message keys are not null.
 
     "value.converter": "org.apache.kafka.connect.json.JsonConverter",
     "value.converter.schemas.enable": false,
     
 In the connector config are super important - we can't use schemas with the jsonconverter so we have to disable them.
 
-We can't do this from the UI in control center.
+We can't do this from the UI in control center, has to be via the REST API.
 
 CREATE STREAM WIKIPEDIAJSON WITH (VALUE_FORMAT='json') AS SELECT * FROM WIKIPEDIABOT PARTITION BY CREATEDAT;
+
+
 

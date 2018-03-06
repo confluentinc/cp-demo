@@ -21,7 +21,7 @@ curl  -u ${UNAME}:${PWORD} -v -X POST http://${COUCHBASE_HOST}:8091/nodes/self/c
 curl  -u ${UNAME}:${PWORD} -v -X POST http://${COUCHBASE_HOST}:8091/node/controller/rename \
   -d 'hostname=127.0.0.1'
 
-  # TODO: FIX THIS Set index storage mode
+  # Set index storage mode
 curl -X POST -u ${UNAME}:${PWORD} http://${COUCHBASE_HOST}:8091/settings/indexes \
   -d 'storageMode=plasma'
         
