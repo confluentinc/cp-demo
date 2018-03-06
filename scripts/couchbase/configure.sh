@@ -20,6 +20,10 @@ curl  -u ${UNAME}:${PWORD} -v -X POST http://${COUCHBASE_HOST}:8091/nodes/self/c
 # Rename Node
 curl  -u ${UNAME}:${PWORD} -v -X POST http://${COUCHBASE_HOST}:8091/node/controller/rename \
   -d 'hostname=127.0.0.1'
+
+  # TODO: FIX THIS Set index storage mode
+curl -X POST -u ${UNAME}:${PWORD} http://${COUCHBASE_HOST}:8091/settings/indexes \
+  -d 'storageMode=plasma'
         
 # Setup Services
 curl  -u ${UNAME}:${PWORD} -v -X POST http://${COUCHBASE_HOST}:8091/node/controller/setupServices \
@@ -36,7 +40,6 @@ curl -X POST -u ${UNAME}:${PWORD} http://${COUCHBASE_HOST}:8091/pools/default \
 # Setup Bucket
 curl  -u ${UNAME}:${PWORD} -v -X POST http://${COUCHBASE_HOST}:8091/pools/default/buckets \
   -d 'replicaNumber=0&ramQuotaMB=128&bucketType=membase&name=wikipedia'
-
 
 #Create User for Kafka Connect
 curl -X PUT --data "${DATA}" -H "${HEADER}" http://${UNAME}:${PWORD}@${COUCHBASE_HOST}:8091/settings/rbac/users/local/kafka-connect
