@@ -17,3 +17,4 @@ The use case is a streaming ETL deployment on live edits to real Wikipedia pages
 ## Documentation
 
 You can find the documentation for running this demo, playbook, and video tutorials at [https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html](https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html).
+
