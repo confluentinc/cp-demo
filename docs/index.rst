@@ -762,8 +762,8 @@ solution, Confluent Replicator is also configured with security.
 
 2. **Management –> Topics**: scroll down to view the topics called
    ``wikipedia.parsed`` (Replicator is consuming data from this topic)
-   and ``wikipedia.parsed.replica`` (Replicator is copying data to this
-   topic). Click on ``Consumer Groups`` for the topic
+   and ``wikipedia.parsed.replica`` (Replicator automatically created this topic and is
+   copying data to it). Click on ``Consumer Groups`` for the topic
    ``wikipedia.parsed`` and observe that one of the consumer groups is
    called ``connect-replicator``.
 

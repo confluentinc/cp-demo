@@ -332,7 +332,6 @@ services:
                        cub kafka-ready -b kafka1:9091 1 60 --config /etc/kafka/kafka.properties && \
                        sleep 5 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed --create --replication-factor 2 --partitions 2 && \
-                       kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed.replica --create --replication-factor 2 --partitions 4 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.failed --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic WIKIPEDIABOT --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic WIKIPEDIANOBOT --create --replication-factor 2 --partitions 2 && \
