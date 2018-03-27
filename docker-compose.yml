@@ -379,3 +379,35 @@ services:
                   -Djavax.net.ssl.keyStorePassword=confluent
     extra_hosts:
       - "moby:127.0.0.1"
+  rest-proxy:
+    image: confluentinc/cp-kafka-rest:4.0.0
+    depends_on:
+      - zookeeper
+      - kafka1
+      - kafka2
+    hostname: kafka-rest-proxy
+    volumes:
+      - $PWD/scripts/security:/etc/kafka/secrets
+    environment:
+      KAFKA_REST_HOST_NAME: kafka-rest-proxy
+      KAFKA_REST_BOOTSTRAP_SERVERS: "SASL_SSL://kafka1:9091,SASL_SSL://kafka2:9092"
+      KAFKA_REST_SCHEMA_REGISTRY_URL: "https://schemaregistry:8082"
+      KAFKA_REST_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.restproxy.truststore.jks
+      KAFKA_REST_SSL_TRUSTSTORE_PASSWORD: confluent
+      KAFKA_REST_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.restproxy.keystore.jks
+      KAFKA_REST_SSL_KEYSTORE_PASSWORD: confluent
+      KAFKA_REST_SSL_KEY_PASSWORD: confluent
+      KAFKA_REST_SSL_CLIENT_AUTH: "true"
+      KAFKA_REST_CLIENT_SECURITY_PROTOCOL: SASL_SSL
+      KAFKA_REST_CLIENT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.restproxy.truststore.jks
+      KAFKA_REST_CLIENT_SSL_TRUSTSTORE_PASSWORD: confluent
+      KAFKA_REST_CLIENT_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.restproxy.keystore.jks
+      KAFKA_REST_CLIENT_SSL_KEYSTORE_PASSWORD: confluent
+      KAFKA_REST_CLIENT_SSL_KEY_PASSWORD: confluent
+      KAFKAREST_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.restproxy.truststore.jks
+                      -Djavax.net.ssl.trustStorePassword=confluent
+      KAFKA_REST_CLIENT_SASL_MECHANISM: PLAIN
+    ports:
+      - 8081:8081
+
+
