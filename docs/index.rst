@@ -166,7 +166,7 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
    topic. Click on the boxed consumer group count to select a consumer
    group for which to monitor its data streams and jump to it.
 
-   .. figure:: images/topic_info.png.png
+   .. figure:: images/topic_info.png
       :alt: image
 
 5. **Monitoring –> System Health**: to identify bottlenecks, you can
