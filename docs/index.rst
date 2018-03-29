@@ -124,6 +124,7 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
       the details of the connector configuration and custom transforms.
 
       .. figure:: images/connect_source.png
+         :alt: image
    
 
 
@@ -164,6 +165,9 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
    and the number of consumer groups currently consuming from this
    topic. Click on the boxed consumer group count to select a consumer
    group for which to monitor its data streams and jump to it.
+
+   .. figure:: images/topic_info.png.png
+      :alt: image
 
 5. **Monitoring –> System Health**: to identify bottlenecks, you can
    see a breakdown of produce and fetch latencies through the entire
@@ -461,12 +465,18 @@ consumers in a consumer group.
    has the partition that ``consumer_app_1`` is consuming from is taking
    longer to service requests.
 
+   .. figure:: images/slow_consumer_fetch_latency.png
+      :alt: image
+
 6. Click on the fetch request latency line graph to see a breakdown of
    produce and fetch latencies through the entire `request
    lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
    The middle number does not necessarily equal the sum of the
    percentiles of individual segments because it is the total percentile
    latency.
+
+   .. figure:: images/slow_consumer_fetch_latency_breakdown.png
+      :alt: image
 
 7. Remove the consumption quota for the consumer. Latency for
    ``consumer_app_1`` recovers to steady state values.
@@ -507,6 +517,9 @@ it has previously read.
    described in the section `consumer
    rebalances <#consumer-rebalances>`__.
 
+   .. figure:: images/verify_two_consumers.png
+      :alt: image
+
 2. Let this consumer group run for 2 minutes until Control Center stream
    monitoring shows the consumer group ``app`` with steady consumption.
 
@@ -525,6 +538,9 @@ it has previously read.
    window when the consumer group was stopped, there were some messages
    produced but not consumed. These messages are not missing, they are
    just not consumed because the consumer group stopped.
+
+   .. figure:: images/over_consumption_before_2.png
+      :alt: image
 
 5. Reset the offset of the consumer group ``app`` by shifting 200
    offsets backwards. The offset reset tool must be run when the
@@ -566,6 +582,10 @@ it has previously read.
    -  The latency peaks and then gradually decreases, because this is
       also relative to the produce timestamp.
 
+   .. figure:: images/over_consumption_after_2.png
+      :alt: image
+
+
 Under consumption
 -----------------
 
@@ -598,6 +618,9 @@ skipping messages that will never be read.
    described in the section `consumer
    rebalances <#consumer-rebalances>`__.
 
+   .. figure:: images/verify_two_consumers.png
+      :alt: image
+
 2. Let this consumer group run for 2 minutes until Control Center stream
    monitoring shows the consumer group ``app`` with steady consumption.
 
@@ -617,11 +640,17 @@ skipping messages that will never be read.
    produced but not consumed. These messages are not missing, they are
    just not consumed because the consumer group stopped.
 
+   .. figure:: images/under_consumption_before.png
+      :alt: image
+
 5. Wait for another few minutes and notice that the bar graph changes
    and there is a
    `herringbone <https://docs.confluent.io/current/control-center/docs/monitoring.html#missing-metrics-data>`__
    pattern to indicate that perhaps the consumer group stopped
    ungracefully.
+
+   .. figure:: images/under_consumption_before_herringbone.png
+      :alt: image
 
 6. Reset the offset of the consumer group ``app`` by setting it to
    latest offset. The offset reset tool must be run when the consumer is
@@ -654,6 +683,10 @@ skipping messages that will never be read.
    Notice that during the time period that the consumer group ``app``
    was not running, no produced messages are shown as delivered.
 
+   .. figure:: images/under_consumption_after.png
+      :alt: image
+
+
 Failed broker
 -------------
 
@@ -678,8 +711,14 @@ the two Kafka brokers.
    has gone down from 2 to 1, and there are many under replicated
    partitions.
 
+   .. figure:: images/broker_down_failed.png
+      :alt: image
+
 3. View topic details to see that there are out of sync replicas on
    broker 2.
+
+   .. figure:: images/broker_down_replicas.png
+      :alt: image
 
 4. Restart the Docker container running Kafka broker 2.
 
@@ -691,8 +730,15 @@ the two Kafka brokers.
    Control Center. The broker count has recovered to 2, and the topic
    partitions are back to reporting no under replicated partitions.
 
+   .. figure:: images/broker_down_steady.png
+      :alt: image
+
 6. Click on the broker count ``2`` inside the circle to view when the
    broker counts changed.
+
+   .. figure:: images/broker_down_times.png
+      :alt: image
+
 
 Alerting
 --------
@@ -724,6 +770,9 @@ consumer groups or topics to setup alerts from there.
       greater than ``0``, and it causes an action
       ``Email Administrator``.
 
+   .. figure:: images/alerts_triggers.png
+      :alt: image
+
 2. If you followed the steps in the `failed broker <#failed-broker>`__
    section, view the Alert history to see that the trigger
    ``Under Replicated Partitions`` happened and caused an alert when you
@@ -737,8 +786,15 @@ consumer groups or topics to setup alerts from there.
    pressing the pause icon in the top right. This will stop consumption
    for the related consumer group.
 
+   .. figure:: images/pause_connector.png
+      :alt: image
+
 5. View the Alert history to see that this trigger happened and caused
    an alert.
+
+   .. figure:: images/trigger_history.png
+      :alt: image
+
 
 Replicator
 ----------
@@ -773,6 +829,9 @@ solution, Confluent Replicator is also configured with security.
 3. **Management –> Kafka Connect**: pause the Replicator connector
    by pressing the pause icon in the top right. This will stop
    consumption for the related consumer group.
+
+   .. figure:: images/pause_connector.png
+      :alt: image
 
 4. Observe that the ``connect-replicator`` consumer group has stopped
    consumption.
