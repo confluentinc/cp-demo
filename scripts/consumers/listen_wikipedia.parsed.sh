@@ -6,5 +6,5 @@ if [[ ! -z "$1" && "$1" == "SSL" ]]; then
 fi
 
 docker exec cpdemo_connect_1 kafka-avro-console-consumer \
-  --property schema.registry.url=https://schemaregistry:8082 \
+  --property schema.registry.url=https://schemaregistry:8085 \
   --topic wikipedia.parsed --group=test $ARGS

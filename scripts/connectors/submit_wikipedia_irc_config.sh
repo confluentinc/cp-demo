@@ -21,7 +21,7 @@ DATA=$( cat << EOF
     "kafka.topic": "wikipedia.parsed",
     "producer.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor",
     "value.converter": "io.confluent.connect.avro.AvroConverter",
-    "value.converter.schema.registry.url": "https://schemaregistry:8082",
+    "value.converter.schema.registry.url": "https://schemaregistry:8085",
     "tasks.max": "1"
   }
 }

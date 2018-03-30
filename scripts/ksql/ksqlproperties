@@ -15,7 +15,7 @@ sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule require
 sasl.mechanism=PLAIN
 
 # Schema Registry using HTTPS
-ksql.schema.registry.url=https://schemaregistry:8082
+ksql.schema.registry.url=https://schemaregistry:8085
 
 # Producer Confluent Monitoring Interceptors for Control Center streams monitoring
 producer.interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor

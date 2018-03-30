@@ -322,7 +322,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
    .. sourcecode:: bash
 
       $ docker exec cpdemo_connect_1 kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1 \       
-        --property schema.registry.url=https://schemaregistry:8082 \
+        --property schema.registry.url=https://schemaregistry:8085 \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
       null
       {"USERNAME":"Atsme","WIKIPAGE":"Wikipedia:Articles for deletion/Metallurg Bratsk","COUNT":2}
@@ -334,7 +334,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
       ...
 
       $ docker exec cpdemo_connect_1 kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1_COUNTS \
-        --property schema.registry.url=https://schemaregistry:8082 \
+        --property schema.registry.url=https://schemaregistry:8085 \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
       {"USERNAME":"Atsme","COUNT":2,"WIKIPAGE":"Wikipedia:Articles for deletion/Metallurg Bratsk"}
       {"USERNAME":"7.61.29.178","COUNT":2,"WIKIPAGE":"Tandem language learning"}
@@ -1022,7 +1022,7 @@ Troubleshooting the demo
         cpdemo_kafka2_1           /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp
         cpdemo_kibana_1           /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp
         cpdemo_ksql-cli_1         perl -e while(1){ sleep 99 ...   Up       0.0.0.0:9098->9098/tcp
-        cpdemo_schemaregistry_1   /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8082->8082/tcp
+        cpdemo_schemaregistry_1   /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8085->8085/tcp
         cpdemo_zookeeper_1        /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 
 2. To view sample messages for each topic, including
