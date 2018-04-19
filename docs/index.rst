@@ -181,6 +181,8 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
    .. figure:: images/request_latencies.png
       :alt: image
 
+6. **Management -> Topics**: click the ``+ Create`` button on the top right to create a new topic in your Kafka cluster. Read more information on the |c3| `topic creation feature <https://docs.confluent.io/current/control-center/docs/topics/create.html>`__.
+
 
 
 KSQL
