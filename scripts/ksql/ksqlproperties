@@ -1,6 +1,6 @@
 bootstrap.servers=kafka1:9091,kafka2:9092
 application.id=cp-demo
-listeners=http://localhost:8080
+listeners=http://0.0.0.0:8088
 cache.max.bytes.buffering=0
 
 # SSL and SASL configuration

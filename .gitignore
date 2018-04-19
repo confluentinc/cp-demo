@@ -13,3 +13,5 @@ scripts/security/*.req
 scripts/security/*.pem
 scripts/security/*.der
 scripts/security/*.p12
+
+ui/expanded
