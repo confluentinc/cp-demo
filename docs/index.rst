@@ -198,9 +198,9 @@ Follow along with the `Demo 3: KSQL <https://youtu.be/U_ntFVXWBPc>`_ video.
 
 In this demo, KSQL is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the `KSQL command file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlcommands>`__.
 
-1. The KSQL server is listening on port 8088. You have two options for running new KSQL commands:
+1. The KSQL server is listening on port 8088. You have two options for interfacing with KSQL:
 
-   (a) Run the KSQL CLI command ``ksql`` to get to the KSQL CLI prompt.
+   (a) Run KSQL CLI to get to the KSQL CLI prompt.
 
        .. sourcecode:: bash
 
