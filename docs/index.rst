@@ -181,6 +181,10 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
    .. figure:: images/request_latencies.png
       :alt: image
 
+6. **Management -> Topics**: click the ``+ Create`` button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
+
+      .. figure:: images/create_topic.png
+         :alt: image
 
 
 KSQL
@@ -196,11 +200,15 @@ Follow along with the `Demo 3: KSQL <https://youtu.be/U_ntFVXWBPc>`_ video.
 
 In this demo, KSQL is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the `KSQL command file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlcommands>`__.
 
-1. Run the KSQL CLI to get to the KSQL prompt.
+1. The KSQL server is listening on port 8088. You have two options for interfacing with KSQL:
 
-   .. sourcecode:: bash
+   (a) Run KSQL CLI to get to the KSQL CLI prompt.
 
-      $ docker-compose exec ksql-cli ksql-cli remote http://localhost:8080
+       .. sourcecode:: bash
+
+          $ docker-compose exec ksql-cli ksql http://localhost:8088
+
+   (b) Run the preview KSQL web interface. Navigate your browser to ``http://localhost:8088/index.html``
 
 2. At the KSQL prompt, view the configured KSQL properties that were set with the `KSQL properties file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlproperties>`__.
 
