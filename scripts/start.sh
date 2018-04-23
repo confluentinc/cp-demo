@@ -59,6 +59,9 @@ curl -X PATCH  -H "Content-Type: application/merge-patch+json" -d '{"displayName
 # If you don't have 'jq'
 #curl -X PATCH  -H "Content-Type: application/merge-patch+json" -d '{"displayName":"Kafka Raleigh"}' http://localhost:9021/2.0/clusters/kafka/$(curl -X get http://localhost:9021/2.0/clusters/kafka/ | awk -v FS="(clusterId\":\"|\",\"displayName)" '{print $2}' )
 
+echo -e "\nSetting up Couchbase Cluster, Users and Buckets"
+./scripts/couchbase/configure.sh
+
 # Verify Kafka Connect Worker has started within 60 seconds
 MAX_WAIT=60
 CUR_WAIT=0
@@ -80,6 +83,9 @@ echo -e "\nProvide data mapping to Elasticsearch:"
 
 echo -e "\nStart streaming to Elasticsearch sink connector:"
 ./scripts/connectors/submit_elastic_sink_config.sh
+
+echo -e "\nStart streaming to Couchbase sink connector:"
+./scripts/connectors/submit_couchbase_sink_config.sh
 
 echo -e "\nStart Confluent Replicator:"
 ./scripts/connectors/submit_replicator_config.sh
