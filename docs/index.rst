@@ -333,7 +333,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
    .. sourcecode:: bash
 
-      $ docker exec cpdemo_connect_1 kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1 \       
+      $ docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1 \       
         --property schema.registry.url=https://schemaregistry:8082 \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
       null
@@ -345,7 +345,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
       {"USERNAME":"Attar-Aram syria","WIKIPAGE":"Antiochus X Eusebes","COUNT":2}
       ...
 
-      $ docker exec cpdemo_connect_1 kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1_COUNTS \
+      $ docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1_COUNTS \
         --property schema.registry.url=https://schemaregistry:8082 \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
       {"USERNAME":"Atsme","COUNT":2,"WIKIPAGE":"Wikipedia:Articles for deletion/Metallurg Bratsk"}
@@ -1081,16 +1081,16 @@ Troubleshooting the demo
 
                  Name                        Command               State                              Ports
         ------------------------------------------------------------------------------------------------------------------------------
-        cpdemo_connect_1          /etc/confluent/docker/run        Up       0.0.0.0:8083->8083/tcp, 9092/tcp
-        cpdemo_control-center_1   /etc/confluent/docker/run        Up       0.0.0.0:9021->9021/tcp
-        cpdemo_elasticsearch_1    /bin/bash bin/es-docker          Up       0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp
-        cpdemo_kafka-client_1     bash -c -a echo Waiting fo ...   Exit 0
-        cpdemo_kafka1_1           /etc/confluent/docker/run        Up       0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp, 9092/tcp
-        cpdemo_kafka2_1           /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp
-        cpdemo_kibana_1           /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp
-        cpdemo_ksql-cli_1         perl -e while(1){ sleep 99 ...   Up       0.0.0.0:9098->9098/tcp
-        cpdemo_schemaregistry_1   /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8082->8082/tcp
-        cpdemo_zookeeper_1        /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
+        connect                   /etc/confluent/docker/run        Up       0.0.0.0:8083->8083/tcp, 9092/tcp
+        control-center            /etc/confluent/docker/run        Up       0.0.0.0:9021->9021/tcp
+        elasticsearch             /bin/bash bin/es-docker          Up       0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp
+        kafka-client              bash -c -a echo Waiting fo ...   Exit 0
+        kafka1                    /etc/confluent/docker/run        Up       0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp, 9092/tcp
+        kafka2                    /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp
+        kibana                    /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp
+        ksql-cli                  perl -e while(1){ sleep 99 ...   Up       0.0.0.0:9098->9098/tcp
+        schemaregistry            /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8082->8082/tcp
+        zookeeper                 /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 
 2. To view sample messages for each topic, including
    ``wikipedia.parsed``:

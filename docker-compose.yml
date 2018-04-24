@@ -4,6 +4,7 @@ services:
     image: confluentinc/cp-zookeeper:4.1.0
     restart: always
     hostname: zookeeper
+    container_name: zookeeper
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: "2181"
@@ -17,6 +18,7 @@ services:
   kafka1:
     image: confluentinc/cp-enterprise-kafka:4.1.0
     hostname: kafka1
+    container_name: kafka1
     depends_on:
       - zookeeper
     volumes:
@@ -68,6 +70,7 @@ services:
   kafka2:
     image: confluentinc/cp-enterprise-kafka:4.1.0
     hostname: kafka2
+    container_name: kafka2
     depends_on:
       - zookeeper
     volumes:
@@ -118,6 +121,7 @@ services:
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   connect:
     image: confluentinc/cp-kafka-connect:4.1.0
+    container_name: connect
     restart: always
     ports:
       - "8083:8083"
@@ -215,6 +219,7 @@ services:
                   -Djavax.net.ssl.keyStorePassword=confluent
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
+    container_name: elasticsearch
     #restart: always
     depends_on:
       - connect
@@ -226,6 +231,7 @@ services:
       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
   kibana:
     image: docker.elastic.co/kibana/kibana:5.5.2
+    container_name: kibana
     restart: always
     depends_on:
       - elasticsearch
@@ -236,6 +242,7 @@ services:
       discovery.type: "single-node"
   control-center:
     image: confluentinc/cp-enterprise-control-center:4.1.0
+    container_name: control-center
     restart: always
     depends_on:
       - zookeeper
@@ -270,6 +277,7 @@ services:
       CONTROL_CENTER_STREAMS_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
   schemaregistry:
     image: confluentinc/cp-schema-registry:4.1.0
+    container_name: schemaregistry
     #restart: always
     depends_on:
       - zookeeper
@@ -304,6 +312,7 @@ services:
       - 8082:8082
   kafka-client:
     image: confluentinc/cp-enterprise-kafka:4.1.0
+    container_name: kafka-client
     depends_on:
       - kafka1
     hostname: kafka-client
@@ -344,6 +353,7 @@ services:
       - "7073:7073"
   ksql-cli:
     image: "confluentinc/ksql-cli:4.1.0"
+    container_name: ksql-cli
     depends_on:
       - kafka1
     ports:
