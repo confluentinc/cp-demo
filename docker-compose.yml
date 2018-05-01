@@ -368,9 +368,10 @@ services:
     command: "perl -e 'while(1){ sleep 99999 }'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
+      KSQL_HOST_NAME: ksql-cli
       KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
       # Required for Schema Registry HTTPS
       KSQL_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.client.truststore.jks
                   -Djavax.net.ssl.trustStorePassword=confluent
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
-                  -Djavax.net.ssl.keyStorePassword=confluent -Dhost.name=ksql-cli
+                  -Djavax.net.ssl.keyStorePassword=confluent
