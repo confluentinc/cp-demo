@@ -1,7 +1,7 @@
 version: "2.1"
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:5.0.0-beta1
+    image: confluentinc/cp-zookeeper:4.1.0
     restart: always
     hostname: zookeeper
     container_name: zookeeper
@@ -16,7 +16,7 @@ services:
     ports:
       - "2181:2181"
   kafka1:
-    image: confluentinc/cp-enterprise-kafka:5.0.0-beta1
+    image: confluentinc/cp-enterprise-kafka:4.1.0
     hostname: kafka1
     container_name: kafka1
     depends_on:
@@ -68,7 +68,7 @@ services:
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   kafka2:
-    image: confluentinc/cp-enterprise-kafka:5.0.0-beta1
+    image: confluentinc/cp-enterprise-kafka:4.1.0
     hostname: kafka2
     container_name: kafka2
     depends_on:
@@ -120,7 +120,7 @@ services:
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   connect:
-    image: confluentinc/cp-kafka-connect:5.0.0-beta1
+    image: confluentinc/cp-kafka-connect:4.1.0
     container_name: connect
     restart: always
     ports:
@@ -241,7 +241,7 @@ services:
       xpack.security.enabled: "false"
       discovery.type: "single-node"
   control-center:
-    image: confluentinc/cp-enterprise-control-center:5.0.0-beta1-2
+    image: confluentinc/cp-enterprise-control-center:4.1.0
     container_name: control-center
     restart: always
     depends_on:
@@ -263,7 +263,6 @@ services:
       CONTROL_CENTER_METRICS_TOPIC_REPLICATION: 2
       CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS: 2
       CONTROL_CENTER_CONNECT_CLUSTER: "connect:8083"
-      CONTROL_CENTER_KSQL_ENDPOINT: "http://ksql-cli:8088"
       CONTROL_CENTER_STREAMS_CONSUMER_REQUEST_TIMEOUT_MS: "960032"
       CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SSL
       CONTROL_CENTER_STREAMS_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
@@ -277,7 +276,7 @@ services:
       CONTROL_CENTER_STREAMS_SSL_KEY_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
   schemaregistry:
-    image: confluentinc/cp-schema-registry:5.0.0-beta1
+    image: confluentinc/cp-schema-registry:4.1.0
     container_name: schemaregistry
     #restart: always
     depends_on:
@@ -312,7 +311,7 @@ services:
     ports:
       - 8082:8082
   kafka-client:
-    image: confluentinc/cp-enterprise-kafka:5.0.0-beta1
+    image: confluentinc/cp-enterprise-kafka:4.1.0
     container_name: kafka-client
     depends_on:
       - kafka1
@@ -353,7 +352,7 @@ services:
     ports:
       - "7073:7073"
   ksql-cli:
-    image: "confluentinc/ksql-cli:5.0.0-beta1"
+    image: "confluentinc/ksql-cli:4.1.0"
     container_name: ksql-cli
     depends_on:
       - kafka1
@@ -368,7 +367,6 @@ services:
     command: "perl -e 'while(1){ sleep 99999 }'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
-      KSQL_HOST_NAME: ksql-cli
       KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
       # Required for Schema Registry HTTPS
       KSQL_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.client.truststore.jks
