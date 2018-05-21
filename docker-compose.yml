@@ -312,10 +312,10 @@ services:
       - 8085:8085
   kafka-client:
     image: confluentinc/cp-enterprise-kafka:4.1.0
+    hostname: kafka-client
     container_name: kafka-client
     depends_on:
       - kafka1
-    hostname: kafka-client
     volumes:
       - $PWD/scripts/security:/etc/kafka/secrets
     # We defined a dependency on "kafka", but `depends_on` will NOT wait for the
@@ -374,8 +374,6 @@ services:
                   -Djavax.net.ssl.trustStorePassword=confluent
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
                   -Djavax.net.ssl.keyStorePassword=confluent
-    extra_hosts:
-      - "moby:127.0.0.1"
   restproxy:
     image: confluentinc/cp-kafka-rest:4.1.0
     depends_on:
@@ -383,6 +381,7 @@ services:
       - kafka1
       - kafka2
     hostname: restproxy
+    container_name: restproxy
     volumes:
       - $PWD/scripts/security:/etc/kafka/secrets
       - $PWD/scripts/app:/etc/kafka/app
