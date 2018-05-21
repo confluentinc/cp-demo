@@ -11,7 +11,7 @@ rm -f *.crt *.csr *_creds *.jks *.srl *.key *.pem *.der *.p12
 # Generate CA key
 openssl req -new -x509 -keyout snakeoil-ca-1.key -out snakeoil-ca-1.crt -days 365 -subj '/CN=ca1.test.confluent.io/OU=TEST/O=CONFLUENT/L=PaloAlto/S=Ca/C=US' -passin pass:confluent -passout pass:confluent
 
-for i in kafka1 kafka2 client schemaregistry
+for i in kafka1 kafka2 client schemaregistry restproxy
 do
 	echo "------------------------------- $i -------------------------------"
 
@@ -48,7 +48,7 @@ do
 	# Create pem files and keys used for Schema Registry HTTPS testing
 	#   openssl x509 -noout -modulus -in client.certificate.pem | openssl md5
 	#   openssl rsa -noout -modulus -in client.key | openssl md5 
-        #   echo "GET /" | openssl s_client -connect localhost:8082/subjects -cert client.certificate.pem -key client.key -tls1 
+    #   echo "GET /" | openssl s_client -connect localhost:8085/subjects -cert client.certificate.pem -key client.key -tls1
 	keytool -export -alias $i -file $i.der -keystore kafka.$i.keystore.jks -storepass confluent
 	openssl x509 -inform der -in $i.der -out $i.certificate.pem
 	keytool -importkeystore -srckeystore kafka.$i.keystore.jks -destkeystore $i.keystore.p12 -deststoretype PKCS12 -deststorepass confluent -srcstorepass confluent -noprompt

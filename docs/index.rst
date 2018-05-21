@@ -334,7 +334,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
    .. sourcecode:: bash
 
       $ docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1 \       
-        --property schema.registry.url=https://schemaregistry:8082 \
+        --property schema.registry.url=https://schemaregistry:8085 \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
       null
       {"USERNAME":"Atsme","WIKIPAGE":"Wikipedia:Articles for deletion/Metallurg Bratsk","COUNT":2}
@@ -346,7 +346,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
       ...
 
       $ docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1_COUNTS \
-        --property schema.registry.url=https://schemaregistry:8082 \
+        --property schema.registry.url=https://schemaregistry:8085 \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
       {"USERNAME":"Atsme","COUNT":2,"WIKIPAGE":"Wikipedia:Articles for deletion/Metallurg Bratsk"}
       {"USERNAME":"7.61.29.178","COUNT":2,"WIKIPAGE":"Tandem language learning"}
@@ -1065,6 +1065,75 @@ authorized to communicate with the cluster.
         $ ./scripts/consumers/listen_wikipedia.parsed.sh SSL
 
 
+Schema Registry and REST Proxy
+------------------------------
+
+The connectors used in this demo are configured to automatically read and write Avro-formatted data, leveraging the `Confluent Schema Registry <https://docs.confluent.io/current/schema-registry/docs/index.html>`__ .  The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
+
+1. View the Schema Registry subjects for topics that have registered schemas for their keys and/or values. Notice the security arguments passed into the ``curl`` command which are required to interact with the Schema Registry, which is listening for HTTPS on port 8085.
+
+   .. sourcecode:: bash
+
+     $ docker-compose exec restproxy curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects | jq . 
+
+     [
+       "ksql_query_CTAS_EN_WIKIPEDIA_GT_1-KSQL_Agg_Query_1526914100640-changelog-value",
+       "ksql_query_CTAS_EN_WIKIPEDIA_GT_1-KSQL_Agg_Query_1526914100640-repartition-value",
+       "EN_WIKIPEDIA_GT_1_COUNTS-value",
+       "WIKIPEDIABOT-value",
+       "EN_WIKIPEDIA_GT_1-value",
+       "WIKIPEDIANOBOT-value",
+       "wikipedia.parsed-value"
+     ]
+
+2. Register a new Avro schema (a record with two fields ``username`` and ``userid``) into Confluent Schema Registry for the value of a new topic ``users``. Note the schema id that it returns, in this case id is ``6``.
+
+   .. sourcecode:: bash
+
+     $ docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' https://schemaregistry:8085/subjects/users-value/versions | jq .
+
+     {
+       "id": 6
+     }
+
+3. View the new schema for the subject ``users-value``.
+
+   .. sourcecode:: bash
+
+     $ docker-compose exec restproxy curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects/users-value/versions/1 | jq .
+
+     {
+       "subject": "users-value",
+       "version": 1,
+       "id": 6,
+       "schema": "{\"type\":\"record\",\"name\":\"user\",\"fields\":[{\"name\":\"username\",\"type\":\"string\"},{\"name\":\"userid\",\"type\":\"long\"}]}"
+     }
+
+4. Use the REST Proxy, which is listening for HTTPS on port 8086, to produce a message to the topic ``users``, referencing schema id ``6``.
+
+   .. sourcecode:: bash
+
+     $ docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 6, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' https://restproxy:8086/topics/users
+
+     {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":6}
+
+5. Use the REST Proxy to consume the above message from the topic ``users``. This is a series of steps.
+
+   .. sourcecode:: bash
+
+     # Create consumer instance my_avro_consumer
+     $ docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"name": "my_consumer_instance", "format": "avro", "auto.offset.reset": "earliest"}' https://restproxy:8086/consumers/my_avro_consumer
+
+     # Subscribe my_avro_consumer to the `users` topic
+     $ docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"topics":["users"]}' https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/subscription
+
+     # Get messages for my_avro_consumer subscriptions (you may need to repeat this command)
+     $ docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
+
+     # Delete the consumer instance my_avro_consumer
+     $ docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
+
+
 ========================
 Troubleshooting the demo
 ========================
@@ -1089,7 +1158,8 @@ Troubleshooting the demo
         kafka2                    /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp
         kibana                    /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp
         ksql-cli                  perl -e while(1){ sleep 99 ...   Up       0.0.0.0:9098->9098/tcp
-        schemaregistry            /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8082->8082/tcp
+        restproxy                 /etc/confluent/docker/run        Up       0.0.0.0:8082->8082/tcp, 0.0.0.0:8086->8086/tcp            
+        schemaregistry            /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8085->8085/tcp                          
         zookeeper                 /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 
 2. To view sample messages for each topic, including

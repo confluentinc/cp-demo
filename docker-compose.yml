@@ -32,7 +32,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: SASL_SSL
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka1:9091,SASL_SSL_HOST://localhost:29091,PLAINTEXT://kafka1:10091,SSL://kafka1:11091
       KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.auth.SimpleAclAuthorizer
-      KAFKA_SUPER_USERS: User:client;User:schemaregistry;User:broker;User:ANONYMOUS
+      KAFKA_SUPER_USERS: User:client;User:schemaregistry;User:restproxy;User:broker;User:ANONYMOUS
       KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=INFO"
       KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       KAFKA_BROKER_ID: 1
@@ -84,7 +84,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: SASL_SSL
       KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka2:9092,SASL_SSL_HOST://localhost:29092,PLAINTEXT://kafka2:10092,SSL://kafka2:11092
       KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.auth.SimpleAclAuthorizer
-      KAFKA_SUPER_USERS: User:client;User:schemaregistry;User:broker;User:ANONYMOUS
+      KAFKA_SUPER_USERS: User:client;User:schemaregistry;User:restproxy;User:broker;User:ANONYMOUS
       KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=INFO"
       KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       KAFKA_BROKER_ID: 2
@@ -288,7 +288,7 @@ services:
     environment:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "SASL_SSL://kafka1:9091,SASL_SSL://kafka2:9092"
       SCHEMA_REGISTRY_HOST_NAME: schemaregistry
-      SCHEMA_REGISTRY_LISTENERS: "https://0.0.0.0:8082"
+      SCHEMA_REGISTRY_LISTENERS: "https://0.0.0.0:8085"
       SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: SASL_SSL
       SCHEMA_REGISTRY_KAFKASTORE_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
         username=\"schemaregistry\" \
@@ -309,13 +309,13 @@ services:
       SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "https"
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
     ports:
-      - 8082:8082
+      - 8085:8085
   kafka-client:
     image: confluentinc/cp-enterprise-kafka:4.1.0
+    hostname: kafka-client
     container_name: kafka-client
     depends_on:
       - kafka1
-    hostname: kafka-client
     volumes:
       - $PWD/scripts/security:/etc/kafka/secrets
     # We defined a dependency on "kafka", but `depends_on` will NOT wait for the
@@ -327,6 +327,7 @@ services:
                        /etc/confluent/docker/configure && \
                        cub kafka-ready -b kafka1:9091 1 60 --config /etc/kafka/kafka.properties && \
                        sleep 5 && \
+                       kafka-topics --zookeeper zookeeper:2181 --topic users --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.failed --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic WIKIPEDIABOT --create --replication-factor 2 --partitions 2 && \
@@ -373,3 +374,47 @@ services:
                   -Djavax.net.ssl.trustStorePassword=confluent
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
                   -Djavax.net.ssl.keyStorePassword=confluent
+  restproxy:
+    image: confluentinc/cp-kafka-rest:4.1.0
+    depends_on:
+      - zookeeper
+      - kafka1
+      - kafka2
+    hostname: restproxy
+    container_name: restproxy
+    volumes:
+      - $PWD/scripts/security:/etc/kafka/secrets
+      - $PWD/scripts/app:/etc/kafka/app
+    environment:
+      KAFKA_REST_HOST_NAME: restproxy
+      KAFKA_REST_BOOTSTRAP_SERVERS: "SASL_SSL://kafka1:9091,SASL_SSL://kafka2:9092"
+      KAFKA_REST_LISTENERS: "https://0.0.0.0:8086"
+      KAFKA_REST_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
+      KAFKA_REST_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.restproxy.truststore.jks
+      KAFKA_REST_SSL_TRUSTSTORE_PASSWORD: confluent
+      KAFKA_REST_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.restproxy.keystore.jks
+      KAFKA_REST_SSL_KEYSTORE_PASSWORD: confluent
+      KAFKA_REST_SSL_KEY_PASSWORD: confluent
+      KAFKA_REST_SSL_CLIENT_AUTH: "false"
+      KAFKA_REST_CLIENT_SECURITY_PROTOCOL: SASL_SSL
+      KAFKA_REST_CLIENT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.restproxy.truststore.jks
+      KAFKA_REST_CLIENT_SSL_TRUSTSTORE_PASSWORD: confluent
+      KAFKA_REST_CLIENT_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.restproxy.keystore.jks
+      KAFKA_REST_CLIENT_SSL_KEYSTORE_PASSWORD: confluent
+      KAFKA_REST_CLIENT_SSL_KEY_PASSWORD: confluent
+      KAFKA_REST_CLIENT_SASL_MECHANISM: PLAIN
+      KAFKA_REST_CLIENT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
+              username=\"client\" \
+              password=\"client-secret\";"
+      KAFKAREST_CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.0.0.jar
+      KAFKAREST_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.client.truststore.jks
+                  -Djavax.net.ssl.trustStorePassword=confluent
+                  -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
+                  -Djavax.net.ssl.keyStorePassword=confluent
+      SCHEMA_REGISTRY_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.client.truststore.jks
+                  -Djavax.net.ssl.trustStorePassword=confluent
+                  -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
+                  -Djavax.net.ssl.keyStorePassword=confluent
+    ports:
+      - 8086:8086
+
