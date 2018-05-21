@@ -1,0 +1,11 @@
+{
+  "schema": "[
+     {
+        \"type\":\"record\",
+        \"name\":\"user\",
+        \"fields\": [
+           {\"name\":\"userid\",\"type\":\"long\"},
+           {\"name\":\"username\",\"type\":\"string\"}
+     ]}
+  ]"
+}
