@@ -1,9 +1,10 @@
 version: "2.1"
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:4.0.0
+    image: confluentinc/cp-zookeeper:4.1.0
     restart: always
     hostname: zookeeper
+    container_name: zookeeper
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: "2181"
@@ -15,8 +16,9 @@ services:
     ports:
       - "2181:2181"
   kafka1:
-    image: confluentinc/cp-enterprise-kafka:4.0.0
+    image: confluentinc/cp-enterprise-kafka:4.1.0
     hostname: kafka1
+    container_name: kafka1
     depends_on:
       - zookeeper
     volumes:
@@ -66,8 +68,9 @@ services:
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   kafka2:
-    image: confluentinc/cp-enterprise-kafka:4.0.0
+    image: confluentinc/cp-enterprise-kafka:4.1.0
     hostname: kafka2
+    container_name: kafka2
     depends_on:
       - zookeeper
     volumes:
@@ -117,7 +120,8 @@ services:
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   connect:
-    image: confluentinc/cp-kafka-connect:4.0.0
+    image: confluentinc/cp-kafka-connect:4.1.0
+    container_name: connect
     restart: always
     ports:
       - "8083:8083"
@@ -149,7 +153,7 @@ services:
       CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.0.0.jar
+      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.0.jar
       # Connect worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
@@ -215,6 +219,7 @@ services:
                   -Djavax.net.ssl.keyStorePassword=confluent
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
+    container_name: elasticsearch
     #restart: always
     depends_on:
       - connect
@@ -226,6 +231,7 @@ services:
       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
   kibana:
     image: docker.elastic.co/kibana/kibana:5.5.2
+    container_name: kibana
     restart: always
     depends_on:
       - elasticsearch
@@ -235,7 +241,8 @@ services:
       xpack.security.enabled: "false"
       discovery.type: "single-node"
   control-center:
-    image: confluentinc/cp-enterprise-control-center:4.0.0
+    image: confluentinc/cp-enterprise-control-center:4.1.0
+    container_name: control-center
     restart: always
     depends_on:
       - zookeeper
@@ -257,8 +264,6 @@ services:
       CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS: 2
       CONTROL_CENTER_CONNECT_CLUSTER: "connect:8083"
       CONTROL_CENTER_STREAMS_CONSUMER_REQUEST_TIMEOUT_MS: "960032"
-      # Until https://github.com/confluentinc/cp-docker-images/pull/372 is merged
-      # Control Center security features require CONTROL_CENTER_STREAMS_PRODUCER_* instead of CONTROL_CENTER_STREAMS_*
       CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SSL
       CONTROL_CENTER_STREAMS_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
         username=\"client\" \
@@ -270,19 +275,9 @@ services:
       CONTROL_CENTER_STREAMS_SSL_KEYSTORE_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_SSL_KEY_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
-      CONTROL_CENTER_STREAMS_PRODUCER_SECURITY_PROTOCOL: SASL_SSL
-      CONTROL_CENTER_STREAMS_PRODUCER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
-        username=\"client\" \
-        password=\"client-secret\";"
-      CONTROL_CENTER_STREAMS_PRODUCER_SASL_MECHANISM: PLAIN      
-      CONTROL_CENTER_STREAMS_PRODUCER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
-      CONTROL_CENTER_STREAMS_PRODUCER_SSL_TRUSTSTORE_PASSWORD: confluent
-      CONTROL_CENTER_STREAMS_PRODUCER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
-      CONTROL_CENTER_STREAMS_PRODUCER_SSL_KEYSTORE_PASSWORD: confluent
-      CONTROL_CENTER_STREAMS_PRODUCER_SSL_KEY_PASSWORD: confluent
-      CONTROL_CENTER_STREAMS_PRODUCER_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
   schemaregistry:
-    image: confluentinc/cp-schema-registry:4.0.0
+    image: confluentinc/cp-schema-registry:4.1.0
+    container_name: schemaregistry
     #restart: always
     depends_on:
       - zookeeper
@@ -316,7 +311,8 @@ services:
     ports:
       - 8085:8085
   kafka-client:
-    image: confluentinc/cp-enterprise-kafka:4.0.0
+    image: confluentinc/cp-enterprise-kafka:4.1.0
+    container_name: kafka-client
     depends_on:
       - kafka1
     hostname: kafka-client
@@ -333,7 +329,6 @@ services:
                        sleep 5 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic users --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed --create --replication-factor 2 --partitions 2 && \
-                       kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed.replica --create --replication-factor 2 --partitions 4 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.failed --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic WIKIPEDIABOT --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic WIKIPEDIANOBOT --create --replication-factor 2 --partitions 2 && \
@@ -358,17 +353,18 @@ services:
     ports:
       - "7073:7073"
   ksql-cli:
-    image: "confluentinc/ksql-cli:0.3"
-    hostname: ksql-cli
+    image: "confluentinc/ksql-cli:4.1.0"
+    container_name: ksql-cli
     depends_on:
       - kafka1
     ports:
-      - 9098:9098
+      - 8088:8088
     volumes:
-      - $PWD/monitoring-interceptors/monitoring-interceptors-4.0.0.jar:/usr/share/java/ksql-cli/monitoring-interceptors-4.0.0.jar
+      - $PWD/monitoring-interceptors/monitoring-interceptors-4.1.0.jar:/usr/share/java/ksql-cli/monitoring-interceptors-4.1.0.jar
       - $PWD/scripts/ksql/ksqlproperties:/tmp/ksqlproperties
       - $PWD/scripts/ksql/ksqlcommands:/tmp/ksqlcommands
       - $PWD/scripts/security:/etc/kafka/secrets
+      - $PWD/ui:/usr/ui
     command: "perl -e 'while(1){ sleep 99999 }'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"

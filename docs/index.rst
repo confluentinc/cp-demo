@@ -124,6 +124,7 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
       the details of the connector configuration and custom transforms.
 
       .. figure:: images/connect_source.png
+         :alt: image
    
 
 
@@ -165,6 +166,9 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
    topic. Click on the boxed consumer group count to select a consumer
    group for which to monitor its data streams and jump to it.
 
+   .. figure:: images/topic_info.png
+      :alt: image
+
 5. **Monitoring –> System Health**: to identify bottlenecks, you can
    see a breakdown of produce and fetch latencies through the entire
    `request
@@ -177,6 +181,10 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
    .. figure:: images/request_latencies.png
       :alt: image
 
+6. **Management -> Topics**: click the ``+ Create`` button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
+
+      .. figure:: images/create_topic.png
+         :alt: image
 
 
 KSQL
@@ -192,11 +200,15 @@ Follow along with the `Demo 3: KSQL <https://youtu.be/U_ntFVXWBPc>`_ video.
 
 In this demo, KSQL is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the `KSQL command file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlcommands>`__.
 
-1. Run the KSQL CLI to get to the KSQL prompt.
+1. The KSQL server is listening on port 8088. You have two options for interfacing with KSQL:
 
-   .. sourcecode:: bash
+   (a) Run KSQL CLI to get to the KSQL CLI prompt.
 
-      $ docker-compose exec ksql-cli ksql-cli remote http://localhost:8080
+       .. sourcecode:: bash
+
+          $ docker-compose exec ksql-cli ksql http://localhost:8088
+
+   (b) Run the preview KSQL web interface. Navigate your browser to ``http://localhost:8088/index.html``
 
 2. At the KSQL prompt, view the configured KSQL properties that were set with the `KSQL properties file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlproperties>`__.
 
@@ -321,7 +333,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
    .. sourcecode:: bash
 
-      $ docker exec cpdemo_connect_1 kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1 \       
+      $ docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1 \       
         --property schema.registry.url=https://schemaregistry:8085 \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
       null
@@ -333,7 +345,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
       {"USERNAME":"Attar-Aram syria","WIKIPAGE":"Antiochus X Eusebes","COUNT":2}
       ...
 
-      $ docker exec cpdemo_connect_1 kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1_COUNTS \
+      $ docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1_COUNTS \
         --property schema.registry.url=https://schemaregistry:8085 \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
       {"USERNAME":"Atsme","COUNT":2,"WIKIPAGE":"Wikipedia:Articles for deletion/Metallurg Bratsk"}
@@ -461,12 +473,18 @@ consumers in a consumer group.
    has the partition that ``consumer_app_1`` is consuming from is taking
    longer to service requests.
 
+   .. figure:: images/slow_consumer_fetch_latency.png
+      :alt: image
+
 6. Click on the fetch request latency line graph to see a breakdown of
    produce and fetch latencies through the entire `request
    lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
    The middle number does not necessarily equal the sum of the
    percentiles of individual segments because it is the total percentile
    latency.
+
+   .. figure:: images/slow_consumer_fetch_latency_breakdown.png
+      :alt: image
 
 7. Remove the consumption quota for the consumer. Latency for
    ``consumer_app_1`` recovers to steady state values.
@@ -507,6 +525,9 @@ it has previously read.
    described in the section `consumer
    rebalances <#consumer-rebalances>`__.
 
+   .. figure:: images/verify_two_consumers.png
+      :alt: image
+
 2. Let this consumer group run for 2 minutes until Control Center stream
    monitoring shows the consumer group ``app`` with steady consumption.
 
@@ -525,6 +546,9 @@ it has previously read.
    window when the consumer group was stopped, there were some messages
    produced but not consumed. These messages are not missing, they are
    just not consumed because the consumer group stopped.
+
+   .. figure:: images/over_consumption_before_2.png
+      :alt: image
 
 5. Reset the offset of the consumer group ``app`` by shifting 200
    offsets backwards. The offset reset tool must be run when the
@@ -566,6 +590,10 @@ it has previously read.
    -  The latency peaks and then gradually decreases, because this is
       also relative to the produce timestamp.
 
+   .. figure:: images/over_consumption_after_2.png
+      :alt: image
+
+
 Under consumption
 -----------------
 
@@ -598,6 +626,9 @@ skipping messages that will never be read.
    described in the section `consumer
    rebalances <#consumer-rebalances>`__.
 
+   .. figure:: images/verify_two_consumers.png
+      :alt: image
+
 2. Let this consumer group run for 2 minutes until Control Center stream
    monitoring shows the consumer group ``app`` with steady consumption.
 
@@ -617,11 +648,17 @@ skipping messages that will never be read.
    produced but not consumed. These messages are not missing, they are
    just not consumed because the consumer group stopped.
 
+   .. figure:: images/under_consumption_before.png
+      :alt: image
+
 5. Wait for another few minutes and notice that the bar graph changes
    and there is a
    `herringbone <https://docs.confluent.io/current/control-center/docs/monitoring.html#missing-metrics-data>`__
    pattern to indicate that perhaps the consumer group stopped
    ungracefully.
+
+   .. figure:: images/under_consumption_before_herringbone.png
+      :alt: image
 
 6. Reset the offset of the consumer group ``app`` by setting it to
    latest offset. The offset reset tool must be run when the consumer is
@@ -654,6 +691,10 @@ skipping messages that will never be read.
    Notice that during the time period that the consumer group ``app``
    was not running, no produced messages are shown as delivered.
 
+   .. figure:: images/under_consumption_after.png
+      :alt: image
+
+
 Failed broker
 -------------
 
@@ -678,8 +719,14 @@ the two Kafka brokers.
    has gone down from 2 to 1, and there are many under replicated
    partitions.
 
+   .. figure:: images/broker_down_failed.png
+      :alt: image
+
 3. View topic details to see that there are out of sync replicas on
    broker 2.
+
+   .. figure:: images/broker_down_replicas.png
+      :alt: image
 
 4. Restart the Docker container running Kafka broker 2.
 
@@ -691,8 +738,15 @@ the two Kafka brokers.
    Control Center. The broker count has recovered to 2, and the topic
    partitions are back to reporting no under replicated partitions.
 
+   .. figure:: images/broker_down_steady.png
+      :alt: image
+
 6. Click on the broker count ``2`` inside the circle to view when the
    broker counts changed.
+
+   .. figure:: images/broker_down_times.png
+      :alt: image
+
 
 Alerting
 --------
@@ -724,6 +778,9 @@ consumer groups or topics to setup alerts from there.
       greater than ``0``, and it causes an action
       ``Email Administrator``.
 
+   .. figure:: images/alerts_triggers.png
+      :alt: image
+
 2. If you followed the steps in the `failed broker <#failed-broker>`__
    section, view the Alert history to see that the trigger
    ``Under Replicated Partitions`` happened and caused an alert when you
@@ -737,8 +794,15 @@ consumer groups or topics to setup alerts from there.
    pressing the pause icon in the top right. This will stop consumption
    for the related consumer group.
 
+   .. figure:: images/pause_connector.png
+      :alt: image
+
 5. View the Alert history to see that this trigger happened and caused
    an alert.
+
+   .. figure:: images/trigger_history.png
+      :alt: image
+
 
 Replicator
 ----------
@@ -762,8 +826,8 @@ solution, Confluent Replicator is also configured with security.
 
 2. **Management –> Topics**: scroll down to view the topics called
    ``wikipedia.parsed`` (Replicator is consuming data from this topic)
-   and ``wikipedia.parsed.replica`` (Replicator is copying data to this
-   topic). Click on ``Consumer Groups`` for the topic
+   and ``wikipedia.parsed.replica`` (Replicator automatically created this topic and is
+   copying data to it). Click on ``Consumer Groups`` for the topic
    ``wikipedia.parsed`` and observe that one of the consumer groups is
    called ``connect-replicator``.
 
@@ -773,6 +837,9 @@ solution, Confluent Replicator is also configured with security.
 3. **Management –> Kafka Connect**: pause the Replicator connector
    by pressing the pause icon in the top right. This will stop
    consumption for the related consumer group.
+
+   .. figure:: images/pause_connector.png
+      :alt: image
 
 4. Observe that the ``connect-replicator`` consumer group has stopped
    consumption.
@@ -1082,17 +1149,17 @@ Troubleshooting the demo
 
                  Name                        Command               State                              Ports
         ------------------------------------------------------------------------------------------------------------------------------
-        cpdemo_connect_1          /etc/confluent/docker/run        Up       0.0.0.0:8083->8083/tcp, 9092/tcp
-        cpdemo_control-center_1   /etc/confluent/docker/run        Up       0.0.0.0:9021->9021/tcp
-        cpdemo_elasticsearch_1    /bin/bash bin/es-docker          Up       0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp
-        cpdemo_kafka-client_1     bash -c -a echo Waiting fo ...   Exit 0
-        cpdemo_kafka1_1           /etc/confluent/docker/run        Up       0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp, 9092/tcp
-        cpdemo_kafka2_1           /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp
-        cpdemo_kibana_1           /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp
-        cpdemo_ksql-cli_1         perl -e while(1){ sleep 99 ...   Up       0.0.0.0:9098->9098/tcp
-        cpdemo_restproxy_1        /etc/confluent/docker/run        Up       0.0.0.0:8082->8082/tcp, 0.0.0.0:8086->8086/tcp            
-        cpdemo_schemaregistry_1   /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8085->8085/tcp
-        cpdemo_zookeeper_1        /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
+        connect                   /etc/confluent/docker/run        Up       0.0.0.0:8083->8083/tcp, 9092/tcp
+        control-center            /etc/confluent/docker/run        Up       0.0.0.0:9021->9021/tcp
+        elasticsearch             /bin/bash bin/es-docker          Up       0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp
+        kafka-client              bash -c -a echo Waiting fo ...   Exit 0
+        kafka1                    /etc/confluent/docker/run        Up       0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp, 9092/tcp
+        kafka2                    /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp
+        kibana                    /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp
+        ksql-cli                  perl -e while(1){ sleep 99 ...   Up       0.0.0.0:9098->9098/tcp
+        restproxy                 /etc/confluent/docker/run        Up       0.0.0.0:8082->8082/tcp, 0.0.0.0:8086->8086/tcp            
+        schemaregistry            /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8082->8082/tcp
+        zookeeper                 /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 
 2. To view sample messages for each topic, including
    ``wikipedia.parsed``:

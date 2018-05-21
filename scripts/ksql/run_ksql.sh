@@ -1,5 +1,9 @@
 #!/bin/bash
 
-docker exec cpdemo_ksql-cli_1 ksql-server-start /tmp/ksqlproperties >/tmp/ksql.log 2>&1 &
+docker exec ksql-cli ksql-server-start /tmp/ksqlproperties 2>&1 &
 sleep 10
-docker-compose exec ksql-cli ksql-cli remote http://localhost:8080 --exec "run script '/tmp/ksqlcommands';" 
+docker exec ksql-cli bash -c "ksql http://localhost:8088 <<EOF
+run script '/tmp/ksqlcommands';
+exit ;
+EOF
+"

@@ -8,7 +8,7 @@ fi
 
 ID=$1
 
-docker exec cpdemo_connect_1 kafka-avro-console-consumer \
+docker exec connect kafka-avro-console-consumer \
    --bootstrap-server kafka1:9091 --topic wikipedia.parsed \
    --property schema.registry.url=https://schemaregistry:8085 \
    --consumer-property group.id=app --consumer-property client.id=consumer_app_$ID \
