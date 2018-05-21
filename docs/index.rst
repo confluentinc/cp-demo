@@ -1068,7 +1068,7 @@ authorized to communicate with the cluster.
 Schema Registry and REST Proxy
 ------------------------------
 
-The connectors used in this demo are configured to automatically read and write Avro-formatted data, leveraring the Confluent Schema Registry.  The REST Proxy is running for optional client access.
+The connectors used in this demo are configured to automatically read and write Avro-formatted data, leveraging the `Confluent Schema Registry <https://docs.confluent.io/current/schema-registry/docs/index.html>`__ .  The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
 
 1. View the Schema Registry subjects for topics that have registered schemas for their keys and/or values. Notice the security arguments passed into the ``curl`` command which are required to interact with the Schema Registry, which is listening for HTTPS on port 8085.
 
