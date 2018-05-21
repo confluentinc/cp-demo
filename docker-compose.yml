@@ -377,7 +377,7 @@ services:
     extra_hosts:
       - "moby:127.0.0.1"
   restproxy:
-    image: confluentinc/cp-kafka-rest:4.0.0
+    image: confluentinc/cp-kafka-rest:4.1.0
     depends_on:
       - zookeeper
       - kafka1
