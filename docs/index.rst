@@ -1127,7 +1127,8 @@ The connectors used in this demo are configured to automatically read and write 
      # Subscribe my_avro_consumer to the `users` topic
      $ docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"topics":["users"]}' https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/subscription
 
-     # Get messages for my_avro_consumer subscriptions (you may need to repeat this command)
+     # Get messages for my_avro_consumer subscriptions
+     # Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
      $ docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
 
      # Delete the consumer instance my_avro_consumer
