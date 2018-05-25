@@ -1183,9 +1183,9 @@ Troubleshooting the demo
         $ docker-compose restart connect
 
 4. If a command that communicates with ZooKeeper appears to be failing with the error ``org.apache.zookeeper.KeeperException$NoAuthException``,
-change the container you are running the command from to be either ``kafka1`` or ``kafka2``.  This is because ZooKeeper is configured for
-`SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, and
-any commands that communicate with ZooKeeper need properties set for ZooKeeper authentication.
+   change the container you are running the command from to be either ``kafka1`` or ``kafka2``.  This is because ZooKeeper is configured for
+   `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, and
+   any commands that communicate with ZooKeeper need properties set for ZooKeeper authentication.
 
 
 ========
