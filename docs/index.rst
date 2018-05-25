@@ -869,7 +869,7 @@ features <https://docs.confluent.io/current/security.html>`__:
 -  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__
    for encryption, except for ZooKeeper which does not support SSL
 -  `SASL/PLAIN <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html>`__
-   for authentication, except for ZooKeeper
+   for authentication, except for ZooKeeper which is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__
 -  `Authorization <https://docs.confluent.io/current/kafka/authorization.html>`__.
    If a resource has no associated ACLs, then users are not allowed to
    access the resource, except super users
@@ -1065,6 +1065,11 @@ authorized to communicate with the cluster.
 
         $ ./scripts/consumers/listen_wikipedia.parsed.sh SSL
 
+9. Because ZooKeeper is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, 
+   any commands that communicate with ZooKeeper need properties set for ZooKeeper authentication. This authentication configuration is provided
+   by the ``KAFKA_OPTS`` setting on the brokers. For example, notice that the `throttle script <scripts/app/throttle_consumer.sh>`__ runs on the
+   Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
+
 
 Schema Registry and REST Proxy
 ------------------------------
@@ -1177,6 +1182,11 @@ Troubleshooting the demo
    .. sourcecode:: bash
 
         $ docker-compose restart connect
+
+4. If a command that communicates with ZooKeeper appears to be failing with the error ``org.apache.zookeeper.KeeperException$NoAuthException``,
+   change the container you are running the command from to be either ``kafka1`` or ``kafka2``.  This is because ZooKeeper is configured for
+   `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, and
+   any commands that communicate with ZooKeeper need properties set for ZooKeeper authentication.
 
 
 ========
