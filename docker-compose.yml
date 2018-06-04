@@ -136,6 +136,7 @@ services:
       - $PWD/connect-plugins:/connect-plugins
       - $PWD/connect-plugins/kafka-connect-transform-nullfilter/null-filter-4.0.0-SNAPSHOT.jar:/usr/share/java/kafka-connect-elasticsearch/null-filter-4.0.0-SNAPSHOT.jar
       - $PWD/scripts/security:/etc/kafka/secrets
+      - mi2:/usr/share/java/monitoring-interceptors/
     environment:
       CONNECT_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       CONNECT_REST_PORT: 8083
@@ -362,15 +363,18 @@ services:
     container_name: ksql-cli
     depends_on:
       - kafka1
+      - connect
     ports:
       - 8088:8088
     volumes:
-      - $PWD/monitoring-interceptors/monitoring-interceptors-4.1.0.jar:/usr/share/java/ksql-cli/monitoring-interceptors-4.1.0.jar
       - $PWD/scripts/ksql/ksqlproperties:/tmp/ksqlproperties
       - $PWD/scripts/ksql/ksqlcommands:/tmp/ksqlcommands
       - $PWD/scripts/security:/etc/kafka/secrets
       - $PWD/ui:/usr/ui
-    command: "perl -e 'while(1){ sleep 99999 }'"
+      - mi2:/usr/share/java/monitoring-interceptors/
+    command: "bash -c -a 'sleep 10 && \
+                       cp /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.0.jar /usr/share/java/ksql-cli/monitoring-interceptors-4.1.0.jar && \
+                       tail -f /dev/null'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
@@ -423,3 +427,5 @@ services:
     ports:
       - 8086:8086
 
+volumes:
+    mi2: {}
