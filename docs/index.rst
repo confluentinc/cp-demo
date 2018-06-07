@@ -64,6 +64,9 @@ Follow along with the `Demo 1: Install + Run <https://www.youtube.com/watch?v=a4
 -  git
 -  jq
 
+.. note:: If you prefer a non-Docker version and have Elasticsearch and Kibana running on your local machine, please follow `these instructions <https://github.com/confluentinc/quickstart-demos/tree/master/wikipedia>`__.
+
+
 1. Clone the `cp-demo GitHub repository <https://github.com/confluentinc/cp-demo>`__:
 
    .. sourcecode:: bash
