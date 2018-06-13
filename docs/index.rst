@@ -46,15 +46,6 @@ analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 Run demo
 ========
 
-Follow along with the `Demo 1: Install + Run <https://www.youtube.com/watch?v=a4B5Oer1j2A>`_ video.
-
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/a4B5Oer1j2A" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
-
-
 **Demo validated with:**
 
 -  Docker version 17.06.1-ce
