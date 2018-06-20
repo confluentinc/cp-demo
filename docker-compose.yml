@@ -157,7 +157,7 @@ services:
       CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.0.jar
+      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.0.0-beta1.jar
       # Connect worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
@@ -317,6 +317,7 @@ services:
       - 8085:8085
   kafka-client:
     image: confluentinc/cp-enterprise-kafka:5.0.0-beta1
+    hostname: kafka-client
     container_name: kafka-client
     depends_on:
       - kafka1
@@ -370,7 +371,10 @@ services:
       - $PWD/scripts/ksql/ksqlproperties:/tmp/ksqlproperties
       - $PWD/scripts/ksql/ksqlcommands:/tmp/ksqlcommands
       - $PWD/scripts/security:/etc/kafka/secrets
-    command: "perl -e 'while(1){ sleep 99999 }'"
+      - mi2:/usr/share/java/monitoring-interceptors/
+    command: "bash -c -a 'sleep 10 && \
+                       cp /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.0.0-beta1.jar /usr/share/java/ksql-cli/monitoring-interceptors-5.0.0-beta1.jar && \
+                       tail -f /dev/null'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_HOST_NAME: ksql-cli
@@ -381,7 +385,7 @@ services:
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
                   -Djavax.net.ssl.keyStorePassword=confluent
   restproxy:
-    image: confluentinc/cp-kafka-rest:4.1.0
+    image: confluentinc/cp-kafka-rest:5.0.0-beta1
     depends_on:
       - zookeeper
       - kafka1
@@ -412,7 +416,7 @@ services:
       KAFKA_REST_CLIENT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
               username=\"client\" \
               password=\"client-secret\";"
-      KAFKAREST_CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.0.0.jar
+      KAFKAREST_CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.0.0-beta1.jar
       KAFKAREST_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.client.truststore.jks
                   -Djavax.net.ssl.trustStorePassword=confluent
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
