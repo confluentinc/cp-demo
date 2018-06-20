@@ -370,11 +370,7 @@ services:
       - $PWD/scripts/ksql/ksqlproperties:/tmp/ksqlproperties
       - $PWD/scripts/ksql/ksqlcommands:/tmp/ksqlcommands
       - $PWD/scripts/security:/etc/kafka/secrets
-      - $PWD/ui:/usr/ui
-      - mi2:/usr/share/java/monitoring-interceptors/
-    command: "bash -c -a 'sleep 10 && \
-                       cp /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.0.jar /usr/share/java/ksql-cli/monitoring-interceptors-4.1.0.jar && \
-                       tail -f /dev/null'"
+    command: "perl -e 'while(1){ sleep 99999 }'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_HOST_NAME: ksql-cli
