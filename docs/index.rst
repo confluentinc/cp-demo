@@ -197,13 +197,13 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
 1. The KSQL server is listening on port 8088. You have two options for interfacing with KSQL:
 
-   (a) Run KSQL CLI to get to the KSQL CLI prompt.
+   (a) Use Control Center's built-in KSQL UI. Navigate your browser to http://localhost:9021/management/ksql/ksql-server%3A8088/streams .
+
+   (b) Run KSQL CLI to get to the KSQL CLI prompt.
 
        .. sourcecode:: bash
 
-          $ docker run --network=cpdemo_default -it confluentinc/cp-ksql-cli:5.0.0-beta30 http://ksql-server:8088
-
-   (b) Use Control Center's built-in KSQL UI. Navigate your browser to http://localhost:9021/management/ksql/ksql-server%3A8088/streams .
+          $ docker-compose exec ksql-cli ksql http://ksql-server:8088
 
 2. At the KSQL prompt, view the configured KSQL properties that were set with the `KSQL properties file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlproperties>`__.
 
