@@ -424,18 +424,6 @@ services:
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
                   -Djavax.net.ssl.keyStorePassword=confluent
 
-  ksql-cli:
-    image: confluentinc/cp-ksql-cli:5.0.0-beta30
-    container_name: ksql-cli
-    depends_on:
-      - kafka1
-      - kafka2
-      - connect
-      - ksql-server
-    volumes:
-      - $PWD/scripts/security:/etc/kafka/secrets
-      - $PWD/scripts/ksql/ksqlcommands:/tmp/ksqlcommands
-
   restproxy:
     image: confluentinc/cp-kafka-rest:5.0.0-beta1
     depends_on:

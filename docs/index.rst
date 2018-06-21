@@ -201,8 +201,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
        .. sourcecode:: bash
 
-          $ docker-compose exec ksql-cli ksql http://ksql-server:8088       
-
+          $ docker run --network=cpdemo_default -it confluentinc/cp-ksql-cli:5.0.0-beta30 http://ksql-server:8088
 
    (b) Use Control Center's built-in KSQL UI. Navigate your browser to http://localhost:9021/management/ksql/ksql-server%3A8088/streams .
 
