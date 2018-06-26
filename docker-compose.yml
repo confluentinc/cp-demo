@@ -1,7 +1,7 @@
 version: "2.1"
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:4.1.0
+    image: confluentinc/cp-zookeeper:5.0.0-beta1
     restart: always
     hostname: zookeeper
     container_name: zookeeper
@@ -17,7 +17,7 @@ services:
     ports:
       - "2181:2181"
   kafka1:
-    image: confluentinc/cp-enterprise-kafka:4.1.0
+    image: confluentinc/cp-enterprise-kafka:5.0.0-beta1
     hostname: kafka1
     container_name: kafka1
     depends_on:
@@ -70,7 +70,7 @@ services:
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   kafka2:
-    image: confluentinc/cp-enterprise-kafka:4.1.0
+    image: confluentinc/cp-enterprise-kafka:5.0.0-beta1
     hostname: kafka2
     container_name: kafka2
     depends_on:
@@ -123,7 +123,7 @@ services:
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   connect:
-    image: confluentinc/cp-kafka-connect:4.1.0
+    image: confluentinc/cp-kafka-connect:5.0.0-beta1
     container_name: connect
     restart: always
     ports:
@@ -157,7 +157,7 @@ services:
       CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.0.jar
+      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.0.0-beta1.jar
       # Connect worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
@@ -245,7 +245,7 @@ services:
       xpack.security.enabled: "false"
       discovery.type: "single-node"
   control-center:
-    image: confluentinc/cp-enterprise-control-center:4.1.0
+    image: confluentinc/cp-enterprise-control-center:5.0.0-beta1-2
     container_name: control-center
     restart: always
     depends_on:
@@ -267,6 +267,7 @@ services:
       CONTROL_CENTER_METRICS_TOPIC_REPLICATION: 2
       CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS: 2
       CONTROL_CENTER_CONNECT_CLUSTER: "connect:8083"
+      CONTROL_CENTER_KSQL_ENDPOINT: "http://ksql-server:8088"
       CONTROL_CENTER_STREAMS_CONSUMER_REQUEST_TIMEOUT_MS: "960032"
       CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SSL
       CONTROL_CENTER_STREAMS_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
@@ -280,7 +281,7 @@ services:
       CONTROL_CENTER_STREAMS_SSL_KEY_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
   schemaregistry:
-    image: confluentinc/cp-schema-registry:4.1.0
+    image: confluentinc/cp-schema-registry:5.0.0-beta1
     container_name: schemaregistry
     #restart: always
     depends_on:
@@ -315,7 +316,7 @@ services:
     ports:
       - 8085:8085
   kafka-client:
-    image: confluentinc/cp-enterprise-kafka:4.1.0
+    image: confluentinc/cp-enterprise-kafka:5.0.0-beta1
     hostname: kafka-client
     container_name: kafka-client
     depends_on:
@@ -358,33 +359,83 @@ services:
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
     ports:
       - "7073:7073"
-  ksql-cli:
-    image: "confluentinc/ksql-cli:4.1.0"
-    container_name: ksql-cli
+
+  ksql-server:
+    image: confluentinc/cp-ksql-server:5.0.0-beta30
+    hostname: ksql-server
+    container_name: ksql-server
     depends_on:
       - kafka1
+      - kafka2
       - connect
     ports:
-      - 8088:8088
+      - "8088:8088"
     volumes:
-      - $PWD/scripts/ksql/ksqlproperties:/tmp/ksqlproperties
-      - $PWD/scripts/ksql/ksqlcommands:/tmp/ksqlcommands
       - $PWD/scripts/security:/etc/kafka/secrets
-      - $PWD/ui:/usr/ui
-      - mi2:/usr/share/java/monitoring-interceptors/
-    command: "bash -c -a 'sleep 10 && \
-                       cp /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.0.jar /usr/share/java/ksql-cli/monitoring-interceptors-4.1.0.jar && \
-                       tail -f /dev/null'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
-      # Required for Schema Registry HTTPS
+      KSQL_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
+      KSQL_HOST_NAME: ksql-server
+      KSQL_APPLICATION_ID: "cp-demo"
+      KSQL_LISTENERS: "http://0.0.0.0:8088"
+      KSQL_CACHE_MAX_BYTES_BUFFERING: 0
+      # SSL and SASL configuration
+      KSQL_SSL_TRUSTSTORE_LOCATION: etc/kafka/secrets/kafka.client.truststore.jks
+      KSQL_SSL_TRUSTSTORE_PASSWORD: confluent
+      KSQL_SSL_KEYSTORE_LOCATION: etc/kafka/secrets/kafka.client.keystore.jks
+      KSQL_SSL_KEYSTORE_PASSWORD: confluent
+      KSQL_SSL_KEY_PASSWORD: confluent
+      KSQL_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
+      KSQL_SECURITY_PROTOCOL: "SASL_SSL"
+      KSQL_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
+              username=\"client\" \
+              password=\"client-secret\";"
+      KSQL_SASL_MECHANISM: PLAIN
+      # Schema Registry using HTTPS
+      KSQL_KSQL_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
+      # Producer Confluent Monitoring Interceptors for Control Center streams monitoring
+      KSQL_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
+      KSQL_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_MECHANISM: PLAIN
+      KSQL_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_LOCATION: etc/kafka/secrets/kafka.client.truststore.jks
+      KSQL_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_PASSWORD: confluent
+      KSQL_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_LOCATION: etc/kafka/secrets/kafka.client.keystore.jks
+      KSQL_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_PASSWORD: confluent
+      KSQL_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEY_PASSWORD: confluent
+      KSQL_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SECURITY_PROTOCOL: sasl_ssl
+      KSQL_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
+              username=\"client\" \
+              password=\"client-secret\";"
+      # Consumer Confluent Monitoring Interceptors for Control Center streams monitoring
+      KSQL_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
+      KSQL_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_MECHANISM: PLAIN
+      KSQL_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_LOCATION: etc/kafka/secrets/kafka.client.truststore.jks
+      KSQL_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_PASSWORD: confluent
+      KSQL_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_LOCATION: etc/kafka/secrets/kafka.client.keystore.jks
+      KSQL_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_PASSWORD: confluent
+      KSQL_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEY_PASSWORD: confluent
+      KSQL_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SECURITY_PROTOCOL: "sasl_ssl"
+      KSQL_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
+              username=\"client\" \
+              password=\"client-secret\";"
+      KSQL_KSQL_SERVER_UI_ENABLED: "false"
       KSQL_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.client.truststore.jks
                   -Djavax.net.ssl.trustStorePassword=confluent
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
                   -Djavax.net.ssl.keyStorePassword=confluent
+  ksql-cli:
+    image: confluentinc/cp-ksql-cli:5.0.0-beta30
+    container_name: ksql-cli
+    depends_on:
+      - kafka1
+      - connect
+      - ksql-server
+    volumes:
+      - $PWD/scripts/ksql/ksqlcommands:/tmp/ksqlcommands
+    entrypoint: /bin/sh
+    tty: true
   restproxy:
-    image: confluentinc/cp-kafka-rest:4.1.0
+    image: confluentinc/cp-kafka-rest:5.0.0-beta1
     depends_on:
       - zookeeper
       - kafka1
@@ -415,7 +466,7 @@ services:
       KAFKA_REST_CLIENT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
               username=\"client\" \
               password=\"client-secret\";"
-      KAFKAREST_CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.0.0.jar
+      KAFKAREST_CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.0.0-beta1.jar
       KAFKAREST_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.client.truststore.jks
                   -Djavax.net.ssl.trustStorePassword=confluent
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
