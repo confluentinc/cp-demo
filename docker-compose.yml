@@ -382,7 +382,7 @@ services:
 
   # Replicator container used only for sharing the Replicator jars with the Connect container
   replicator:
-    image: confluentinc/cp-enterprise-replicator:4.0.0
+    image: confluentinc/cp-enterprise-replicator:4.0.1
     hostname: replicator
     volumes:
       - mi3:/usr/share/java/kafka-connect-replicator/
