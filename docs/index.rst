@@ -1159,6 +1159,7 @@ Troubleshooting the demo
         kafka2                    /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp
         kibana                    /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp
         ksql-cli                  perl -e while(1){ sleep 99 ...   Up       0.0.0.0:9098->9098/tcp
+        replicator                tail -f /dev/null                Up       8083/tcp, 9092/tcp                                        
         restproxy                 /etc/confluent/docker/run        Up       0.0.0.0:8082->8082/tcp, 0.0.0.0:8086->8086/tcp            
         schemaregistry            /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8085->8085/tcp                          
         zookeeper                 /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
