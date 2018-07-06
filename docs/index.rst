@@ -92,7 +92,7 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
         <iframe src="https://www.youtube.com/embed/D9nzAxxIv7A" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
     </div>
 
-1. **Monitoring –> System Health**: |c3| landing
+1. **MONITORING –> System Health**: |c3| landing
    page shows the overall `system
    health <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__
    of a given Kafka cluster. For capacity planning activities, view
@@ -109,7 +109,7 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
 
 
 
-2. **Management –> Kafka Connect**: |c3| uses
+2. **MANAGEMENT –> Kafka Connect**: |c3| uses
    the Kafka Connect API to manage `Kafka
    connectors <https://docs.confluent.io/current/control-center/docs/connect.html>`__.
 
@@ -132,7 +132,7 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
 
 
 
-3. **Monitoring –> Data Streams –> Message Delivery**: hover over
+3. **MONITORING –> Data Streams –> Message Delivery**: hover over
    any chart to see number of messages and average latency within a
    minute time interval.
 
@@ -153,7 +153,7 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
 
 
 
-4. **Management –> Topics –> Topic Information**: For a given topic,
+4. **MANAGEMENT –> Topics –> Topic Information**: For a given topic,
    click on the three dots ``...`` next to the topic name and click on
    ``View details``. View which brokers are leaders for which partitions
    and the number of consumer groups currently consuming from this
@@ -163,7 +163,7 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
    .. figure:: images/topic_info.png
       :alt: image
 
-5. **Monitoring –> System Health**: to identify bottlenecks, you can
+5. **MONITORING –> System Health**: to identify bottlenecks, you can
    see a breakdown of produce and fetch latencies through the entire
    `request
    lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
@@ -175,7 +175,7 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
    .. figure:: images/request_latencies.png
       :alt: image
 
-6. **Management -> Topics**: click the ``+ Create`` button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
+6. **MANAGEMENT -> Topics**: click the ``+ Create`` button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
 
       .. figure:: images/create_topic.png
          :alt: image
@@ -197,7 +197,10 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
 1. The KSQL server is listening on port 8088. You have two options for interfacing with KSQL:
 
-   (a) Use Control Center's built-in KSQL UI. Navigate your browser to http://localhost:9021/management/ksql/ksql-server%3A8088/streams .
+   (a) Use Control Center's integrated KSQL UI. Navigate your browser to http://localhost:9021/management/ksql/ksql-server%3A8088/streams or click **DEVELOPMENT –> KSQL**:
+
+   .. figure:: images/development_ksql.png
+      :alt: image
 
    (b) Run KSQL CLI to get to the KSQL CLI prompt.
 
@@ -205,13 +208,13 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
           $ docker-compose exec ksql-cli ksql http://ksql-server:8088
 
-2. At the KSQL prompt, view the configured KSQL properties that were set with the `KSQL properties file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlproperties>`__.
+2. From Control Center's KSQL UI, click on ``QUERY EDITOR`` and view the configured KSQL server properties set in the docker-compose.yml file.
 
    .. sourcecode:: bash
 
-      ksql> SHOW PROPERTIES;
+      SHOW PROPERTIES;
 
-3. View the existing KSQL streams and describe one of those streams called ``WIKIPEDIABOT``.
+3. From Control Center's KSQL UI, click on ``STREAMS`` to view the existing KSQL streams. Right click on any stream and select ``DESCRIBE``. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;`` and ``DESCRIBE WIKIPEDIABOT;``).
 
    .. sourcecode:: bash
 
@@ -246,7 +249,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
        ISUNPATROLLED | BOOLEAN                   
       -------------------------------------------
 
-4. View the existing KSQL tables and describe one of those tables called ``EN_WIKIPEDIA_GT_1``.
+4. From Control Center's KSQL UI, click on ``TABLES`` to view the existing KSQL tables. Right click on any table and select ``DESCRIBE``. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW TABLES;`` and ``DESCRIBE EN_WIKIPEDIA_GT_1;``).
 
    .. sourcecode:: bash
 
@@ -809,7 +812,7 @@ intra-cluster replication, *i.e.*, the source and destination Kafka
 clusters are the same. As with the rest of the components in the
 solution, Confluent Replicator is also configured with security.
 
-1. **Monitoring –> Data Streams –> Message Delivery**: monitor
+1. **MONITORING –> Data Streams –> Message Delivery**: monitor
    throughput and latency of Confluent Replicator in the Data streams
    monitoring view. Replicator is a Kafka Connect source connector and
    has a corresponding consumer group ``connect-replicator``.
@@ -819,7 +822,7 @@ solution, Confluent Replicator is also configured with security.
 
 
 
-2. **Management –> Topics**: scroll down to view the topics called
+2. **MANAGEMENT –> Topics**: scroll down to view the topics called
    ``wikipedia.parsed`` (Replicator is consuming data from this topic)
    and ``wikipedia.parsed.replica`` (Replicator automatically created this topic and is
    copying data to it). Click on ``Consumer Groups`` for the topic
@@ -829,7 +832,7 @@ solution, Confluent Replicator is also configured with security.
    .. figure:: images/replicator_topic_info.png
 
 
-3. **Management –> Kafka Connect**: pause the Replicator connector
+3. **MANAGEMENT –> Kafka Connect**: pause the Replicator connector
    by pressing the pause icon in the top right. This will stop
    consumption for the related consumer group.
 
