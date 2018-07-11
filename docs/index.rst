@@ -205,7 +205,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
 1. The KSQL server is listening on port 8088. You have two options for interfacing with KSQL:
 
-   (a) Use Control Center's integrated KSQL UI. Navigate your browser to http://localhost:9021/management/ksql/ksql-server%3A8088/streams or click **DEVELOPMENT –> KSQL**:
+   (a) Use Control Center's integrated `KSQL UI <http://localhost:9021/management/ksql/ksql-server%3A8088/streams>`__. From the |c3| UI, click **DEVELOPMENT –> KSQL**:
 
    .. figure:: images/development_ksql.png
       :alt: image
@@ -280,7 +280,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
        COUNT    | BIGINT                    
       --------------------------------------
 
-5. View the existing KSQL queries, which are continuously running, and explain one of those queries called ``CSAS_WIKIPEDIABOT``.
+5. From Control Center's KSQL UI, click on ``QUERIES`` to view the existing KSQL queries, which are continuously running, and explain one of those queries called ``CSAS_WIKIPEDIABOT``.
 
    .. sourcecode:: bash
 
