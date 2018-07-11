@@ -42,6 +42,14 @@ analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 
 .. note:: This is a Docker environment and has all services running on one host. Do not use this demo in production. It is meant exclusively to easily demo the |CP|. In production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production traffic. Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
 
+If you are completely new to |c3|, watch a brief video overview `Monitoring Kafka Like a Pro <https://youtu.be/O9LqDGSoWaU>`_ video.
+
+.. raw:: html
+
+    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
+        <iframe src="https://www.youtube.com/embed/O9LqDGSoWaU" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
+
+
 ========
 Run demo
 ========
