@@ -1107,7 +1107,12 @@ The connectors used in this demo are configured to automatically read and write 
        "id": 6
      }
 
-3. View the new schema for the subject ``users-value``.
+3. View the new schema for the subject ``users-value``. From |c3|, click **MANAGEMENT -> Topics**. Scroll down to and click on the topic `users` and select "SCHEMA".
+
+      .. figure:: images/schema1.png
+         :alt: image
+   
+   You may alternatively request the schema via the command line:
 
    .. sourcecode:: bash
 

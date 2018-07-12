@@ -281,14 +281,14 @@ services:
       CONTROL_CENTER_STREAMS_SSL_KEYSTORE_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_SSL_KEY_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
-      KAFKA_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.client.truststore.jks
-                  -Djavax.net.ssl.trustStorePassword=confluent
-                  -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
-                  -Djavax.net.ssl.keyStorePassword=confluent
-      SCHEMA_REGISTRY_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.client.truststore.jks
-                  -Djavax.net.ssl.trustStorePassword=confluent
-                  -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
-                  -Djavax.net.ssl.keyStorePassword=confluent
+      #KAFKA_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.client.truststore.jks
+      #            -Djavax.net.ssl.trustStorePassword=confluent
+      #            -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
+      #            -Djavax.net.ssl.keyStorePassword=confluent
+      #SCHEMA_REGISTRY_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.client.truststore.jks
+      #            -Djavax.net.ssl.trustStorePassword=confluent
+      #            -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
+      #            -Djavax.net.ssl.keyStorePassword=confluent
       CONTROL_CENTER_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.client.truststore.jks
                   -Djavax.net.ssl.trustStorePassword=confluent
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
@@ -323,11 +323,9 @@ services:
       SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.schemaregistry.keystore.jks
       SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: confluent
       SCHEMA_REGISTRY_SSL_KEY_PASSWORD: confluent
-      SCHEMA_REGISTRY_SSL_CLIENT_AUTH: "true"
+      SCHEMA_REGISTRY_SSL_CLIENT_AUTH: "false"
       SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "https"
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
-      #KAFKA_OPTS: "-Djavax.net.debug=ssl"
-      #SCHEMA_REGISTRY_OPTS: "-Djavax.net.debug=ssl"
     ports:
       - 8085:8085
   kafka-client:
