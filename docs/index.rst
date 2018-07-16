@@ -423,8 +423,6 @@ consumers in a consumer group.
    .. figure:: images/slow_consumer.png
       :alt: image
 
-
-
 5. In the System Health dashboard, you see that the fetch request
    latency has likewise increased. This is the because the broker that
    has the partition that ``consumer_app_1`` is consuming from is taking
@@ -443,12 +441,18 @@ consumers in a consumer group.
    .. figure:: images/slow_consumer_fetch_latency_breakdown.png
       :alt: image
 
-7. Remove the consumption quota for the consumer. Latency for
+7. **MONITORING -> Consumer lag**: consumer lag is the topic's high water mark (latest offset for the topic that has been written) minus the current consumer offset (latest offset read for that topic by that consumer group). Keep in mind topic write rate and consumer group read rate when considering consumer lag. In the demo, view the consumer lag for the ``app`` consumer group: expect consumer 1 to be have much more lag than consumer 2 because of the throttle you added in an earlier step. 
+
+   .. figure:: images/consumer_lag_app.png
+      :alt: image
+
+8. Remove the consumption quota for the consumer. Latency for
    ``consumer_app_1`` recovers to steady state values.
 
    .. sourcecode:: bash
 
         $ ./scripts/app/throttle_consumer.sh 1 delete
+
 
 Over consumption
 ----------------
