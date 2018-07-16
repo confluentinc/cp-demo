@@ -89,7 +89,7 @@ Run demo
 Playbook
 ========
 
-|c3|
+|c3| Tour
 --------------------------------
 
 Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
@@ -160,18 +160,7 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
       :alt: image
 
 
-
-4. **MANAGEMENT –> Topics –> Topic Information**: For a given topic,
-   click on the three dots ``...`` next to the topic name and click on
-   ``View details``. View which brokers are leaders for which partitions
-   and the number of consumer groups currently consuming from this
-   topic. Click on the boxed consumer group count to select a consumer
-   group for which to monitor its data streams and jump to it.
-
-   .. figure:: images/topic_info.png
-      :alt: image
-
-5. **MONITORING –> System Health**: to identify bottlenecks, you can
+4. **MONITORING –> System Health**: to identify bottlenecks, you can
    see a breakdown of produce and fetch latencies through the entire
    `request
    lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
@@ -183,10 +172,42 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
    .. figure:: images/request_latencies.png
       :alt: image
 
+
+Topic Management
+--------------------------------
+
+|c3| has a useful interface to manage topics in a Kafka cluster.
+
+1. **MANAGEMENT –> Topics**: Scroll down to and click on the topic `wikipedia.parsed`.
+
+      .. figure:: images/topic_actions.png
+         :alt: image
+
+2. **MANAGEMENT –> Topics -> Status**: View which brokers are leaders for which partitions and where all partitions reside.
+
+   .. figure:: images/topic_info.png
+      :alt: image
+
+3. **MANAGEMENT –> Topics -> Schema**: View the schema for this topic. For `wikipedia.parsed`, the topic value is using a Schema registered with the Schema Registry (the topic key is just a string).
+
+   .. figure:: images/topic_schema.png
+      :alt: image
+
+4. **MANAGEMENT –> Topics -> Inspect**: View messages for this topic, in real-time.
+
+   .. figure:: images/topic_inspect.png
+      :alt: image
+
+5. **MANAGEMENT –> Topics -> Settings**: View configuration settings for this topic.
+
+   .. figure:: images/topic_settings.png
+      :alt: image
+
 6. **MANAGEMENT -> Topics**: click the ``+ Create`` button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
 
       .. figure:: images/create_topic.png
          :alt: image
+
 
 .. _ksql-demo-3:
 
@@ -207,8 +228,8 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
    (a) Use Control Center's integrated `KSQL UI <http://localhost:9021/management/ksql/ksql-server%3A8088/streams>`__. From the |c3| UI, click **DEVELOPMENT –> KSQL**:
 
-   .. figure:: images/development_ksql.png
-      :alt: image
+       .. figure:: images/development_ksql.png
+          :alt: image
 
    (b) Run KSQL CLI to get to the KSQL CLI prompt.
 
@@ -216,107 +237,37 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
           $ docker-compose exec ksql-cli ksql http://ksql-server:8088
 
-2. From Control Center's KSQL UI, click on ``QUERY EDITOR`` and view the configured KSQL server properties set in the docker-compose.yml file.
+2. **DEVELOPMENT -> KSQL -> QUERY EDITOR**: View the configured KSQL server properties set in the docker-compose.yml file. In the query editor, type ``SHOW PROPERTIES;`` and then click on the ``Run query`` button.
 
-   .. sourcecode:: bash
+     .. figure:: images/ksql_properties.png
+        :alt: image
 
-      SHOW PROPERTIES;
+3. **DEVELOPMENT -> KSQL -> STREAMS**: View the existing KSQL streams. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``).
 
-3. From Control Center's KSQL UI, click on ``STREAMS`` to view the existing KSQL streams. Right click on any stream and select ``DESCRIBE``. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;`` and ``DESCRIBE WIKIPEDIABOT;``).
+     .. figure:: images/ksql_streams_list.png
+        :alt: image
 
-   .. sourcecode:: bash
+4. **DEVELOPMENT -> KSQL -> TABLES**: View the existing KSQL tables. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``).
 
-      ksql> SHOW STREAMS;
-      
-       Stream Name              | Kafka Topic              | Format 
-      --------------------------------------------------------------
-       EN_WIKIPEDIA_GT_1_COUNTS | EN_WIKIPEDIA_GT_1_COUNTS | AVRO   
-       WIKIPEDIA                | wikipedia.parsed         | AVRO   
-       WIKIPEDIABOT             | WIKIPEDIABOT             | AVRO   
-       WIKIPEDIANOBOT           | WIKIPEDIANOBOT           | AVRO   
-       EN_WIKIPEDIA_GT_1_STREAM | EN_WIKIPEDIA_GT_1        | AVRO   
-      --------------------------------------------------------------
+     .. figure:: images/ksql_tables_list.png
+        :alt: image
 
+5. **DEVELOPMENT -> KSQL -> QUERY EDITOR**: View the schema (fields or columns) and source and sink of an existing KSQL stream. In the query editor, type ``DESCRIBE WIKIPEDIABOT;`` and then click on the ``Run query`` button.
 
-      ksql> DESCRIBE WIKIPEDIABOT;
-      
-       Field         | Type                      
-      -------------------------------------------
-       ROWTIME       | BIGINT           (system) 
-       ROWKEY        | VARCHAR(STRING)  (system) 
-       CREATEDAT     | BIGINT                    
-       WIKIPAGE      | VARCHAR(STRING)           
-       CHANNEL       | VARCHAR(STRING)           
-       USERNAME      | VARCHAR(STRING)           
-       COMMITMESSAGE | VARCHAR(STRING)           
-       BYTECHANGE    | INTEGER                   
-       DIFFURL       | VARCHAR(STRING)           
-       ISNEW         | BOOLEAN                   
-       ISMINOR       | BOOLEAN                   
-       ISBOT         | BOOLEAN                   
-       ISUNPATROLLED | BOOLEAN                   
-      -------------------------------------------
+     .. figure:: images/ksql_stream_describe.png
+        :alt: image
 
-4. From Control Center's KSQL UI, click on ``TABLES`` to view the existing KSQL tables. Right click on any table and select ``DESCRIBE``. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW TABLES;`` and ``DESCRIBE EN_WIKIPEDIA_GT_1;``).
+6. **DEVELOPMENT -> KSQL -> PERSISTENT QUERIES**: View the existing KSQL queries, which are continuously running. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW QUERIES;``).
 
-   .. sourcecode:: bash
+     .. figure:: images/ksql_queries_list.png
+        :alt: image
 
-      ksql> SHOW TABLES;
+7. **DEVELOPMENT -> KSQL -> STREAMS**: View messages from different KSQL streams and tables. Right click on your stream of choice, select ``Query`` which takes you to the Query Editor with a pre-populated query such as ``select * from WIKIPEDIA limit 5;``.  Click on the ``Run query`` button to run.
 
-       Table Name        | Kafka Topic       | Format | Windowed 
-      -----------------------------------------------------------
-       EN_WIKIPEDIA_GT_1 | EN_WIKIPEDIA_GT_1 | AVRO   | true     
-      -----------------------------------------------------------
+     .. figure:: images/ksql_query_topic.png
+        :alt: image
 
-
-      ksql> DESCRIBE EN_WIKIPEDIA_GT_1;
-      
-       Field    | Type                      
-      --------------------------------------
-       ROWTIME  | BIGINT           (system) 
-       ROWKEY   | VARCHAR(STRING)  (system) 
-       USERNAME | VARCHAR(STRING)  (key)    
-       WIKIPAGE | VARCHAR(STRING)  (key)    
-       COUNT    | BIGINT                    
-      --------------------------------------
-
-5. From Control Center's KSQL UI, click on ``QUERIES`` to view the existing KSQL queries, which are continuously running, and explain one of those queries called ``CSAS_WIKIPEDIABOT``.
-
-   .. sourcecode:: bash
-
-      ksql> SHOW QUERIES;
-      
-       Query ID                      | Kafka Topic              | Query String
-      --------------------------------------------------------------------------------------------------
-       CSAS_WIKIPEDIABOT             | WIKIPEDIABOT             | CREATE STREAM wikipediabot WITH (PARTITIONS=2,REPLICAS=2) AS SELECT * FROM wikipedia WHERE isbot = true;
-       CTAS_EN_WIKIPEDIA_GT_1        | EN_WIKIPEDIA_GT_1        | CREATE TABLE en_wikipedia_gt_1 WITH (PARTITIONS=2,REPLICAS=2) AS SELECT username, wikipage, count(*) AS COUNT FROM wikipedia WINDOW TUMBLING (size 300 second) WHERE channel = '#en.wikipedia' GROUP BY username, wikipage HAVING count(*) > 1;
-       CSAS_WIKIPEDIANOBOT           | WIKIPEDIANOBOT           | CREATE STREAM wikipedianobot WITH (PARTITIONS=2,REPLICAS=2) AS SELECT * FROM wikipedia WHERE isbot <> true;
-       CSAS_EN_WIKIPEDIA_GT_1_COUNTS | EN_WIKIPEDIA_GT_1_COUNTS | CREATE STREAM en_wikipedia_gt_1_counts WITH (PARTITIONS=2,REPLICAS=2) AS SELECT * FROM en_wikipedia_gt_1_stream where ROWTIME is not null;
-      --------------------------------------------------------------------------------------------------
-
-      
-      ksql> EXPLAIN CSAS_WIKIPEDIABOT;
-      
-      Type                 : QUERY
-      SQL                  : CREATE STREAM wikipediabot WITH (PARTITIONS=2,REPLICAS=2) AS SELECT * FROM wikipedia WHERE isbot = true;
-      
-      
-      Local runtime statistics
-      ------------------------
-      messages-per-sec:      1.07   total-messages:      1210     last-message: 2/16/18 4:47:16 PM UTC
-       failed-messages:         0 failed-messages-per-sec:         0      last-failed:       n/a
-      (Statistics of the local KSQL server interaction with the Kafka topic WIKIPEDIABOT)
-
-6. At the KSQL prompt, view three messages from different KSQL streams and tables.
-
-   .. sourcecode:: bash
-
-      ksql> SELECT * FROM WIKIPEDIABOT LIMIT 3;
-      ksql> SELECT * FROM EN_WIKIPEDIA_GT_1 LIMIT 3;
-      ksql> SELECT * FROM EN_WIKIPEDIA_GT_1_COUNTS LIMIT 3;
-
-
-7. In this demo, KSQL is run with Confluent Monitoring Interceptors configured which enables |c3| Data Streams to monitor KSQL queries. The consumer group names ``ksql_query_`` correlate to the KSQL query names above, and |c3| is showing the records that are incoming to each query.
+8. In this demo, KSQL is run with Confluent Monitoring Interceptors configured which enables |c3| Data Streams to monitor KSQL queries. The consumer group names ``ksql_query_`` correlate to the KSQL query names above, and |c3| is showing the records that are incoming to each query.
 
 * View throughput and latency of the incoming records for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``ksql_query_CSAS_WIKIPEDIABOT`` in |c3|.
 
@@ -335,7 +286,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
    .. note:: In |c3| the stream monitoring graphs for consumer groups ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` and ``EN_WIKIPEDIA_GT_1_COUNTS-consumer`` are displaying data at 5-minute intervals instead of smoothly like the other consumer groups. This is because |c3| displays data based on message timestamps, and the incoming stream for these consumer groups is a tumbling window with a window size of 5 minutes. Thus all its messages are timestamped to the beginning of each 5-minute window. This is also why the latency for these streams appears to be high. Kafka streaming tumbling windows are working as designed, and |c3| is reporting them accurately.
 
-8. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
+9. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
    .. sourcecode:: bash
 
@@ -1085,7 +1036,7 @@ The connectors used in this demo are configured to automatically read and write 
 
    .. sourcecode:: bash
 
-     $ docker-compose exec restproxy curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects | jq . 
+     $ docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects | jq . 
 
      [
        "ksql_query_CTAS_EN_WIKIPEDIA_GT_1-KSQL_Agg_Query_1526914100640-changelog-value",
@@ -1097,11 +1048,11 @@ The connectors used in this demo are configured to automatically read and write 
        "wikipedia.parsed-value"
      ]
 
-2. Register a new Avro schema (a record with two fields ``username`` and ``userid``) into Confluent Schema Registry for the value of a new topic ``users``. Note the schema id that it returns, in this case id is ``6``.
+2. Register a new Avro schema (a record with two fields ``username`` and ``userid``) into Confluent Schema Registry for the value of a new topic ``users``. Note the schema id that it returns, e.g. below schema id is ``6``.
 
    .. sourcecode:: bash
 
-     $ docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' https://schemaregistry:8085/subjects/users-value/versions | jq .
+     $ docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' https://schemaregistry:8085/subjects/users-value/versions | jq .
 
      {
        "id": 6
@@ -1116,7 +1067,7 @@ The connectors used in this demo are configured to automatically read and write 
 
    .. sourcecode:: bash
 
-     $ docker-compose exec restproxy curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects/users-value/versions/1 | jq .
+     $ docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects/users-value/versions/1 | jq .
 
      {
        "subject": "users-value",
@@ -1137,17 +1088,17 @@ The connectors used in this demo are configured to automatically read and write 
 
    .. sourcecode:: bash
 
-     # Create consumer instance my_avro_consumer
+     # 5.1 Create consumer instance my_avro_consumer
      $ docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"name": "my_consumer_instance", "format": "avro", "auto.offset.reset": "earliest"}' https://restproxy:8086/consumers/my_avro_consumer
 
-     # Subscribe my_avro_consumer to the `users` topic
+     # 5.2 Subscribe my_avro_consumer to the `users` topic
      $ docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"topics":["users"]}' https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/subscription
 
-     # Get messages for my_avro_consumer subscriptions
-     # Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
+     # 5.3 Get messages for my_avro_consumer subscriptions
+     # Note: Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
      $ docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
 
-     # Delete the consumer instance my_avro_consumer
+     # 5.4 Delete the consumer instance my_avro_consumer
      $ docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
 
 
