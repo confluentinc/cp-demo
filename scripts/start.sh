@@ -1,8 +1,8 @@
 #!/bin/bash
 
-set -o nounset \
-    -o errexit \
-    -o verbose
+#set -o nounset \
+#    -o errexit \
+#    -o verbose
 
 # Verify jq is installed
 if [[ $(type jq 2>&1) =~ "not found" ]]; then

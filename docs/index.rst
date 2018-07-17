@@ -441,7 +441,7 @@ consumers in a consumer group.
    .. figure:: images/slow_consumer_fetch_latency_breakdown.png
       :alt: image
 
-7. **MONITORING -> Consumer lag**: consumer lag is the topic's high water mark (latest offset for the topic that has been written) minus the current consumer offset (latest offset read for that topic by that consumer group). Keep in mind topic write rate and consumer group read rate when considering consumer lag. In the demo, view the consumer lag for the ``app`` consumer group: expect consumer 1 to be have much more lag than consumer 2 because of the throttle you added in an earlier step. 
+7. **MONITORING -> Consumer lag**: consumer lag is the topic's high water mark (latest offset for the topic that has been written) minus the current consumer offset (latest offset read for that topic by that consumer group). Keep in mind topic write rate and consumer group read rate when considering what the significance of how big is the consumer lag. In the demo, view the consumer lag for the ``app`` consumer group: expect consumer 1 to be have much more lag than consumer 2 because of the throttle you added in an earlier step. 
 
    .. figure:: images/consumer_lag_app.png
       :alt: image
