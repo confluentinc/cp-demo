@@ -281,14 +281,6 @@ services:
       CONTROL_CENTER_STREAMS_SSL_KEYSTORE_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_SSL_KEY_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
-      #KAFKA_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.client.truststore.jks
-      #            -Djavax.net.ssl.trustStorePassword=confluent
-      #            -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
-      #            -Djavax.net.ssl.keyStorePassword=confluent
-      #SCHEMA_REGISTRY_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.client.truststore.jks
-      #            -Djavax.net.ssl.trustStorePassword=confluent
-      #            -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
-      #            -Djavax.net.ssl.keyStorePassword=confluent
       CONTROL_CENTER_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.client.truststore.jks
                   -Djavax.net.ssl.trustStorePassword=confluent
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
