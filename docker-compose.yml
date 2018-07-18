@@ -1,7 +1,7 @@
 version: "2.1"
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:4.0.1
+    image: confluentinc/cp-zookeeper:4.0.3-SNAPSHOT
     restart: always
     hostname: zookeeper
     environment:
@@ -15,7 +15,7 @@ services:
     ports:
       - "2181:2181"
   kafka1:
-    image: confluentinc/cp-enterprise-kafka:4.0.1
+    image: confluentinc/cp-enterprise-kafka:4.0.3-SNAPSHOT
     hostname: kafka1
     depends_on:
       - zookeeper
@@ -66,7 +66,7 @@ services:
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   kafka2:
-    image: confluentinc/cp-enterprise-kafka:4.0.1
+    image: confluentinc/cp-enterprise-kafka:4.0.3-SNAPSHOT
     hostname: kafka2
     depends_on:
       - zookeeper
@@ -117,7 +117,7 @@ services:
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   connect:
-    image: confluentinc/cp-kafka-connect:4.0.1
+    image: confluentinc/cp-kafka-connect:4.0.3-SNAPSHOT
     restart: always
     ports:
       - "8083:8083"
@@ -235,7 +235,7 @@ services:
       xpack.security.enabled: "false"
       discovery.type: "single-node"
   control-center:
-    image: confluentinc/cp-enterprise-control-center:4.0.1
+    image: confluentinc/cp-enterprise-control-center:4.0.3-SNAPSHOT
     restart: always
     depends_on:
       - zookeeper
@@ -282,7 +282,7 @@ services:
       CONTROL_CENTER_STREAMS_PRODUCER_SSL_KEY_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_PRODUCER_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
   schemaregistry:
-    image: confluentinc/cp-schema-registry:4.0.1
+    image: confluentinc/cp-schema-registry:4.0.3-SNAPSHOT
     #restart: always
     depends_on:
       - zookeeper
@@ -316,7 +316,7 @@ services:
     ports:
       - 8082:8082
   kafka-client:
-    image: confluentinc/cp-enterprise-kafka:4.0.1
+    image: confluentinc/cp-enterprise-kafka:4.0.3-SNAPSHOT
     depends_on:
       - kafka1
     hostname: kafka-client
