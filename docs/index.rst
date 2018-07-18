@@ -42,6 +42,14 @@ analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 
 .. note:: This is a Docker environment and has all services running on one host. Do not use this demo in production. It is meant exclusively to easily demo the |CP|. In production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production traffic. Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
 
+If you are completely new to |c3|, watch a brief video overview `Monitoring Kafka Like a Pro <https://youtu.be/O9LqDGSoWaU>`_ video.
+
+.. raw:: html
+
+    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
+        <iframe src="https://www.youtube.com/embed/O9LqDGSoWaU" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
+
+
 ========
 Run demo
 ========
@@ -81,7 +89,7 @@ Run demo
 Playbook
 ========
 
-|c3|
+|c3| Tour
 --------------------------------
 
 Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
@@ -92,7 +100,7 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
         <iframe src="https://www.youtube.com/embed/D9nzAxxIv7A" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
     </div>
 
-1. **Monitoring –> System Health**: |c3| landing
+1. **MONITORING –> System Health**: |c3| landing
    page shows the overall `system
    health <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__
    of a given Kafka cluster. For capacity planning activities, view
@@ -109,7 +117,7 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
 
 
 
-2. **Management –> Kafka Connect**: |c3| uses
+2. **MANAGEMENT –> Kafka Connect**: |c3| uses
    the Kafka Connect API to manage `Kafka
    connectors <https://docs.confluent.io/current/control-center/docs/connect.html>`__.
 
@@ -132,7 +140,7 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
 
 
 
-3. **Monitoring –> Data Streams –> Message Delivery**: hover over
+3. **MONITORING –> Data Streams –> Message Delivery**: hover over
    any chart to see number of messages and average latency within a
    minute time interval.
 
@@ -152,18 +160,7 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
       :alt: image
 
 
-
-4. **Management –> Topics –> Topic Information**: For a given topic,
-   click on the three dots ``...`` next to the topic name and click on
-   ``View details``. View which brokers are leaders for which partitions
-   and the number of consumer groups currently consuming from this
-   topic. Click on the boxed consumer group count to select a consumer
-   group for which to monitor its data streams and jump to it.
-
-   .. figure:: images/topic_info.png
-      :alt: image
-
-5. **Monitoring –> System Health**: to identify bottlenecks, you can
+4. **MONITORING –> System Health**: to identify bottlenecks, you can
    see a breakdown of produce and fetch latencies through the entire
    `request
    lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
@@ -175,10 +172,42 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
    .. figure:: images/request_latencies.png
       :alt: image
 
-6. **Management -> Topics**: click the ``+ Create`` button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
+
+Topic Management
+--------------------------------
+
+|c3| has a useful interface to manage topics in a Kafka cluster.
+
+1. **MANAGEMENT –> Topics**: Scroll down to and click on the topic `wikipedia.parsed`.
+
+      .. figure:: images/topic_actions.png
+         :alt: image
+
+2. **MANAGEMENT –> Topics -> Status**: View which brokers are leaders for which partitions and where all partitions reside.
+
+   .. figure:: images/topic_info.png
+      :alt: image
+
+3. **MANAGEMENT –> Topics -> Schema**: View the schema for this topic. For `wikipedia.parsed`, the topic value is using a Schema registered with the Schema Registry (the topic key is just a string).
+
+   .. figure:: images/topic_schema.png
+      :alt: image
+
+4. **MANAGEMENT –> Topics -> Inspect**: View messages for this topic, in real-time.
+
+   .. figure:: images/topic_inspect.png
+      :alt: image
+
+5. **MANAGEMENT –> Topics -> Settings**: View configuration settings for this topic.
+
+   .. figure:: images/topic_settings.png
+      :alt: image
+
+6. **MANAGEMENT -> Topics**: click the ``+ Create`` button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
 
       .. figure:: images/create_topic.png
          :alt: image
+
 
 .. _ksql-demo-3:
 
@@ -197,7 +226,10 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
 1. The KSQL server is listening on port 8088. You have two options for interfacing with KSQL:
 
-   (a) Use Control Center's built-in KSQL UI. Navigate your browser to http://localhost:9021/management/ksql/ksql-server%3A8088/streams .
+   (a) Use Control Center's integrated `KSQL UI <http://localhost:9021/management/ksql/ksql-server%3A8088/streams>`__. From the |c3| UI, click **DEVELOPMENT –> KSQL**:
+
+       .. figure:: images/development_ksql.png
+          :alt: image
 
    (b) Run KSQL CLI to get to the KSQL CLI prompt.
 
@@ -205,107 +237,37 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
           $ docker-compose exec ksql-cli ksql http://ksql-server:8088
 
-2. At the KSQL prompt, view the configured KSQL properties that were set with the `KSQL properties file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlproperties>`__.
+2. **DEVELOPMENT -> KSQL -> QUERY EDITOR**: View the configured KSQL server properties set in the docker-compose.yml file. In the query editor, type ``SHOW PROPERTIES;`` and then click on the ``Run query`` button.
 
-   .. sourcecode:: bash
+     .. figure:: images/ksql_properties.png
+        :alt: image
 
-      ksql> SHOW PROPERTIES;
+3. **DEVELOPMENT -> KSQL -> STREAMS**: View the existing KSQL streams. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``).
 
-3. View the existing KSQL streams and describe one of those streams called ``WIKIPEDIABOT``.
+     .. figure:: images/ksql_streams_list.png
+        :alt: image
 
-   .. sourcecode:: bash
+4. **DEVELOPMENT -> KSQL -> TABLES**: View the existing KSQL tables. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``).
 
-      ksql> SHOW STREAMS;
-      
-       Stream Name              | Kafka Topic              | Format 
-      --------------------------------------------------------------
-       EN_WIKIPEDIA_GT_1_COUNTS | EN_WIKIPEDIA_GT_1_COUNTS | AVRO   
-       WIKIPEDIA                | wikipedia.parsed         | AVRO   
-       WIKIPEDIABOT             | WIKIPEDIABOT             | AVRO   
-       WIKIPEDIANOBOT           | WIKIPEDIANOBOT           | AVRO   
-       EN_WIKIPEDIA_GT_1_STREAM | EN_WIKIPEDIA_GT_1        | AVRO   
-      --------------------------------------------------------------
+     .. figure:: images/ksql_tables_list.png
+        :alt: image
 
+5. **DEVELOPMENT -> KSQL -> QUERY EDITOR**: View the schema (fields or columns) and source and sink of an existing KSQL stream. In the query editor, type ``DESCRIBE WIKIPEDIABOT;`` and then click on the ``Run query`` button.
 
-      ksql> DESCRIBE WIKIPEDIABOT;
-      
-       Field         | Type                      
-      -------------------------------------------
-       ROWTIME       | BIGINT           (system) 
-       ROWKEY        | VARCHAR(STRING)  (system) 
-       CREATEDAT     | BIGINT                    
-       WIKIPAGE      | VARCHAR(STRING)           
-       CHANNEL       | VARCHAR(STRING)           
-       USERNAME      | VARCHAR(STRING)           
-       COMMITMESSAGE | VARCHAR(STRING)           
-       BYTECHANGE    | INTEGER                   
-       DIFFURL       | VARCHAR(STRING)           
-       ISNEW         | BOOLEAN                   
-       ISMINOR       | BOOLEAN                   
-       ISBOT         | BOOLEAN                   
-       ISUNPATROLLED | BOOLEAN                   
-      -------------------------------------------
+     .. figure:: images/ksql_stream_describe.png
+        :alt: image
 
-4. View the existing KSQL tables and describe one of those tables called ``EN_WIKIPEDIA_GT_1``.
+6. **DEVELOPMENT -> KSQL -> PERSISTENT QUERIES**: View the existing KSQL queries, which are continuously running. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW QUERIES;``).
 
-   .. sourcecode:: bash
+     .. figure:: images/ksql_queries_list.png
+        :alt: image
 
-      ksql> SHOW TABLES;
+7. **DEVELOPMENT -> KSQL -> STREAMS**: View messages from different KSQL streams and tables. Right click on your stream of choice, select ``Query`` which takes you to the Query Editor with a pre-populated query such as ``select * from WIKIPEDIA limit 5;``.  Click on the ``Run query`` button to run.
 
-       Table Name        | Kafka Topic       | Format | Windowed 
-      -----------------------------------------------------------
-       EN_WIKIPEDIA_GT_1 | EN_WIKIPEDIA_GT_1 | AVRO   | true     
-      -----------------------------------------------------------
+     .. figure:: images/ksql_query_topic.png
+        :alt: image
 
-
-      ksql> DESCRIBE EN_WIKIPEDIA_GT_1;
-      
-       Field    | Type                      
-      --------------------------------------
-       ROWTIME  | BIGINT           (system) 
-       ROWKEY   | VARCHAR(STRING)  (system) 
-       USERNAME | VARCHAR(STRING)  (key)    
-       WIKIPAGE | VARCHAR(STRING)  (key)    
-       COUNT    | BIGINT                    
-      --------------------------------------
-
-5. View the existing KSQL queries, which are continuously running, and explain one of those queries called ``CSAS_WIKIPEDIABOT``.
-
-   .. sourcecode:: bash
-
-      ksql> SHOW QUERIES;
-      
-       Query ID                      | Kafka Topic              | Query String
-      --------------------------------------------------------------------------------------------------
-       CSAS_WIKIPEDIABOT             | WIKIPEDIABOT             | CREATE STREAM wikipediabot WITH (PARTITIONS=2,REPLICAS=2) AS SELECT * FROM wikipedia WHERE isbot = true;
-       CTAS_EN_WIKIPEDIA_GT_1        | EN_WIKIPEDIA_GT_1        | CREATE TABLE en_wikipedia_gt_1 WITH (PARTITIONS=2,REPLICAS=2) AS SELECT username, wikipage, count(*) AS COUNT FROM wikipedia WINDOW TUMBLING (size 300 second) WHERE channel = '#en.wikipedia' GROUP BY username, wikipage HAVING count(*) > 1;
-       CSAS_WIKIPEDIANOBOT           | WIKIPEDIANOBOT           | CREATE STREAM wikipedianobot WITH (PARTITIONS=2,REPLICAS=2) AS SELECT * FROM wikipedia WHERE isbot <> true;
-       CSAS_EN_WIKIPEDIA_GT_1_COUNTS | EN_WIKIPEDIA_GT_1_COUNTS | CREATE STREAM en_wikipedia_gt_1_counts WITH (PARTITIONS=2,REPLICAS=2) AS SELECT * FROM en_wikipedia_gt_1_stream where ROWTIME is not null;
-      --------------------------------------------------------------------------------------------------
-
-      
-      ksql> EXPLAIN CSAS_WIKIPEDIABOT;
-      
-      Type                 : QUERY
-      SQL                  : CREATE STREAM wikipediabot WITH (PARTITIONS=2,REPLICAS=2) AS SELECT * FROM wikipedia WHERE isbot = true;
-      
-      
-      Local runtime statistics
-      ------------------------
-      messages-per-sec:      1.07   total-messages:      1210     last-message: 2/16/18 4:47:16 PM UTC
-       failed-messages:         0 failed-messages-per-sec:         0      last-failed:       n/a
-      (Statistics of the local KSQL server interaction with the Kafka topic WIKIPEDIABOT)
-
-6. At the KSQL prompt, view three messages from different KSQL streams and tables.
-
-   .. sourcecode:: bash
-
-      ksql> SELECT * FROM WIKIPEDIABOT LIMIT 3;
-      ksql> SELECT * FROM EN_WIKIPEDIA_GT_1 LIMIT 3;
-      ksql> SELECT * FROM EN_WIKIPEDIA_GT_1_COUNTS LIMIT 3;
-
-
-7. In this demo, KSQL is run with Confluent Monitoring Interceptors configured which enables |c3| Data Streams to monitor KSQL queries. The consumer group names ``ksql_query_`` correlate to the KSQL query names above, and |c3| is showing the records that are incoming to each query.
+8. In this demo, KSQL is run with Confluent Monitoring Interceptors configured which enables |c3| Data Streams to monitor KSQL queries. The consumer group names ``ksql_query_`` correlate to the KSQL query names above, and |c3| is showing the records that are incoming to each query.
 
 * View throughput and latency of the incoming records for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``ksql_query_CSAS_WIKIPEDIABOT`` in |c3|.
 
@@ -324,7 +286,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
    .. note:: In |c3| the stream monitoring graphs for consumer groups ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` and ``EN_WIKIPEDIA_GT_1_COUNTS-consumer`` are displaying data at 5-minute intervals instead of smoothly like the other consumer groups. This is because |c3| displays data based on message timestamps, and the incoming stream for these consumer groups is a tumbling window with a window size of 5 minutes. Thus all its messages are timestamped to the beginning of each 5-minute window. This is also why the latency for these streams appears to be high. Kafka streaming tumbling windows are working as designed, and |c3| is reporting them accurately.
 
-8. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
+9. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
    .. sourcecode:: bash
 
@@ -461,8 +423,6 @@ consumers in a consumer group.
    .. figure:: images/slow_consumer.png
       :alt: image
 
-
-
 5. In the System Health dashboard, you see that the fetch request
    latency has likewise increased. This is the because the broker that
    has the partition that ``consumer_app_1`` is consuming from is taking
@@ -481,12 +441,18 @@ consumers in a consumer group.
    .. figure:: images/slow_consumer_fetch_latency_breakdown.png
       :alt: image
 
-7. Remove the consumption quota for the consumer. Latency for
+7. **MONITORING -> Consumer lag**: consumer lag is the topic's high water mark (latest offset for the topic that has been written) minus the current consumer offset (latest offset read for that topic by that consumer group). Keep in mind topic write rate and consumer group read rate when considering what the significance of how big is the consumer lag. In the demo, view the consumer lag for the ``app`` consumer group: expect consumer 1 to be have much more lag than consumer 2 because of the throttle you added in an earlier step. 
+
+   .. figure:: images/consumer_lag_app.png
+      :alt: image
+
+8. Remove the consumption quota for the consumer. Latency for
    ``consumer_app_1`` recovers to steady state values.
 
    .. sourcecode:: bash
 
         $ ./scripts/app/throttle_consumer.sh 1 delete
+
 
 Over consumption
 ----------------
@@ -809,7 +775,7 @@ intra-cluster replication, *i.e.*, the source and destination Kafka
 clusters are the same. As with the rest of the components in the
 solution, Confluent Replicator is also configured with security.
 
-1. **Monitoring –> Data Streams –> Message Delivery**: monitor
+1. **MONITORING –> Data Streams –> Message Delivery**: monitor
    throughput and latency of Confluent Replicator in the Data streams
    monitoring view. Replicator is a Kafka Connect source connector and
    has a corresponding consumer group ``connect-replicator``.
@@ -819,7 +785,7 @@ solution, Confluent Replicator is also configured with security.
 
 
 
-2. **Management –> Topics**: scroll down to view the topics called
+2. **MANAGEMENT –> Topics**: scroll down to view the topics called
    ``wikipedia.parsed`` (Replicator is consuming data from this topic)
    and ``wikipedia.parsed.replica`` (Replicator automatically created this topic and is
    copying data to it). Click on ``Consumer Groups`` for the topic
@@ -829,7 +795,7 @@ solution, Confluent Replicator is also configured with security.
    .. figure:: images/replicator_topic_info.png
 
 
-3. **Management –> Kafka Connect**: pause the Replicator connector
+3. **MANAGEMENT –> Kafka Connect**: pause the Replicator connector
    by pressing the pause icon in the top right. This will stop
    consumption for the related consumer group.
 
@@ -1074,7 +1040,7 @@ The connectors used in this demo are configured to automatically read and write 
 
    .. sourcecode:: bash
 
-     $ docker-compose exec restproxy curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects | jq . 
+     $ docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects | jq . 
 
      [
        "ksql_query_CTAS_EN_WIKIPEDIA_GT_1-KSQL_Agg_Query_1526914100640-changelog-value",
@@ -1086,21 +1052,26 @@ The connectors used in this demo are configured to automatically read and write 
        "wikipedia.parsed-value"
      ]
 
-2. Register a new Avro schema (a record with two fields ``username`` and ``userid``) into Confluent Schema Registry for the value of a new topic ``users``. Note the schema id that it returns, in this case id is ``6``.
+2. Register a new Avro schema (a record with two fields ``username`` and ``userid``) into Confluent Schema Registry for the value of a new topic ``users``. Note the schema id that it returns, e.g. below schema id is ``6``.
 
    .. sourcecode:: bash
 
-     $ docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' https://schemaregistry:8085/subjects/users-value/versions | jq .
+     $ docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' https://schemaregistry:8085/subjects/users-value/versions | jq .
 
      {
        "id": 6
      }
 
-3. View the new schema for the subject ``users-value``.
+3. View the new schema for the subject ``users-value``. From |c3|, click **MANAGEMENT -> Topics**. Scroll down to and click on the topic `users` and select "SCHEMA".
+
+      .. figure:: images/schema1.png
+         :alt: image
+   
+   You may alternatively request the schema via the command line:
 
    .. sourcecode:: bash
 
-     $ docker-compose exec restproxy curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects/users-value/versions/1 | jq .
+     $ docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects/users-value/versions/1 | jq .
 
      {
        "subject": "users-value",
@@ -1121,17 +1092,17 @@ The connectors used in this demo are configured to automatically read and write 
 
    .. sourcecode:: bash
 
-     # Create consumer instance my_avro_consumer
+     # 5.1 Create consumer instance my_avro_consumer
      $ docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"name": "my_consumer_instance", "format": "avro", "auto.offset.reset": "earliest"}' https://restproxy:8086/consumers/my_avro_consumer
 
-     # Subscribe my_avro_consumer to the `users` topic
+     # 5.2 Subscribe my_avro_consumer to the `users` topic
      $ docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"topics":["users"]}' https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/subscription
 
-     # Get messages for my_avro_consumer subscriptions
-     # Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
+     # 5.3 Get messages for my_avro_consumer subscriptions
+     # Note: Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
      $ docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
 
-     # Delete the consumer instance my_avro_consumer
+     # 5.4 Delete the consumer instance my_avro_consumer
      $ docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
 
 
@@ -1151,18 +1122,19 @@ Troubleshooting the demo
 
                  Name                        Command               State                              Ports
         ------------------------------------------------------------------------------------------------------------------------------
-        connect                   /etc/confluent/docker/run        Up       0.0.0.0:8083->8083/tcp, 9092/tcp
-        control-center            /etc/confluent/docker/run        Up       0.0.0.0:9021->9021/tcp
-        elasticsearch             /bin/bash bin/es-docker          Up       0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp
-        kafka-client              bash -c -a echo Waiting fo ...   Exit 0
-        kafka1                    /etc/confluent/docker/run        Up       0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp, 9092/tcp
-        kafka2                    /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp
-        kibana                    /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp
-        ksql-cli                  perl -e while(1){ sleep 99 ...   Up       0.0.0.0:9098->9098/tcp
-        replicator                tail -f /dev/null                Up       8083/tcp, 9092/tcp                                        
-        restproxy                 /etc/confluent/docker/run        Up       0.0.0.0:8082->8082/tcp, 0.0.0.0:8086->8086/tcp            
-        schemaregistry            /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8085->8085/tcp                          
-        zookeeper                 /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
+        connect          /etc/confluent/docker/run                 Up      0.0.0.0:8083->8083/tcp, 9092/tcp                          
+        control-center   /etc/confluent/docker/run                 Up      0.0.0.0:9021->9021/tcp                                    
+        elasticsearch    /bin/bash bin/es-docker                   Up      0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp            
+        kafka-client     bash -c -a echo Waiting fo ...            Up      0.0.0.0:7073->7073/tcp, 9092/tcp                          
+        kafka1           /etc/confluent/docker/run                 Up      0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp, 9092/tcp
+        kafka2           /etc/confluent/docker/run                 Up      0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp          
+        kibana           /bin/sh -c /usr/local/bin/ ...            Up      0.0.0.0:5601->5601/tcp                                    
+        ksql-cli         /bin/sh                                   Up                                                                
+        ksql-server      /etc/confluent/docker/run                 Up      0.0.0.0:8088->8088/tcp                                    
+        replicator       tail -f /dev/null                         Up      8083/tcp, 9092/tcp                                        
+        restproxy        /etc/confluent/docker/run                 Up      8082/tcp, 0.0.0.0:8086->8086/tcp                          
+        schemaregistry   /etc/confluent/docker/run                 Up      8081/tcp, 0.0.0.0:8085->8085/tcp                          
+        zookeeper        /etc/confluent/docker/run                 Up      0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp   
 
 2. To view sample messages for each topic, including
    ``wikipedia.parsed``:
