@@ -18,8 +18,8 @@ services:
       - "2181:2181"
 
   kafka1:
-    image: confluentinc/cp-enterprise-kafka:5.0.0-beta30-1
-    #image: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc/cp-enterprise-kafka:5.0.x-75
+    #image: confluentinc/cp-enterprise-kafka:5.0.0-beta30-1
+    image: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc/cp-enterprise-kafka:5.0.x-75
     hostname: kafka1
     container_name: kafka1
     depends_on:
@@ -72,8 +72,8 @@ services:
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   kafka2:
-    image: confluentinc/cp-enterprise-kafka:5.0.0-beta30-1
-    #image: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc/cp-enterprise-kafka:5.0.x-75
+    #image: confluentinc/cp-enterprise-kafka:5.0.0-beta30-1
+    image: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc/cp-enterprise-kafka:5.0.x-75
     hostname: kafka2
     container_name: kafka2
     depends_on:
@@ -372,7 +372,7 @@ services:
       - "7073:7073"
 
   ksql-server:
-    image: confluentinc/cp-ksql-server:5.0.0-beta30
+    image: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc/cp-ksql-server:5.0.x-157
     hostname: ksql-server
     container_name: ksql-server
     depends_on:
