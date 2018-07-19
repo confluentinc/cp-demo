@@ -131,6 +131,7 @@ services:
       - schemaregistry
     volumes:
       - $PWD/connect-plugins:/connect-plugins
+      - mi3:/usr/share/java/kafka-connect-replicator/
       - $PWD/connect-plugins/kafka-connect-transform-nullfilter/null-filter-4.0.0-SNAPSHOT.jar:/usr/share/java/kafka-connect-elasticsearch/null-filter-4.0.0-SNAPSHOT.jar
       - $PWD/scripts/security:/etc/kafka/secrets
     environment:
@@ -419,3 +420,26 @@ services:
     ports:
       - 8086:8086
 
+  replicator:
+    image: confluentinc/cp-enterprise-replicator:4.1.1
+    hostname: replicator
+    container_name: replicator
+    volumes:
+      - mi3:/usr/share/java/kafka-connect-replicator/
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: localhost:8882
+      CONNECT_REST_PORT: 8883
+      CONNECT_GROUP_ID: "connect-replicator"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "default.offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "default.status"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "localhost"
+      CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
+    command: "tail -f /dev/null"
+
+volumes:
+    mi3: {}
