@@ -16,6 +16,7 @@ services:
       - $PWD/scripts/security:/etc/kafka/secrets
     ports:
       - "2181:2181"
+
   kafka1:
     image: confluentinc/cp-enterprise-kafka:5.0.0-beta30-1
     #image: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc/cp-enterprise-kafka:5.0.x-75
@@ -433,8 +434,6 @@ services:
                   -Djavax.net.ssl.trustStorePassword=confluent
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
                   -Djavax.net.ssl.keyStorePassword=confluent
-    ports:
-      - 8088:8088
 
   ksql-cli:
     image: confluentinc/cp-ksql-cli:5.0.0-beta30
