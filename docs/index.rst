@@ -1081,6 +1081,7 @@ Troubleshooting the demo
         cpdemo_kafka2_1           /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp
         cpdemo_kibana_1           /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp
         cpdemo_ksql-cli_1         perl -e while(1){ sleep 99 ...   Up       0.0.0.0:9098->9098/tcp
+        cpdemo_replicator_1       tail -f /dev/null                Up       8083/tcp, 9092/tcp                                        
         cpdemo_schemaregistry_1   /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8082->8082/tcp
         cpdemo_zookeeper_1        /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 
