@@ -17,7 +17,8 @@ services:
     ports:
       - "2181:2181"
   kafka1:
-    image: confluentinc/cp-enterprise-kafka:5.0.0-beta180702222458-1
+    image: confluentinc/cp-enterprise-kafka:5.0.0-beta30-1
+    #image: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc/cp-enterprise-kafka:5.0.x-75
     hostname: kafka1
     container_name: kafka1
     depends_on:
@@ -70,7 +71,8 @@ services:
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   kafka2:
-    image: confluentinc/cp-enterprise-kafka:5.0.0-beta180702222458-1
+    image: confluentinc/cp-enterprise-kafka:5.0.0-beta30-1
+    #image: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc/cp-enterprise-kafka:5.0.x-75
     hostname: kafka2
     container_name: kafka2
     depends_on:
@@ -123,7 +125,7 @@ services:
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   connect:
-    image: confluentinc/cp-kafka-connect:5.0.0-beta180702222458-1
+    image: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc/cp-kafka-connect:5.0.x-75
     container_name: connect
     restart: always
     ports:
@@ -131,6 +133,7 @@ services:
     depends_on:
       - zookeeper
       - kafka1
+      - kafka2
       - schemaregistry
     volumes:
       - $PWD/connect-plugins:/connect-plugins
@@ -155,9 +158,10 @@ services:
       CONNECT_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
       CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
-      CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
+      #CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
+      CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.0.0-beta180702222458.jar
+      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.0.0-SNAPSHOT.jar
       # Connect worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
@@ -245,7 +249,7 @@ services:
       xpack.security.enabled: "false"
       discovery.type: "single-node"
   control-center:
-    image: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc/cp-enterprise-control-center:5.0.x-62
+    image: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc/cp-enterprise-control-center:5.0.x-75
     container_name: control-center
     restart: always
     depends_on:
@@ -429,6 +433,9 @@ services:
                   -Djavax.net.ssl.trustStorePassword=confluent
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
                   -Djavax.net.ssl.keyStorePassword=confluent
+    ports:
+      - 8088:8088
+
   ksql-cli:
     image: confluentinc/cp-ksql-cli:5.0.0-beta30
     container_name: ksql-cli
@@ -487,7 +494,7 @@ services:
       - 8086:8086
 
   replicator:
-    image: confluentinc/cp-enterprise-replicator:5.0.0-beta180702222458-1
+    image: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc/cp-enterprise-replicator:5.0.x-75
     hostname: replicator
     container_name: replicator
     volumes:
