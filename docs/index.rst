@@ -252,7 +252,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
      .. figure:: images/ksql_tables_list.png
         :alt: image
 
-5. **DEVELOPMENT -> KSQL -> QUERY EDITOR**: View the schema (fields or columns) and source and sink of an existing KSQL stream. In the query editor, type ``DESCRIBE WIKIPEDIABOT;`` and then click on the ``Run query`` button.
+5. **DEVELOPMENT -> KSQL -> QUERY EDITOR**: View the schema (fields or columns) and source and sink of an existing KSQL stream. In the query editor, type ``DESCRIBE WIKIPEDIA;`` and then click on the ``Run query`` button.
 
      .. figure:: images/ksql_stream_describe.png
         :alt: image
