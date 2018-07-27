@@ -80,7 +80,7 @@ Run demo
 
       $ ./scripts/start.sh
 
-4. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
+4. Use Google Chrome to view the `|c3| GUI <http://localhost:9021/monitoring/system/brokers?latencyPercentile=95&rolling=30&view=RAW>`_.
 
 5. View the data in the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 

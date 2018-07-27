@@ -107,3 +107,6 @@ echo -e "\nWaiting for everything to stabilize, sleeping 30 seconds"
 sleep 30
 
 echo -e "\nDONE! Connect to Confluent Control Center at http://localhost:9021\n"
+if [[ $(uname -s) == "Darwin" ]]; then
+  open "http://localhost:9021/monitoring/system/brokers?latencyPercentile=95&rolling=30&view=RAW"
+fi
