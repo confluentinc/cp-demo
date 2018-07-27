@@ -291,7 +291,7 @@ services:
   schemaregistry:
     image: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc/cp-schema-registry:5.0.0-rc3
     container_name: schemaregistry
-    #restart: always
+    restart: always
     depends_on:
       - zookeeper
       - kafka1
@@ -373,6 +373,7 @@ services:
     image: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc/cp-ksql-server:5.0.0-rc3
     hostname: ksql-server
     container_name: ksql-server
+    restart: always
     depends_on:
       - kafka1
       - kafka2
