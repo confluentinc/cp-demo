@@ -28,10 +28,10 @@ echo -e "Generate keys and certificates used for SSL"
 echo -e "Bringing up Docker Compose"
 docker-compose up -d
 
-# Verify Confluent Control Center has started within 120 seconds
-MAX_WAIT=120
+# Verify Confluent Control Center has started within MAX_WAIT seconds
+MAX_WAIT=300
 CUR_WAIT=0
-echo "Waiting for Confluent Control Center to start"
+echo "Waiting up to $MAX_WAIT seconds for Confluent Control Center to start"
 while [[ ! $(docker-compose logs control-center) =~ "Started NetworkTrafficServerConnector" ]]; do
   sleep 10
   CUR_WAIT=$(( CUR_WAIT+10 ))
