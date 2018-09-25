@@ -188,7 +188,7 @@ Topic Management
    .. figure:: images/topic_info.png
       :alt: image
 
-3. **MANAGEMENT –> Topics -> Schema**: View the schema for this topic. For `wikipedia.parsed`, the topic value is using a Schema registered with the Schema Registry (the topic key is just a string).
+3. **MANAGEMENT –> Topics -> Schema**: View the schema for this topic. For `wikipedia.parsed`, the topic value is using a Schema registered with |sr| (the topic key is just a string).
 
    .. figure:: images/topic_schema.png
       :alt: image
@@ -1033,12 +1033,12 @@ authorized to communicate with the cluster.
    Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
 
 
-Schema Registry and REST Proxy
-------------------------------
+|sr| and REST Proxy
+-------------------
 
 The connectors used in this demo are configured to automatically read and write Avro-formatted data, leveraging the `Confluent Schema Registry <https://docs.confluent.io/current/schema-registry/docs/index.html>`__ .  The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
 
-1. View the Schema Registry subjects for topics that have registered schemas for their keys and/or values. Notice the security arguments passed into the ``curl`` command which are required to interact with the Schema Registry, which is listening for HTTPS on port 8085.
+1. View the |sr| subjects for topics that have registered schemas for their keys and/or values. Notice the security arguments passed into the ``curl`` command which are required to interact with |sr|, which is listening for HTTPS on port 8085.
 
    .. sourcecode:: bash
 
@@ -1054,7 +1054,7 @@ The connectors used in this demo are configured to automatically read and write 
        "wikipedia.parsed-value"
      ]
 
-2. Register a new Avro schema (a record with two fields ``username`` and ``userid``) into Confluent Schema Registry for the value of a new topic ``users``. Note the schema id that it returns, e.g. below schema id is ``6``.
+2. Register a new Avro schema (a record with two fields ``username`` and ``userid``) into |sr| for the value of a new topic ``users``. Note the schema id that it returns, e.g. below schema id is ``6``.
 
    .. sourcecode:: bash
 
