@@ -938,8 +938,7 @@ authorized to communicate with the cluster.
 
        .. sourcecode:: bash
 
-            Error: Executing consumer group command failed due to Request
-            METADATA failed on brokers List(kafka1:9091 (id: -1 rack: null))
+            Error: Executing consumer group command failed due to Request METADATA failed on brokers List(kafka1:9091 (id: -1 rack: null))
 
 
 3. Verify the super users are configured for the authenticated users
