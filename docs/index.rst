@@ -837,6 +837,7 @@ features <https://docs.confluent.io/current/security.html>`__:
    access the resource, except super users
 -  `HTTPS for Schema
    Registry <https://docs.confluent.io/current/schema-registry/docs/security.html>`__
+-  `HTTPS for Connect <https://docs.confluent.io/current/connect/security.html#configuring-the-kconnect-rest-api-for-http-or-https>`__
 
 .. note::
     This demo showcases a secure |CP| for educational purposes and is not meant to be complete best practices. There are certain differences between what is shown in the demo and what you should do in production:

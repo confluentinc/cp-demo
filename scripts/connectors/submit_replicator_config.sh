@@ -1,11 +1,5 @@
 #!/bin/bash
 
-CONNECT_HOST=localhost
-
-if [[ $1 ]];then
-    CONNECT_HOST=$1
-fi
-
 HEADER="Content-Type: application/json"
 DATA=$( cat << EOF
 {
@@ -62,6 +56,4 @@ DATA=$( cat << EOF
 EOF
 )
 
-echo "curl -X POST -H \"${HEADER}\" --data \"${DATA}\" http://${CONNECT_HOST}:8083/connectors"
-curl -X POST -H "${HEADER}" --data "${DATA}" http://${CONNECT_HOST}:8083/connectors
-echo
+docker-compose exec connect curl -X POST -H "${HEADER}" --data "${DATA}" --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://connect:8083/connectors
