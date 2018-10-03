@@ -837,6 +837,7 @@ features <https://docs.confluent.io/current/security.html>`__:
    access the resource, except super users
 -  `HTTPS for Schema
    Registry <https://docs.confluent.io/current/schema-registry/docs/security.html>`__
+-  `HTTPS for Connect <https://docs.confluent.io/current/connect/security.html#configuring-the-kconnect-rest-api-for-http-or-https>`__
 
 .. note::
     This demo showcases a secure |CP| for educational purposes and is not meant to be complete best practices. There are certain differences between what is shown in the demo and what you should do in production:
@@ -878,12 +879,12 @@ Authorization
 -------------
 
 All the brokers in this demo authenticate as ``broker``, and all other
-components authenticate as ``client``. Per the broker configuration
+services authenticate as their respective names. Per the broker configuration
 parameter ``super.users``, as it is set in this demo, the only users
 that can communicate with the cluster are those that authenticate as
-``broker`` or ``client``, or users that connect via the ``PLAINTEXT``
-port (their username is ``ANONYMOUS``). All other users are not
-authorized to communicate with the cluster.
+``broker``, ``schemaregistry``, ``client``, ``restproxy``, ``client``, or users
+that connect via the ``PLAINTEXT`` port (their username is ``ANONYMOUS``).
+All other users are not authorized to communicate with the cluster.
 
 1. Verify the ports on which the Kafka brokers are listening with the
    following command, and they should match the table shown below:
@@ -937,22 +938,21 @@ authorized to communicate with the cluster.
 
        .. sourcecode:: bash
 
-            Error: Executing consumer group command failed due to Request
-            METADATA failed on brokers List(kafka1:9091 (id: -1 rack: null))
+            Error: Executing consumer group command failed due to Request METADATA failed on brokers List(kafka1:9091 (id: -1 rack: null))
 
 
-3. Verify the super users are configured for the authenticated users
-   ``broker``, ``client``, and unauthenticated ``PLAINTEXT``.
+3. Verify which authenticated users are configured to be super users.
 
    .. sourcecode:: bash
 
        $ docker-compose logs kafka1 | grep SUPER_USERS
 
-   Your output should resemble:
+   Your output should resemble the following. Notice this authorizes each service name which authenticates as itself,
+   as well as the unauthenticated ``PLAINTEXT`` which authenticates as ``ANONYMOUS`` (for demo purposes only):
 
    .. sourcecode:: bash
 
-         KAFKA_SUPER_USERS=User:client;User:schemaregistry;User:broker;User:ANONYMOUS
+         KAFKA_SUPER_USERS=User:client;User:schemaregistry;User:restproxy;User:broker;User:connect;User:ANONYMOUS
 
 4. Verify that a user ``client`` which authenticates via SASL can
    consume messages from topic ``wikipedia.parsed``:
@@ -999,13 +999,13 @@ authorized to communicate with the cluster.
 
    .. sourcecode:: bash
 
-    $ docker-compose exec connect /usr/bin/kafka-acls \
+    $ docker-compose exec kafka1 /usr/bin/kafka-acls \
         --authorizer-properties zookeeper.connect=zookeeper:2181 \
         --add --topic wikipedia.parsed \
         --allow-principal User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US \
         --operation Read --group test
 
-    $ docker-compose exec connect /usr/bin/kafka-acls \
+    $ docker-compose exec kafka1 /usr/bin/kafka-acls \
         --authorizer-properties zookeeper.connect=zookeeper:2181 \
         --list --topic wikipedia.parsed --group test
 
