@@ -378,12 +378,12 @@ Control Center updates as consumer rebalances occur in a consumer group.
 Slow consumers
 --------------
 
-Follow along with the `Demo 5: Slow Consumers <https://youtu.be/HPIskKJjmNU>`_ video.
+Follow along with the `Demo 5: Slow Consumers <https://youtu.be/XOtY1uUaf_Y>`_ video.
 
 .. raw:: html
 
     <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/HPIskKJjmNU" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
+        <iframe src="https://www.youtube.com/embed/XOtY1uUaf_Y" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
     </div>
 
 Streams monitoring in Control Center can highlight consumers that are
