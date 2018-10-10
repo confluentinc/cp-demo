@@ -63,14 +63,14 @@ Run demo
 -  git
 -  jq
 
-.. note:: If you prefer a non-Docker version and have Elasticsearch and Kibana running on your local machine, please follow `these instructions <https://github.com/confluentinc/quickstart-demos/tree/master/wikipedia>`__.
+.. note:: If you prefer a non-Docker version and have Elasticsearch and Kibana running on your local machine, please follow `these instructions <https://github.com/confluentinc/quickstart-demos/tree/master/wikipedia>`__. NB! At any time the _master_ branch may point to not-yet staged versions of Confluent Platform and thus it's recommended to explicitly set the branch to be used. The most recent stable branch is currenly _5.0.0-post_.
 
 
 1. Clone the `cp-demo GitHub repository <https://github.com/confluentinc/cp-demo>`__:
 
    .. sourcecode:: bash
 
-     $ git clone https://github.com/confluentinc/cp-demo
+     $ git clone -b 5.0.0-post https://github.com/confluentinc/cp-demo
 
 2. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8GB (default is 2GB).
 
