@@ -1,7 +1,7 @@
 version: "2.1"
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:5.2.0-SNAPSHOT
+    image: confluentinc/cp-zookeeper:6.0.0-beta181011024526
     restart: always
     hostname: zookeeper
     container_name: zookeeper
@@ -18,7 +18,7 @@ services:
       - "2181:2181"
 
   kafka1:
-    image: confluentinc/cp-enterprise-kafka:5.2.0-SNAPSHOT
+    image: confluentinc/cp-enterprise-kafka:6.0.0-beta181011024526
     hostname: kafka1
     container_name: kafka1
     depends_on:
@@ -71,7 +71,7 @@ services:
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   kafka2:
-    image: confluentinc/cp-enterprise-kafka:5.2.0-SNAPSHOT
+    image: confluentinc/cp-enterprise-kafka:6.0.0-beta181011024526
     hostname: kafka2
     container_name: kafka2
     depends_on:
@@ -124,7 +124,7 @@ services:
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   connect:
-    image: confluentinc/cp-kafka-connect:5.2.0-SNAPSHOT
+    image: confluentinc/cp-kafka-connect:6.0.0-beta181011024526
     container_name: connect
     restart: always
     ports:
@@ -248,7 +248,7 @@ services:
       xpack.security.enabled: "false"
       discovery.type: "single-node"
   control-center:
-    image: confluentinc/cp-enterprise-control-center:5.2.0-SNAPSHOT
+    image: confluentinc/cp-enterprise-control-center:6.0.0-beta181011024526
     container_name: control-center
     restart: always
     depends_on:
@@ -290,7 +290,7 @@ services:
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
                   -Djavax.net.ssl.keyStorePassword=confluent
   schemaregistry:
-    image: confluentinc/cp-schema-registry:5.2.0-SNAPSHOT
+    image: confluentinc/cp-schema-registry:6.0.0-beta181011024526
     container_name: schemaregistry
     restart: always
     depends_on:
@@ -326,7 +326,7 @@ services:
     ports:
       - 8085:8085
   kafka-client:
-    image: confluentinc/cp-enterprise-kafka:5.2.0-SNAPSHOT
+    image: confluentinc/cp-enterprise-kafka:6.0.0-beta181011024526
     hostname: kafka-client
     container_name: kafka-client
     depends_on:
@@ -371,7 +371,7 @@ services:
       - "7073:7073"
 
   ksql-server:
-    image: confluentinc/cp-ksql-server:5.2.0-SNAPSHOT
+    image: confluentinc/cp-ksql-server:6.0.0-beta181011024526
     hostname: ksql-server
     container_name: ksql-server
     restart: always
@@ -436,7 +436,7 @@ services:
                   -Djavax.net.ssl.keyStorePassword=confluent
 
   ksql-cli:
-    image: confluentinc/cp-ksql-cli:5.2.0-SNAPSHOT
+    image: confluentinc/cp-ksql-cli:6.0.0-beta181011024526
     container_name: ksql-cli
     depends_on:
       - kafka1
@@ -447,7 +447,7 @@ services:
     entrypoint: /bin/sh
     tty: true
   restproxy:
-    image: confluentinc/cp-kafka-rest:5.2.0-SNAPSHOT
+    image: confluentinc/cp-kafka-rest:6.0.0-beta181011024526
     restart: always
     depends_on:
       - zookeeper
@@ -492,7 +492,7 @@ services:
       - 8086:8086
 
   replicator:
-    image: confluentinc/cp-enterprise-replicator:5.2.0-SNAPSHOT
+    image: confluentinc/cp-enterprise-replicator:6.0.0-beta181011024526
     hostname: replicator
     container_name: replicator
     volumes:
