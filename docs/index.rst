@@ -80,7 +80,7 @@ Run demo
 
       $ ./scripts/start.sh
 
-4. Use Google Chrome to view the |c3| GUI at http://localhost:9021 (or https://localhost:9022 for HTTPS in which Chrome may require you to accept this demo's self-signed certificate). Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
+4. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
 
 5. View the data in the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
@@ -835,7 +835,7 @@ features <https://docs.confluent.io/current/security.html>`__:
 -  `Authorization <https://docs.confluent.io/current/kafka/authorization.html>`__.
    If a resource has no associated ACLs, then users are not allowed to
    access the resource, except super users
--  `HTTPS for Control Center <https://docs.confluent.io/current/control-center/docs/installation/configuration.html#https-settings>`__
+-  `HTTPS for Control Center <https://docs.confluent.io/current/control-center/docs/installation/configuration.html#https-settings>`__ (with HTTPS to Control Center, KSQL query editor will not work with HTTP to KSQL server)
 -  `HTTPS for Schema
    Registry <https://docs.confluent.io/current/schema-registry/docs/security.html>`__
 -  `HTTPS for Connect <https://docs.confluent.io/current/connect/security.html#configuring-the-kconnect-rest-api-for-http-or-https>`__
