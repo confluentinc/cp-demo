@@ -80,7 +80,7 @@ Run demo
 
       $ ./scripts/start.sh
 
-4. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
+4. Use Google Chrome to view the |c3| GUI at http://localhost:9021 (or https://localhost:9022 for HTTPS in which Chrome may require you to accept this demo's self-signed certificate). Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
 
 5. View the data in the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
@@ -378,12 +378,12 @@ Control Center updates as consumer rebalances occur in a consumer group.
 Slow consumers
 --------------
 
-Follow along with the `Demo 5: Slow Consumers <https://youtu.be/HPIskKJjmNU>`_ video.
+Follow along with the `Demo 5: Slow Consumers <https://youtu.be/XOtY1uUaf_Y>`_ video.
 
 .. raw:: html
 
     <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/HPIskKJjmNU" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
+        <iframe src="https://www.youtube.com/embed/XOtY1uUaf_Y" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
     </div>
 
 Streams monitoring in Control Center can highlight consumers that are
@@ -835,6 +835,7 @@ features <https://docs.confluent.io/current/security.html>`__:
 -  `Authorization <https://docs.confluent.io/current/kafka/authorization.html>`__.
    If a resource has no associated ACLs, then users are not allowed to
    access the resource, except super users
+-  `HTTPS for Control Center <https://docs.confluent.io/current/control-center/docs/installation/configuration.html#https-settings>`__
 -  `HTTPS for Schema
    Registry <https://docs.confluent.io/current/schema-registry/docs/security.html>`__
 -  `HTTPS for Connect <https://docs.confluent.io/current/connect/security.html#configuring-the-kconnect-rest-api-for-http-or-https>`__

@@ -12,6 +12,7 @@ DATA=$( cat << EOF
     "transforms.wikiEditTransformation.dead.letter.topic": "wikipedia.failed",
     "irc.channels": "#en.wikipedia,#fr.wikipedia,#es.wikipedia,#ru.wikipedia,#en.wiktionary,#de.wikipedia,#zh.wikipedia,#sd.wikipedia,#it.wikipedia,#mediawiki.wikipedia,#commons.wikimedia,#eu.wikipedia,#vo.wikipedia,#eo.wikipedia,#uk.wikipedia",
     "irc.server": "irc.wikimedia.org",
+    "irc.server.port": "6667",
     "kafka.topic": "wikipedia.parsed",
     "producer.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor",
     "value.converter": "io.confluent.connect.avro.AvroConverter",
