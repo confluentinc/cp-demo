@@ -80,7 +80,7 @@ Run demo
 
       $ ./scripts/start.sh
 
-4. Use Google Chrome to view the |c3| GUI at http://localhost:9021 (or https://localhost:9022). Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
+4. Use Google Chrome to view the |c3| GUI at http://localhost:9021 (or https://localhost:9022 for HTTPS in which Chrome may require you to accept this demo's self-signed certificate). Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
 
 5. View the data in the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
