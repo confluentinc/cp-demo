@@ -80,7 +80,7 @@ Run demo
 
       $ ./scripts/start.sh
 
-4. Use Google Chrome to view the |c3| GUI at https://localhost:9021. Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
+4. Use Google Chrome to view the |c3| GUI at http://localhost:9021 (or https://localhost:9022). Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
 
 5. View the data in the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
@@ -226,7 +226,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
 1. The KSQL server is listening on port 8088. You have two options for interfacing with KSQL:
 
-   (a) Use Control Center's integrated `KSQL UI <https://localhost:9021/management/ksql/ksql-server%3A8088/streams>`__. From the |c3| UI, click **DEVELOPMENT –> KSQL**:
+   (a) Use Control Center's integrated `KSQL UI <http://localhost:9021/management/ksql/ksql-server%3A8088/streams>`__. From the |c3| UI, click **DEVELOPMENT –> KSQL**:
 
        .. figure:: images/development_ksql.png
           :alt: image
@@ -835,6 +835,7 @@ features <https://docs.confluent.io/current/security.html>`__:
 -  `Authorization <https://docs.confluent.io/current/kafka/authorization.html>`__.
    If a resource has no associated ACLs, then users are not allowed to
    access the resource, except super users
+-  `HTTPS for Control Center <https://docs.confluent.io/current/control-center/docs/installation/configuration.html#https-settings>`__
 -  `HTTPS for Schema
    Registry <https://docs.confluent.io/current/schema-registry/docs/security.html>`__
 -  `HTTPS for Connect <https://docs.confluent.io/current/connect/security.html#configuring-the-kconnect-rest-api-for-http-or-https>`__

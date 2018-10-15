@@ -11,7 +11,7 @@ rm -f *.crt *.csr *_creds *.jks *.srl *.key *.pem *.der *.p12
 # Generate CA key
 openssl req -new -x509 -keyout snakeoil-ca-1.key -out snakeoil-ca-1.crt -days 365 -subj '/CN=ca1.test.confluent.io/OU=TEST/O=CONFLUENT/L=PaloAlto/S=Ca/C=US' -passin pass:confluent -passout pass:confluent
 
-for i in kafka1 kafka2 client schemaregistry restproxy connect control-center
+for i in kafka1 kafka2 client schemaregistry restproxy connect control-center localhost
 do
 	echo "------------------------------- $i -------------------------------"
 
@@ -19,7 +19,7 @@ do
 	keytool -genkey -noprompt \
 				 -alias $i \
 				 -dname "CN=$i,OU=TEST,O=CONFLUENT,L=PaloAlto,S=Ca,C=US" \
-                                 -ext san=dns:$i \
+                                 -ext "SAN=dns:$i" \
 				 -keystore kafka.$i.keystore.jks \
 				 -keyalg RSA \
 				 -storepass confluent \
