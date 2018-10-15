@@ -30,8 +30,9 @@ do
         #openssl req -in $i.csr -text -noout
 
         # Sign the host certificate with the certificate authority (CA)
+        echo $PWD
         if [[ "$i" == "control-center" ]]; then
-          openssl x509 -req -CA snakeoil-ca-1.crt -CAkey snakeoil-ca-1.key -in $i.csr -out $i-ca1-signed.crt -days 9999 -CAcreateserial -passin pass:confluent -extfile scripts/security/cust.cnf -extensions v3_req
+          openssl x509 -req -CA snakeoil-ca-1.crt -CAkey snakeoil-ca-1.key -in $i.csr -out $i-ca1-signed.crt -days 9999 -CAcreateserial -passin pass:confluent -extfile cust.cnf -extensions v3_req
         else
           openssl x509 -req -CA snakeoil-ca-1.crt -CAkey snakeoil-ca-1.key -in $i.csr -out $i-ca1-signed.crt -days 9999 -CAcreateserial -passin pass:confluent
         fi
