@@ -72,6 +72,11 @@ while [[ ! $(docker-compose logs connect) =~ "Herder started" ]]; do
   fi
 done
 
+if [[ ! $(docker-compose exec connect timeout 3 nc -zv irc.wikimedia.org 6667) =~ "open" ]]; then
+  echo -e "\nERROR: irc.wikimedia.org 6667 is unreachable. Please ensure connectivity before proceeding or try setting 'irc.server.port' to 8001 in scripts/connectors/submit_wikipedia_irc_config.sh\n"
+  exit 1
+fi
+
 echo -e "\nStart streaming from the IRC source connector:"
 ./scripts/connectors/submit_wikipedia_irc_config.sh
 
@@ -111,4 +116,4 @@ curl -X POST -H "Content-Type: application/json" -d '{"name":"Email Administrato
 echo -e "\nWaiting for everything to stabilize, sleeping 30 seconds"
 sleep 30
 
-echo -e "\nDONE! Connect to Confluent Control Center at http://localhost:9021\n"
+echo -e "\nDONE! Connect to Confluent Control Center at http://localhost:9021 (or https://localhost:9022)\n"
