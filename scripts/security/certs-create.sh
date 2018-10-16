@@ -31,11 +31,19 @@ do
 
         # Sign the host certificate with the certificate authority (CA)
         echo $PWD
-        if [[ "$i" == "control-center" || "$i" == "ksql-server" ]]; then
-          openssl x509 -req -CA snakeoil-ca-1.crt -CAkey snakeoil-ca-1.key -in $i.csr -out $i-ca1-signed.crt -days 9999 -CAcreateserial -passin pass:confluent -extfile cust.$i.cnf -extensions v3_req
-        else
-          openssl x509 -req -CA snakeoil-ca-1.crt -CAkey snakeoil-ca-1.key -in $i.csr -out $i-ca1-signed.crt -days 9999 -CAcreateserial -passin pass:confluent
-        fi
+        openssl x509 -req -CA snakeoil-ca-1.crt -CAkey snakeoil-ca-1.key -in $i.csr -out $i-ca1-signed.crt -days 9999 -CAcreateserial -passin pass:confluent -extensions v3_req -extfile <(cat <<EOF
+[req]
+distinguished_name = req_distinguished_name
+x509_extensions = v3_req
+prompt = no
+[req_distinguished_name]
+CN = $i
+[v3_req]
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = $i
+DNS.2 = localhost
+)
         #openssl x509 -noout -text -in $i-ca1-signed.crt
 
         # Sign and import the CA cert into the keystore

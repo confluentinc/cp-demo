@@ -406,6 +406,7 @@ services:
       KSQL_SSL_KEYSTORE_LOCATION: etc/kafka/secrets/kafka.ksql-server.keystore.jks
       KSQL_SSL_KEYSTORE_PASSWORD: confluent
       KSQL_SSL_KEY_PASSWORD: confluent
+      KSQL_SSL_CLIENT_AUTH: "false"
       KSQL_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KSQL_SECURITY_PROTOCOL: "SASL_SSL"
       KSQL_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
