@@ -224,18 +224,22 @@ Follow along with the `Demo 3: KSQL <https://youtu.be/3o7MzCri4e4>`_ video.
 
 In this demo, KSQL is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the `KSQL command file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlcommands>`__.
 
-1. The KSQL server is listening on port 8088. You have two options for interfacing with KSQL:
+1. The KSQL server is listening for HTTP on port 8088 and HTTPS on port 8098. You have two options for interfacing with KSQL:
 
    (a) Use Control Center's integrated `KSQL UI <http://localhost:9021/management/ksql/ksql-server%3A8088/streams>`__. From the |c3| UI, click **DEVELOPMENT –> KSQL**:
 
        .. figure:: images/development_ksql.png
           :alt: image
 
-   (b) Run KSQL CLI to get to the KSQL CLI prompt.
+   (b) Run KSQL CLI to get to the KSQL CLI prompt
 
        .. sourcecode:: bash
 
+          # Connect via HTTP
           $ docker-compose exec ksql-cli ksql http://ksql-server:8088
+
+          # Connect via HTTPS
+          $ docker-compose exec ksql-cli ksql --config-file /etc/kafka/secrets/client_ksql_cli.config https://ksql-server:8098
 
 2. **DEVELOPMENT -> KSQL -> STREAMS**: View the existing KSQL streams. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``).
 
@@ -838,6 +842,7 @@ features <https://docs.confluent.io/current/security.html>`__:
 -  `HTTPS for Control Center <https://docs.confluent.io/current/control-center/docs/installation/configuration.html#https-settings>`__
 -  `HTTPS for Schema Registry <https://docs.confluent.io/current/schema-registry/docs/security.html>`__
 -  `HTTPS for Connect <https://docs.confluent.io/current/connect/security.html#configuring-the-kconnect-rest-api-for-http-or-https>`__
+-  HTTPS for KSQL
 
 .. note::
     This demo showcases a secure |CP| for educational purposes and is not meant to be complete best practices. There are certain differences between what is shown in the demo and what you should do in production:

@@ -457,6 +457,12 @@ services:
       - $PWD/scripts/security:/etc/kafka/secrets
     entrypoint: /bin/sh
     tty: true
+    environment:
+      KSQL_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.ksql-server.truststore.jks
+                  -Djavax.net.ssl.trustStorePassword=confluent
+                  -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.ksql-server.keystore.jks
+                  -Djavax.net.ssl.keyStorePassword=confluent
+
   restproxy:
     image: confluentinc/cp-kafka-rest:5.0.0
     restart: always
