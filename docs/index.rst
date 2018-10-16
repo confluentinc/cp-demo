@@ -835,9 +835,8 @@ features <https://docs.confluent.io/current/security.html>`__:
 -  `Authorization <https://docs.confluent.io/current/kafka/authorization.html>`__.
    If a resource has no associated ACLs, then users are not allowed to
    access the resource, except super users
--  `HTTPS for Control Center <https://docs.confluent.io/current/control-center/docs/installation/configuration.html#https-settings>`__ (with HTTPS to Control Center, KSQL query editor will not work with HTTP to KSQL server)
--  `HTTPS for Schema
-   Registry <https://docs.confluent.io/current/schema-registry/docs/security.html>`__
+-  `HTTPS for Control Center <https://docs.confluent.io/current/control-center/docs/installation/configuration.html#https-settings>`__
+-  `HTTPS for Schema Registry <https://docs.confluent.io/current/schema-registry/docs/security.html>`__
 -  `HTTPS for Connect <https://docs.confluent.io/current/connect/security.html#configuring-the-kconnect-rest-api-for-http-or-https>`__
 
 .. note::
