@@ -5,12 +5,6 @@ Monitoring Kafka streaming ETL deployments
 
 This demo shows users how to deploy a Kafka streaming ETL using `KSQL <https://www.confluent.io/product/ksql/>`__ for stream processing and `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ for monitoring. All the components in the Confluent platform have security enabled end-to-end.
 
-
-.. contents:: Contents
-    :local:
-    :depth: 2
-
-
 ========
 Overview
 ========
