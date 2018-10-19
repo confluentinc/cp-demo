@@ -208,6 +208,7 @@ Topic Management
       .. figure:: images/create_topic.png
          :alt: image
 
+.. _ksql-demo-3:
 
 .. _ksql-demo-3:
 
