@@ -186,6 +186,7 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
       .. figure:: images/create_topic.png
          :alt: image
 
+.. _ksql-demo-3:
 
 KSQL
 ----
