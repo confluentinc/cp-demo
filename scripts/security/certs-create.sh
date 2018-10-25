@@ -42,6 +42,7 @@ subjectAltName = @alt_names
 [alt_names]
 DNS.1 = $i
 DNS.2 = localhost
+EOF
 )
         #openssl x509 -noout -text -in $i-ca1-signed.crt
 
