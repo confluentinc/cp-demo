@@ -4,11 +4,16 @@
 #    -o errexit \
 #    -o verbose
 
-# Verify jq is installed
-if [[ $(type jq 2>&1) =~ "not found" ]]; then
-  echo -e "\nERROR: This script requires 'jq'. Please install 'jq' and run again.\n"
-  exit 1
-fi
+verify_installed()
+{
+  local cmd="$1"
+  if [[ $(type $cmd 2>&1) =~ "not found" ]]; then
+    echo -e "\nERROR: This script requires '$cmd'. Please install '$cmd' and run again.\n"
+    exit 1
+  fi
+}
+verify_installed "jq"
+verify_installed "docker-compose"
 
 # Verify Docker memory is increased to at least 8GB
 DOCKER_MEMORY=$(docker system info | grep Memory | grep -o "[0-9\.]\+")
