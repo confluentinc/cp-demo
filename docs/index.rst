@@ -1,6 +1,6 @@
 .. _cp-demo:
 
-Monitoring Kafka streaming ETL deployments
+Kafka streaming ETL deployments
 ==========================================
 
 This demo shows users how to deploy a Kafka streaming ETL using `KSQL <https://www.confluent.io/product/ksql/>`__ for stream processing and `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ for monitoring. All the components in the Confluent platform have security enabled end-to-end.
@@ -57,7 +57,7 @@ Run demo
 -  git
 -  jq
 
-.. note:: If you prefer a non-Docker version and have Elasticsearch and Kibana running on your local machine, please follow `these instructions <https://github.com/confluentinc/quickstart-demos/tree/master/wikipedia>`__.
+.. note:: If you prefer a non-Docker version and have Elasticsearch and Kibana running on your local machine, please follow `these instructions <https://github.com/confluentinc/examples/tree/5.0.1-post/wikipedia>`__.
 
 
 1. Clone the `cp-demo GitHub repository <https://github.com/confluentinc/cp-demo>`__:
