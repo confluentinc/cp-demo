@@ -204,8 +204,6 @@ Topic Management
 
 .. _ksql-demo-3:
 
-.. _ksql-demo-3:
-
 KSQL
 ----
 
