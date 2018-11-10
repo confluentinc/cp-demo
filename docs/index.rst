@@ -64,7 +64,7 @@ Run demo
 
    .. sourcecode:: bash
 
-     $ git clone https://github.com/confluentinc/cp-demo
+       git clone https://github.com/confluentinc/cp-demo
 
 2. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8GB (default is 2GB).
 
@@ -72,7 +72,7 @@ Run demo
 
    .. sourcecode:: bash
 
-      $ ./scripts/start.sh
+        ./scripts/start.sh
 
 4. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
 
@@ -228,7 +228,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
        .. sourcecode:: bash
 
-          $ docker-compose exec ksql-cli ksql http://ksql-server:8088
+            docker-compose exec ksql-cli ksql http://ksql-server:8088
 
 2. **DEVELOPMENT -> KSQL -> STREAMS**: View the existing KSQL streams. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``).
 
@@ -285,7 +285,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
    .. sourcecode:: bash
 
-      $ docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1 \       
+        docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1 \
         --property schema.registry.url=https://schemaregistry:8085 \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
       null
@@ -297,7 +297,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
       {"USERNAME":"Attar-Aram syria","WIKIPAGE":"Antiochus X Eusebes","COUNT":2}
       ...
 
-      $ docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1_COUNTS \
+        docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1_COUNTS \
         --property schema.registry.url=https://schemaregistry:8085 \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
       {"USERNAME":"Atsme","COUNT":2,"WIKIPAGE":"Wikipedia:Articles for deletion/Metallurg Bratsk"}
@@ -330,7 +330,7 @@ Control Center updates as consumer rebalances occur in a consumer group.
 
    .. sourcecode:: bash
 
-        $ ./scripts/app/start_consumer_app.sh 1
+          ./scripts/app/start_consumer_app.sh 1
 
 2. Let this consumer group run for 2 minutes until Control Center stream
    monitoring shows the consumer group ``app`` with steady consumption.
@@ -352,7 +352,7 @@ Control Center updates as consumer rebalances occur in a consumer group.
 
    .. sourcecode:: bash
 
-        $ ./scripts/app/start_consumer_app.sh 2
+          ./scripts/app/start_consumer_app.sh 2
 
 4. Let this consumer group run for 2 minutes until Control Center stream
    monitoring shows the consumer group ``app`` with steady consumption.
@@ -403,7 +403,7 @@ consumers in a consumer group.
 
    .. sourcecode:: bash
 
-        $ ./scripts/app/throttle_consumer.sh 1 add
+          ./scripts/app/throttle_consumer.sh 1 add
 
    .. note:: You are running a Docker demo environment with all services running on one host, which you would never do in production.  Depending on your system resource availability, sometimes applying the quota may stall the consumer (`KAFKA-5871 <https://issues.apache.org/jira/browse/KAFKA-5871>`__), thus you may need to adjust the quota rate. See the ``./scripts/app/throttle_consumer.sh`` script for syntax on modifying the quota rate.
 
@@ -446,7 +446,7 @@ consumers in a consumer group.
 
    .. sourcecode:: bash
 
-        $ ./scripts/app/throttle_consumer.sh 1 delete
+          ./scripts/app/throttle_consumer.sh 1 delete
 
 
 Over consumption
@@ -494,7 +494,7 @@ it has previously read.
 
    .. sourcecode:: bash
 
-        $ ./scripts/app/stop_consumer_app_group_graceful.sh
+          ./scripts/app/stop_consumer_app_group_graceful.sh
 
 4. Wait for 2 minutes to let messages continue to be written to the
    topics for a while, without being consumed by the consumer group
@@ -513,7 +513,7 @@ it has previously read.
 
    .. sourcecode:: bash
 
-       $ docker-compose exec kafka1 kafka-consumer-groups \
+         docker-compose exec kafka1 kafka-consumer-groups \
            --reset-offsets --group app --shift-by -200 --bootstrap-server kafka1:10091 \
            --all-topics --execute
 
@@ -530,8 +530,8 @@ it has previously read.
 
    .. sourcecode:: bash
 
-        $ ./scripts/app/start_consumer_app.sh 1
-        $ ./scripts/app/start_consumer_app.sh 2
+          ./scripts/app/start_consumer_app.sh 1
+          ./scripts/app/start_consumer_app.sh 2
 
 7. Let this consumer group run for 2 minutes until Control Center stream
    monitoring shows the consumer group ``app`` with steady consumption.
@@ -595,7 +595,7 @@ skipping messages that will never be read.
 
    .. sourcecode:: bash
 
-        $ ./scripts/app/stop_consumer_app_group_ungraceful.sh
+          ./scripts/app/stop_consumer_app_group_ungraceful.sh
 
 4. Wait for 2 minutes to let messages continue to be written to the
    topics for a while, without being consumed by the consumer group
@@ -622,7 +622,7 @@ skipping messages that will never be read.
 
    .. sourcecode:: bash
 
-       $ docker-compose exec kafka1 kafka-consumer-groups \
+         docker-compose exec kafka1 kafka-consumer-groups \
          --reset-offsets --group app --to-latest --bootstrap-server kafka1:10091 \
          --all-topics --execute
 
@@ -639,8 +639,8 @@ skipping messages that will never be read.
 
    .. sourcecode:: bash
 
-        $ ./scripts/app/start_consumer_app.sh 1
-        $ ./scripts/app/start_consumer_app.sh 2
+          ./scripts/app/start_consumer_app.sh 1
+          ./scripts/app/start_consumer_app.sh 2
 
 8. Let this consumer group run for 2 minutes until Control Center stream
    monitoring shows the consumer group ``app`` with steady consumption.
@@ -669,7 +669,7 @@ the two Kafka brokers.
 
    .. sourcecode:: bash
 
-        $ docker-compose stop kafka2
+          docker-compose stop kafka2
 
 2. After a few minutes, observe the System Health shows the broker count
    has gone down from 2 to 1, and there are many under replicated
@@ -688,7 +688,7 @@ the two Kafka brokers.
 
    .. sourcecode:: bash
 
-        $ docker-compose start kafka2
+          docker-compose start kafka2
 
 5. After about a minute, observe the System Health view in Confluent
    Control Center. The broker count has recovered to 2, and the topic
@@ -884,8 +884,8 @@ All other users are not authorized to communicate with the cluster.
 
    .. sourcecode:: bash
 
-        $ docker-compose logs kafka1 | grep "Registered broker 1"
-        $ docker-compose logs kafka2 | grep "Registered broker 2"
+          docker-compose logs kafka1 | grep "Registered broker 1"
+          docker-compose logs kafka2 | grep "Registered broker 2"
 
 2. This demo `automatically
    generates <https://github.com/confluentinc/cp-demo/blob/master/scripts/security/certs-create.sh>`__ simple SSL
@@ -906,7 +906,7 @@ All other users are not authorized to communicate with the cluster.
        .. sourcecode:: bash
 
            # PLAINTEXT port
-           $ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091
+             docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091
 
    #.  Communicate with brokers via the SASL_SSL port, and SASL_SSL
        parameters configured via the ``--command-config`` argument for
@@ -916,7 +916,7 @@ All other users are not authorized to communicate with the cluster.
        .. sourcecode:: bash
 
             # SASL_SSL port with SASL_SSL parameters
-            $ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 \
+              docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 \
                --command-config /etc/kafka/secrets/client_without_interceptors.config
 
    #.  If you try to communicate with brokers via the SASL_SSL port but
@@ -925,7 +925,7 @@ All other users are not authorized to communicate with the cluster.
        .. sourcecode:: bash
 
             # SASL_SSL port without SASL_SSL parameters
-            $ docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091
+              docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091
 
        Your output should resemble:
 
@@ -938,7 +938,7 @@ All other users are not authorized to communicate with the cluster.
 
    .. sourcecode:: bash
 
-       $ docker-compose logs kafka1 | grep SUPER_USERS
+         docker-compose logs kafka1 | grep SUPER_USERS
 
    Your output should resemble the following. Notice this authorizes each service name which authenticates as itself,
    as well as the unauthenticated ``PLAINTEXT`` which authenticates as ``ANONYMOUS`` (for demo purposes only):
@@ -952,14 +952,14 @@ All other users are not authorized to communicate with the cluster.
 
    .. sourcecode:: bash
 
-        $ ./scripts/consumers/listen_wikipedia.parsed.sh SASL
+          ./scripts/consumers/listen_wikipedia.parsed.sh SASL
 
 5. Verify that a user which authenticates via SSL cannot consume
    messages from topic ``wikipedia.parsed``. It should fail with an exception.
 
    .. sourcecode:: bash
 
-       $ ./scripts/consumers/listen_wikipedia.parsed.sh SSL
+         ./scripts/consumers/listen_wikipedia.parsed.sh SSL
 
    Your output should resemble:
 
@@ -976,7 +976,7 @@ All other users are not authorized to communicate with the cluster.
    .. sourcecode:: bash
 
         # Authorizer logger logs the denied operation
-        $ docker-compose logs kafka1 | grep kafka.authorizer.logger
+          docker-compose logs kafka1 | grep kafka.authorizer.logger
 
 
    Your output should resemble:
@@ -992,13 +992,13 @@ All other users are not authorized to communicate with the cluster.
 
    .. sourcecode:: bash
 
-    $ docker-compose exec kafka1 /usr/bin/kafka-acls \
+      docker-compose exec kafka1 /usr/bin/kafka-acls \
         --authorizer-properties zookeeper.connect=zookeeper:2181 \
         --add --topic wikipedia.parsed \
         --allow-principal User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US \
         --operation Read --group test
 
-    $ docker-compose exec kafka1 /usr/bin/kafka-acls \
+      docker-compose exec kafka1 /usr/bin/kafka-acls \
         --authorizer-properties zookeeper.connect=zookeeper:2181 \
         --list --topic wikipedia.parsed --group test
 
@@ -1018,7 +1018,7 @@ All other users are not authorized to communicate with the cluster.
 
    .. sourcecode:: bash
 
-        $ ./scripts/consumers/listen_wikipedia.parsed.sh SSL
+          ./scripts/consumers/listen_wikipedia.parsed.sh SSL
 
 9. Because ZooKeeper is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, 
    any commands that communicate with ZooKeeper need properties set for ZooKeeper authentication. This authentication configuration is provided
@@ -1035,7 +1035,7 @@ The connectors used in this demo are configured to automatically read and write 
 
    .. sourcecode:: bash
 
-     $ docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects | jq . 
+       docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects | jq .
 
      [
        "ksql_query_CTAS_EN_WIKIPEDIA_GT_1-KSQL_Agg_Query_1526914100640-changelog-value",
@@ -1051,7 +1051,7 @@ The connectors used in this demo are configured to automatically read and write 
 
    .. sourcecode:: bash
 
-     $ docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' https://schemaregistry:8085/subjects/users-value/versions | jq .
+       docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' https://schemaregistry:8085/subjects/users-value/versions | jq .
 
      {
        "id": 6
@@ -1066,7 +1066,7 @@ The connectors used in this demo are configured to automatically read and write 
 
    .. sourcecode:: bash
 
-     $ docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects/users-value/versions/1 | jq .
+       docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects/users-value/versions/1 | jq .
 
      {
        "subject": "users-value",
@@ -1079,7 +1079,7 @@ The connectors used in this demo are configured to automatically read and write 
 
    .. sourcecode:: bash
 
-     $ docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 6, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' https://restproxy:8086/topics/users
+       docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 6, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' https://restproxy:8086/topics/users
 
      {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":6}
 
@@ -1088,17 +1088,17 @@ The connectors used in this demo are configured to automatically read and write 
    .. sourcecode:: bash
 
      # 5.1 Create consumer instance my_avro_consumer
-     $ docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"name": "my_consumer_instance", "format": "avro", "auto.offset.reset": "earliest"}' https://restproxy:8086/consumers/my_avro_consumer
+       docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"name": "my_consumer_instance", "format": "avro", "auto.offset.reset": "earliest"}' https://restproxy:8086/consumers/my_avro_consumer
 
      # 5.2 Subscribe my_avro_consumer to the `users` topic
-     $ docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"topics":["users"]}' https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/subscription
+       docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"topics":["users"]}' https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/subscription
 
      # 5.3 Get messages for my_avro_consumer subscriptions
      # Note: Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
-     $ docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
+       docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
 
      # 5.4 Delete the consumer instance my_avro_consumer
-     $ docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
+       docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
 
 
 ========================
@@ -1109,7 +1109,7 @@ Troubleshooting the demo
 
    .. sourcecode:: bash
 
-      $ docker-compose ps
+        docker-compose ps
 
    Your output should resemble:
 
@@ -1136,14 +1136,14 @@ Troubleshooting the demo
 
    .. sourcecode:: bash
 
-        $ ./scripts/consumers/listen.sh
+          ./scripts/consumers/listen.sh
 
 3. If the data streams monitoring appears to stop for the Kafka source
    connector, restart the connect container.
 
    .. sourcecode:: bash
 
-        $ docker-compose restart connect
+          docker-compose restart connect
 
 4. If a command that communicates with ZooKeeper appears to be failing with the error ``org.apache.zookeeper.KeeperException$NoAuthException``,
    change the container you are running the command from to be either ``kafka1`` or ``kafka2``.  This is because ZooKeeper is configured for
@@ -1162,12 +1162,12 @@ Teardown
 
    .. code:: bash
 
-       $ ./scripts/app/stop_consumer_app_group_graceful.sh
+         ./scripts/app/stop_consumer_app_group_graceful.sh
 
 2. Stop the Docker demo, destroy all components and clear all Docker
    volumes.
 
    .. sourcecode:: bash
 
-        $ ./scripts/stop.sh
+          ./scripts/stop.sh
 
