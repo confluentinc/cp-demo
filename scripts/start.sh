@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
 #set -o nounset \
 #    -o errexit \
 #    -o verbose
@@ -23,11 +25,11 @@ if (( $(echo "$DOCKER_MEMORY 7.0" | awk '{print ($1 < $2)}') )); then
 fi
 
 # Stop existing demo Docker containers
-./scripts/stop.sh
+${DIR}/stop.sh
 
 # Generate keys and certificates used for SSL
 echo -e "Generate keys and certificates used for SSL"
-(cd scripts/security && ./certs-create.sh)
+(cd ${DIR}/security && ./certs-create.sh)
 
 # Bring up Docker Compose
 echo -e "Bringing up Docker Compose"
@@ -83,27 +85,27 @@ if [[ ! $(docker-compose exec connect timeout 3 nc -zv irc.wikimedia.org 6667) =
 fi
 
 echo -e "\nStart streaming from the IRC source connector:"
-./scripts/connectors/submit_wikipedia_irc_config.sh
+${DIR}/connectors/submit_wikipedia_irc_config.sh
 
 echo -e "\nProvide data mapping to Elasticsearch:"
-./scripts/dashboard/set_elasticsearch_mapping_bot.sh
-./scripts/dashboard/set_elasticsearch_mapping_count.sh
+${DIR}/dashboard/set_elasticsearch_mapping_bot.sh
+${DIR}/dashboard/set_elasticsearch_mapping_count.sh
 
 echo -e "\nStart streaming to Elasticsearch sink connector:"
-./scripts/connectors/submit_elastic_sink_config.sh
+${DIR}/connectors/submit_elastic_sink_config.sh
 
 echo -e "\nStart Confluent Replicator:"
-./scripts/connectors/submit_replicator_config.sh
+${DIR}/connectors/submit_replicator_config.sh
 
 echo -e "\nConfigure Kibana dashboard:"
-./scripts/dashboard/configure_kibana_dashboard.sh
+${DIR}/dashboard/configure_kibana_dashboard.sh
 
 echo -e "\n\nStart KSQL engine and running queries:"
-./scripts/ksql/run_ksql.sh
+${DIR}/ksql/run_ksql.sh
 
 echo -e "\nStart consumers for additional topics: WIKIPEDIANOBOT, EN_WIKIPEDIA_GT_1_COUNTS"
-./scripts/consumers/listen_WIKIPEDIANOBOT.sh
-./scripts/consumers/listen_EN_WIKIPEDIA_GT_1_COUNTS.sh
+${DIR}/consumers/listen_WIKIPEDIANOBOT.sh
+${DIR}/consumers/listen_EN_WIKIPEDIA_GT_1_COUNTS.sh
 
 echo -e "\nWaiting for KSQL queries to start, sleeping 50 seconds"
 sleep 50
