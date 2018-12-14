@@ -382,7 +382,7 @@ services:
     image: confluentinc/cp-ksql-server:5.1.0
     hostname: ksql-server
     container_name: ksql-server
-    restart: always
+    #restart: always
     depends_on:
       - kafka1
       - kafka2

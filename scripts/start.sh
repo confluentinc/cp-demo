@@ -17,11 +17,11 @@ verify_installed()
 verify_installed "jq"
 verify_installed "docker-compose"
 
-# Verify Docker memory is increased to at least 8GB
+# Verify Docker memory is increased to at least 12GB
 DOCKER_MEMORY=$(docker system info | grep Memory | grep -o "[0-9\.]\+")
-if (( $(echo "$DOCKER_MEMORY 7.0" | awk '{print ($1 < $2)}') )); then
-  echo -e "\nWARNING: Did you remember to increase the memory available to Docker to at least 8GB (default is 2GB)? Demo may otherwise not work properly.\n"
-  sleep 3
+if (( $(echo "$DOCKER_MEMORY 11.5" | awk '{print ($1 < $2)}') )); then
+  echo -e "\nERROR: Increase the memory available to Docker to at least 12GB (default is 2GB). Demo may otherwise not work properly.\n"
+  exit 1
 fi
 
 # Stop existing demo Docker containers
@@ -50,7 +50,7 @@ done
 
 # Verify Docker containers started
 if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
-  echo -e "\nERROR: At least one Docker container did not start properly, see 'docker-compose ps'. Did you remember to increase the memory available to Docker to at least 8GB (default is 2GB)?\n"
+  echo -e "\nERROR: At least one Docker container did not start properly, see 'docker-compose ps'. Did you remember to increase the memory available to Docker to at least 12GB (default is 2GB)?\n"
   exit 1
 fi
 
