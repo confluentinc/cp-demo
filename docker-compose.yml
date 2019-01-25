@@ -507,6 +507,8 @@ services:
     ports:
       - 8086:8086
 
+  # This container is just to transfer Replicator jars to the Connect worker
+  # It is not used as a Connect worker
   replicator:
     image: confluentinc/cp-enterprise-replicator:5.1.0
     hostname: replicator
@@ -516,7 +518,7 @@ services:
     environment:
       CONNECT_BOOTSTRAP_SERVERS: localhost:8882
       CONNECT_REST_PORT: 8883
-      CONNECT_GROUP_ID: "connect-replicator"
+      CONNECT_GROUP_ID: "connect-bogus"
       CONNECT_CONFIG_STORAGE_TOPIC: "default.config"
       CONNECT_OFFSET_STORAGE_TOPIC: "default.offsets"
       CONNECT_STATUS_STORAGE_TOPIC: "default.status"
