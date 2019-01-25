@@ -1115,21 +1115,21 @@ Troubleshooting the demo
 
    .. sourcecode:: bash
 
-                 Name                        Command               State                              Ports
-        ------------------------------------------------------------------------------------------------------------------------------
-        connect          /etc/confluent/docker/run                 Up      0.0.0.0:8083->8083/tcp, 9092/tcp                          
-        control-center   /etc/confluent/docker/run                 Up      0.0.0.0:9021->9021/tcp, 0.0.0.0:9022->9022/tcp
-        elasticsearch    /bin/bash bin/es-docker                   Up      0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp            
-        kafka-client     bash -c -a echo Waiting fo ...            Exit 0
-        kafka1           /etc/confluent/docker/run                 Up      0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp, 9092/tcp
-        kafka2           /etc/confluent/docker/run                 Up      0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp          
-        kibana           /bin/sh -c /usr/local/bin/ ...            Up      0.0.0.0:5601->5601/tcp                                    
-        ksql-cli         /bin/sh                                   Up                                                                
-        ksql-server      /etc/confluent/docker/run                 Up      0.0.0.0:8088->8088/tcp                                    
-        replicator       tail -f /dev/null                         Up      8083/tcp, 9092/tcp                                        
-        restproxy        /etc/confluent/docker/run                 Up      8082/tcp, 0.0.0.0:8086->8086/tcp                          
-        schemaregistry   /etc/confluent/docker/run                 Up      8081/tcp, 0.0.0.0:8085->8085/tcp                          
-        zookeeper        /etc/confluent/docker/run                 Up      0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp   
+                   Name                          Command               State                             Ports                           
+        ---------------------------------------------------------------------------------------------------------------------------------
+        connect                       /etc/confluent/docker/run        Up      0.0.0.0:8083->8083/tcp, 9092/tcp                          
+        control-center                /etc/confluent/docker/run        Up      0.0.0.0:9021->9021/tcp, 0.0.0.0:9022->9022/tcp            
+        elasticsearch                 /bin/bash bin/es-docker          Up      0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp            
+        kafka-client                  bash -c -a echo Waiting fo ...   Up      0.0.0.0:7073->7073/tcp, 9092/tcp                          
+        kafka1                        /etc/confluent/docker/run        Up      0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp, 9092/tcp
+        kafka2                        /etc/confluent/docker/run        Up      0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp          
+        kibana                        /bin/sh -c /usr/local/bin/ ...   Up      0.0.0.0:5601->5601/tcp                                    
+        ksql-cli                      /bin/sh                          Up                                                                
+        ksql-server                   /etc/confluent/docker/run        Up      0.0.0.0:8088->8088/tcp                                    
+        replicator-for-jar-transfer   sleep infinity                   Up      8083/tcp, 9092/tcp                                        
+        restproxy                     /etc/confluent/docker/run        Up      8082/tcp, 0.0.0.0:8086->8086/tcp                          
+        schemaregistry                /etc/confluent/docker/run        Up      8081/tcp, 0.0.0.0:8085->8085/tcp                          
+        zookeeper                     /etc/confluent/docker/run        Up      0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp    
 
 2. To view sample messages for each topic, including
    ``wikipedia.parsed``:
