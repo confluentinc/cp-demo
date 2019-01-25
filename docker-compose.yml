@@ -507,26 +507,15 @@ services:
     ports:
       - 8086:8086
 
-  replicator:
-    image: confluentinc/cp-enterprise-replicator:5.1.1-SNAPSHOT
-    hostname: replicator
-    container_name: replicator
+  # This container is just to transfer Replicator jars to the Connect worker
+  # It is not used as a Connect worker
+  replicator-for-jar-transfer:
+    image: confluentinc/cp-enterprise-replicator:5.1.0
+    hostname: replicator-for-jar-transfer
+    container_name: replicator-for-jar-transfer
     volumes:
       - mi3:/usr/share/java/kafka-connect-replicator/
-    environment:
-      CONNECT_BOOTSTRAP_SERVERS: localhost:8882
-      CONNECT_REST_PORT: 8883
-      CONNECT_GROUP_ID: "connect-replicator"
-      CONNECT_CONFIG_STORAGE_TOPIC: "default.config"
-      CONNECT_OFFSET_STORAGE_TOPIC: "default.offsets"
-      CONNECT_STATUS_STORAGE_TOPIC: "default.status"
-      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      CONNECT_REST_ADVERTISED_HOST_NAME: "localhost"
-      CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
-    command: "tail -f /dev/null"
+    command: "sleep infinity"
 
 volumes:
     mi3: {}
