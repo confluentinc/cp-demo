@@ -22,6 +22,8 @@ do
                                  -ext "SAN=dns:$i,dns:localhost" \
 				 -keystore kafka.$i.keystore.jks \
 				 -keyalg RSA \
+                                 -sigalg SHA256withRSA \
+                                 -keysize 2048 \				 
 				 -storepass confluent \
 				 -keypass confluent
 
@@ -30,7 +32,7 @@ do
         #openssl req -in $i.csr -text -noout
 
         # Sign the host certificate with the certificate authority (CA)
-        openssl x509 -req -CA snakeoil-ca-1.crt -CAkey snakeoil-ca-1.key -in $i.csr -out $i-ca1-signed.crt -days 9999 -CAcreateserial -passin pass:confluent -extensions v3_req -extfile <(cat <<EOF
+        openssl x509 -sha256 -req -CA snakeoil-ca-1.crt -CAkey snakeoil-ca-1.key -in $i.csr -out $i-ca1-signed.crt -days 9999 -CAcreateserial -passin pass:confluent -extensions v3_req -extfile <(cat <<EOF
 [req]
 distinguished_name = req_distinguished_name
 x509_extensions = v3_req
