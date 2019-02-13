@@ -1,15 +1,16 @@
 .. _cp-demo:
 
-Kafka streaming ETL deployments
-==========================================
+Kafka Event Streaming Application
+=================================
 
-This demo shows users how to deploy a Kafka streaming ETL using `KSQL <https://www.confluent.io/product/ksql/>`__ for stream processing and `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ for monitoring. All the components in the Confluent platform have security enabled end-to-end.
+This demo shows users how to deploy a Kafka event streaming application using `KSQL <https://www.confluent.io/product/ksql/>`__ for stream processing. All the components in the Confluent platform have security enabled end-to-end.
+
 
 ========
 Overview
 ========
 
-The use case is a streaming ETL deployment for real-time edits to real Wikipedia
+The use case is a Kafka event streaming application for real-time edits to real Wikipedia
 pages. Wikimedia Foundation has IRC channels that publish edits
 happening to real wiki pages (e.g. ``#en.wikipedia``, ``#en.wiktionary``) in
 real time. Using `Kafka
@@ -29,6 +30,8 @@ streams the data out of Kafka, applying another custom Kafka Connect
 transform called NullFilter. The data is materialized into
 `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for
 analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
+Use [Confluent Control Center](https://www.confluent.io/product/control-center/) for management and monitoring.
+
 
 .. figure:: images/drawing.png
     :alt: image
