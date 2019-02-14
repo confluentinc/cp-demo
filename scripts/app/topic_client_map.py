@@ -2,6 +2,8 @@
 
 #########################
 #
+# Note: for demo purposes only, not for production
+#
 # Usage
 # -----
 #
