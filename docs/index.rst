@@ -1153,6 +1153,31 @@ Troubleshooting the demo
    `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, and
    any commands that communicate with ZooKeeper need properties set for ZooKeeper authentication.
 
+5. If Confluent Monitoring Interceptors are configured on any Kafka-based client, i.e., producers and consumers, then they write metadata to a topic called ``_confluent-monitoring``.
+   Confluent Control Center reads that topic to do expert stream monitoring for message delivery assurance and performance for throughput and latency.  
+   You can also read this topic data to build a dynamic map to verify which producers are writing to which topics and which consumers are reading from which topics.
+   Checkout the sample python script `topic_client_map.py <scripts/app/topic_client_map.py>`__ (this is for demo purposes only, not suitable for production).
+   Sample output:
+
+   .. sourcecode:: bash
+
+      WIKIPEDIABOT:
+      - producers:
+          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1-053e85c1-b4f0-4d17-a412-1ca2f9b8043a-StreamThread-7-producer
+          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1-053e85c1-b4f0-4d17-a412-1ca2f9b8043a-StreamThread-8-producer
+          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1-053e85c1-b4f0-4d17-a412-1ca2f9b8043a-StreamThread-6-producer
+      - consumers:
+          connect-elasticsearch-ksql
+      
+      wikipedia.parsed:
+      - producers:
+          producer-6
+      - consumers:
+          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2
+          connect-replicator
+          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0
+
 
 ========
 Teardown
