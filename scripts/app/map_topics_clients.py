@@ -7,7 +7,7 @@
 # Dynamically map which producers are writing to which topics and which consumers are reading from which topics.
 # Assumes Confluent Monitoring Interceptors are running.
 #
-# Note: for demo purposes only, not for production
+# Note: for demo purposes only, not for production. Format of monitoring data subject to change
 #
 # Usage
 # -----
