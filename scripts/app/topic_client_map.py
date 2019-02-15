@@ -2,28 +2,17 @@
 
 #########################
 #
+# Overview
+# --------
+# Dynamically map which producers are writing to which topics and which consumers are reading from which topics.
+# Assumes Confluent Monitoring Interceptors are running.
+#
 # Note: for demo purposes only, not for production
 #
 # Usage
 # -----
-#
-# 1. Consume data from the '_confluent-monitoring' topic for 2 minutes
-#    (assuming Confluent Monitoring Interceptors are configured on all clients)
-#
-#    docker-compose exec control-center \
-#           /usr/bin/control-center-console-consumer \
-#           /etc/confluent-control-center/control-center.properties \
-#           --topic _confluent-monitoring \
-#           --consumer.config /etc/kafka/secrets/client_without_interceptors.config
-#
-# 2. Save data to file called output.txt
-#
-# 3. Run this script
-#
-#    ./topic_client_map.py
-#
-#
-#
+# ./topic_client_map.py
+
 # Sample output
 # -------------
 #
