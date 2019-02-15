@@ -1163,22 +1163,60 @@ Troubleshooting the demo
 
       WIKIPEDIABOT:
       - producers:
-          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1-053e85c1-b4f0-4d17-a412-1ca2f9b8043a-StreamThread-7-producer
-          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1-053e85c1-b4f0-4d17-a412-1ca2f9b8043a-StreamThread-8-producer
-          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1-053e85c1-b4f0-4d17-a412-1ca2f9b8043a-StreamThread-6-producer
+          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1-670fb0b8-7c14-4939-89bb-c33e36a0547d-StreamThread-8-producer
+          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1-670fb0b8-7c14-4939-89bb-c33e36a0547d-StreamThread-6-producer
       - consumers:
           connect-elasticsearch-ksql
       
       wikipedia.parsed:
       - producers:
-          producer-6
+          producer-8
       - consumers:
-          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1
+          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0
           _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2
           connect-replicator
-          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0
+          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1
+      
+      wikipedia.parsed.replica:
+      - producers:
+          producer-9
+      - consumers:
+      
+      WIKIPEDIANOBOT:
+      - producers:
+          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0-3640827d-d590-4177-b45f-828279504483-StreamThread-4-producer
+          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0-3640827d-d590-4177-b45f-828279504483-StreamThread-3-producer
+      - consumers:
+          WIKIPEDIANOBOT-consumer
+      
+      _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-KSTREAM-AGGREGATE-STATE-STORE-0000000007-repartition:
+      - producers:
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-e6fc01c4-504f-44af-8cfd-0833ab6e63b9-StreamThread-10-producer
+      - consumers:
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2
+      
+      EN_WIKIPEDIA_GT_1_COUNTS:
+      - producers:
+          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_3-9dbe860b-9247-420d-a750-cee1be1036b8-StreamThread-14-producer
+          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_3-9dbe860b-9247-420d-a750-cee1be1036b8-StreamThread-16-producer
+      - consumers:
+          EN_WIKIPEDIA_GT_1_COUNTS-consumer
+      
+      _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-KSTREAM-AGGREGATE-STATE-STORE-0000000007-changelog:
+      - producers:
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-e6fc01c4-504f-44af-8cfd-0833ab6e63b9-StreamThread-9-producer
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-e6fc01c4-504f-44af-8cfd-0833ab6e63b9-StreamThread-12-producer
+      - consumers:
+      
+      EN_WIKIPEDIA_GT_1:
+      - producers:
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-e6fc01c4-504f-44af-8cfd-0833ab6e63b9-StreamThread-9-producer
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-e6fc01c4-504f-44af-8cfd-0833ab6e63b9-StreamThread-12-producer
+      - consumers:
+          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_3
 
 
+      
 ========
 Teardown
 ========

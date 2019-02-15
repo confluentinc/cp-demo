@@ -47,33 +47,60 @@
 #########################
 
 import json
-from pprint import pprint
 from collections import defaultdict
+import subprocess
+from threading import Timer
+
+def get_output():
+    """This function reads from the topic _confluent-monitoring
+    for 60 seconds"""
+
+    kill = lambda process: process.kill()
+
+    command = "docker-compose exec control-center bash -c 'timeout 60 /usr/bin/control-center-console-consumer /etc/confluent-control-center/control-center.properties --topic _confluent-monitoring --consumer.config /etc/kafka/secrets/client_without_interceptors.config'"
+
+    print "Reading topic _confluent-monitoring for 60 seconds...please wait"
+
+    try:
+        proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    except Exception as e:
+        print e
+
+    my_timer = Timer(1, kill, [proc])
+    try:
+        my_timer.start()
+        stdout, stderr = proc.communicate()
+    finally:
+        my_timer.cancel()
+
+    return stdout
+
 
 
 topicMap = defaultdict(lambda: defaultdict(dict))
 
-filename = "output.txt"
-with open(filename) as f:
-    for line in f:
-
+monitoringData = get_output()
+for line in monitoringData.splitlines():
+    
+    try:
         a, b, c, d, e = line.strip().split("\t")
+    except Exception as e:
+        continue
 
-        data = json.loads(e)
-        # pprint(data)
+    data = json.loads(e)
 
-        topic = data["topic"]
-        clientType = data["clientType"]
-        clientId = data["clientId"]
-        group = data["group"]
+    topic = data["topic"]
+    clientType = data["clientType"]
+    clientId = data["clientId"]
+    group = data["group"]
 
-        if clientType == "PRODUCER":
-            id = clientId
-        else:
-            id = group
+    if clientType == "PRODUCER":
+        id = clientId
+    else:
+        id = group
 
-        if clientType != "CONTROLCENTER":
-            topicMap[topic][clientType][id] = 1
+    if clientType != "CONTROLCENTER":
+        topicMap[topic][clientType][id] = 1
 
 
 for topic in topicMap.keys():
