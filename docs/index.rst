@@ -1156,65 +1156,65 @@ Troubleshooting the demo
 5. If Confluent Monitoring Interceptors are configured on any Kafka-based client, i.e., producers and consumers, then they write metadata to a topic called ``_confluent-monitoring``.
    Confluent Control Center reads that topic to do expert stream monitoring for message delivery assurance and performance for throughput and latency.  
    You can also read this topic data to build a dynamic map to verify which producers are writing to which topics and which consumers are reading from which topics.
-   Checkout the sample python script `topic_client_map.py <scripts/app/topic_client_map.py>`__ (this is for demo purposes only, not suitable for production).
+   Checkout the sample python script `map_topics_clients.py <scripts/app/map_topics_clients.py>`__ (this is for demo purposes only, not suitable for production).
    Sample output:
 
    .. sourcecode:: bash
 
+      $ ./scripts/app/map_topics_clients.py
+
       Reading topic _confluent-monitoring for 60 seconds...please wait
 
-      WIKIPEDIABOT:
-      - producers:
-          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1-d3bf43ec-0fb2-4919-9bed-d5941969dfbc-StreamThread-8-producer
-          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1-d3bf43ec-0fb2-4919-9bed-d5941969dfbc-StreamThread-6-producer
-      - consumers:
+      WIKIPEDIABOT
+        producers
+          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1-27512fbf-3272-4a50-a980-ed10cd554435-StreamThread-5-producer
+          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1-27512fbf-3272-4a50-a980-ed10cd554435-StreamThread-7-producer
+        consumers
           connect-elasticsearch-ksql
-      
-      wikipedia.parsed:
-      - producers:
+
+      wikipedia.parsed
+        producers
           connect-worker-producer
-      - consumers:
-          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0
+        consumers
+          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1
           _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2
           connect-replicator
-          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1
-      
-      wikipedia.parsed.replica:
-      - producers:
+          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0
+
+      wikipedia.parsed.replica
+        producers
           connect-worker-producer
-      - consumers:
-      
-      WIKIPEDIANOBOT:
-      - producers:
-          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0-f4141302-3f36-4c42-95ab-04012aa64be0-StreamThread-3-producer
-          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0-f4141302-3f36-4c42-95ab-04012aa64be0-StreamThread-4-producer
-      - consumers:
+
+      WIKIPEDIANOBOT
+        producers
+          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0-61e1a062-4e98-4793-a923-5a89c73b9b4e-StreamThread-3-producer
+          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0-61e1a062-4e98-4793-a923-5a89c73b9b4e-StreamThread-4-producer
+        consumers
           WIKIPEDIANOBOT-consumer
-      
-      _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-KSTREAM-AGGREGATE-STATE-STORE-0000000007-repartition:
-      - producers:
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-32cee64d-64dd-4fa9-b21b-e5bb7a0aed0a-StreamThread-12-producer
-      - consumers:
+
+      _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-KSTREAM-AGGREGATE-STATE-STORE-0000000007-repartition
+        producers
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-89f69ebe-0d29-4717-aafb-846945e5142e-StreamThread-12-producer
+        consumers
           _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2
-      
-      EN_WIKIPEDIA_GT_1:
-      - producers:
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-32cee64d-64dd-4fa9-b21b-e5bb7a0aed0a-StreamThread-9-producer
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-32cee64d-64dd-4fa9-b21b-e5bb7a0aed0a-StreamThread-11-producer
-      - consumers:
+
+      EN_WIKIPEDIA_GT_1
+        producers
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-89f69ebe-0d29-4717-aafb-846945e5142e-StreamThread-11-producer
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-89f69ebe-0d29-4717-aafb-846945e5142e-StreamThread-9-producer
+        consumers
           _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_3
-      
-      _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-KSTREAM-AGGREGATE-STATE-STORE-0000000007-changelog:
-      - producers:
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-32cee64d-64dd-4fa9-b21b-e5bb7a0aed0a-StreamThread-9-producer
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-32cee64d-64dd-4fa9-b21b-e5bb7a0aed0a-StreamThread-11-producer
-      - consumers:
-      
-      EN_WIKIPEDIA_GT_1_COUNTS:
-      - producers:
-          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_3-232a4aa1-f2cf-43a3-8c73-10b0410855da-StreamThread-13-producer
-          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_3-232a4aa1-f2cf-43a3-8c73-10b0410855da-StreamThread-15-producer
-      - consumers:
+
+      _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-KSTREAM-AGGREGATE-STATE-STORE-0000000007-changelog
+        producers
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-89f69ebe-0d29-4717-aafb-846945e5142e-StreamThread-11-producer
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-89f69ebe-0d29-4717-aafb-846945e5142e-StreamThread-9-producer
+
+      EN_WIKIPEDIA_GT_1_COUNTS
+        producers
+          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_3-2b6ddd23-7a97-4b0b-8094-f936aa539f1b-StreamThread-16-producer
+          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_3-2b6ddd23-7a97-4b0b-8094-f936aa539f1b-StreamThread-14-producer
+        consumers
           EN_WIKIPEDIA_GT_1_COUNTS-consumer
       
       
