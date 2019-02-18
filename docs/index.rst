@@ -205,10 +205,10 @@ Topic Management
       .. figure:: images/create_topic.png
          :alt: image
 
-7. When Confluent Monitoring Interceptors are configured on any Kafka-based clients, they write metadata to a topic called ``_confluent-monitoring``. Kafka-based clients include producers, consumers, Connect, KSQL, etc. 
-   |c3| reads that topic to do expert stream monitoring for message delivery assurance and performance for throughput and latency.
-   From that topic, you can also verify which producers are writing to which topics and which consumers are reading from which topics.
-   Checkout the sample script provided into the repo (Note: this is for demo purposes only, not suitable for production).
+7. When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic called ``_confluent-monitoring``.
+   Kafka clients include any application that uses the Apache Kafka client API to connect to Kafka brokers, such as custom client code or any service that has embedded producers or consumers, such as Kafka Connect, KSQL, or a Kafka Streams application.
+   |c3| uses that topic to ensure that all messages are delivered and to provide statistics on throughput and latency performance.
+   From that same topic, you can also derive which producers are writing to which topics and which consumers are reading from which topics, and an example script is provided with the repo (note: this is for demo purposes only, not suitable for production).
 
    .. sourcecode:: bash
 
