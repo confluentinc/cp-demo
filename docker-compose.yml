@@ -144,6 +144,7 @@ services:
       CONNECT_REST_PORT: 8083
       CONNECT_LISTENERS: "https://0.0.0.0:8083"
       CONNECT_GROUP_ID: "connect"
+      CONNECT_PRODUCER_CLIENT_ID: "connect-worker-producer"
       CONNECT_CONFIG_STORAGE_TOPIC: connect-config
       CONNECT_OFFSET_STORAGE_TOPIC: connect-offsets
       CONNECT_STATUS_STORAGE_TOPIC: connect-status
