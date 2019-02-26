@@ -205,6 +205,70 @@ Topic Management
       .. figure:: images/create_topic.png
          :alt: image
 
+7. When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic called ``_confluent-monitoring``.
+   Kafka clients include any application that uses the Apache Kafka client API to connect to Kafka brokers, such as custom client code or any service that has embedded producers or consumers, such as Kafka Connect, KSQL, or a Kafka Streams application.
+   |c3| uses that topic to ensure that all messages are delivered and to provide statistics on throughput and latency performance.
+   From that same topic, you can also derive which producers are writing to which topics and which consumers are reading from which topics, and an example script is provided with the repo (note: this is for demo purposes only, not suitable for production).
+
+   .. sourcecode:: bash
+
+      $ ./scripts/app/map_topics_clients.py
+
+      Reading topic _confluent-monitoring for 60 seconds...please wait
+
+      EN_WIKIPEDIA_GT_1
+        producers
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-84e85189-4f37-460c-991f-bb7bbb4b5a58-StreamThread-12-producer
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-84e85189-4f37-460c-991f-bb7bbb4b5a58-StreamThread-9-producer
+        consumers
+          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_3
+
+      EN_WIKIPEDIA_GT_1_COUNTS
+        producers
+          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_3-df19ff7e-4d42-4b40-8133-a3632c86e42d-StreamThread-13-producer
+          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_3-df19ff7e-4d42-4b40-8133-a3632c86e42d-StreamThread-14-producer
+        consumers
+          EN_WIKIPEDIA_GT_1_COUNTS-consumer
+
+      WIKIPEDIABOT
+        producers
+          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1-7d47ae21-e734-43da-9782-bae3191fc85a-StreamThread-7-producer
+          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1-7d47ae21-e734-43da-9782-bae3191fc85a-StreamThread-8-producer
+        consumers
+          connect-elasticsearch-ksql
+
+      WIKIPEDIANOBOT
+        producers
+          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0-6f29b3fb-abf8-4c3e-bb8d-266cb5aa65c6-StreamThread-2-producer
+          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0-6f29b3fb-abf8-4c3e-bb8d-266cb5aa65c6-StreamThread-3-producer
+        consumers
+          WIKIPEDIANOBOT-consumer
+
+      _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-KSTREAM-AGGREGATE-STATE-STORE-0000000007-changelog
+        producers
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-84e85189-4f37-460c-991f-bb7bbb4b5a58-StreamThread-12-producer
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-84e85189-4f37-460c-991f-bb7bbb4b5a58-StreamThread-9-producer
+
+      _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-KSTREAM-AGGREGATE-STATE-STORE-0000000007-repartition
+        producers
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-84e85189-4f37-460c-991f-bb7bbb4b5a58-StreamThread-11-producer
+        consumers
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2
+
+      wikipedia.parsed
+        producers
+          connect-worker-producer
+        consumers
+          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1
+          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2
+          connect-replicator
+
+      wikipedia.parsed.replica
+        producers
+          connect-worker-producer
+
+
 .. _ksql-demo-3:
 
 KSQL
@@ -1153,7 +1217,7 @@ Troubleshooting the demo
    `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, and
    any commands that communicate with ZooKeeper need properties set for ZooKeeper authentication.
 
-
+      
 ========
 Teardown
 ========
