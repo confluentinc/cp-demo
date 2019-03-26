@@ -340,6 +340,7 @@ services:
     container_name: kafka-client
     depends_on:
       - kafka1
+      - kafka2
     volumes:
       - $PWD/scripts/security:/etc/kafka/secrets
     # We defined a dependency on "kafka", but `depends_on` will NOT wait for the
@@ -350,6 +351,7 @@ services:
     command: "bash -c -a 'echo Waiting for Kafka to be ready... && \
                        /etc/confluent/docker/configure && \
                        cub kafka-ready -b kafka1:9091 1 60 --config /etc/kafka/kafka.properties && \
+                       cub kafka-ready -b kafka2:9092 1 60 --config /etc/kafka/kafka.properties && \
                        sleep 5 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic users --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed --create --replication-factor 2 --partitions 2 && \
