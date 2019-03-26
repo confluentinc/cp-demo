@@ -40,8 +40,8 @@ MAX_WAIT=300
 CUR_WAIT=0
 echo "Waiting up to $MAX_WAIT seconds for Confluent Control Center to start"
 while [[ ! $(docker-compose logs control-center) =~ "Started NetworkTrafficServerConnector" ]]; do
-  sleep 10
-  CUR_WAIT=$(( CUR_WAIT+10 ))
+  sleep 3
+  CUR_WAIT=$(( CUR_WAIT+3 ))
   if [[ "$CUR_WAIT" -gt "$MAX_WAIT" ]]; then
     echo -e "\nERROR: The logs in control-center container do not show 'Started NetworkTrafficServerConnector' after $MAX_WAIT seconds. Please troubleshoot with 'docker-compose ps' and 'docker-compose logs'.\n"
     exit 1
@@ -71,8 +71,8 @@ curl -X PATCH  -H "Content-Type: application/merge-patch+json" -d '{"displayName
 MAX_WAIT=60
 CUR_WAIT=0
 while [[ ! $(docker-compose logs connect) =~ "Herder started" ]]; do
-  sleep 10
-  CUR_WAIT=$(( CUR_WAIT+10 ))
+  sleep 3
+  CUR_WAIT=$(( CUR_WAIT+3 ))
   if [[ "$CUR_WAIT" -gt "$MAX_WAIT" ]]; then
     echo -e "\nERROR: The logs in Kafka Connect container do not show 'Herder started'. Please troubleshoot with 'docker-compose ps' and 'docker-compose logs'.\n"
     exit 1
@@ -107,8 +107,18 @@ echo -e "\nStart consumers for additional topics: WIKIPEDIANOBOT, EN_WIKIPEDIA_G
 ${DIR}/consumers/listen_WIKIPEDIANOBOT.sh
 ${DIR}/consumers/listen_EN_WIKIPEDIA_GT_1_COUNTS.sh
 
-echo -e "\nWaiting for KSQL queries to start, sleeping 50 seconds"
-sleep 50
+# Verify wikipedia.parsed topic is populated and schema is registered
+MAX_WAIT=50
+CUR_WAIT=0
+echo -e "\nWaiting up to $MAX_WAIT seconds for wikipedia.parsed topic to be populated"
+while [[ ! $(docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects) =~ "wikipedia.parsed-value" ]]; do
+  sleep 3
+  CUR_WAIT=$(( CUR_WAIT+3 ))
+  if [[ "$CUR_WAIT" -gt "$MAX_WAIT" ]]; then
+    echo -e "\nERROR: IRC connector is not populating the Kafka topic wikipedia.parsed. Please troubleshoot with 'docker-compose ps' and 'docker-compose logs'.\n"
+    exit 1
+  fi
+done
 
 # Register the same schema for the replicated topic wikipedia.parsed.replica as was created for the original topic wikipedia.parsed
 # In this case the replicated topic will register with the same schema ID as the original topic
@@ -119,8 +129,5 @@ echo -e "\nConfigure triggers and actions in Control Center:"
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Consumption Difference","clusterId":"'$(curl -X GET http://localhost:9021/2.0/clusters/kafka/ | jq --raw-output '.[0].clusterId')'","group":"connect-elasticsearch-ksql","metric":"CONSUMPTION_DIFF","condition":"GREATER_THAN","longValue":"0","lagMs":"10000"}' http://localhost:9021/2.0/alerts/triggers
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Under Replicated Partitions","clusterId":"default","condition":"GREATER_THAN","longValue":"0","lagMs":"60000","brokerClusters":{"brokerClusters":["'$(curl -X GET http://localhost:9021/2.0/clusters/kafka/ | jq --raw-output ".[0].clusterId")'"]},"brokerMetric":"UNDER_REPLICATED_TOPIC_PARTITIONS"}' http://localhost:9021/2.0/alerts/triggers
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Email Administrator","enabled":true,"triggerGuid":["'$(curl -X GET http://localhost:9021/2.0/alerts/triggers/ | jq --raw-output '.[0].guid')'","'$(curl -X GET http://localhost:9021/2.0/alerts/triggers/ | jq --raw-output '.[1].guid')'"],"maxSendRate":1,"intervalMs":"60000","email":{"address":"devnull@confluent.io","subject":"Confluent Control Center alert"}}' http://localhost:9021/2.0/alerts/actions
-
-echo -e "\nWaiting for everything to stabilize, sleeping 30 seconds"
-sleep 30
 
 echo -e "\nDONE! Connect to Confluent Control Center at http://localhost:9021\n"
