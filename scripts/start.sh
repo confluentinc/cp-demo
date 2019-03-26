@@ -40,8 +40,8 @@ MAX_WAIT=300
 CUR_WAIT=0
 echo "Waiting up to $MAX_WAIT seconds for Confluent Control Center to start"
 while [[ ! $(docker-compose logs control-center) =~ "Started NetworkTrafficServerConnector" ]]; do
-  sleep 10
-  CUR_WAIT=$(( CUR_WAIT+10 ))
+  sleep 3
+  CUR_WAIT=$(( CUR_WAIT+3 ))
   if [[ "$CUR_WAIT" -gt "$MAX_WAIT" ]]; then
     echo -e "\nERROR: The logs in control-center container do not show 'Started NetworkTrafficServerConnector' after $MAX_WAIT seconds. Please troubleshoot with 'docker-compose ps' and 'docker-compose logs'.\n"
     exit 1
@@ -71,8 +71,8 @@ curl -X PATCH  -H "Content-Type: application/merge-patch+json" -d '{"displayName
 MAX_WAIT=60
 CUR_WAIT=0
 while [[ ! $(docker-compose logs connect) =~ "Herder started" ]]; do
-  sleep 10
-  CUR_WAIT=$(( CUR_WAIT+10 ))
+  sleep 3
+  CUR_WAIT=$(( CUR_WAIT+3 ))
   if [[ "$CUR_WAIT" -gt "$MAX_WAIT" ]]; then
     echo -e "\nERROR: The logs in Kafka Connect container do not show 'Herder started'. Please troubleshoot with 'docker-compose ps' and 'docker-compose logs'.\n"
     exit 1
@@ -112,9 +112,8 @@ MAX_WAIT=50
 CUR_WAIT=0
 echo -e "\nWaiting up to $MAX_WAIT seconds for wikipedia.parsed topic to be populated"
 while [[ ! $(docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects) =~ "wikipedia.parsed-value" ]]; do
-  sleep 10
-  CUR_WAIT=$(( CUR_WAIT+10 ))
-  #echo "CUR_WAIT: $CUR_WAIT"
+  sleep 3
+  CUR_WAIT=$(( CUR_WAIT+3 ))
   if [[ "$CUR_WAIT" -gt "$MAX_WAIT" ]]; then
     echo -e "\nERROR: IRC connector is not populating the Kafka topic wikipedia.parsed. Please troubleshoot with 'docker-compose ps' and 'docker-compose logs'.\n"
     exit 1
