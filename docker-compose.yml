@@ -1,7 +1,7 @@
 version: "2.1"
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:5.2.1-SNAPSHOT
+    image: confluentinc/cp-zookeeper:5.2.2-SNAPSHOT
     restart: always
     hostname: zookeeper
     container_name: zookeeper
@@ -18,7 +18,7 @@ services:
       - "2181:2181"
 
   kafka1:
-    image: confluentinc/cp-enterprise-kafka:5.2.1-SNAPSHOT
+    image: confluentinc/cp-enterprise-kafka:5.2.2-SNAPSHOT
     hostname: kafka1
     container_name: kafka1
     depends_on:
@@ -71,7 +71,7 @@ services:
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   kafka2:
-    image: confluentinc/cp-enterprise-kafka:5.2.1-SNAPSHOT
+    image: confluentinc/cp-enterprise-kafka:5.2.2-SNAPSHOT
     hostname: kafka2
     container_name: kafka2
     depends_on:
@@ -124,7 +124,7 @@ services:
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   connect:
-    image: confluentinc/cp-kafka-connect:5.2.1-SNAPSHOT
+    image: confluentinc/cp-kafka-connect:5.2.2-SNAPSHOT
     container_name: connect
     restart: always
     ports:
@@ -161,7 +161,7 @@ services:
       CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.2.1-SNAPSHOT.jar
+      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.2.2-SNAPSHOT.jar
       # Connect worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
@@ -249,7 +249,7 @@ services:
       xpack.security.enabled: "false"
       discovery.type: "single-node"
   control-center:
-    image: confluentinc/cp-enterprise-control-center:5.2.1-SNAPSHOT
+    image: confluentinc/cp-enterprise-control-center:5.2.2-SNAPSHOT
     container_name: control-center
     restart: always
     depends_on:
@@ -299,7 +299,7 @@ services:
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.control-center.keystore.jks
                   -Djavax.net.ssl.keyStorePassword=confluent
   schemaregistry:
-    image: confluentinc/cp-schema-registry:5.2.1-SNAPSHOT
+    image: confluentinc/cp-schema-registry:5.2.2-SNAPSHOT
     container_name: schemaregistry
     restart: always
     depends_on:
@@ -335,7 +335,7 @@ services:
     ports:
       - 8085:8085
   kafka-client:
-    image: confluentinc/cp-enterprise-kafka:5.2.1-SNAPSHOT
+    image: confluentinc/cp-enterprise-kafka:5.2.2-SNAPSHOT
     hostname: kafka-client
     container_name: kafka-client
     depends_on:
@@ -382,7 +382,7 @@ services:
       - "7073:7073"
 
   ksql-server:
-    image: confluentinc/cp-ksql-server:5.2.1-SNAPSHOT
+    image: confluentinc/cp-ksql-server:5.2.2-SNAPSHOT
     hostname: ksql-server
     container_name: ksql-server
     restart: always
@@ -455,7 +455,7 @@ services:
       KSQL_KSQL_SERVER_UI_ENABLED: "false"
 
   ksql-cli:
-    image: confluentinc/cp-ksql-cli:5.2.1-SNAPSHOT
+    image: confluentinc/cp-ksql-cli:5.2.2-SNAPSHOT
     container_name: ksql-cli
     depends_on:
       - kafka1
@@ -466,7 +466,7 @@ services:
     entrypoint: /bin/sh
     tty: true
   restproxy:
-    image: confluentinc/cp-kafka-rest:5.2.1-SNAPSHOT
+    image: confluentinc/cp-kafka-rest:5.2.2-SNAPSHOT
     restart: always
     depends_on:
       - zookeeper
@@ -513,7 +513,7 @@ services:
   # This container is just to transfer Replicator jars to the Connect worker
   # It is not used as a Connect worker
   replicator-for-jar-transfer:
-    image: confluentinc/cp-enterprise-replicator:5.2.1-SNAPSHOT
+    image: confluentinc/cp-enterprise-replicator:5.2.2-SNAPSHOT
     hostname: replicator-for-jar-transfer
     container_name: replicator-for-jar-transfer
     volumes:
