@@ -72,8 +72,8 @@ curl -X PATCH  -H "Content-Type: application/merge-patch+json" -d '{"displayName
 # If you don't have 'jq'
 #curl -X PATCH  -H "Content-Type: application/merge-patch+json" -d '{"displayName":"Kafka Raleigh"}' http://localhost:9021/2.0/clusters/kafka/$(curl -X GET http://localhost:9021/2.0/clusters/kafka/ | awk -v FS="(clusterId\":\"|\",\"displayName)" '{print $2}' )
 
-# Verify Kafka Connect Worker has started within 60 seconds
-MAX_WAIT=60
+# Verify Kafka Connect Worker has started within 120 seconds
+MAX_WAIT=120
 CUR_WAIT=0
 while [[ ! $(docker-compose logs connect) =~ "Herder started" ]]; do
   sleep 3
@@ -124,6 +124,7 @@ while [[ ! $(docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/se
     echo -e "\nERROR: IRC connector is not populating the Kafka topic wikipedia.parsed. Please troubleshoot with 'docker-compose ps' and 'docker-compose logs'.\n"
     exit 1
   fi
+  echo "DEBUG: waiting for wikipedia schema $CUR_WAIT"
 done
 
 # Register the same schema for the replicated topic wikipedia.parsed.replica as was created for the original topic wikipedia.parsed

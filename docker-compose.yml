@@ -128,7 +128,7 @@ services:
   connect:
     image: confluentinc/cp-kafka-connect:5.2.1
     container_name: connect
-    cpus: 0.5
+    cpus: 0.6
     restart: always
     ports:
       - "8083:8083"
@@ -256,7 +256,7 @@ services:
   control-center:
     image: confluentinc/cp-enterprise-control-center:5.2.1
     container_name: control-center
-    cpus: 0.5
+    cpus: 0.7
     restart: always
     depends_on:
       - zookeeper
@@ -312,7 +312,7 @@ services:
   schemaregistry:
     image: confluentinc/cp-schema-registry:5.2.1
     container_name: schemaregistry
-    cpus: 0.7
+    cpus: 0.4
     restart: always
     depends_on:
       - zookeeper
@@ -350,6 +350,7 @@ services:
     image: confluentinc/cp-enterprise-kafka:5.2.1
     hostname: kafka-client
     container_name: kafka-client
+    cpus: 0.4
     depends_on:
       - kafka1
       - kafka2
@@ -397,7 +398,7 @@ services:
     image: confluentinc/cp-ksql-server:5.2.1
     hostname: ksql-server
     container_name: ksql-server
-    cpus: 0.7
+    cpus: 0.5
     restart: always
     depends_on:
       - kafka1
@@ -470,7 +471,7 @@ services:
   ksql-cli:
     image: confluentinc/cp-ksql-cli:5.2.1
     container_name: ksql-cli
-    cpus: 0.7
+    cpus: 0.4
     depends_on:
       - kafka1
       - connect
@@ -482,7 +483,7 @@ services:
   restproxy:
     image: confluentinc/cp-kafka-rest:5.2.1
     restart: always
-    cpus: 0.7
+    cpus: 0.4
     depends_on:
       - zookeeper
       - kafka1
