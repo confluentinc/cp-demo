@@ -131,6 +131,6 @@ curl -X POST -H "Content-Type: application/json" -d '{"name":"Under Replicated P
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Email Administrator","enabled":true,"triggerGuid":["'$(curl -X GET http://localhost:9021/2.0/alerts/triggers/ | jq --raw-output '.[0].guid')'","'$(curl -X GET http://localhost:9021/2.0/alerts/triggers/ | jq --raw-output '.[1].guid')'"],"maxSendRate":1,"intervalMs":"60000","email":{"address":"devnull@confluent.io","subject":"Confluent Control Center alert"}}' http://localhost:9021/2.0/alerts/actions
 
 echo -e "\n\n\n******************************************************************"
-echo -e "DONE! Connect to Confluent Control Center at http://localhost:9021\n"
+echo -e "DONE! Connect to Confluent Control Center at http://localhost:9021"
 echo -e "******************************************************************\n"
 
