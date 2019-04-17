@@ -20,7 +20,7 @@ services:
   kafka1:
     image: confluentinc/cp-enterprise-kafka:5.2.1
     hostname: kafka1
-    cpus: 0.5
+    cpus: 0.6
     container_name: kafka1
     depends_on:
       - zookeeper
@@ -74,7 +74,7 @@ services:
   kafka2:
     image: confluentinc/cp-enterprise-kafka:5.2.1
     hostname: kafka2
-    cpus: 0.5
+    cpus: 0.6
     container_name: kafka2
     depends_on:
       - zookeeper
@@ -128,7 +128,7 @@ services:
   connect:
     image: confluentinc/cp-kafka-connect:5.2.1
     container_name: connect
-    cpus: 0.5
+    cpus: 0.6
     restart: always
     ports:
       - "8083:8083"
@@ -244,6 +244,7 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:5.5.2
     container_name: kibana
+    cpus: 0.25
     restart: always
     depends_on:
       - elasticsearch
@@ -255,7 +256,7 @@ services:
   control-center:
     image: confluentinc/cp-enterprise-control-center:5.2.1
     container_name: control-center
-    cpus: 0.5
+    cpus: 0.6
     restart: always
     depends_on:
       - zookeeper
