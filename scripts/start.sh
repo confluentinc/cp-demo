@@ -27,8 +27,6 @@ fi
 # Stop existing demo Docker containers
 ${DIR}/stop.sh
 
-echo "DEBUG: $(top -l 1 -n 1 | grep Load )"
-
 # Generate keys and certificates used for SSL
 echo -e "Generate keys and certificates used for SSL"
 (cd ${DIR}/security && ./certs-create.sh)
@@ -48,10 +46,7 @@ while [[ ! $(docker-compose logs control-center) =~ "Started NetworkTrafficServe
     echo -e "\nERROR: The logs in control-center container do not show 'Started NetworkTrafficServerConnector' after $MAX_WAIT seconds. Please troubleshoot with 'docker-compose ps' and 'docker-compose logs'.\n"
     exit 1
   fi
-  echo "DEBUG: waiting for Control Center $CUR_WAIT"
 done
-
-echo "DEBUG: $(top -l 1 -n 1 | grep Load )"
 
 # Verify Docker containers started
 if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
@@ -82,7 +77,6 @@ while [[ ! $(docker-compose logs connect) =~ "Herder started" ]]; do
     echo -e "\nERROR: The logs in Kafka Connect container do not show 'Herder started'. Please troubleshoot with 'docker-compose ps' and 'docker-compose logs'.\n"
     exit 1
   fi
-  echo "DEBUG: waiting for Herder $CUR_WAIT"
 done
 
 if [[ ! $(docker-compose exec connect timeout 3 nc -zv irc.wikimedia.org 6667) =~ "open" ]]; then
@@ -124,7 +118,6 @@ while [[ ! $(docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/se
     echo -e "\nERROR: IRC connector is not populating the Kafka topic wikipedia.parsed. Please troubleshoot with 'docker-compose ps' and 'docker-compose logs'.\n"
     exit 1
   fi
-  echo "DEBUG: waiting for wikipedia schema $CUR_WAIT"
 done
 
 # Register the same schema for the replicated topic wikipedia.parsed.replica as was created for the original topic wikipedia.parsed
@@ -137,6 +130,7 @@ curl -X POST -H "Content-Type: application/json" -d '{"name":"Consumption Differ
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Under Replicated Partitions","clusterId":"default","condition":"GREATER_THAN","longValue":"0","lagMs":"60000","brokerClusters":{"brokerClusters":["'$(curl -X GET http://localhost:9021/2.0/clusters/kafka/ | jq --raw-output ".[0].clusterId")'"]},"brokerMetric":"UNDER_REPLICATED_TOPIC_PARTITIONS"}' http://localhost:9021/2.0/alerts/triggers
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Email Administrator","enabled":true,"triggerGuid":["'$(curl -X GET http://localhost:9021/2.0/alerts/triggers/ | jq --raw-output '.[0].guid')'","'$(curl -X GET http://localhost:9021/2.0/alerts/triggers/ | jq --raw-output '.[1].guid')'"],"maxSendRate":1,"intervalMs":"60000","email":{"address":"devnull@confluent.io","subject":"Confluent Control Center alert"}}' http://localhost:9021/2.0/alerts/actions
 
-echo -e "\nDONE! Connect to Confluent Control Center at http://localhost:9021\n"
+echo -e "\n\n\n******************************************************************"
+echo -e "DONE! Connect to Confluent Control Center at http://localhost:9021\n"
+echo -e "******************************************************************\n"
 
-echo "DEBUG: $(top -l 1 -n 1 | grep Load )"
