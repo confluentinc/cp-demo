@@ -57,10 +57,13 @@ Run demo
 -  Docker Compose version 1.14.0 with Docker Compose file format 2.1
 -  Java version 1.8.0_92
 -  MacOS 10.12
+
+   - Note for `Ubuntu environments <https://github.com/confluentinc/cp-demo/issues/53>`__
+
 -  git
 -  jq
 
-.. note:: If you prefer a non-Docker version and have Elasticsearch and Kibana running on your local machine, please follow `these instructions <https://github.com/confluentinc/examples/tree/5.0.1-post/wikipedia>`__.
+.. note:: If you prefer a non-Docker version and have Elasticsearch and Kibana running on your local machine, please follow `these instructions <https://github.com/confluentinc/examples/tree/5.2.1-post/wikipedia>`__.
 
 
 1. Clone the `cp-demo GitHub repository <https://github.com/confluentinc/cp-demo>`__:
