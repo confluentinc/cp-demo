@@ -30,7 +30,7 @@ streams the data out of Kafka, applying another custom Kafka Connect
 transform called NullFilter. The data is materialized into
 `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for
 analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
-Use [Confluent Control Center](https://www.confluent.io/product/control-center/) for management and monitoring.
+Use `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ for management and monitoring.
 
 
 .. figure:: images/drawing.png
