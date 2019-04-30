@@ -70,6 +70,7 @@ curl -X PATCH  -H "Content-Type: application/merge-patch+json" -d '{"displayName
 # Verify Kafka Connect Worker has started within 120 seconds
 MAX_WAIT=120
 CUR_WAIT=0
+echo "Waiting up to $MAX_WAIT seconds for Kafka Connect Worker to start"
 while [[ ! $(docker-compose logs connect) =~ "Herder started" ]]; do
   sleep 3
   CUR_WAIT=$(( CUR_WAIT+3 ))
