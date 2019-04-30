@@ -101,7 +101,7 @@ ${DIR}/connectors/submit_replicator_config.sh
 echo -e "\nConfigure Kibana dashboard:"
 ${DIR}/dashboard/configure_kibana_dashboard.sh
 
-echo -e "\n\nStart KSQL engine and running queries:"
+echo -e "\n\nRun KSQL queries (~10 seconds):"
 ${DIR}/ksql/run_ksql.sh
 
 echo -e "\nStart consumers for additional topics: WIKIPEDIANOBOT, EN_WIKIPEDIA_GT_1_COUNTS"
