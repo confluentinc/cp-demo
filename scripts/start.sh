@@ -67,9 +67,10 @@ curl -X PATCH  -H "Content-Type: application/merge-patch+json" -d '{"displayName
 # If you don't have 'jq'
 #curl -X PATCH  -H "Content-Type: application/merge-patch+json" -d '{"displayName":"Kafka Raleigh"}' http://localhost:9021/2.0/clusters/kafka/$(curl -X GET http://localhost:9021/2.0/clusters/kafka/ | awk -v FS="(clusterId\":\"|\",\"displayName)" '{print $2}' )
 
-# Verify Kafka Connect Worker has started within 60 seconds
-MAX_WAIT=60
+# Verify Kafka Connect Worker has started within 120 seconds
+MAX_WAIT=120
 CUR_WAIT=0
+echo "Waiting up to $MAX_WAIT seconds for Kafka Connect Worker to start"
 while [[ ! $(docker-compose logs connect) =~ "Herder started" ]]; do
   sleep 3
   CUR_WAIT=$(( CUR_WAIT+3 ))
@@ -100,7 +101,7 @@ ${DIR}/connectors/submit_replicator_config.sh
 echo -e "\nConfigure Kibana dashboard:"
 ${DIR}/dashboard/configure_kibana_dashboard.sh
 
-echo -e "\n\nStart KSQL engine and running queries:"
+echo -e "\n\nRun KSQL queries (~10 seconds):"
 ${DIR}/ksql/run_ksql.sh
 
 echo -e "\nStart consumers for additional topics: WIKIPEDIANOBOT, EN_WIKIPEDIA_GT_1_COUNTS"
@@ -130,4 +131,7 @@ curl -X POST -H "Content-Type: application/json" -d '{"name":"Consumption Differ
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Under Replicated Partitions","clusterId":"default","condition":"GREATER_THAN","longValue":"0","lagMs":"60000","brokerClusters":{"brokerClusters":["'$(curl -X GET http://localhost:9021/2.0/clusters/kafka/ | jq --raw-output ".[0].clusterId")'"]},"brokerMetric":"UNDER_REPLICATED_TOPIC_PARTITIONS"}' http://localhost:9021/2.0/alerts/triggers
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Email Administrator","enabled":true,"triggerGuid":["'$(curl -X GET http://localhost:9021/2.0/alerts/triggers/ | jq --raw-output '.[0].guid')'","'$(curl -X GET http://localhost:9021/2.0/alerts/triggers/ | jq --raw-output '.[1].guid')'"],"maxSendRate":1,"intervalMs":"60000","email":{"address":"devnull@confluent.io","subject":"Confluent Control Center alert"}}' http://localhost:9021/2.0/alerts/actions
 
-echo -e "\nDONE! Connect to Confluent Control Center at http://localhost:9021\n"
+echo -e "\n\n\n******************************************************************"
+echo -e "DONE! Connect to Confluent Control Center at http://localhost:9021"
+echo -e "******************************************************************\n"
+
