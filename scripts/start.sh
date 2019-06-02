@@ -16,6 +16,7 @@ verify_installed()
 }
 verify_installed "jq"
 verify_installed "docker-compose"
+verify_installed "keytool"
 
 # Verify Docker memory is increased to at least 8GB
 DOCKER_MEMORY=$(docker system info | grep Memory | grep -o "[0-9\.]\+")
