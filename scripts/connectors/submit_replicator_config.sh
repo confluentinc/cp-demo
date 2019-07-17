@@ -50,7 +50,8 @@ DATA=$( cat << EOF
     "src.kafka.timestamps.producer.confluent.monitoring.interceptor.ssl.keystore.password": "confluent",
     "src.kafka.timestamps.producer.confluent.monitoring.interceptor.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"client\" password=\"client-secret\";",
     "src.kafka.timestamps.producer.confluent.monitoring.interceptor.sasl.mechanism": "PLAIN",
-    "tasks.max": "1"
+    "tasks.max": "1",
+    "provenance.header.enable": "false"
   }
 }
 EOF
