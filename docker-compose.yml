@@ -148,9 +148,9 @@ services:
       CONNECT_LISTENERS: "https://0.0.0.0:8083"
       CONNECT_GROUP_ID: "connect"
       CONNECT_PRODUCER_CLIENT_ID: "connect-worker-producer"
-      CONNECT_CONFIG_STORAGE_TOPIC: connect-config
+      CONNECT_CONFIG_STORAGE_TOPIC: connect-configs
       CONNECT_OFFSET_STORAGE_TOPIC: connect-offsets
-      CONNECT_STATUS_STORAGE_TOPIC: connect-status
+      CONNECT_STATUS_STORAGE_TOPIC: connect-statuses
       CONNECT_REPLICATION_FACTOR: 2
       CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 2
       CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 2
@@ -321,7 +321,7 @@ services:
     volumes:
       - $PWD/scripts/security:/etc/kafka/secrets
     environment:
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "SASL_SSL://kafka1:9091,SASL_SSL://kafka2:9092"
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       SCHEMA_REGISTRY_HOST_NAME: schemaregistry
       SCHEMA_REGISTRY_LISTENERS: "https://0.0.0.0:8085"
       SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: SASL_SSL
