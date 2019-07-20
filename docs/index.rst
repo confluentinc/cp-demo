@@ -684,15 +684,14 @@ the two Kafka brokers.
 
           docker-compose stop kafka2
 
-2. After a few minutes, observe the System Health shows the broker count
-   has gone down from 2 to 1, and there are many under replicated
+2. After a few minutes, observe the Broker summary show that the number of brokers 
+   has decreased from 2 to 1, and there are many under replicated
    partitions.
 
    .. figure:: images/broker_down_failed.png
       :alt: image
 
-3. View topic details to see that there are out of sync replicas on
-   broker 2.
+3. View Topic information details to see that there are out of sync replicas on broker 2.
 
    .. figure:: images/broker_down_replicas.png
       :alt: image
@@ -703,14 +702,14 @@ the two Kafka brokers.
 
           docker-compose start kafka2
 
-5. After about a minute, observe the System Health view in Confluent
+5. After about a minute, observe the Broker summary in Confluent
    Control Center. The broker count has recovered to 2, and the topic
    partitions are back to reporting no under replicated partitions.
 
    .. figure:: images/broker_down_steady.png
       :alt: image
 
-6. Click on the broker count ``2`` inside the circle to view when the
+6. Click on the broker count ``2`` inside the "Broker uptime" box to view when
    broker counts changed.
 
    .. figure:: images/broker_down_times.png
@@ -732,8 +731,12 @@ Follow along with the `Demo 9: Alerting <https://youtu.be/523o_S8OOGo>`_ video.
 There are many types of Control Center
 `alerts <https://docs.confluent.io/current/control-center/docs/alerts.html>`__
 and many ways to configure them. Use the Alerts management page to
-define triggers and actions, or click on a streams monitoring graph for
-consumer groups or topics to setup alerts from there.
+define triggers and actions, or click on individual resources
+to setup alerts from there.
+
+.. figure:: images/c3-alerts-bell-icon-initial.png
+   :alt: image
+
 
 1. This demo already has pre-configured triggers and actions. View the
    Alerts ``Triggers`` screen, and click ``Edit`` against each trigger
@@ -755,11 +758,16 @@ consumer groups or topics to setup alerts from there.
    ``Under Replicated Partitions`` happened and caused an alert when you
    stopped broker 2.
 
+
+   .. figure:: images/alerts_triggers_under_replication_partitions.png
+      :alt: image
+
+
 3. You can also trigger the ``Consumption Difference`` trigger. In the
    Kafka Connect -> Sinks screen, edit the running Elasticsearch sink
    connector.
 
-4. In the Kafka Connect view, pause the Elasticsearch sink connector by
+4. In the Connect view, pause the Elasticsearch sink connector by
    pressing the pause icon in the top right. This will stop consumption
    for the related consumer group.
 
@@ -783,17 +791,23 @@ intra-cluster replication, *i.e.*, the source and destination Kafka
 clusters are the same. As with the rest of the components in the
 solution, Confluent Replicator is also configured with security.
 
-1. **MONITORING –> Data Streams –> Message Delivery**: monitor
-   throughput and latency of Confluent Replicator in the Data streams
-   monitoring view. Replicator is a Kafka Connect source connector and
-   has a corresponding consumer group ``connect-replicator``.
+1. **Consumers**: monitor throughput and latency of Confluent Replicator.
+   Replicator is a Kafka Connect source connector and has a corresponding consumer group ``connect-replicator``.
 
-   .. figure:: images/replicator_consumer_group.png
+   .. figure:: images/replicator_consumer_group_list.png
       :alt: image
 
+2. View Replicator Consumer Lag.
 
+   .. figure:: images/replicator_consumer_lag.png
+      :alt: image
 
-2. **MANAGEMENT –> Topics**: scroll down to view the topics called
+3. View Replicator Consumption metrics.
+
+   .. figure:: images/replicator_consumption.png
+      :alt: image
+
+4. **Topics**: scroll down to view the topics called
    ``wikipedia.parsed`` (Replicator is consuming data from this topic)
    and ``wikipedia.parsed.replica`` (Replicator automatically created this topic and is
    copying data to it). Click on ``Consumer Groups`` for the topic
