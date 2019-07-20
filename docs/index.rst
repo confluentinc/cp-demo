@@ -97,115 +97,51 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
         <iframe src="https://www.youtube.com/embed/D9nzAxxIv7A" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
     </div>
 
-1. **MONITORING –> System Health**: |c3| landing
-   page shows the overall `system
-   health <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__
-   of a given Kafka cluster. For capacity planning activities, view
-   cluster utilization:
+1. **Brokers**: from the first cluster, view the status of the Brokers including:
 
-   -  CPU: look at network and thread pool usage, produce and fetch
-      request latencies
-   -  Network utilization: look at throughput per broker or per cluster
-   -  Disk utilization: look at disk space used by all log segments, per
-      broker
+   - Produce metrics
+   - Consume metrics
+   - Broker uptime
+   - Partitions: online, under replicated, total replicas, out of sync replicas
+   - Disk utilization
+   - System: network pool usage, request pool usage
 
    .. figure:: images/landing_page.png
 
 
+2. **Topics**: |c3| has a useful interface to manage topics in a Kafka cluster.
 
-
-2. **MANAGEMENT –> Kafka Connect**: |c3| uses
-   the Kafka Connect API to manage `Kafka
-   connectors <https://docs.confluent.io/current/control-center/docs/connect.html>`__.
-
-   -  Kafka Connect **Sources** tab shows the connectors
-      ``wikipedia-irc`` and ``replicate-topic``. Click ``Edit`` to see
-      the details of the connector configuration and custom transforms.
-
-      .. figure:: images/connect_source.png
-         :alt: image
-   
-
-
-
-   -  Kafka Connect **Sinks** tab shows the connector
-      ``elasticsearch-ksql``. Click ``Edit`` to see the details of the
-      connector configuration and custom transforms.
-
-      .. figure:: images/connect_sink.png
-         :alt: image
-
-
-
-3. **MONITORING –> Data Streams –> Message Delivery**: hover over
-   any chart to see number of messages and average latency within a
-   minute time interval.
-
-   .. figure:: images/message_delivery.png
-      :alt: image
-
-
-
-   The Kafka Connect sink connectors have corresponding consumer groups
-   ``connect-elasticsearch-ksql`` and ``connect-replicator``. These
-   consumer groups will be in the consumer group statistics in the
-   `stream
-   monitoring <https://docs.confluent.io/current/control-center/docs/monitoring.html>`__
-   charts.
-
-   .. figure:: images/connect_consumer_group.png
-      :alt: image
-
-
-4. **MONITORING –> System Health**: to identify bottlenecks, you can
-   see a breakdown of produce and fetch latencies through the entire
-   `request
-   lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
-   Click on the line graph in the ``Request latency`` chart. The request
-   latency values can be shown at the median, 95th, 99th, or 99.9th
-   percentile. Depending on where the bottlenecks are, you can tune your
-   brokers and clients appropriately.
-
-   .. figure:: images/request_latencies.png
-      :alt: image
-
-
-Topic Management
---------------------------------
-
-|c3| has a useful interface to manage topics in a Kafka cluster.
-
-1. **MANAGEMENT –> Topics**: Scroll down to and click on the topic `wikipedia.parsed`.
+* Scroll down to and click on the topic `wikipedia.parsed`.
 
       .. figure:: images/topic_actions.png
          :alt: image
 
-2. **MANAGEMENT –> Topics -> Status**: View which brokers are leaders for which partitions and where all partitions reside.
+* View which brokers are leaders for which partitions and where all partitions reside.
 
    .. figure:: images/topic_info.png
       :alt: image
 
-3. **MANAGEMENT –> Topics -> Schema**: View the schema for this topic. For `wikipedia.parsed`, the topic value is using a Schema registered with |sr| (the topic key is just a string).
-
-   .. figure:: images/topic_schema.png
-      :alt: image
-
-4. **MANAGEMENT –> Topics -> Inspect**: View messages for this topic, in real-time.
+* Inspect messages for this topic, in real-time.
 
    .. figure:: images/topic_inspect.png
       :alt: image
 
-5. **MANAGEMENT –> Topics -> Settings**: View configuration settings for this topic.
+* View the schema for this topic. For `wikipedia.parsed`, the topic value is using a Schema registered with |sr| (the topic key is just a string).
+
+   .. figure:: images/topic_schema.png
+      :alt: image
+
+* View configuration settings for this topic.
 
    .. figure:: images/topic_settings.png
       :alt: image
 
-6. **MANAGEMENT -> Topics**: click the ``+ Create`` button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
+* Click the ``+ Add a topic`` button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
 
       .. figure:: images/create_topic.png
          :alt: image
 
-7. When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic called ``_confluent-monitoring``.
+* When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic called ``_confluent-monitoring``.
    Kafka clients include any application that uses the Apache Kafka client API to connect to Kafka brokers, such as custom client code or any service that has embedded producers or consumers, such as Kafka Connect, KSQL, or a Kafka Streams application.
    |c3| uses that topic to ensure that all messages are delivered and to provide statistics on throughput and latency performance.
    From that same topic, you can also derive which producers are writing to which topics and which consumers are reading from which topics, and an example script is provided with the repo (note: this is for demo purposes only, not suitable for production).
@@ -267,6 +203,15 @@ Topic Management
       wikipedia.parsed.replica
         producers
           connect-worker-producer
+
+
+3. **Connect**: |c3| uses the Kafka Connect API to manage `Kafka connectors <https://docs.confluent.io/current/control-center/docs/connect.html>`__.
+
+   - This demo is running two source connectors ``wikipedia-irc`` and ``replicate-topic``
+   - This demo is running one sink connector ``elasticsearch-ksql`` consuming from the Kafka topic ``WIKIPEDIABOT``
+   - Click the three dots to see the details of the connector configuration and custom transforms.
+
+   .. figure:: images/landing_page.png
 
 
 .. _ksql-demo-3:
