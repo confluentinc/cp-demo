@@ -276,35 +276,7 @@ KSQL
    .. figure:: images/ksql_properties.png
       :alt: image
 
-
-Consumers
----------
-
-1. In this demo, KSQL is run with Confluent Monitoring Interceptors configured which enables |c3| Data Streams to monitor KSQL query performance. Click on "Consumers".
-
-2. The consumer group names that start with ``_confluent-ksql-default_query_`` correlate to the KSQL query names, and |c3| is showing the records that are incoming to each query.
-
-   .. figure:: images/consumer_group_list.png
-      :alt: image
-
-3. View consumer lag for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer gorup list.
-
-   .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT.png
-      :alt: image
-
-* View throughput and latency of the incoming records for the persistent KSQL "Create Table As Select" query ``CTAS_EN_WIKIPEDIA_GT_1``, which is displayed as ``ksql_query_CTAS_EN_WIKIPEDIA_GT_1`` in |c3|.
-
-   .. figure:: images/ksql_query_CTAS_EN_WIKIPEDIA_GT_1.png
-      :alt: image
-
-* View throughput and latency of the incoming records for the persistent KSQL "Create Stream As Select" query ``CTAS_EN_WIKIPEDIA_GT_1_COUNTS``, which is displayed as ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` in |c3|.
-
-   .. figure:: images/tumbling_window.png
-      :alt: image
-
-   .. note:: In |c3| the stream monitoring graphs for consumer groups ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` and ``EN_WIKIPEDIA_GT_1_COUNTS-consumer`` are displaying data at 5-minute intervals instead of smoothly like the other consumer groups. This is because |c3| displays data based on message timestamps, and the incoming stream for these consumer groups is a tumbling window with a window size of 5 minutes. Thus all its messages are timestamped to the beginning of each 5-minute window. This is also why the latency for these streams appears to be high. Kafka streaming tumbling windows are working as designed, and |c3| is reporting them accurately.
-
-11. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
+10. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
    .. sourcecode:: bash
 
@@ -332,6 +304,34 @@ Consumers
       ...
 
 
+Consumers
+---------
+
+1. |c3| enables you to monitor consumer lag and throughput performance. Click on "Consumers".
+
+2. Consumer lag is available on a per `consumer basis <https://docs.confluent.io/current/control-center/consumers.html#view-consumer-lag-details-for-a-consumer-group>`__, including embedded consumers in sink connectors (e.g., ``connect-replicator`` and ``connect-elasticsearch-ksql``), KSQL queries (e.g., consumer groups whose names start with ``_confluent-ksql-default_query_``), console consumers (e.g., ``WIKIPEDIANOBOT-consumer``), etc.  Consumer lag is also available on a per `topic basis <https://docs.confluent.io/current/control-center/topics/view.html#view-consumer-lag-for-a-topic>`__.
+
+   .. figure:: images/consumer_group_list.png
+      :alt: image
+
+3. View consumer lag for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer group list.
+
+   .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumer_lag.png
+      :alt: image
+
+4. With `Confluent Monitoring Interceptors <https://docs.confluent.io/current/control-center/installation/clients.html>`__, you may also view additional metrics related to production and consumption of messages, including:
+
+   - Throughput
+   - Failed consume requests
+   - Percent messages consumed
+   - End to end latency
+
+5. View consumption metrics for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer group list.
+
+   .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumption.png
+      :alt: image
+
+
 Consumer rebalances
 -------------------
 
@@ -347,20 +347,12 @@ Control Center updates as consumer rebalances occur in a consumer group.
 
           ./scripts/app/start_consumer_app.sh 1
 
-2. Let this consumer group run for 2 minutes until Control Center stream
-   monitoring shows the consumer group ``app`` with steady consumption.
-   Click on the box ``View Details`` above the bar graph to drill down
-   into consumer group details. This consumer group ``app`` has a single
-   consumer ``consumer_app_1`` consuming all of the partitions in the
-   topic ``wikipedia.parsed``. The first bar may be red because the
-   consumer started in the middle of a time window and did not receive
-   all messages produced during that window. This does not mean messages
-   were lost.
+2. Let this consumer group run for 2 minutes until |c3|
+   shows the consumer group ``app`` with steady consumption.
+   This consumer group ``app`` has a single consumer ``consumer_app_1`` consuming all of the partitions in the topic ``wikipedia.parsed``. 
 
    .. figure:: images/consumer_start_one.png
       :alt: image
-
-
 
 3. Add a second consumer ``consumer_app_2`` to the existing consumer
    group ``app``.
@@ -369,18 +361,14 @@ Control Center updates as consumer rebalances occur in a consumer group.
 
           ./scripts/app/start_consumer_app.sh 2
 
-4. Let this consumer group run for 2 minutes until Control Center stream
-   monitoring shows the consumer group ``app`` with steady consumption.
+4. Let this consumer group run for 2 minutes until |c3|
+   shows the consumer group ``app`` with steady consumption.
    Notice that the consumers ``consumer_app_1`` and ``consumer_app_2``
    now share consumption of the partitions in the topic
-   ``wikipedia.parsed``. When the second consumer was added, that bar
-   may be red for both consumers because a consumer rebalance occurred
-   during that time window. This does not mean messages were lost, as
-   you can confirm at the consumer group level.
+   ``wikipedia.parsed``. 
 
    .. figure:: images/consumer_start_two.png
       :alt: image
-
 
 
 Slow consumers
