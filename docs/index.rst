@@ -86,18 +86,16 @@ Run demo
 Playbook
 ========
 
-|c3| Tour
---------------------------------
+Brokers 
+-------
 
-Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
+1. Select the cluster called "Kafka Raleigh".
 
-.. raw:: html
+   .. figure:: images/cluster_raleigh.png
 
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/D9nzAxxIv7A" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
+2. Click on "Brokers".
 
-1. **Brokers**: from the first cluster, view the status of the Brokers including:
+3. View the status of the Brokers in the cluster, including:
 
    - Produce metrics
    - Consume metrics
@@ -108,40 +106,50 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
 
    .. figure:: images/landing_page.png
 
+Topics
+------
 
-2. **Topics**: |c3| has a useful interface to manage topics in a Kafka cluster.
+1. |c3| has a useful interface to manage topics in a Kafka cluster. Click on "Topics".
 
-* Scroll down to and click on the topic `wikipedia.parsed`.
+2. Scroll down to and click on the topic `wikipedia.parsed`.
 
-      .. figure:: images/topic_actions.png
+      .. figure:: images/topic_list_wikipedia.png
          :alt: image
 
-* View which brokers are leaders for which partitions and where all partitions reside.
+3. View an overview of this topic:
+
+   - Throughput
+   - Partitions: under replicated, out of sync replicas
+
+   .. figure:: images/topic_actions.png
+      :alt: image
+
+4. View which brokers are leaders for which partitions and where all partitions reside.
 
    .. figure:: images/topic_info.png
       :alt: image
 
-* Inspect messages for this topic, in real-time.
+5. Inspect messages for this topic, in real-time.
 
    .. figure:: images/topic_inspect.png
       :alt: image
 
-* View the schema for this topic. For `wikipedia.parsed`, the topic value is using a Schema registered with |sr| (the topic key is just a string).
+6. View the schema for this topic. For `wikipedia.parsed`, the topic value is using a Schema registered with |sr| (the topic key is just a string).
 
    .. figure:: images/topic_schema.png
       :alt: image
 
-* View configuration settings for this topic.
+7. View configuration settings for this topic.
 
    .. figure:: images/topic_settings.png
       :alt: image
 
-* Click the ``+ Add a topic`` button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
+8. Click the ``+ Add a topic`` button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
 
       .. figure:: images/create_topic.png
          :alt: image
 
-* When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic called ``_confluent-monitoring``.
+9. Dataflow: you can derive which producers are writing to which topics and which consumers are reading from which topics. When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic called ``_confluent-monitoring``.
    Kafka clients include any application that uses the Apache Kafka client API to connect to Kafka brokers, such as custom client code or any service that has embedded producers or consumers, such as Kafka Connect, KSQL, or a Kafka Streams application.
    |c3| uses that topic to ensure that all messages are delivered and to provide statistics on throughput and latency performance.
    From that same topic, you can also derive which producers are writing to which topics and which consumers are reading from which topics, and an example script is provided with the repo (note: this is for demo purposes only, not suitable for production).
@@ -204,16 +212,24 @@ Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
         producers
           connect-worker-producer
 
+Connect
+-------
 
-3. **Connect**: |c3| uses the Kafka Connect API to manage `Kafka connectors <https://docs.confluent.io/current/control-center/docs/connect.html>`__.
+1. |c3| uses the Kafka Connect API to manage multiple `connect clusters <https://docs.confluent.io/current/control-center/docs/connect.html>`__.  Click on "Connect".
 
-   - This demo is running two source connectors ``wikipedia-irc`` and ``replicate-topic``
-   - This demo is running one sink connector ``elasticsearch-ksql`` consuming from the Kafka topic ``WIKIPEDIABOT``
-   - Click the three dots to see the details of the connector configuration and custom transforms.
+2. Select `connect-default`, the name of the cluster of Connect workers.
+
+   .. figure:: images/connect_default.png
+
+3. Verify the connectors running in this demo:
+
+   - source connector ``wikipedia-irc``
+   - source connector ``replicate-topic``
+   - sink connector ``elasticsearch-ksql`` consuming from the Kafka topic ``WIKIPEDIABOT``
 
    .. figure:: images/landing_page.png
 
-
+4. Click the three dots to see the details of the connector configuration and custom transforms.
 
 .. _ksql-demo-3:
 
