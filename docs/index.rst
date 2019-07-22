@@ -39,12 +39,6 @@ Use `Confluent Control Center <https://www.confluent.io/product/control-center/>
 
 .. note:: This is a Docker environment and has all services running on one host. Do not use this demo in production. It is meant exclusively to easily demo the |CP|. In production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production traffic. Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
 
-If you are completely new to |c3|, watch a brief video overview `Monitoring Kafka Like a Pro <https://youtu.be/O9LqDGSoWaU>`_ video.
-
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/O9LqDGSoWaU" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
 
 
 ========
@@ -227,22 +221,17 @@ Connect
    - source connector ``replicate-topic``
    - sink connector ``elasticsearch-ksql`` consuming from the Kafka topic ``WIKIPEDIABOT``
 
-   .. figure:: images/landing_page.png
+   .. figure:: images/connector_list.png
 
-4. Click the three dots to see the details of the connector configuration and custom transforms.
+4. Click any connector view or modify any details of the connector configuration and custom transforms.
+
+   .. figure:: images/connect_replicator_settings.png
+
 
 .. _ksql-demo-3:
 
 KSQL
 ----
-
-Follow along with the `Demo 3: KSQL <https://youtu.be/3o7MzCri4e4>`_ video.
-
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/3o7MzCri4e4" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
 
 In this demo, KSQL is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the `KSQL command file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlcommands>`__.
 
@@ -341,14 +330,6 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 Consumer rebalances
 -------------------
 
-Follow along with the `Demo 4: Consumer Rebalances <https://youtu.be/2Egh3I0q4dE>`_ video.
-
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/2Egh3I0q4dE" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
-
 Control Center shows which consumers in a consumer group are consuming
 from which partitions and on which brokers those partitions reside.
 Control Center updates as consumer rebalances occur in a consumer group.
@@ -399,14 +380,6 @@ Control Center updates as consumer rebalances occur in a consumer group.
 
 Slow consumers
 --------------
-
-Follow along with the `Demo 5: Slow Consumers <https://youtu.be/XOtY1uUaf_Y>`_ video.
-
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/XOtY1uUaf_Y" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
 
 Streams monitoring in Control Center can highlight consumers that are
 slow to keep up with the producers. This is critial to monitor for
@@ -480,15 +453,6 @@ consumers in a consumer group.
 
 Over consumption
 ----------------
-
-Follow along with the `Demo 6: Over Consumption <https://youtu.be/ZYnoG59xNCI>`_ video.
-
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/ZYnoG59xNCI" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
-
 
 Streams monitoring in Control Center can highlight consumers that are
 over consuming some messages, which is an indication that consumers are
@@ -581,14 +545,6 @@ it has previously read.
 
 Under consumption
 -----------------
-
-Follow along with the `Demo 7: Under Consumption <https://youtu.be/d0tZS5FxdM0>`_ video.
-
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/d0tZS5FxdM0" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
 
 Streams monitoring in Control Center can highlight consumers that are
 under consuming some messages. This may happen intentionally when
@@ -683,14 +639,6 @@ skipping messages that will never be read.
 Failed broker
 -------------
 
-Follow along with the `Demo 8: Failed Broker <https://youtu.be/oxr1X0t5pLg>`_ video.
-
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/oxr1X0t5pLg" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
-
 To simulate a failed broker, stop the Docker container running one of
 the two Kafka brokers.
 
@@ -734,15 +682,6 @@ the two Kafka brokers.
 
 Alerting
 --------
-
-Follow along with the `Demo 9: Alerting <https://youtu.be/523o_S8OOGo>`_ video.
-
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/523o_S8OOGo" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
-
 
 There are many types of Control Center
 `alerts <https://docs.confluent.io/current/control-center/docs/alerts.html>`__
