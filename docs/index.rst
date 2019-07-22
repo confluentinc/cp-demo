@@ -246,41 +246,48 @@ KSQL
 
         docker-compose exec ksql-cli ksql http://ksql-server:8088
 
-3. View the existing KSQL streams. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``).
+4. View the existing KSQL streams. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``).
 
-     .. figure:: images/ksql_streams_list.png
-        :alt: image
+   .. figure:: images/ksql_streams_list.png
+      :alt: image
 
-4. Describe the schema (fields or columns) and source and sink of an existing KSQL stream. Click on ``WIKIPEDIA``.
+5. Describe the schema (fields or columns) and source and sink of an existing KSQL stream. Click on ``WIKIPEDIA``.
 
-     .. figure:: images/wikipedia_describe.png
-        :alt: image
+   .. figure:: images/wikipedia_describe.png
+      :alt: image
 
-5. View the existing KSQL tables. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``).
+6. View the existing KSQL tables. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``).
 
-     .. figure:: images/ksql_tables_list.png
-        :alt: image
+   .. figure:: images/ksql_tables_list.png
+      :alt: image
 
-6. View the existing KSQL queries, which are continuously running. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW QUERIES;``).
+7. View the existing KSQL queries, which are continuously running. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW QUERIES;``).
 
-     .. figure:: images/ksql_queries_list.png
-        :alt: image
+   .. figure:: images/ksql_queries_list.png
+      :alt: image
 
-7. View messages from different KSQL streams and tables. Right click on your stream of choice, select ``Query`` which takes you to the Query Editor with a pre-populated query such as ``select * from WIKIPEDIA;`` and it will show results for newly arriving data.
+8. View messages from different KSQL streams and tables. Right click on your stream of choice, select ``Query`` which takes you to the Query Editor with a pre-populated query such as ``select * from WIKIPEDIA;`` and it will show results for newly arriving data.
 
-     .. figure:: images/ksql_query_topic.png
-        :alt: image
-
-8. Create a new stream from an existing topic. Click on the button ``Add Stream`` and follow the prompts.
+   .. figure:: images/ksql_query_topic.png
+      :alt: image
 
 9. View the configured KSQL server properties set in the docker-compose.yml file. In the query editor, type ``SHOW PROPERTIES;`` and then click on the ``Run query`` button.
 
-     .. figure:: images/ksql_properties.png
-        :alt: image
+   .. figure:: images/ksql_properties.png
+      :alt: image
 
-10. In this demo, KSQL is run with Confluent Monitoring Interceptors configured which enables |c3| Data Streams to monitor KSQL queries. The consumer group names ``_confluent-ksql-default`` correlate to the KSQL query names above, and |c3| is showing the records that are incoming to each query.
 
-* View throughput and latency of the incoming records for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``ksql_query_CSAS_WIKIPEDIABOT`` in |c3|.
+Consumers
+---------
+
+1. In this demo, KSQL is run with Confluent Monitoring Interceptors configured which enables |c3| Data Streams to monitor KSQL query performance. Click on "Consumers".
+
+2. The consumer group names that start with ``_confluent-ksql-default_query_`` correlate to the KSQL query names, and |c3| is showing the records that are incoming to each query.
+
+   .. figure:: images/consumer_group_list.png
+      :alt: image
+
+3. View consumer lag for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer gorup list.
 
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT.png
       :alt: image
