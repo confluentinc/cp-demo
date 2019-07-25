@@ -364,15 +364,13 @@ Consumers
 
 10. Click on "System heath" and then a line in "Request latency".
 
-   .. figure:: images/request_latency_find.png
-      :alt: image
+.. figure:: images/request_latency_find.png
+    :alt: image
 
-11. This shows a breakdown of
-   produce latencies (fetch latencies also available) through the entire `request
-   lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
+11. This shows a breakdown of produce latencies (fetch latencies also available) through the entire `request lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
 
-   .. figure:: images/slow_consumer_produce_latency_breakdown.png
-      :alt: image
+.. figure:: images/slow_consumer_produce_latency_breakdown.png
+   :alt: image
 
 
 Data Streams: Over Consumption
@@ -401,8 +399,7 @@ it has previously read.
 2. Scroll down to verify there are two consumers ``consumer_app_1`` and
    ``consumer_app_2`` that were created in an earlier section. If these
    two consumers are not running and were never started, start them as
-   described in the section `consumer
-   rebalances <#consumer-rebalances>`__.
+   described in the section `Consumers <#consumers>`__.
    Let this consumer group run for 2 minutes until Control Center stream
    monitoring shows the consumer group ``app`` with steady consumption.
 
@@ -499,8 +496,7 @@ skipping messages that will never be read.
 2. Scroll down to verify there are two consumers ``consumer_app_1`` and
    ``consumer_app_2`` that were created in an earlier section. If these
    two consumers are not running and were never started, start them as
-   described in the section `consumer
-   rebalances <#consumer-rebalances>`__.
+   described in the section `Consumers <#consumers>`__.
    Let this consumer group run for 2 minutes until Control Center stream
    monitoring shows the consumer group ``app`` with steady consumption.
 
@@ -648,7 +644,7 @@ to setup alerts from there.
    Kafka Connect -> Sinks screen, edit the running Elasticsearch sink
    connector.
 
-4. In the Connect view, pause the Elasticsearch sink connector by
+4. In the Connect view, pause the Elasticsearch sink connector in Settings by
    pressing the pause icon in the top right. This will stop consumption
    for the related consumer group.
 
@@ -698,14 +694,14 @@ solution, Confluent Replicator is also configured with security.
    .. figure:: images/replicator_topic_info.png
 
 
-3. **MANAGEMENT –> Kafka Connect**: pause the Replicator connector
+5. **MANAGEMENT –> Kafka Connect**: pause the Replicator connector in Settings
    by pressing the pause icon in the top right. This will stop
    consumption for the related consumer group.
 
-   .. figure:: images/pause_connector.png
+   .. figure:: images/pause_connector_replicator.png
       :alt: image
 
-4. Observe that the ``connect-replicator`` consumer group has stopped
+6. Observe that the ``connect-replicator`` consumer group has stopped
    consumption.
 
    .. figure:: images/replicator_streams_stopped.png
