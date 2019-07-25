@@ -307,7 +307,7 @@ KSQL
 Consumers
 ---------
 
-1. |c3| enables you to monitor consumer lag and throughput performance. Click on "Consumers".
+1. |c3| enables you to monitor consumer lag and throughput performance. Consumer lag is the topic's high water mark (latest offset for the topic that has been written) minus the current consumer offset (latest offset read for that topic by that consumer group). Keep in mind topic write rate and consumer group read rate when considering what the significance of how big is the consumer lag. Click on "Consumers".
 
 2. Consumer lag is available on a per `consumer basis <https://docs.confluent.io/current/control-center/consumers.html#view-consumer-lag-details-for-a-consumer-group>`__, including embedded consumers in sink connectors (e.g., ``connect-replicator`` and ``connect-elasticsearch-ksql``), KSQL queries (e.g., consumer groups whose names start with ``_confluent-ksql-default_query_``), console consumers (e.g., ``WIKIPEDIANOBOT-consumer``), etc.  Consumer lag is also available on a per `topic basis <https://docs.confluent.io/current/control-center/topics/view.html#view-consumer-lag-for-a-topic>`__.
 
@@ -332,36 +332,27 @@ Consumers
       :alt: image
 
 
-Consumer rebalances
--------------------
-
-Control Center shows which consumers in a consumer group are consuming
-from which partitions and on which brokers those partitions reside.
-Control Center updates as consumer rebalances occur in a consumer group.
-
-1. Start consuming from topic ``wikipedia.parsed`` with a new consumer
-   group ``app`` with one consumer ``consumer_app_1``. It will run in
-   the background.
+6. Control Center shows which consumers in a consumer group are consuming from which partitions and on which brokers those partitions reside.  Control Center updates as consumer rebalances occur in a consumer group.  Start consuming from topic ``wikipedia.parsed`` with a new consumer group ``app`` with one consumer ``consumer_app_1``. It will run in the background.
 
    .. sourcecode:: bash
 
           ./scripts/app/start_consumer_app.sh 1
 
-2. Let this consumer group run for 2 minutes until |c3|
+7. Let this consumer group run for 2 minutes until |c3|
    shows the consumer group ``app`` with steady consumption.
    This consumer group ``app`` has a single consumer ``consumer_app_1`` consuming all of the partitions in the topic ``wikipedia.parsed``. 
 
    .. figure:: images/consumer_start_one.png
       :alt: image
 
-3. Add a second consumer ``consumer_app_2`` to the existing consumer
+8. Add a second consumer ``consumer_app_2`` to the existing consumer
    group ``app``.
 
    .. sourcecode:: bash
 
           ./scripts/app/start_consumer_app.sh 2
 
-4. Let this consumer group run for 2 minutes until |c3|
+9. Let this consumer group run for 2 minutes until |c3|
    shows the consumer group ``app`` with steady consumption.
    Notice that the consumers ``consumer_app_1`` and ``consumer_app_2``
    now share consumption of the partitions in the topic
@@ -371,81 +362,21 @@ Control Center updates as consumer rebalances occur in a consumer group.
       :alt: image
 
 
-Slow consumers
---------------
+10. Click on "System heath" and then a line in "Request latency".
 
-Streams monitoring in Control Center can highlight consumers that are
-slow to keep up with the producers. This is critial to monitor for
-real-time applications where consumers should consume produced messages
-with as low latency as possible. To simulate a slow consumer, we will
-use Kafka’s `quota
-feature <https://docs.confluent.io/current/kafka/post-deployment.html#enforcing-client-quotas>`__
-to rate-limit consumption from the broker side, for just one of two
-consumers in a consumer group.
-
-1. Click on ``Data streams``, and ``View Details`` for the consumer
-   group ``app``. Click on the left-hand blue circle on the consumption
-   line to verify there are two consumers ``consumer_app_1`` and
-   ``consumer_app_2``, that were created in an earlier section. If these
-   two consumers are not running, start them as described in the section
-   `consumer rebalances <#consumer-rebalances>`__.
-
-2. Let this consumer group run for 2 minutes until Control Center stream
-   monitoring shows the consumer group ``app`` with steady consumption.
-
-3. Add a consumption quota for one of the consumers in the consumer
-   group ``app``.
-
-   .. sourcecode:: bash
-
-          ./scripts/app/throttle_consumer.sh 1 add
-
-   .. note:: You are running a Docker demo environment with all services running on one host, which you would never do in production.  Depending on your system resource availability, sometimes applying the quota may stall the consumer (`KAFKA-5871 <https://issues.apache.org/jira/browse/KAFKA-5871>`__), thus you may need to adjust the quota rate. See the ``./scripts/app/throttle_consumer.sh`` script for syntax on modifying the quota rate.
-
-      -  If consumer group ``app`` does not increase latency, decrease the quota rate
-      -  If consumer group ``app`` seems to stall, increase the quota rate
-
-
-4. View the details of the consumer group ``app`` again,
-   ``consumer_app_1`` now shows high latency, and ``consumer_app_2``
-   shows normal latency.
-
-   .. figure:: images/slow_consumer.png
+   .. figure:: images/request_latency_find.png
       :alt: image
 
-5. In the System Health dashboard, you see that the fetch request
-   latency has likewise increased. This is the because the broker that
-   has the partition that ``consumer_app_1`` is consuming from is taking
-   longer to service requests.
-
-   .. figure:: images/slow_consumer_fetch_latency.png
-      :alt: image
-
-6. Click on the fetch request latency line graph to see a breakdown of
-   produce and fetch latencies through the entire `request
+11. This shows a breakdown of
+   produce latencies (fetch latencies also available) through the entire `request
    lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
-   The middle number does not necessarily equal the sum of the
-   percentiles of individual segments because it is the total percentile
-   latency.
 
-   .. figure:: images/slow_consumer_fetch_latency_breakdown.png
+   .. figure:: images/slow_consumer_produce_latency_breakdown.png
       :alt: image
 
-7. **MONITORING -> Consumer lag**: consumer lag is the topic's high water mark (latest offset for the topic that has been written) minus the current consumer offset (latest offset read for that topic by that consumer group). Keep in mind topic write rate and consumer group read rate when considering what the significance of how big is the consumer lag. In the demo, view the consumer lag for the ``app`` consumer group: expect consumer 1 to be have much more lag than consumer 2 because of the throttle you added in an earlier step. 
 
-   .. figure:: images/consumer_lag_app.png
-      :alt: image
-
-8. Remove the consumption quota for the consumer. Latency for
-   ``consumer_app_1`` recovers to steady state values.
-
-   .. sourcecode:: bash
-
-          ./scripts/app/throttle_consumer.sh 1 delete
-
-
-Over consumption
-----------------
+Data Streams: Over Consumption
+------------------------------
 
 Streams monitoring in Control Center can highlight consumers that are
 over consuming some messages, which is an indication that consumers are
@@ -459,19 +390,24 @@ offset reset tool to set the offset of the consumer group ``app`` to an
 earlier offset, thereby forcing the consumer group to reconsume messages
 it has previously read.
 
+.. note:: Data Streams view is enabled by setting `confluent.controlcenter.deprecated.views.enable=true`
+
 1. Click on ``Data streams``, and ``View Details`` for the consumer
-   group ``app``. Click on the blue circle on the consumption line on
-   the left to verify there are two consumers ``consumer_app_1`` and
-   ``consumer_app_2``, that were created in an earlier section. If these
+   group ``app``.
+
+   .. figure:: images/data_streams_app.png
+      :alt: image
+
+2. Scroll down to verify there are two consumers ``consumer_app_1`` and
+   ``consumer_app_2`` that were created in an earlier section. If these
    two consumers are not running and were never started, start them as
    described in the section `consumer
    rebalances <#consumer-rebalances>`__.
+   Let this consumer group run for 2 minutes until Control Center stream
+   monitoring shows the consumer group ``app`` with steady consumption.
 
    .. figure:: images/verify_two_consumers.png
       :alt: image
-
-2. Let this consumer group run for 2 minutes until Control Center stream
-   monitoring shows the consumer group ``app`` with steady consumption.
 
 3. Stop the consumer group ``app`` to stop consuming from topic
    ``wikipedia.parsed``. Note that the command below stops the consumers
@@ -536,8 +472,8 @@ it has previously read.
       :alt: image
 
 
-Under consumption
------------------
+Data Streams: Under Consumption
+-------------------------------
 
 Streams monitoring in Control Center can highlight consumers that are
 under consuming some messages. This may happen intentionally when
@@ -552,19 +488,24 @@ consumption, we will use Kafka’s consumer offset reset tool to set the
 offset of the consumer group ``app`` to the latest offset, thereby
 skipping messages that will never be read.
 
-1. Click on Data Streams, and ``View Details`` for the consumer group
-   ``app``. Click on the blue circle on the consumption line on the left
-   to verify there are two consumers ``consumer_app_1`` and
-   ``consumer_app_2``, that were created in an earlier section. If these
+.. note:: Data Streams view is enabled by setting `confluent.controlcenter.deprecated.views.enable=true`
+
+1. Click on ``Data streams``, and ``View Details`` for the consumer
+   group ``app``.
+
+   .. figure:: images/data_streams_app.png
+      :alt: image
+
+2. Scroll down to verify there are two consumers ``consumer_app_1`` and
+   ``consumer_app_2`` that were created in an earlier section. If these
    two consumers are not running and were never started, start them as
    described in the section `consumer
    rebalances <#consumer-rebalances>`__.
+   Let this consumer group run for 2 minutes until Control Center stream
+   monitoring shows the consumer group ``app`` with steady consumption.
 
    .. figure:: images/verify_two_consumers.png
       :alt: image
-
-2. Let this consumer group run for 2 minutes until Control Center stream
-   monitoring shows the consumer group ``app`` with steady consumption.
 
 3. Stop the consumer group ``app`` to stop consuming from topic
    ``wikipedia.parsed``. Note that the command below stops the consumers
@@ -585,16 +526,7 @@ skipping messages that will never be read.
    .. figure:: images/under_consumption_before.png
       :alt: image
 
-5. Wait for another few minutes and notice that the bar graph changes
-   and there is a
-   `herringbone <https://docs.confluent.io/current/control-center/docs/monitoring.html#missing-metrics-data>`__
-   pattern to indicate that perhaps the consumer group stopped
-   ungracefully.
-
-   .. figure:: images/under_consumption_before_herringbone.png
-      :alt: image
-
-6. Reset the offset of the consumer group ``app`` by setting it to
+5. Reset the offset of the consumer group ``app`` by setting it to
    latest offset. The offset reset tool must be run when the consumer is
    completely stopped. Offset values in output shown below will vary.
 
@@ -612,7 +544,7 @@ skipping messages that will never be read.
        wikipedia.parsed 1         8601
        wikipedia.parsed 0         15135 
 
-7. Restart consuming from topic ``wikipedia.parsed`` with the consumer
+6. Restart consuming from topic ``wikipedia.parsed`` with the consumer
    group ``app`` with two consumers.
 
    .. sourcecode:: bash
@@ -620,10 +552,11 @@ skipping messages that will never be read.
           ./scripts/app/start_consumer_app.sh 1
           ./scripts/app/start_consumer_app.sh 2
 
-8. Let this consumer group run for 2 minutes until Control Center stream
+7. Let this consumer group run for 2 minutes until Control Center stream
    monitoring shows the consumer group ``app`` with steady consumption.
    Notice that during the time period that the consumer group ``app``
    was not running, no produced messages are shown as delivered.
+   The light blue indicates that perhaps the consumer group stopped ungracefully.
 
    .. figure:: images/under_consumption_after.png
       :alt: image
@@ -1001,10 +934,10 @@ All other users are not authorized to communicate with the cluster.
    Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
 
 
-|sr| and REST Proxy
+|sr|
 -------------------
 
-The connectors used in this demo are configured to automatically read and write Avro-formatted data, leveraging the `Confluent Schema Registry <https://docs.confluent.io/current/schema-registry/docs/index.html>`__ .  The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
+The connectors used in this demo are configured to automatically read and write Avro-formatted data, leveraging the `Confluent Schema Registry <https://docs.confluent.io/current/schema-registry/docs/index.html>`__ .
 
 1. View the |sr| subjects for topics that have registered schemas for their keys and/or values. Notice the security arguments passed into the ``curl`` command which are required to interact with |sr|, which is listening for HTTPS on port 8085.
 
@@ -1050,7 +983,13 @@ The connectors used in this demo are configured to automatically read and write 
        "schema": "{\"type\":\"record\",\"name\":\"user\",\"fields\":[{\"name\":\"username\",\"type\":\"string\"},{\"name\":\"userid\",\"type\":\"long\"}]}"
      }
 
-4. Use the REST Proxy, which is listening for HTTPS on port 8086, to produce a message to the topic ``users``, referencing schema id ``6``.
+
+Confluent REST Proxy
+--------------------
+
+The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
+
+1. Use the REST Proxy, which is listening for HTTPS on port 8086, to produce a message to the topic ``users``, referencing schema id ``6``.
 
    .. sourcecode:: bash
 
@@ -1058,21 +997,30 @@ The connectors used in this demo are configured to automatically read and write 
 
      {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":6}
 
-5. Use the REST Proxy to consume the above message from the topic ``users``. This is a series of steps.
+2. Create consumer instance my_avro_consumer.
 
    .. sourcecode:: bash
 
-     # 5.1 Create consumer instance my_avro_consumer
        docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"name": "my_consumer_instance", "format": "avro", "auto.offset.reset": "earliest"}' https://restproxy:8086/consumers/my_avro_consumer
 
-     # 5.2 Subscribe my_avro_consumer to the `users` topic
+3. Subscribe my_avro_consumer to the `users` topic
+
+   .. sourcecode:: bash
+
        docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"topics":["users"]}' https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/subscription
 
-     # 5.3 Get messages for my_avro_consumer subscriptions
-     # Note: Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
+4. Get messages for my_avro_consumer subscriptions
+
+   .. sourcecode:: bash
+
+       # Note: Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
+       docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
        docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
 
-     # 5.4 Delete the consumer instance my_avro_consumer
+5. Delete the consumer instance my_avro_consumer
+
+   .. sourcecode:: bash
+
        docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
 
 
