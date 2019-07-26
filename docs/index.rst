@@ -39,12 +39,6 @@ Use `Confluent Control Center <https://www.confluent.io/product/control-center/>
 
 .. note:: This is a Docker environment and has all services running on one host. Do not use this demo in production. It is meant exclusively to easily demo the |CP|. In production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production traffic. Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
 
-If you are completely new to |c3|, watch a brief video overview `Monitoring Kafka Like a Pro <https://youtu.be/O9LqDGSoWaU>`_ video.
-
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/O9LqDGSoWaU" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
 
 
 ========
@@ -86,126 +80,69 @@ Run demo
 Playbook
 ========
 
-|c3| Tour
---------------------------------
+Brokers 
+-------
 
-Follow along with the `Demo 2: Tour <https://youtu.be/D9nzAxxIv7A>`_ video.
+1. Select the cluster named "Kafka Raleigh".
 
-.. raw:: html
+   .. figure:: images/cluster_raleigh.png
 
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/D9nzAxxIv7A" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
+2. Click on "Brokers".
 
-1. **MONITORING –> System Health**: |c3| landing
-   page shows the overall `system
-   health <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__
-   of a given Kafka cluster. For capacity planning activities, view
-   cluster utilization:
+3. View the status of the Brokers in the cluster, including:
 
-   -  CPU: look at network and thread pool usage, produce and fetch
-      request latencies
-   -  Network utilization: look at throughput per broker or per cluster
-   -  Disk utilization: look at disk space used by all log segments, per
-      broker
+   - Production and Consumption metrics
+   - Broker uptime
+   - Partitions: online, under replicated, total replicas, out of sync replicas
+   - Disk utilization
+   - System: network pool usage, request pool usage
 
    .. figure:: images/landing_page.png
 
+Topics
+------
 
+1. |c3| has a useful interface to manage topics in a Kafka cluster. Click on "Topics".
 
+2. Scroll down and click on the topic ``wikipedia.parsed``.
 
-2. **MANAGEMENT –> Kafka Connect**: |c3| uses
-   the Kafka Connect API to manage `Kafka
-   connectors <https://docs.confluent.io/current/control-center/docs/connect.html>`__.
-
-   -  Kafka Connect **Sources** tab shows the connectors
-      ``wikipedia-irc`` and ``replicate-topic``. Click ``Edit`` to see
-      the details of the connector configuration and custom transforms.
-
-      .. figure:: images/connect_source.png
-         :alt: image
-   
-
-
-
-   -  Kafka Connect **Sinks** tab shows the connector
-      ``elasticsearch-ksql``. Click ``Edit`` to see the details of the
-      connector configuration and custom transforms.
-
-      .. figure:: images/connect_sink.png
+      .. figure:: images/topic_list_wikipedia.png
          :alt: image
 
+3. View an overview of this topic:
 
+   - Throughput
+   - Partition replication status
 
-3. **MONITORING –> Data Streams –> Message Delivery**: hover over
-   any chart to see number of messages and average latency within a
-   minute time interval.
-
-   .. figure:: images/message_delivery.png
+   .. figure:: images/topic_actions.png
       :alt: image
 
-
-
-   The Kafka Connect sink connectors have corresponding consumer groups
-   ``connect-elasticsearch-ksql`` and ``connect-replicator``. These
-   consumer groups will be in the consumer group statistics in the
-   `stream
-   monitoring <https://docs.confluent.io/current/control-center/docs/monitoring.html>`__
-   charts.
-
-   .. figure:: images/connect_consumer_group.png
-      :alt: image
-
-
-4. **MONITORING –> System Health**: to identify bottlenecks, you can
-   see a breakdown of produce and fetch latencies through the entire
-   `request
-   lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
-   Click on the line graph in the ``Request latency`` chart. The request
-   latency values can be shown at the median, 95th, 99th, or 99.9th
-   percentile. Depending on where the bottlenecks are, you can tune your
-   brokers and clients appropriately.
-
-   .. figure:: images/request_latencies.png
-      :alt: image
-
-
-Topic Management
---------------------------------
-
-|c3| has a useful interface to manage topics in a Kafka cluster.
-
-1. **MANAGEMENT –> Topics**: Scroll down to and click on the topic `wikipedia.parsed`.
-
-      .. figure:: images/topic_actions.png
-         :alt: image
-
-2. **MANAGEMENT –> Topics -> Status**: View which brokers are leaders for which partitions and where all partitions reside.
+4. View which brokers are leaders for which partitions and where all partitions reside.
 
    .. figure:: images/topic_info.png
       :alt: image
 
-3. **MANAGEMENT –> Topics -> Schema**: View the schema for this topic. For `wikipedia.parsed`, the topic value is using a Schema registered with |sr| (the topic key is just a string).
-
-   .. figure:: images/topic_schema.png
-      :alt: image
-
-4. **MANAGEMENT –> Topics -> Inspect**: View messages for this topic, in real-time.
+5. Inspect messages for this topic, in real-time.
 
    .. figure:: images/topic_inspect.png
       :alt: image
 
-5. **MANAGEMENT –> Topics -> Settings**: View configuration settings for this topic.
+6. View the schema for this topic. For `wikipedia.parsed`, the topic value is using a Schema registered with |sr| (the topic key is just a string).
+
+   .. figure:: images/topic_schema.png
+      :alt: image
+
+7. View configuration settings for this topic.
 
    .. figure:: images/topic_settings.png
       :alt: image
 
-6. **MANAGEMENT -> Topics**: click the ``+ Create`` button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
+8. Return to the ``All topics`` view and click the **+ Add a topic** button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
 
       .. figure:: images/create_topic.png
          :alt: image
 
-7. When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic called ``_confluent-monitoring``.
+9. Dataflow: you can derive which producers are writing to which topics and which consumers are reading from which topics. When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic named ``_confluent-monitoring``.
    Kafka clients include any application that uses the Apache Kafka client API to connect to Kafka brokers, such as custom client code or any service that has embedded producers or consumers, such as Kafka Connect, KSQL, or a Kafka Streams application.
    |c3| uses that topic to ensure that all messages are delivered and to provide statistics on throughput and latency performance.
    From that same topic, you can also derive which producers are writing to which topics and which consumers are reading from which topics, and an example script is provided with the repo (note: this is for demo purposes only, not suitable for production).
@@ -268,85 +205,77 @@ Topic Management
         producers
           connect-worker-producer
 
+Connect
+-------
+
+1. |c3| uses the Kafka Connect API to manage multiple `connect clusters <https://docs.confluent.io/current/control-center/docs/connect.html>`__.  Click on "Connect".
+
+2. Select ``connect-default``, the name of the cluster of |kconnect| workers.
+
+   .. figure:: images/connect_default.png
+
+3. Verify the connectors running in this demo:
+
+   - source connector ``wikipedia-irc``
+   - source connector ``replicate-topic``
+   - sink connector ``elasticsearch-ksql`` consuming from the Kafka topic ``WIKIPEDIABOT``
+
+   .. figure:: images/connector_list.png
+
+4. Click any connector name to view or modify any details of the connector configuration and custom transforms.
+
+   .. figure:: images/connect_replicator_settings.png
+
 
 .. _ksql-demo-3:
 
 KSQL
 ----
 
-Follow along with the `Demo 3: KSQL <https://youtu.be/3o7MzCri4e4>`_ video.
-
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/3o7MzCri4e4" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
-
 In this demo, KSQL is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the `KSQL command file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlcommands>`__.
 
-1. The KSQL server is listening on port 8088. You have two options for interfacing with KSQL:
+1. In the navigation bar, click **KSQL**.
 
-   (a) Use Control Center's integrated `KSQL UI <http://localhost:9021/management/ksql/ksql-server%3A8088/streams>`__. From the |c3| UI, click **DEVELOPMENT –> KSQL**:
+2. From the list of KSQL applications, select ``KSQL``.
 
-       .. figure:: images/development_ksql.png
-          :alt: image
-
-   (b) Run KSQL CLI to get to the KSQL CLI prompt.
-
-       .. sourcecode:: bash
-
-            docker-compose exec ksql-cli ksql http://ksql-server:8088
-
-2. **DEVELOPMENT -> KSQL -> STREAMS**: View the existing KSQL streams. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``).
-
-     .. figure:: images/ksql_streams_list.png
-        :alt: image
-
-3. **DEVELOPMENT -> KSQL -> STREAMS**: Describe the schema (fields or columns) and source and sink of an existing KSQL stream. Click on ``WIKIPEDIA``.
-
-     .. figure:: images/wikipedia_describe.png
-        :alt: image
-
-4. **DEVELOPMENT -> KSQL -> TABLES**: View the existing KSQL tables. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``).
-
-     .. figure:: images/ksql_tables_list.png
-        :alt: image
-
-5. **DEVELOPMENT -> KSQL -> PERSISTENT QUERIES**: View the existing KSQL queries, which are continuously running. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW QUERIES;``).
-
-     .. figure:: images/ksql_queries_list.png
-        :alt: image
-
-6. **DEVELOPMENT -> KSQL -> STREAMS**: View messages from different KSQL streams and tables. Right click on your stream of choice, select ``Query`` which takes you to the Query Editor with a pre-populated query such as ``select * from WIKIPEDIA limit 5;``.  Click on the ``Run query`` button to run.
-
-     .. figure:: images/ksql_query_topic.png
-        :alt: image
-
-7. **DEVELOPMENT -> KSQL -> STREAMS**: Create a new stream from an existing topic. Click on the button ``Create Stream`` and follow the prompts.
-
-8. **DEVELOPMENT -> KSQL -> QUERY EDITOR**: View the configured KSQL server properties set in the docker-compose.yml file. In the query editor, type ``SHOW PROPERTIES;`` and then click on the ``Run query`` button.
-
-     .. figure:: images/ksql_properties.png
-        :alt: image
-
-9. In this demo, KSQL is run with Confluent Monitoring Interceptors configured which enables |c3| Data Streams to monitor KSQL queries. The consumer group names ``ksql_query_`` correlate to the KSQL query names above, and |c3| is showing the records that are incoming to each query.
-
-* View throughput and latency of the incoming records for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``ksql_query_CSAS_WIKIPEDIABOT`` in |c3|.
-
-   .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT.png
+   .. figure:: images/ksql_link.png
       :alt: image
 
-* View throughput and latency of the incoming records for the persistent KSQL "Create Table As Select" query ``CTAS_EN_WIKIPEDIA_GT_1``, which is displayed as ``ksql_query_CTAS_EN_WIKIPEDIA_GT_1`` in |c3|.
+3. Alternatively, run KSQL CLI to get to the KSQL CLI prompt.
 
-   .. figure:: images/ksql_query_CTAS_EN_WIKIPEDIA_GT_1.png
+   .. sourcecode:: bash
+
+        docker-compose exec ksql-cli ksql http://ksql-server:8088
+
+4. View the existing KSQL streams. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``).
+
+   .. figure:: images/ksql_streams_list.png
       :alt: image
 
-* View throughput and latency of the incoming records for the persistent KSQL "Create Stream As Select" query ``CTAS_EN_WIKIPEDIA_GT_1_COUNTS``, which is displayed as ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` in |c3|.
+5. Describe the schema (fields or columns) and source and sink of an existing KSQL stream. Click on ``WIKIPEDIA``.
 
-   .. figure:: images/tumbling_window.png
+   .. figure:: images/wikipedia_describe.png
       :alt: image
 
-   .. note:: In |c3| the stream monitoring graphs for consumer groups ``ksql_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS`` and ``EN_WIKIPEDIA_GT_1_COUNTS-consumer`` are displaying data at 5-minute intervals instead of smoothly like the other consumer groups. This is because |c3| displays data based on message timestamps, and the incoming stream for these consumer groups is a tumbling window with a window size of 5 minutes. Thus all its messages are timestamped to the beginning of each 5-minute window. This is also why the latency for these streams appears to be high. Kafka streaming tumbling windows are working as designed, and |c3| is reporting them accurately.
+6. View the existing KSQL tables. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``).
+
+   .. figure:: images/ksql_tables_list.png
+      :alt: image
+
+7. View the existing KSQL queries, which are continuously running. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW QUERIES;``).
+
+   .. figure:: images/ksql_queries_list.png
+      :alt: image
+
+8. View messages from different KSQL streams and tables. Click on your stream of choice and select **Query** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA;``, and it shows results for newly arriving data.
+
+   .. figure:: images/ksql_query_topic.png
+      :alt: image
+
+9. Click **KSQL Editor** and run the ``SHOW PROPERTIES;`` statement. You can see the configured KSQL server properties and check these values with the `docker-compose.yml` file.
+
+   .. figure:: images/ksql_properties.png
+      :alt: image
 
 10. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
@@ -376,157 +305,77 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
       ...
 
 
-Consumer rebalances
--------------------
+Consumers
+---------
 
-Follow along with the `Demo 4: Consumer Rebalances <https://youtu.be/2Egh3I0q4dE>`_ video.
+1. |c3| enables you to monitor consumer lag and throughput performance. Consumer lag is the topic's high water mark (latest offset for the topic that has been written) minus the current consumer offset (latest offset read for that topic by that consumer group). Keep in mind the topic's write rate and consumer group's read rate when you consider the significance the consumer lag's size. Click on "Consumers".
 
-.. raw:: html
+2. Consumer lag is available on a `per-consumer basis <https://docs.confluent.io/current/control-center/consumers.html#view-consumer-lag-details-for-a-consumer-group>`__, including embedded consumers in sink connectors (e.g., ``connect-replicator`` and ``connect-elasticsearch-ksql``), KSQL queries (e.g., consumer groups whose names start with ``_confluent-ksql-default_query_``), console consumers (e.g., ``WIKIPEDIANOBOT-consumer``), etc.  Consumer lag is also available on a `per-topic basis <https://docs.confluent.io/current/control-center/topics/view.html#view-consumer-lag-for-a-topic>`__.
 
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/2Egh3I0q4dE" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
+   .. figure:: images/consumer_group_list.png
+      :alt: image
 
-Control Center shows which consumers in a consumer group are consuming
-from which partitions and on which brokers those partitions reside.
-Control Center updates as consumer rebalances occur in a consumer group.
+3. View consumer lag for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer group list.
 
-1. Start consuming from topic ``wikipedia.parsed`` with a new consumer
-   group ``app`` with one consumer ``consumer_app_1``. It will run in
-   the background.
+   .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumer_lag.png
+      :alt: image
+
+4. With `Confluent Monitoring Interceptors <https://docs.confluent.io/current/control-center/installation/clients.html>`__, you may also view additional metrics related to production and consumption of messages, including:
+
+   - Throughput
+   - Failed consume requests
+   - Percent messages consumed
+   - End to end latency
+
+5. View consumption metrics for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer group list.
+
+   .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumption.png
+      :alt: image
+
+
+6. |c3| shows which consumers in a consumer group are consuming from which partitions and on which brokers those partitions reside.  |c3| updates as consumer rebalances occur in a consumer group.  Start consuming from topic ``wikipedia.parsed`` with a new consumer group ``app`` with one consumer ``consumer_app_1``. It runs in the background.
 
    .. sourcecode:: bash
 
           ./scripts/app/start_consumer_app.sh 1
 
-2. Let this consumer group run for 2 minutes until Control Center stream
-   monitoring shows the consumer group ``app`` with steady consumption.
-   Click on the box ``View Details`` above the bar graph to drill down
-   into consumer group details. This consumer group ``app`` has a single
-   consumer ``consumer_app_1`` consuming all of the partitions in the
-   topic ``wikipedia.parsed``. The first bar may be red because the
-   consumer started in the middle of a time window and did not receive
-   all messages produced during that window. This does not mean messages
-   were lost.
+7. Let this consumer group run for 2 minutes until |c3|
+   shows the consumer group ``app`` with steady consumption.
+   This consumer group ``app`` has a single consumer ``consumer_app_1`` consuming all of the partitions in the topic ``wikipedia.parsed``. 
 
    .. figure:: images/consumer_start_one.png
       :alt: image
 
-
-
-3. Add a second consumer ``consumer_app_2`` to the existing consumer
+8. Add a second consumer ``consumer_app_2`` to the existing consumer
    group ``app``.
 
    .. sourcecode:: bash
 
           ./scripts/app/start_consumer_app.sh 2
 
-4. Let this consumer group run for 2 minutes until Control Center stream
-   monitoring shows the consumer group ``app`` with steady consumption.
+9. Let this consumer group run for 2 minutes until |c3|
+   shows the consumer group ``app`` with steady consumption.
    Notice that the consumers ``consumer_app_1`` and ``consumer_app_2``
    now share consumption of the partitions in the topic
-   ``wikipedia.parsed``. When the second consumer was added, that bar
-   may be red for both consumers because a consumer rebalance occurred
-   during that time window. This does not mean messages were lost, as
-   you can confirm at the consumer group level.
+   ``wikipedia.parsed``. 
 
    .. figure:: images/consumer_start_two.png
       :alt: image
 
 
+10. Click "System health" and then a line in "Request latency".
 
-Slow consumers
---------------
+.. figure:: images/request_latency_find.png
+    :alt: image
 
-Follow along with the `Demo 5: Slow Consumers <https://youtu.be/XOtY1uUaf_Y>`_ video.
+11. This shows a breakdown of produce latencies (fetch latencies also available) through the entire `request lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
 
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/XOtY1uUaf_Y" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
-
-Streams monitoring in Control Center can highlight consumers that are
-slow to keep up with the producers. This is critial to monitor for
-real-time applications where consumers should consume produced messages
-with as low latency as possible. To simulate a slow consumer, we will
-use Kafka’s `quota
-feature <https://docs.confluent.io/current/kafka/post-deployment.html#enforcing-client-quotas>`__
-to rate-limit consumption from the broker side, for just one of two
-consumers in a consumer group.
-
-1. Click on ``Data streams``, and ``View Details`` for the consumer
-   group ``app``. Click on the left-hand blue circle on the consumption
-   line to verify there are two consumers ``consumer_app_1`` and
-   ``consumer_app_2``, that were created in an earlier section. If these
-   two consumers are not running, start them as described in the section
-   `consumer rebalances <#consumer-rebalances>`__.
-
-2. Let this consumer group run for 2 minutes until Control Center stream
-   monitoring shows the consumer group ``app`` with steady consumption.
-
-3. Add a consumption quota for one of the consumers in the consumer
-   group ``app``.
-
-   .. sourcecode:: bash
-
-          ./scripts/app/throttle_consumer.sh 1 add
-
-   .. note:: You are running a Docker demo environment with all services running on one host, which you would never do in production.  Depending on your system resource availability, sometimes applying the quota may stall the consumer (`KAFKA-5871 <https://issues.apache.org/jira/browse/KAFKA-5871>`__), thus you may need to adjust the quota rate. See the ``./scripts/app/throttle_consumer.sh`` script for syntax on modifying the quota rate.
-
-      -  If consumer group ``app`` does not increase latency, decrease the quota rate
-      -  If consumer group ``app`` seems to stall, increase the quota rate
+.. figure:: images/slow_consumer_produce_latency_breakdown.png
+   :alt: image
 
 
-4. View the details of the consumer group ``app`` again,
-   ``consumer_app_1`` now shows high latency, and ``consumer_app_2``
-   shows normal latency.
-
-   .. figure:: images/slow_consumer.png
-      :alt: image
-
-5. In the System Health dashboard, you see that the fetch request
-   latency has likewise increased. This is the because the broker that
-   has the partition that ``consumer_app_1`` is consuming from is taking
-   longer to service requests.
-
-   .. figure:: images/slow_consumer_fetch_latency.png
-      :alt: image
-
-6. Click on the fetch request latency line graph to see a breakdown of
-   produce and fetch latencies through the entire `request
-   lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
-   The middle number does not necessarily equal the sum of the
-   percentiles of individual segments because it is the total percentile
-   latency.
-
-   .. figure:: images/slow_consumer_fetch_latency_breakdown.png
-      :alt: image
-
-7. **MONITORING -> Consumer lag**: consumer lag is the topic's high water mark (latest offset for the topic that has been written) minus the current consumer offset (latest offset read for that topic by that consumer group). Keep in mind topic write rate and consumer group read rate when considering what the significance of how big is the consumer lag. In the demo, view the consumer lag for the ``app`` consumer group: expect consumer 1 to be have much more lag than consumer 2 because of the throttle you added in an earlier step. 
-
-   .. figure:: images/consumer_lag_app.png
-      :alt: image
-
-8. Remove the consumption quota for the consumer. Latency for
-   ``consumer_app_1`` recovers to steady state values.
-
-   .. sourcecode:: bash
-
-          ./scripts/app/throttle_consumer.sh 1 delete
-
-
-Over consumption
-----------------
-
-Follow along with the `Demo 6: Over Consumption <https://youtu.be/ZYnoG59xNCI>`_ video.
-
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/ZYnoG59xNCI" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
-
+Data Streams: Over Consumption
+------------------------------
 
 Streams monitoring in Control Center can highlight consumers that are
 over consuming some messages, which is an indication that consumers are
@@ -540,19 +389,23 @@ offset reset tool to set the offset of the consumer group ``app`` to an
 earlier offset, thereby forcing the consumer group to reconsume messages
 it has previously read.
 
+.. note:: Data Streams view is enabled by setting `confluent.controlcenter.deprecated.views.enable=true`
+
 1. Click on ``Data streams``, and ``View Details`` for the consumer
-   group ``app``. Click on the blue circle on the consumption line on
-   the left to verify there are two consumers ``consumer_app_1`` and
-   ``consumer_app_2``, that were created in an earlier section. If these
+   group ``app``.
+
+   .. figure:: images/data_streams_app.png
+      :alt: image
+
+2. Scroll down to verify there are two consumers ``consumer_app_1`` and
+   ``consumer_app_2`` that were created in an earlier section. If these
    two consumers are not running and were never started, start them as
-   described in the section `consumer
-   rebalances <#consumer-rebalances>`__.
+   described in the section `Consumers <#consumers>`__.
+   Let this consumer group run for two minutes, until |c3| stream
+   monitoring shows the consumer group ``app`` with steady consumption.
 
    .. figure:: images/verify_two_consumers.png
       :alt: image
-
-2. Let this consumer group run for 2 minutes until Control Center stream
-   monitoring shows the consumer group ``app`` with steady consumption.
 
 3. Stop the consumer group ``app`` to stop consuming from topic
    ``wikipedia.parsed``. Note that the command below stops the consumers
@@ -617,16 +470,8 @@ it has previously read.
       :alt: image
 
 
-Under consumption
------------------
-
-Follow along with the `Demo 7: Under Consumption <https://youtu.be/d0tZS5FxdM0>`_ video.
-
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/d0tZS5FxdM0" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
+Data Streams: Under Consumption
+-------------------------------
 
 Streams monitoring in Control Center can highlight consumers that are
 under consuming some messages. This may happen intentionally when
@@ -641,19 +486,23 @@ consumption, we will use Kafka’s consumer offset reset tool to set the
 offset of the consumer group ``app`` to the latest offset, thereby
 skipping messages that will never be read.
 
-1. Click on Data Streams, and ``View Details`` for the consumer group
-   ``app``. Click on the blue circle on the consumption line on the left
-   to verify there are two consumers ``consumer_app_1`` and
-   ``consumer_app_2``, that were created in an earlier section. If these
+.. note:: Data Streams view is enabled by setting `confluent.controlcenter.deprecated.views.enable=true`
+
+1. Click on **Data streams**, and **View Details** for the consumer
+   group ``app``.
+
+   .. figure:: images/data_streams_app.png
+      :alt: image
+
+2. Scroll down to verify there are two consumers ``consumer_app_1`` and
+   ``consumer_app_2`` that were created in an earlier section. If these
    two consumers are not running and were never started, start them as
-   described in the section `consumer
-   rebalances <#consumer-rebalances>`__.
+   described in the section `Consumers <#consumers>`__.
+   Let this consumer group run for two minutes, until |c3| stream
+   monitoring shows the consumer group ``app`` with steady consumption.
 
    .. figure:: images/verify_two_consumers.png
       :alt: image
-
-2. Let this consumer group run for 2 minutes until Control Center stream
-   monitoring shows the consumer group ``app`` with steady consumption.
 
 3. Stop the consumer group ``app`` to stop consuming from topic
    ``wikipedia.parsed``. Note that the command below stops the consumers
@@ -674,16 +523,7 @@ skipping messages that will never be read.
    .. figure:: images/under_consumption_before.png
       :alt: image
 
-5. Wait for another few minutes and notice that the bar graph changes
-   and there is a
-   `herringbone <https://docs.confluent.io/current/control-center/docs/monitoring.html#missing-metrics-data>`__
-   pattern to indicate that perhaps the consumer group stopped
-   ungracefully.
-
-   .. figure:: images/under_consumption_before_herringbone.png
-      :alt: image
-
-6. Reset the offset of the consumer group ``app`` by setting it to
+5. Reset the offset of the consumer group ``app`` by setting it to
    latest offset. The offset reset tool must be run when the consumer is
    completely stopped. Offset values in output shown below will vary.
 
@@ -701,7 +541,7 @@ skipping messages that will never be read.
        wikipedia.parsed 1         8601
        wikipedia.parsed 0         15135 
 
-7. Restart consuming from topic ``wikipedia.parsed`` with the consumer
+6. Restart consuming from topic ``wikipedia.parsed`` with the consumer
    group ``app`` with two consumers.
 
    .. sourcecode:: bash
@@ -709,10 +549,11 @@ skipping messages that will never be read.
           ./scripts/app/start_consumer_app.sh 1
           ./scripts/app/start_consumer_app.sh 2
 
-8. Let this consumer group run for 2 minutes until Control Center stream
+7. Let this consumer group run for two minutes, until |c3| stream
    monitoring shows the consumer group ``app`` with steady consumption.
    Notice that during the time period that the consumer group ``app``
    was not running, no produced messages are shown as delivered.
+   The light blue indicates that perhaps the consumer group stopped ungracefully.
 
    .. figure:: images/under_consumption_after.png
       :alt: image
@@ -720,14 +561,6 @@ skipping messages that will never be read.
 
 Failed broker
 -------------
-
-Follow along with the `Demo 8: Failed Broker <https://youtu.be/oxr1X0t5pLg>`_ video.
-
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/oxr1X0t5pLg" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
 
 To simulate a failed broker, stop the Docker container running one of
 the two Kafka brokers.
@@ -738,15 +571,14 @@ the two Kafka brokers.
 
           docker-compose stop kafka2
 
-2. After a few minutes, observe the System Health shows the broker count
-   has gone down from 2 to 1, and there are many under replicated
+2. After a few minutes, observe the Broker summary show that the number of brokers 
+   has decreased from 2 to 1, and there are many under replicated
    partitions.
 
    .. figure:: images/broker_down_failed.png
       :alt: image
 
-3. View topic details to see that there are out of sync replicas on
-   broker 2.
+3. View Topic information details to see that there are out of sync replicas on broker 2.
 
    .. figure:: images/broker_down_replicas.png
       :alt: image
@@ -757,14 +589,14 @@ the two Kafka brokers.
 
           docker-compose start kafka2
 
-5. After about a minute, observe the System Health view in Confluent
+5. After about a minute, observe the Broker summary in Confluent
    Control Center. The broker count has recovered to 2, and the topic
    partitions are back to reporting no under replicated partitions.
 
    .. figure:: images/broker_down_steady.png
       :alt: image
 
-6. Click on the broker count ``2`` inside the circle to view when the
+6. Click on the broker count ``2`` inside the "Broker uptime" box to view when
    broker counts changed.
 
    .. figure:: images/broker_down_times.png
@@ -774,20 +606,15 @@ the two Kafka brokers.
 Alerting
 --------
 
-Follow along with the `Demo 9: Alerting <https://youtu.be/523o_S8OOGo>`_ video.
-
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/523o_S8OOGo" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 75%; height: 75%;"></iframe>
-    </div>
-
-
 There are many types of Control Center
 `alerts <https://docs.confluent.io/current/control-center/docs/alerts.html>`__
 and many ways to configure them. Use the Alerts management page to
-define triggers and actions, or click on a streams monitoring graph for
-consumer groups or topics to setup alerts from there.
+define triggers and actions, or click on individual resources
+to setup alerts from there.
+
+.. figure:: images/c3-alerts-bell-icon-initial.png
+   :alt: image
+
 
 1. This demo already has pre-configured triggers and actions. View the
    Alerts ``Triggers`` screen, and click ``Edit`` against each trigger
@@ -809,11 +636,16 @@ consumer groups or topics to setup alerts from there.
    ``Under Replicated Partitions`` happened and caused an alert when you
    stopped broker 2.
 
+
+   .. figure:: images/alerts_triggers_under_replication_partitions.png
+      :alt: image
+
+
 3. You can also trigger the ``Consumption Difference`` trigger. In the
    Kafka Connect -> Sinks screen, edit the running Elasticsearch sink
    connector.
 
-4. In the Kafka Connect view, pause the Elasticsearch sink connector by
+4. In the Connect view, pause the Elasticsearch sink connector in Settings by
    pressing the pause icon in the top right. This will stop consumption
    for the related consumer group.
 
@@ -837,17 +669,23 @@ intra-cluster replication, *i.e.*, the source and destination Kafka
 clusters are the same. As with the rest of the components in the
 solution, Confluent Replicator is also configured with security.
 
-1. **MONITORING –> Data Streams –> Message Delivery**: monitor
-   throughput and latency of Confluent Replicator in the Data streams
-   monitoring view. Replicator is a Kafka Connect source connector and
-   has a corresponding consumer group ``connect-replicator``.
+1. **Consumers**: monitor throughput and latency of Confluent Replicator.
+   Replicator is a Kafka Connect source connector and has a corresponding consumer group ``connect-replicator``.
 
-   .. figure:: images/replicator_consumer_group.png
+   .. figure:: images/replicator_consumer_group_list.png
       :alt: image
 
+2. View Replicator Consumer Lag.
 
+   .. figure:: images/replicator_consumer_lag.png
+      :alt: image
 
-2. **MANAGEMENT –> Topics**: scroll down to view the topics called
+3. View Replicator Consumption metrics.
+
+   .. figure:: images/replicator_consumption.png
+      :alt: image
+
+4. **Topics**: scroll down to view the topics called
    ``wikipedia.parsed`` (Replicator is consuming data from this topic)
    and ``wikipedia.parsed.replica`` (Replicator automatically created this topic and is
    copying data to it). Click on ``Consumer Groups`` for the topic
@@ -857,14 +695,14 @@ solution, Confluent Replicator is also configured with security.
    .. figure:: images/replicator_topic_info.png
 
 
-3. **MANAGEMENT –> Kafka Connect**: pause the Replicator connector
+5. **MANAGEMENT –> Kafka Connect**: pause the |crep| connector in **Settings**
    by pressing the pause icon in the top right. This will stop
    consumption for the related consumer group.
 
-   .. figure:: images/pause_connector.png
+   .. figure:: images/pause_connector_replicator.png
       :alt: image
 
-4. Observe that the ``connect-replicator`` consumer group has stopped
+6. Observe that the ``connect-replicator`` consumer group has stopped
    consumption.
 
    .. figure:: images/replicator_streams_stopped.png
@@ -1093,10 +931,10 @@ All other users are not authorized to communicate with the cluster.
    Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
 
 
-|sr| and REST Proxy
+|sr|
 -------------------
 
-The connectors used in this demo are configured to automatically read and write Avro-formatted data, leveraging the `Confluent Schema Registry <https://docs.confluent.io/current/schema-registry/docs/index.html>`__ .  The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
+The connectors used in this demo are configured to automatically read and write Avro-formatted data, leveraging the `Confluent Schema Registry <https://docs.confluent.io/current/schema-registry/docs/index.html>`__ .
 
 1. View the |sr| subjects for topics that have registered schemas for their keys and/or values. Notice the security arguments passed into the ``curl`` command which are required to interact with |sr|, which is listening for HTTPS on port 8085.
 
@@ -1142,7 +980,13 @@ The connectors used in this demo are configured to automatically read and write 
        "schema": "{\"type\":\"record\",\"name\":\"user\",\"fields\":[{\"name\":\"username\",\"type\":\"string\"},{\"name\":\"userid\",\"type\":\"long\"}]}"
      }
 
-4. Use the REST Proxy, which is listening for HTTPS on port 8086, to produce a message to the topic ``users``, referencing schema id ``6``.
+
+Confluent REST Proxy
+--------------------
+
+The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
+
+1. Use the REST Proxy, which is listening for HTTPS on port 8086, to produce a message to the topic ``users``, referencing schema id ``6``.
 
    .. sourcecode:: bash
 
@@ -1150,21 +994,30 @@ The connectors used in this demo are configured to automatically read and write 
 
      {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":6}
 
-5. Use the REST Proxy to consume the above message from the topic ``users``. This is a series of steps.
+2. Create consumer instance ``my_avro_consumer``.
 
    .. sourcecode:: bash
 
-     # 5.1 Create consumer instance my_avro_consumer
        docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"name": "my_consumer_instance", "format": "avro", "auto.offset.reset": "earliest"}' https://restproxy:8086/consumers/my_avro_consumer
 
-     # 5.2 Subscribe my_avro_consumer to the `users` topic
+3. Subscribe my_avro_consumer to the `users` topic
+
+   .. sourcecode:: bash
+
        docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"topics":["users"]}' https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/subscription
 
-     # 5.3 Get messages for my_avro_consumer subscriptions
-     # Note: Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
+4. Get messages for my_avro_consumer subscriptions
+
+   .. sourcecode:: bash
+
+       # Note: Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
+       docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
        docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
 
-     # 5.4 Delete the consumer instance my_avro_consumer
+5. Delete the consumer instance ``my_avro_consumer``.
+
+   .. sourcecode:: bash
+
        docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
 
 
