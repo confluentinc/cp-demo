@@ -142,7 +142,7 @@ Topics
       .. figure:: images/create_topic.png
          :alt: image
 
-9. Dataflow: you can derive which producers are writing to which topics and which consumers are reading from which topics. When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic called ``_confluent-monitoring``.
+9. Dataflow: you can derive which producers are writing to which topics and which consumers are reading from which topics. When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic named ``_confluent-monitoring``.
    Kafka clients include any application that uses the Apache Kafka client API to connect to Kafka brokers, such as custom client code or any service that has embedded producers or consumers, such as Kafka Connect, KSQL, or a Kafka Streams application.
    |c3| uses that topic to ensure that all messages are delivered and to provide statistics on throughput and latency performance.
    From that same topic, you can also derive which producers are writing to which topics and which consumers are reading from which topics, and an example script is provided with the repo (note: this is for demo purposes only, not suitable for production).
