@@ -488,7 +488,7 @@ skipping messages that will never be read.
 
 .. note:: Data Streams view is enabled by setting `confluent.controlcenter.deprecated.views.enable=true`
 
-1. Click on ``Data streams``, and ``View Details`` for the consumer
+1. Click on **Data streams**, and **View Details** for the consumer
    group ``app``.
 
    .. figure:: images/data_streams_app.png
