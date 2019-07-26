@@ -112,7 +112,7 @@ Topics
 3. View an overview of this topic:
 
    - Throughput
-   - Partitions: under replicated, out of sync replicas
+   - Partition replication status
 
    .. figure:: images/topic_actions.png
       :alt: image
