@@ -265,7 +265,7 @@ KSQL
    .. figure:: images/ksql_queries_list.png
       :alt: image
 
-8. View messages from different KSQL streams and tables. Right click on your stream of choice, select ``Query`` which takes you to the Query Editor with a pre-populated query such as ``select * from WIKIPEDIA;`` and it will show results for newly arriving data.
+8. View messages from different KSQL streams and tables. Right-click on your stream of choice and select **Query** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA;``, and it shows results for newly arriving data.
 
    .. figure:: images/ksql_query_topic.png
       :alt: image
