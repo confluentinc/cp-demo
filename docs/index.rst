@@ -361,7 +361,7 @@ Consumers
       :alt: image
 
 
-10. Click on "System heath" and then a line in "Request latency".
+10. Click "System health" and then a line in "Request latency".
 
 .. figure:: images/request_latency_find.png
     :alt: image
