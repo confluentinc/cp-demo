@@ -496,7 +496,7 @@ skipping messages that will never be read.
    ``consumer_app_2`` that were created in an earlier section. If these
    two consumers are not running and were never started, start them as
    described in the section `Consumers <#consumers>`__.
-   Let this consumer group run for 2 minutes until Control Center stream
+   Let this consumer group run for two minutes, until |c3| stream
    monitoring shows the consumer group ``app`` with steady consumption.
 
    .. figure:: images/verify_two_consumers.png
