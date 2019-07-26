@@ -137,7 +137,7 @@ Topics
    .. figure:: images/topic_settings.png
       :alt: image
 
-8. Click the ``+ Add a topic`` button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
+8. Click the **+ Add a topic** button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
 
       .. figure:: images/create_topic.png
          :alt: image
