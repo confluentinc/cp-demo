@@ -210,7 +210,7 @@ Connect
 
 1. |c3| uses the Kafka Connect API to manage multiple `connect clusters <https://docs.confluent.io/current/control-center/docs/connect.html>`__.  Click on "Connect".
 
-2. Select `connect-default`, the name of the cluster of Connect workers.
+2. Select ``connect-default``, the name of the cluster of |kconnect| workers.
 
    .. figure:: images/connect_default.png
 
