@@ -222,7 +222,7 @@ Connect
 
    .. figure:: images/connector_list.png
 
-4. Click any connector view or modify any details of the connector configuration and custom transforms.
+4. Click any connector name to view or modify any details of the connector configuration and custom transforms.
 
    .. figure:: images/connect_replicator_settings.png
 
