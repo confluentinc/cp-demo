@@ -83,7 +83,7 @@ Playbook
 Brokers 
 -------
 
-1. Select the cluster called "Kafka Raleigh".
+1. Select the cluster named "Kafka Raleigh".
 
    .. figure:: images/cluster_raleigh.png
 
