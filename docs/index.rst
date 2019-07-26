@@ -992,7 +992,7 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
 
      {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":6}
 
-2. Create consumer instance my_avro_consumer.
+2. Create consumer instance ``my_avro_consumer``.
 
    .. sourcecode:: bash
 
