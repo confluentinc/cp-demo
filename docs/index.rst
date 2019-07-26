@@ -547,7 +547,7 @@ skipping messages that will never be read.
           ./scripts/app/start_consumer_app.sh 1
           ./scripts/app/start_consumer_app.sh 2
 
-7. Let this consumer group run for 2 minutes until Control Center stream
+7. Let this consumer group run for two minutes, until |c3| stream
    monitoring shows the consumer group ``app`` with steady consumption.
    Notice that during the time period that the consumer group ``app``
    was not running, no produced messages are shown as delivered.
