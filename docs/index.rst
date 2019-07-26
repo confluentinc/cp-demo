@@ -234,7 +234,7 @@ KSQL
 
 1. In this demo, KSQL is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the `KSQL command file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlcommands>`__.  Click on "KSQL".
 
-2. From the list of KSQL applications, select "KSQL".
+2. From the list of KSQL applications, select ``KSQL``.
 
    .. figure:: images/ksql_link.png
       :alt: image
