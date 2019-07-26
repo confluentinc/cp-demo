@@ -137,7 +137,7 @@ Topics
    .. figure:: images/topic_settings.png
       :alt: image
 
-8. Click the **+ Add a topic** button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
+8. Return to the ``All topics`` view and click the **+ Add a topic** button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
 
       .. figure:: images/create_topic.png
          :alt: image
@@ -267,12 +267,12 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
    .. figure:: images/ksql_queries_list.png
       :alt: image
 
-8. View messages from different KSQL streams and tables. Right-click on your stream of choice and select **Query** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA;``, and it shows results for newly arriving data.
+8. View messages from different KSQL streams and tables. Click on your stream of choice and select **Query** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA;``, and it shows results for newly arriving data.
 
    .. figure:: images/ksql_query_topic.png
       :alt: image
 
-9. View the configured KSQL server properties set in the docker-compose.yml file. In the query editor, type ``SHOW PROPERTIES;`` and then click on the ``Run query`` button.
+9. Click **KSQL Editor** and run the ``SHOW PROPERTIES;`` statement. You can see the configured KSQL server properties and check these values with the `docker-compose.yml` file.
 
    .. figure:: images/ksql_properties.png
       :alt: image
