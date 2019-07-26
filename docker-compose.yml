@@ -244,7 +244,7 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:5.5.2
     container_name: kibana
-    cpus: 0.25
+    cpus: 0.50
     restart: always
     depends_on:
       - elasticsearch
