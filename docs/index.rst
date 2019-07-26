@@ -693,7 +693,7 @@ solution, Confluent Replicator is also configured with security.
    .. figure:: images/replicator_topic_info.png
 
 
-5. **MANAGEMENT –> Kafka Connect**: pause the Replicator connector in Settings
+5. **MANAGEMENT –> Kafka Connect**: pause the |crep| connector in **Settings**
    by pressing the pause icon in the top right. This will stop
    consumption for the related consumer group.
 
