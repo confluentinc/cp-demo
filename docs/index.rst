@@ -104,7 +104,7 @@ Topics
 
 1. |c3| has a useful interface to manage topics in a Kafka cluster. Click on "Topics".
 
-2. Scroll down to and click on the topic `wikipedia.parsed`.
+2. Scroll down and click on the topic ``wikipedia.parsed``.
 
       .. figure:: images/topic_list_wikipedia.png
          :alt: image
