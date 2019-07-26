@@ -331,7 +331,7 @@ Consumers
       :alt: image
 
 
-6. Control Center shows which consumers in a consumer group are consuming from which partitions and on which brokers those partitions reside.  Control Center updates as consumer rebalances occur in a consumer group.  Start consuming from topic ``wikipedia.parsed`` with a new consumer group ``app`` with one consumer ``consumer_app_1``. It will run in the background.
+6. |c3| shows which consumers in a consumer group are consuming from which partitions and on which brokers those partitions reside.  |c3| updates as consumer rebalances occur in a consumer group.  Start consuming from topic ``wikipedia.parsed`` with a new consumer group ``app`` with one consumer ``consumer_app_1``. It runs in the background.
 
    .. sourcecode:: bash
 
