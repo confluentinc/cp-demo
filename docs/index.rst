@@ -92,7 +92,7 @@ Brokers
 3. View the status of the Brokers in the cluster, including:
 
    - Produce metrics
-   - Consume metrics
+   - Production and Consumption metrics
    - Broker uptime
    - Partitions: online, under replicated, total replicas, out of sync replicas
    - Disk utilization
