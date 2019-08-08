@@ -28,8 +28,8 @@ DATA=$( cat << EOF
         }
     }
 }
-
-EOF);
+EOF
+)
 
 curl -XPUT -H "${HEADER}" --data "${DATA}" 'http://localhost:9200/en_wikipedia_gt_1?pretty'
 echo
