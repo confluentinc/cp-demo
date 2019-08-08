@@ -43,8 +43,8 @@ DATA=$( cat << EOF
         }
     }
 }
-
-EOF);
+EOF
+)
 
 curl -XPUT -H "${HEADER}" --data "${DATA}" 'http://localhost:9200/wikipediabot?pretty'
 echo
