@@ -17,3 +17,7 @@ The use case is an event streaming application that processes live edits to real
 ## Documentation
 
 You can find the documentation for running this demo, playbook, and video tutorials at [https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html](https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html).
+
+# Additional Examples
+
+For additional examples that showcase streaming applications within an event streaming platform, please refer to the [examples GitHub repository](https://github.com/confluentinc/examples).
