@@ -10,7 +10,6 @@
         <version>5.3.0</version>
     </parent>
 
-    <groupId>io.confluent</groupId>
     <artifactId>cp-demo-kstreams</artifactId>
     <version>5.3.0</version>
     <organization>
@@ -76,17 +75,6 @@
             <version>${kafka.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-streams-scala_${kafka.scala.version}</artifactId>
-            <version>${kafka.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-streams-test-utils</artifactId>
-            <version>${kafka.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
             <version>${avro.version}</version>
@@ -95,12 +83,6 @@
             <groupId>org.apache.avro</groupId>
             <artifactId>avro-maven-plugin</artifactId>
             <version>${avro.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-            <!-- This version must be compatible with the Scala version of the Kafka dependency. -->
-            <version>${scala.version}</version>
         </dependency>
         <dependency>
             <!-- This could be a test-only dependency, but we keep it a compile dependency so that
@@ -243,114 +225,26 @@
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
-
-        <!-- The following dependencies on ScalaTest are only required for the Scala tests
-             under src/test/scala/.  They are not required for Java code/tests.
-        -->
-        <dependency>
-            <!-- This is a compile-time dependency but included only for scalatest below,
-                 so still list it under test dependencies. -->
-            <groupId>org.scalactic</groupId>
-            <artifactId>scalactic_${kafka.scala.version}</artifactId>
-            <version>${scalatest.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_${kafka.scala.version}</artifactId>
-            <version>${scalatest.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>net.alchim31.maven</groupId>
-                    <artifactId>scala-maven-plugin</artifactId>
-                    <version>3.2.1</version>
-                    <configuration>
-                        <scalaCompatVersion>${kafka.scala.version}</scalaCompatVersion>
-                        <scalaVersion>${scala.version}</scalaVersion>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
         <plugins>
 
-            <!--
-                Add Scala sources and tests to project.
-                See http://www.mojohaus.org/build-helper-maven-plugin/usage.html
-            -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.10</version>
+                <groupId>org.apache.avro</groupId>
+                <artifactId>avro-maven-plugin</artifactId>
+                <version>${avro.version}</version>
                 <executions>
                     <execution>
-                        <id>add-source</id>
                         <phase>generate-sources</phase>
                         <goals>
-                            <goal>add-source</goal>
+                            <goal>schema</goal>
                         </goals>
                         <configuration>
-                            <sources>
-                                <source>src/main/scala</source>
-                                <source>${project.build.directory}/generated-sources</source>
-                            </sources>
+                            <sourceDirectory>src/main/resources/avro/io/confluent/cpdemo</sourceDirectory>
+                            <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
+                            <stringType>String</stringType>
                         </configuration>
-                    </execution>
-                    <execution>
-                        <id>add-test-source</id>
-                        <phase>generate-test-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/test/scala</source>
-                                <source>${project.build.directory}/generated-sources</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- See http://davidb.github.io/scala-maven-plugin/usage.html -->
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <version>3.2.1</version>
-                <configuration>
-                    <args>
-                        <!--
-                           In combination with Scala 2.11, `-Xexperimental` enables SAM
-                           for Java 8 lambda support.  Make sure `kafka.scala.version`
-                           is set to `2.11`, not `2.10`.
-                        -->
-                        <arg>-Xexperimental</arg>
-                        <!-- Emit warning and location for usages of features that should be imported explicitly. -->
-                        <arg>-feature</arg>
-                        <!-- Emit warning and location for usages of deprecated APIs. -->
-                        <arg>-deprecation</arg>
-                        <!-- Enable additional warnings where generated code depends on assumptions. -->
-                        <arg>-unchecked</arg>
-                        <!-- Enable recommended additional warnings. -->
-                        <arg>-Xlint</arg>
-                        <!-- Warn if an argument list is modified to match the receiver. -->
-                        <arg>-Ywarn-adapted-args</arg>
-                        <arg>-Ywarn-dead-code</arg>
-                        <!-- Fail on compiler warnings -->
-                        <!--TODO: enable this once we have warnings under control<arg>-Xfatal-warnings</arg>-->
-                    </args>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>testCompile</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -381,7 +275,7 @@
                     </descriptors>
                     <archive>
                         <manifest>
-                            <mainClass>io.confluent.cp_demo.WikipediaActivityMonitor</mainClass>
+                            <mainClass>io.confluent.cpdemo.WikipediaActivityMonitor</mainClass>
                         </manifest>
                     </archive>
                     <attach>false</attach>
@@ -458,7 +352,7 @@
                             <includeResources>false</includeResources>
                             <includeTestResources>false</includeTestResources>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                            <excludes>io/confluent/examples/streams/avro/**</excludes>
+                            <excludes>io/confluent/cpdemo/avro/**</excludes>
                             <configLocation>checkstyle.xml</configLocation>
                         </configuration>
                         <goals>

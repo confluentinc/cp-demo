@@ -32,6 +32,9 @@ ${DIR}/stop.sh
 echo -e "Generate keys and certificates used for SSL"
 (cd ${DIR}/security && ./certs-create.sh)
 
+echo -e "Building KStreams application Docker image (cp-demo-kstreams:local)"
+docker build -t cp-demo-kstreams:local "$DIR/../apps/cp-demo-kstreams"
+
 # Bring up Docker Compose
 echo -e "Bringing up Docker Compose"
 docker-compose up -d
@@ -64,7 +67,7 @@ fi
 
 echo -e "\nRename the cluster in Control Center:"
 # If you have 'jq'
-curl -X PATCH  -H "Content-Type: application/merge-patch+json" -d '{"displayName":"Kafka Raleigh"}' http://localhost:9021/2.0/clusters/kafka/$(curl -X GET http://localhost:9021/2.0/clusters/kafka/ | jq --raw-output '.[0].clusterId')
+curl -s -X PATCH  -H "Content-Type: application/merge-patch+json" -d '{"displayName":"Kafka Raleigh"}' http://localhost:9021/2.0/clusters/kafka/$(curl -X GET http://localhost:9021/2.0/clusters/kafka/ | jq --raw-output '.[0].clusterId')
 # If you don't have 'jq'
 #curl -X PATCH  -H "Content-Type: application/merge-patch+json" -d '{"displayName":"Kafka Raleigh"}' http://localhost:9021/2.0/clusters/kafka/$(curl -X GET http://localhost:9021/2.0/clusters/kafka/ | awk -v FS="(clusterId\":\"|\",\"displayName)" '{print $2}' )
 

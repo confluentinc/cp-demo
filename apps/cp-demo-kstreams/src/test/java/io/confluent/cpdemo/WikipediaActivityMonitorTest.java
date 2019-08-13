@@ -1,8 +1,11 @@
-package io.confluent.cp_demo;
+package io.confluent.cpdemo;
 
+import io.confluent.cpdemo.avro.WikiFeedMetric;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
+import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -13,23 +16,20 @@ import org.apache.kafka.common.serialization.*;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.TopologyTestDriver;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 public class WikipediaActivityMonitorTest {
 
-
     private TopologyTestDriver testDriver;
     private final GenericRecord testRecord;
-    private final Optional<Schema> schema = loadSchema();
 
     private static final String SCHEMA_REGISTRY_SCOPE = WikipediaActivityMonitorTest.class.getName();
-    final SchemaRegistryClient schemaRegistryClient = MockSchemaRegistry
+    private final SchemaRegistryClient schemaRegistryClient = MockSchemaRegistry
             .getClientForScope(SCHEMA_REGISTRY_SCOPE);
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + SCHEMA_REGISTRY_SCOPE;
 
@@ -38,13 +38,14 @@ public class WikipediaActivityMonitorTest {
                 "#en.wikipedia", "jdoe", "fun new content", 500,
                 "http://diff", false, true, false, false)
                 .orElseThrow(() -> new RuntimeException("schema could not be loaded"));
+        final Optional<Schema> schema = loadSchema();
         schema.ifPresent(s -> registerSchema(schemaRegistryClient, s, WikipediaActivityMonitor.INPUT_TOPIC));
     }
 
     private static void registerSchema(final SchemaRegistryClient schemaRegistryClient, final Schema s, final String topic) {
         try {
             schemaRegistryClient.register(topic + "-value", s);
-        } catch (final Exception ex) { }
+        } catch (final Exception ignored) { }
     }
     private static <K, V> void produceKeyValuesSynchronously(final String topic,
                                                      final List<KeyValue<K, V>> records,
@@ -105,7 +106,7 @@ public class WikipediaActivityMonitorTest {
         try {
             return Optional.of(new Schema.Parser()
                 .parse(WikipediaActivityMonitorTest.class
-                        .getResourceAsStream("/avro/io/confluent/cp_demo/WikiFeedUpdate.avsc")));
+                        .getResourceAsStream("/avro/io/confluent/cpdemo/WikiEdit.avsc")));
         } catch (final Exception e) {
             return Optional.empty();
         }
@@ -125,7 +126,7 @@ public class WikipediaActivityMonitorTest {
     ) {
         Schema schema = null;
         try {
-            schema = new Schema.Parser().parse(WikipediaActivityMonitorTest.class.getResourceAsStream("/avro/io/confluent/cp_demo/WikiFeedUpdate.avsc"));
+            schema = new Schema.Parser().parse(WikipediaActivityMonitorTest.class.getResourceAsStream("/avro/io/confluent/cpdemo/WikiEdit.avsc"));
         } catch (final Exception e) {}
         if (schema == null)
             return Optional.empty();
@@ -146,17 +147,97 @@ public class WikipediaActivityMonitorTest {
         }
     }
 
-    @Before
-    public void setup() {
+    @Test
+    public void testWikiActivityMonitor() {
+
+        final Properties tempProps = new Properties();
+        tempProps.putIfAbsent(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+               MOCK_SCHEMA_REGISTRY_URL);
+        final Properties finalProps = WikipediaActivityMonitor.overlayDefaultProperties(tempProps);
+
+        final SpecificAvroSerde<WikiFeedMetric> metricSerde = new SpecificAvroSerde<>();
+        metricSerde.configure(WikipediaActivityMonitor.propertiesToMap(finalProps), false);
 
         final StreamsBuilder builder = new StreamsBuilder();
-        WikipediaActivityMonitor.createMonitorStream(builder);
-        testDriver = new TopologyTestDriver(builder.build(),
-            WikipediaActivityMonitor.getStreamsConfiguration("localhost:9092", MOCK_SCHEMA_REGISTRY_URL));
-    }
+        WikipediaActivityMonitor
+                .createMonitorStream(builder, metricSerde);
+        testDriver = new TopologyTestDriver(builder.build(), finalProps);
 
-    @After
-    public void tearDown() {
+        final List<GenericRecord> inputValues = new ArrayList<>();
+        cloneRecord(testRecord)
+                .map(c -> with(
+                            with(c, WikipediaActivityMonitor.ISBOT, true),
+                            WikipediaActivityMonitor.CHANNEL, "#en.wikipedia"))
+                .ifPresent(inputValues::add);
+        cloneRecord(testRecord)
+                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#fr.wikipedia"))
+                .ifPresent(inputValues::add);
+        cloneRecord(testRecord)
+                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#en.wikipedia"))
+                .ifPresent(inputValues::add);
+        cloneRecord(testRecord)
+                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#fr.wikipedia"))
+                .ifPresent(inputValues::add);
+        cloneRecord(testRecord)
+                .map(c -> with(
+                        with(c, WikipediaActivityMonitor.ISBOT, true),
+                        WikipediaActivityMonitor.CHANNEL, "#en.wikipedia"))
+                .ifPresent(inputValues::add);
+        cloneRecord(testRecord)
+                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#en.wikipedia"))
+                .ifPresent(inputValues::add);
+        cloneRecord(testRecord)
+                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#fr.wikipedia"))
+                .ifPresent(inputValues::add);
+        cloneRecord(testRecord)
+                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#fr.wikipedia"))
+                .ifPresent(inputValues::add);
+        cloneRecord(testRecord)
+                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#en.wikipedia"))
+                .ifPresent(inputValues::add);
+        cloneRecord(testRecord)
+                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#uk.wikipedia"))
+                .ifPresent(inputValues::add);
+
+        produceKeyValuesSynchronously(
+                WikipediaActivityMonitor.INPUT_TOPIC,
+                inputValues
+                        .stream()
+                        .map(v -> new KeyValue<>(
+                                (String) v.get(WikipediaActivityMonitor.CHANNEL),
+                                (Object) v))
+                        .collect(Collectors.toList()),
+                testDriver,
+                new StringSerializer(),
+                new KafkaAvroSerializer(schemaRegistryClient),
+                0L
+        );
+
+        final List<WikiFeedMetric> counts = drainStreamOutput(
+                WikipediaActivityMonitor.OUPTUT_TOPIC,
+                testDriver,
+                new StringDeserializer(),
+                metricSerde.deserializer())
+            .stream().map(kv -> kv.value).collect(Collectors.toList());
+
+        assertThat((long)counts.size())
+            .isEqualTo(inputValues
+                    .stream()
+                    .filter(gr -> !(boolean)gr.get(WikipediaActivityMonitor.ISBOT))
+                    .collect(Collectors.toList())
+                    .size());
+
+        assertThat(counts).extracting("channel", "editCount")
+                .containsExactly(
+                        tuple("#fr.wikipedia", 1L),
+                        tuple("#en.wikipedia", 1L),
+                        tuple("#fr.wikipedia", 2L),
+                        tuple("#en.wikipedia", 2L),
+                        tuple("#fr.wikipedia", 3L),
+                        tuple("#fr.wikipedia", 4L),
+                        tuple("#en.wikipedia", 3L),
+                        tuple("#uk.wikipedia", 1L));
+
         try {
             testDriver.close();
         } catch (final RuntimeException e) {
@@ -165,43 +246,5 @@ public class WikipediaActivityMonitorTest {
             System.out.println("Ignoring exception, test failing in Windows due this exception:" + e.getLocalizedMessage());
         }
         MockSchemaRegistry.dropScope(SCHEMA_REGISTRY_SCOPE);
-    }
-
-    @Test
-    public void testWikiActivityMonitor() {
-
-        final List<GenericRecord> inputValues = new ArrayList<>();
-        inputValues.add(testRecord);
-        cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.ISBOT, true))
-                .ifPresent(inputValues::add);
-        cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#fr.wikipedia"))
-                .ifPresent(inputValues::add);
-        cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#fr.wikipedia"))
-                .ifPresent(inputValues::add);
-
-        produceKeyValuesSynchronously(
-                WikipediaActivityMonitor.INPUT_TOPIC,
-                inputValues.stream().map(v -> new KeyValue<>((String) v.get(WikipediaActivityMonitor.CHANNEL), (Object) v)).collect(Collectors.toList()),
-                testDriver,
-                new StringSerializer(),
-                new KafkaAvroSerializer(schemaRegistryClient),
-                0L
-        );
-
-        final List<Long> counts = drainStreamOutput(
-                WikipediaActivityMonitor.OUPTUT_TOPIC,
-                testDriver,
-                new StringDeserializer(),
-                new LongDeserializer()
-        ).stream().map(kv -> kv.value).collect(Collectors.toList());
-
-        assertThat((long)counts.size())
-            .isEqualTo(inputValues.stream().filter(gr -> !(boolean)gr.get(WikipediaActivityMonitor.ISBOT)).count());
-
-        assertThat(counts.get(0) == 1);
-        assertThat(counts.get(1) == 2);
     }
 }
