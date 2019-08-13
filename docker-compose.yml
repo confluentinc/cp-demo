@@ -168,8 +168,8 @@ services:
       # Connect worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
-  username=\"client\" \
-  password=\"client-secret\";"
+        username=\"client\" \
+        password=\"client-secret\";"
       CONNECT_SASL_MECHANISM: PLAIN
       CONNECT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.truststore.jks
       CONNECT_SSL_TRUSTSTORE_PASSWORD: confluent
