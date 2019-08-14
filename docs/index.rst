@@ -126,7 +126,7 @@ Topics
    .. figure:: images/topic_inspect.png
       :alt: image
 
-6. Return to "All Topics", click on "wikipedia.parsed.count-by-channel" to view the KStreams application
+6. Return to "All Topics", click on ``wikipedia.parsed.count-by-channel`` to view the KStreams application
 output topic.
 
    .. figure:: images/count-topic-view.png 
@@ -346,6 +346,7 @@ Consumers
       :alt: image
 
 4. View consumer lag for the KStreams application under the consumer group id ``wikipedia-activity-monitor``.
+
    .. figure:: images/activity-monitor-consumer.png
       :alt: image
 
@@ -397,7 +398,7 @@ Consumers
 .. figure:: images/request_latency_find.png
     :alt: image
 
-11. This shows a breakdown of produce latencies (fetch latencies also available) through the entire `request lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
+12. This shows a breakdown of produce latencies (fetch latencies also available) through the entire `request lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
 
 .. figure:: images/slow_consumer_produce_latency_breakdown.png
    :alt: image
@@ -1085,23 +1086,23 @@ Troubleshooting the demo
 
    .. sourcecode:: bash
 
-           Name                          Command               State                          Ports                       
---------------------------------------------------------------------------------------------------------------------------
-connect                       /etc/confluent/docker/run        Up       0.0.0.0:8083->8083/tcp, 9092/tcp                  
-control-center                /etc/confluent/docker/run        Up       0.0.0.0:9021->9021/tcp, 0.0.0.0:9022->9022/tcp    
-elasticsearch                 /bin/bash bin/es-docker          Up       0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp    
-kafka-client                  bash -c -a echo Waiting fo ...   Exit 0                                                     
-kafka1                        /etc/confluent/docker/run        Up       0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp, 
+       Name                          Command               State                          Ports                       
+       --------------------------------------------------------------------------------------------------------------------------
+        connect                       /etc/confluent/docker/run        Up       0.0.0.0:8083->8083/tcp, 9092/tcp                  
+        control-center                /etc/confluent/docker/run        Up       0.0.0.0:9021->9021/tcp, 0.0.0.0:9022->9022/tcp    
+        elasticsearch                 /bin/bash bin/es-docker          Up       0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp    
+        kafka-client                  bash -c -a echo Waiting fo ...   Exit 0                                                     
+        kafka1                        /etc/confluent/docker/run        Up       0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp, 
                                                                         9092/tcp                                          
-kafka2                        /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp  
-kibana                        /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp                            
-ksql-cli                      /bin/sh                          Up                                                         
-ksql-server                   /etc/confluent/docker/run        Up       0.0.0.0:8088->8088/tcp                            
-replicator-for-jar-transfer   sleep infinity                   Up       8083/tcp, 9092/tcp                                
-restproxy                     /etc/confluent/docker/run        Up       8082/tcp, 0.0.0.0:8086->8086/tcp                  
-schemaregistry                /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8085->8085/tcp                  
-streams-demo                  /bin/sh -c /app/start.sh         Up       9092/tcp                                          
-zookeeper                     /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp        
+        kafka2                        /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp  
+        kibana                        /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp                            
+        ksql-cli                      /bin/sh                          Up                                                         
+        ksql-server                   /etc/confluent/docker/run        Up       0.0.0.0:8088->8088/tcp                            
+        replicator-for-jar-transfer   sleep infinity                   Up       8083/tcp, 9092/tcp                                
+        restproxy                     /etc/confluent/docker/run        Up       8082/tcp, 0.0.0.0:8086->8086/tcp                  
+        schemaregistry                /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8085->8085/tcp                  
+        streams-demo                  /bin/sh -c /app/start.sh         Up       9092/tcp                                          
+        zookeeper                     /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp        
 
 2. To view sample messages for each topic, including
    ``wikipedia.parsed``:
