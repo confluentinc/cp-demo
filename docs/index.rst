@@ -592,6 +592,7 @@ skipping messages that will never be read.
    click on ``View Details`` and then ``Topic partitions``.  From this view
    you can see the consumption status of the various topic and partitions for the
    KStreams Application.
+
    .. figure:: images/activity-monitor-streams.png
       :alt: image
 
