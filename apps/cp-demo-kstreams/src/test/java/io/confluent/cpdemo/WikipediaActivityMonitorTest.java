@@ -23,9 +23,16 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
+/**
+ * Basic unit test functions for the `WikipediaActivityMonitor` class.  Uses the
+ * MockScheamRegistry class from Confluent and the TopologyTestDriver from
+ * Kafka Streams.
+ *
+ * @see io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry
+ * @see org.apache.kafka.streams.TopologyTestDriver
+ */
 public class WikipediaActivityMonitorTest {
 
-    private TopologyTestDriver testDriver;
     private final GenericRecord testRecord;
 
     private static final String SCHEMA_REGISTRY_SCOPE = WikipediaActivityMonitorTest.class.getName();
@@ -42,7 +49,9 @@ public class WikipediaActivityMonitorTest {
         schema.ifPresent(s -> registerSchema(schemaRegistryClient, s, WikipediaActivityMonitor.INPUT_TOPIC));
     }
 
-    private static void registerSchema(final SchemaRegistryClient schemaRegistryClient, final Schema s, final String topic) {
+    private static void registerSchema(final SchemaRegistryClient schemaRegistryClient,
+                                       final Schema s,
+                                       final String topic) {
         try {
             schemaRegistryClient.register(topic + "-value", s);
         } catch (final Exception ignored) { }
@@ -127,7 +136,7 @@ public class WikipediaActivityMonitorTest {
         Schema schema = null;
         try {
             schema = new Schema.Parser().parse(WikipediaActivityMonitorTest.class.getResourceAsStream("/avro/io/confluent/cpdemo/WikiEdit.avsc"));
-        } catch (final Exception e) {}
+        } catch (final Exception ignored) {}
         if (schema == null)
             return Optional.empty();
         else {
@@ -161,7 +170,7 @@ public class WikipediaActivityMonitorTest {
         final StreamsBuilder builder = new StreamsBuilder();
         WikipediaActivityMonitor
                 .createMonitorStream(builder, metricSerde);
-        testDriver = new TopologyTestDriver(builder.build(), finalProps);
+        final TopologyTestDriver testDriver = new TopologyTestDriver(builder.build(), finalProps);
 
         final List<GenericRecord> inputValues = new ArrayList<>();
         cloneRecord(testRecord)
@@ -223,9 +232,7 @@ public class WikipediaActivityMonitorTest {
         assertThat((long)counts.size())
             .isEqualTo(inputValues
                     .stream()
-                    .filter(gr -> !(boolean)gr.get(WikipediaActivityMonitor.ISBOT))
-                    .collect(Collectors.toList())
-                    .size());
+                    .filter(gr -> !(boolean) gr.get(WikipediaActivityMonitor.ISBOT)).count());
 
         assertThat(counts).extracting("channel", "editCount")
                 .containsExactly(

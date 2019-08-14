@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.confluent.cpdemo;
 
 import io.confluent.common.utils.TestUtils;
@@ -37,6 +38,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * A class that builds a KStreams Topology which will process Wikipedia edits from the
+ * `wikipedia.parsed` topic and output edit counts grouped by channel
+ * to the `wikipedia.parsed.counts-by-channel` topic. The KStreams application can be
+ * ran from the `main` provided here which requires a single command line argument,
+ * the location to the properties file containing configuration key / value pairs.  The
+ * Topology expects Avro inputs of type WikiFeed and produces output of type WikiFeedMetric
+ *
+ * @see <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/streams/Topology.html">Topology</a>
+ */
 class WikipediaActivityMonitor {
   public static final String CREATEDAT = "createdat";
   public static final String WIKIPAGE = "wikipage";
@@ -53,13 +64,14 @@ class WikipediaActivityMonitor {
   public static final String INPUT_TOPIC  = "wikipedia.parsed";
   public static final String OUPTUT_TOPIC = "wikipedia.parsed.count-by-channel";
 
-  public static Properties loadEnvProperties(final String fileName) throws IOException {
+  private static Properties loadEnvProperties(final String fileName) throws IOException {
     final Properties envProps = new Properties();
     final FileInputStream input = new FileInputStream(fileName);
     envProps.load(input);
     input.close();
     return envProps;
   }
+
   static Properties overlayDefaultProperties(final Properties baseProperties) {
 
     final Properties rv = new Properties();
@@ -84,6 +96,7 @@ class WikipediaActivityMonitor {
 
     return rv;
   }
+
   public static Map<String, Object> propertiesToMap(final Properties props) {
     final Map<String, Object> rv = new HashMap<>();
     final Enumeration<?> names = props.propertyNames();
@@ -108,13 +121,15 @@ class WikipediaActivityMonitor {
        .count()
        .mapValues(WikiFeedMetric::new)
        .toStream()
-       .peek((key, value) -> logger.debug("%s:%s", key, value.getEditCount()))
+       .peek((key, value) -> logger.debug("{}:{}", key, value.getEditCount()))
        .to(OUPTUT_TOPIC, Produced.with(Serdes.String(), metricSerde));
   }
+
   public static void main(final String[] args) throws IOException {
 
     if (args.length < 1) {
-      throw new IllegalArgumentException("This program requires one argument: the path to a properties file");
+      throw new IllegalArgumentException(
+              "This program requires one argument: the path to a properties file");
     }
 
     final Properties props = overlayDefaultProperties(
