@@ -826,14 +826,14 @@ All other users are not authorized to communicate with the cluster.
    with these security parameters. As an example, to communicate with
    the Kafka cluster to view all the active consumer groups:
 
-   *  Communicate with brokers via the PLAINTEXT port
+   #. Communicate with brokers via the PLAINTEXT port
 
        .. sourcecode:: bash
 
            # PLAINTEXT port
            docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091
 
-   *  Communicate with brokers via the SASL_SSL port, and SASL_SSL
+   #. Communicate with brokers via the SASL_SSL port, and SASL_SSL
        parameters configured via the ``--command-config`` argument for
        command line tools or ``--consumer.config`` for
        kafka-console-consumer.
@@ -844,7 +844,7 @@ All other users are not authorized to communicate with the cluster.
             docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 \
                --command-config /etc/kafka/secrets/client_without_interceptors.config
 
-   *  If you try to communicate with brokers via the SASL_SSL port but
+   #. If you try to communicate with brokers via the SASL_SSL port but
        don’t specify the SASL_SSL parameters, it will fail
 
        .. sourcecode:: bash
