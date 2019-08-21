@@ -283,17 +283,17 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
 10. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
-   View messages in ``EN_WIKIPEDIA_GT_1``:
+View messages in ``EN_WIKIPEDIA_GT_1``:
 
-   .. sourcecode:: bash
+.. sourcecode:: bash
 
       docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1 \
         --property schema.registry.url=https://schemaregistry:8085 \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
 
-   Your output should resemble:
+Your output should resemble:
 
-   .. sourcecode:: bash
+.. sourcecode:: bash
 
       null
       {"USERNAME":"Atsme","WIKIPAGE":"Wikipedia:Articles for deletion/Metallurg Bratsk","COUNT":2}
@@ -304,17 +304,17 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
       {"USERNAME":"Attar-Aram syria","WIKIPAGE":"Antiochus X Eusebes","COUNT":2}
       ...
 
-   View messages in ``EN_WIKIPEDIA_GT_1_COUNTS``:
+View messages in ``EN_WIKIPEDIA_GT_1_COUNTS``:
 
-   .. sourcecode:: bash
+.. sourcecode:: bash
 
-      docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1_COUNTS \
+   docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1_COUNTS \
         --property schema.registry.url=https://schemaregistry:8085 \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
 
-   Your output should resemble:
+Your output should resemble:
 
-   .. sourcecode:: bash
+.. sourcecode:: bash
 
       {"USERNAME":"Atsme","COUNT":2,"WIKIPAGE":"Wikipedia:Articles for deletion/Metallurg Bratsk"}
       {"USERNAME":"7.61.29.178","COUNT":2,"WIKIPAGE":"Tandem language learning"}
@@ -826,14 +826,14 @@ All other users are not authorized to communicate with the cluster.
    with these security parameters. As an example, to communicate with
    the Kafka cluster to view all the active consumer groups:
 
-   #.  Communicate with brokers via the PLAINTEXT port
+   *  Communicate with brokers via the PLAINTEXT port
 
        .. sourcecode:: bash
 
            # PLAINTEXT port
            docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091
 
-   #.  Communicate with brokers via the SASL_SSL port, and SASL_SSL
+   *  Communicate with brokers via the SASL_SSL port, and SASL_SSL
        parameters configured via the ``--command-config`` argument for
        command line tools or ``--consumer.config`` for
        kafka-console-consumer.
@@ -844,7 +844,7 @@ All other users are not authorized to communicate with the cluster.
             docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 \
                --command-config /etc/kafka/secrets/client_without_interceptors.config
 
-   #.  If you try to communicate with brokers via the SASL_SSL port but
+   *  If you try to communicate with brokers via the SASL_SSL port but
        don’t specify the SASL_SSL parameters, it will fail
 
        .. sourcecode:: bash
