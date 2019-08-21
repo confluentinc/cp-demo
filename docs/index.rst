@@ -145,11 +145,15 @@ Topics
 9. Dataflow: you can derive which producers are writing to which topics and which consumers are reading from which topics. When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic named ``_confluent-monitoring``.
    Kafka clients include any application that uses the Apache Kafka client API to connect to Kafka brokers, such as custom client code or any service that has embedded producers or consumers, such as Kafka Connect, KSQL, or a Kafka Streams application.
    |c3| uses that topic to ensure that all messages are delivered and to provide statistics on throughput and latency performance.
-   From that same topic, you can also derive which producers are writing to which topics and which consumers are reading from which topics, and an example script is provided with the repo (note: this is for demo purposes only, not suitable for production).
+   From that same topic, you can also derive which producers are writing to which topics and which consumers are reading from which topics, and an example script is provided with the repo (note: this is for demo purposes only, not suitable for production). The command is:
 
    .. sourcecode:: bash
 
-      $ ./scripts/app/map_topics_clients.py
+      ./scripts/app/map_topics_clients.py
+
+   Your output should resemble:
+
+   .. sourcecode:: bash
 
       Reading topic _confluent-monitoring for 60 seconds...please wait
 
@@ -279,11 +283,18 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
 10. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
+   View messages in ``EN_WIKIPEDIA_GT_1``:
+
    .. sourcecode:: bash
 
-        docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1 \
+      docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1 \
         --property schema.registry.url=https://schemaregistry:8085 \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
+
+   Your output should resemble:
+
+   .. sourcecode:: bash
+
       null
       {"USERNAME":"Atsme","WIKIPAGE":"Wikipedia:Articles for deletion/Metallurg Bratsk","COUNT":2}
       null
@@ -293,9 +304,18 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
       {"USERNAME":"Attar-Aram syria","WIKIPAGE":"Antiochus X Eusebes","COUNT":2}
       ...
 
-        docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1_COUNTS \
+   View messages in ``EN_WIKIPEDIA_GT_1_COUNTS``:
+
+   .. sourcecode:: bash
+
+      docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1_COUNTS \
         --property schema.registry.url=https://schemaregistry:8085 \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
+
+   Your output should resemble:
+
+   .. sourcecode:: bash
+
       {"USERNAME":"Atsme","COUNT":2,"WIKIPAGE":"Wikipedia:Articles for deletion/Metallurg Bratsk"}
       {"USERNAME":"7.61.29.178","COUNT":2,"WIKIPAGE":"Tandem language learning"}
       {"USERNAME":"Attar-Aram syria","COUNT":2,"WIKIPAGE":"Antiochus X Eusebes"}
@@ -811,7 +831,7 @@ All other users are not authorized to communicate with the cluster.
        .. sourcecode:: bash
 
            # PLAINTEXT port
-             docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091
+           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091
 
    #.  Communicate with brokers via the SASL_SSL port, and SASL_SSL
        parameters configured via the ``--command-config`` argument for
@@ -821,7 +841,7 @@ All other users are not authorized to communicate with the cluster.
        .. sourcecode:: bash
 
             # SASL_SSL port with SASL_SSL parameters
-              docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 \
+            docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 \
                --command-config /etc/kafka/secrets/client_without_interceptors.config
 
    #.  If you try to communicate with brokers via the SASL_SSL port but
@@ -830,7 +850,7 @@ All other users are not authorized to communicate with the cluster.
        .. sourcecode:: bash
 
             # SASL_SSL port without SASL_SSL parameters
-              docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091
+            docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091
 
        Your output should resemble:
 
@@ -881,7 +901,7 @@ All other users are not authorized to communicate with the cluster.
    .. sourcecode:: bash
 
         # Authorizer logger logs the denied operation
-          docker-compose logs kafka1 | grep kafka.authorizer.logger
+        docker-compose logs kafka1 | grep kafka.authorizer.logger
 
 
    Your output should resemble:
@@ -942,6 +962,11 @@ The connectors used in this demo are configured to automatically read and write 
 
        docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects | jq .
 
+   Your output should resemble:
+
+   .. sourcecode:: bash
+
+
      [
        "ksql_query_CTAS_EN_WIKIPEDIA_GT_1-KSQL_Agg_Query_1526914100640-changelog-value",
        "ksql_query_CTAS_EN_WIKIPEDIA_GT_1-KSQL_Agg_Query_1526914100640-repartition-value",
@@ -958,6 +983,10 @@ The connectors used in this demo are configured to automatically read and write 
 
        docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' https://schemaregistry:8085/subjects/users-value/versions | jq .
 
+   Your output should resemble:
+
+   .. sourcecode:: bash
+
      {
        "id": 6
      }
@@ -972,6 +1001,11 @@ The connectors used in this demo are configured to automatically read and write 
    .. sourcecode:: bash
 
        docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects/users-value/versions/1 | jq .
+
+   Your output should resemble:
+
+   .. sourcecode:: bash
+
 
      {
        "subject": "users-value",
@@ -990,7 +1024,12 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
 
    .. sourcecode:: bash
 
-       docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 6, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' https://restproxy:8086/topics/users
+     docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 6, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' https://restproxy:8086/topics/users
+
+   Your output should resemble:
+
+   .. sourcecode:: bash
+
 
      {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":6}
 
