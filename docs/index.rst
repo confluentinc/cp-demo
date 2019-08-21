@@ -828,35 +828,32 @@ All other users are not authorized to communicate with the cluster.
 
    #. Communicate with brokers via the PLAINTEXT port
 
-       .. sourcecode:: bash
+   .. sourcecode:: bash
 
            # PLAINTEXT port
            docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091
 
-   #. Communicate with brokers via the SASL_SSL port, and SASL_SSL
-       parameters configured via the ``--command-config`` argument for
-       command line tools or ``--consumer.config`` for
+   #. Communicate with brokers via the SASL_SSL port, and SASL_SSL parameters configured via the ``--command-config`` argument for command line tools or ``--consumer.config`` for
        kafka-console-consumer.
 
-       .. sourcecode:: bash
+   .. sourcecode:: bash
 
-            # SASL_SSL port with SASL_SSL parameters
-            docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 \
+           # SASL_SSL port with SASL_SSL parameters
+           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 \
                --command-config /etc/kafka/secrets/client_without_interceptors.config
 
-   #. If you try to communicate with brokers via the SASL_SSL port but
-       don’t specify the SASL_SSL parameters, it will fail
+   #. If you try to communicate with brokers via the SASL_SSL port but don’t specify the SASL_SSL parameters, it will fail
 
-       .. sourcecode:: bash
+   .. sourcecode:: bash
 
-            # SASL_SSL port without SASL_SSL parameters
-            docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091
+           # SASL_SSL port without SASL_SSL parameters
+           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091
 
-       Your output should resemble:
+   Your output should resemble:
 
-       .. sourcecode:: bash
+   .. sourcecode:: bash
 
-            Error: Executing consumer group command failed due to Request METADATA failed on brokers List(kafka1:9091 (id: -1 rack: null))
+           Error: Executing consumer group command failed due to Request METADATA failed on brokers List(kafka1:9091 (id: -1 rack: null))
 
 
 3. Verify which authenticated users are configured to be super users.
