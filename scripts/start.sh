@@ -32,9 +32,6 @@ ${DIR}/stop.sh
 echo -e "Generate keys and certificates used for SSL"
 (cd ${DIR}/security && ./certs-create.sh)
 
-echo -e "Building KStreams application Docker image (cp-demo-kstreams:local)"
-docker build -t cp-demo-kstreams:local "$DIR/../apps/cp-demo-kstreams"
-
 # Bring up Docker Compose
 echo -e "Bringing up Docker Compose"
 docker-compose up -d

@@ -539,7 +539,7 @@ services:
     command: "sleep infinity"
 
   streams-demo:
-    image: cp-demo-kstreams:local
+    image: cnfldemos/cp-demo-kstreams:0.0.2
     restart: always
     cpus: 0.4
     depends_on:
