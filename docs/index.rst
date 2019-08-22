@@ -3,7 +3,7 @@
 Kafka Event Streaming Application
 =================================
 
-This demo shows users how to deploy a Kafka event streaming application using `KSQL <https://www.confluent.io/product/ksql/>`__ and `KStreams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing. All the components in the Confluent platform have security enabled end-to-end.
+This demo shows users how to deploy a Kafka event streaming application using `KSQL <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing. All the components in the Confluent platform have security enabled end-to-end.
 
 
 ========
@@ -126,7 +126,7 @@ Topics
    .. figure:: images/topic_inspect.png
       :alt: image
 
-6. Return to "All Topics", click on ``wikipedia.parsed.count-by-channel`` to view the KStreams application
+6. Return to "All Topics", click on ``wikipedia.parsed.count-by-channel`` to view the Kafka Streams application
 output topic.
 
    .. figure:: images/count-topic-view.png 
@@ -345,7 +345,7 @@ Consumers
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumer_lag.png
       :alt: image
 
-4. View consumer lag for the KStreams application under the consumer group id ``wikipedia-activity-monitor``.
+4. View consumer lag for the Kafka Streams application under the consumer group id ``wikipedia-activity-monitor``.
 
    .. figure:: images/activity-monitor-consumer.png
       :alt: image
@@ -591,7 +591,7 @@ skipping messages that will never be read.
 8. Return to the Data Streams view, find the ``wikipedia-activity-monitor``,
    click on ``View Details`` and then ``Topic partitions``.  From this view
    you can see the consumption status of the various topic and partitions for the
-   KStreams Application.
+   Kafka Streams Application.
 
    .. figure:: images/activity-monitor-streams.png
       :alt: image
