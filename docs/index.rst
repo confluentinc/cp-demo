@@ -126,8 +126,7 @@ Topics
    .. figure:: images/topic_inspect.png
       :alt: image
 
-6. Return to "All Topics", click on ``wikipedia.parsed.count-by-channel`` to view the Kafka Streams application
-output topic.
+6. Return to "All Topics", click on ``wikipedia.parsed.count-by-channel`` to view the Kafka Streams application output topic.
 
    .. figure:: images/count-topic-view.png
       :alt: image
