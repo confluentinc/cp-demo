@@ -3,7 +3,7 @@
 Kafka Event Streaming Application
 =================================
 
-This demo shows users how to deploy a Kafka event streaming application using `KSQL <https://www.confluent.io/product/ksql/>`__ for stream processing. All the components in the Confluent platform have security enabled end-to-end.
+This demo shows users how to deploy a Kafka event streaming application using `KSQL <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing. All the components in the Confluent platform have security enabled end-to-end.
 
 
 ========
@@ -22,9 +22,8 @@ transform
 `kafka-connect-transform-wikiedit <https://github.com/cjmatta/kafka-connect-transform-wikiedit>`__
 transforms these messages and then the messages are written to a Kafka
 cluster. This demo uses `KSQL <https://www.confluent.io/product/ksql/>`__
-for data enrichment, or you can optionally develop and run your own
-`Kafka Streams <http://docs.confluent.io/current/streams/index.html>`__
-application. Then a Kafka sink connector
+and `Kafka Streams <http://docs.confluent.io/current/streams/index.html>`__
+for data processing. Then a Kafka sink connector
 `kafka-connect-elasticsearch <http://docs.confluent.io/current/connect/connect-elasticsearch/docs/elasticsearch_connector.html>`__
 streams the data out of Kafka, applying another custom Kafka Connect
 transform called NullFilter. The data is materialized into
@@ -127,22 +126,27 @@ Topics
    .. figure:: images/topic_inspect.png
       :alt: image
 
-6. View the schema for this topic. For `wikipedia.parsed`, the topic value is using a Schema registered with |sr| (the topic key is just a string).
+6. Return to "All Topics", click on ``wikipedia.parsed.count-by-channel`` to view the Kafka Streams application output topic.
+
+   .. figure:: images/count-topic-view.png
+      :alt: image
+
+7. View the schema for this topic. For `wikipedia.parsed`, the topic value is using a Schema registered with |sr| (the topic key is just a string).
 
    .. figure:: images/topic_schema.png
       :alt: image
 
-7. View configuration settings for this topic.
+8. View configuration settings for this topic.
 
    .. figure:: images/topic_settings.png
       :alt: image
 
-8. Return to the ``All topics`` view and click the **+ Add a topic** button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
+9. Return to the ``All topics`` view and click the **+ Add a topic** button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
 
       .. figure:: images/create_topic.png
          :alt: image
 
-9. Dataflow: you can derive which producers are writing to which topics and which consumers are reading from which topics. When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic named ``_confluent-monitoring``.
+10. Dataflow: you can derive which producers are writing to which topics and which consumers are reading from which topics. When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic named ``_confluent-monitoring``.
    Kafka clients include any application that uses the Apache Kafka client API to connect to Kafka brokers, such as custom client code or any service that has embedded producers or consumers, such as Kafka Connect, KSQL, or a Kafka Streams application.
    |c3| uses that topic to ensure that all messages are delivered and to provide statistics on throughput and latency performance.
    From that same topic, you can also derive which producers are writing to which topics and which consumers are reading from which topics, and an example script is provided with the repo (note: this is for demo purposes only, not suitable for production). The command is:
@@ -340,40 +344,45 @@ Consumers
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumer_lag.png
       :alt: image
 
-4. With `Confluent Monitoring Interceptors <https://docs.confluent.io/current/control-center/installation/clients.html>`__, you may also view additional metrics related to production and consumption of messages, including:
+4. View consumer lag for the Kafka Streams application under the consumer group id ``wikipedia-activity-monitor``.
+
+   .. figure:: images/activity-monitor-consumer.png
+      :alt: image
+
+5. With `Confluent Monitoring Interceptors <https://docs.confluent.io/current/control-center/installation/clients.html>`__, you may also view additional metrics related to production and consumption of messages, including:
 
    - Throughput
    - Failed consume requests
    - Percent messages consumed
    - End to end latency
 
-5. View consumption metrics for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer group list.
+6. View consumption metrics for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer group list.
 
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumption.png
       :alt: image
 
 
-6. |c3| shows which consumers in a consumer group are consuming from which partitions and on which brokers those partitions reside.  |c3| updates as consumer rebalances occur in a consumer group.  Start consuming from topic ``wikipedia.parsed`` with a new consumer group ``app`` with one consumer ``consumer_app_1``. It runs in the background.
+7. |c3| shows which consumers in a consumer group are consuming from which partitions and on which brokers those partitions reside.  |c3| updates as consumer rebalances occur in a consumer group.  Start consuming from topic ``wikipedia.parsed`` with a new consumer group ``app`` with one consumer ``consumer_app_1``. It runs in the background.
 
    .. sourcecode:: bash
 
           ./scripts/app/start_consumer_app.sh 1
 
-7. Let this consumer group run for 2 minutes until |c3|
+8. Let this consumer group run for 2 minutes until |c3|
    shows the consumer group ``app`` with steady consumption.
    This consumer group ``app`` has a single consumer ``consumer_app_1`` consuming all of the partitions in the topic ``wikipedia.parsed``. 
 
    .. figure:: images/consumer_start_one.png
       :alt: image
 
-8. Add a second consumer ``consumer_app_2`` to the existing consumer
+9. Add a second consumer ``consumer_app_2`` to the existing consumer
    group ``app``.
 
    .. sourcecode:: bash
 
           ./scripts/app/start_consumer_app.sh 2
 
-9. Let this consumer group run for 2 minutes until |c3|
+10. Let this consumer group run for 2 minutes until |c3|
    shows the consumer group ``app`` with steady consumption.
    Notice that the consumers ``consumer_app_1`` and ``consumer_app_2``
    now share consumption of the partitions in the topic
@@ -383,12 +392,12 @@ Consumers
       :alt: image
 
 
-10. Click "System health" and then a line in "Request latency".
+11. Click "System health" and then a line in "Request latency".
 
 .. figure:: images/request_latency_find.png
     :alt: image
 
-11. This shows a breakdown of produce latencies (fetch latencies also available) through the entire `request lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
+12. This shows a breakdown of produce latencies (fetch latencies also available) through the entire `request lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
 
 .. figure:: images/slow_consumer_produce_latency_breakdown.png
    :alt: image
@@ -578,6 +587,13 @@ skipping messages that will never be read.
    .. figure:: images/under_consumption_after.png
       :alt: image
 
+8. Return to the Data Streams view, find the ``wikipedia-activity-monitor``,
+   click on ``View Details`` and then ``Topic partitions``.  From this view
+   you can see the consumption status of the various topic and partitions for the
+   Kafka Streams Application.
+
+   .. figure:: images/activity-monitor-streams.png
+      :alt: image
 
 Failed broker
 -------------
@@ -1070,21 +1086,23 @@ Troubleshooting the demo
 
    .. sourcecode:: bash
 
-                   Name                          Command               State                             Ports                           
-        ---------------------------------------------------------------------------------------------------------------------------------
-        connect                       /etc/confluent/docker/run        Up      0.0.0.0:8083->8083/tcp, 9092/tcp                          
-        control-center                /etc/confluent/docker/run        Up      0.0.0.0:9021->9021/tcp, 0.0.0.0:9022->9022/tcp            
-        elasticsearch                 /bin/bash bin/es-docker          Up      0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp            
-        kafka-client                  bash -c -a echo Waiting fo ...   Up      0.0.0.0:7073->7073/tcp, 9092/tcp                          
-        kafka1                        /etc/confluent/docker/run        Up      0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp, 9092/tcp
-        kafka2                        /etc/confluent/docker/run        Up      0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp          
-        kibana                        /bin/sh -c /usr/local/bin/ ...   Up      0.0.0.0:5601->5601/tcp                                    
-        ksql-cli                      /bin/sh                          Up                                                                
-        ksql-server                   /etc/confluent/docker/run        Up      0.0.0.0:8088->8088/tcp                                    
-        replicator-for-jar-transfer   sleep infinity                   Up      8083/tcp, 9092/tcp                                        
-        restproxy                     /etc/confluent/docker/run        Up      8082/tcp, 0.0.0.0:8086->8086/tcp                          
-        schemaregistry                /etc/confluent/docker/run        Up      8081/tcp, 0.0.0.0:8085->8085/tcp                          
-        zookeeper                     /etc/confluent/docker/run        Up      0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp    
+       Name                          Command               State                          Ports                       
+       --------------------------------------------------------------------------------------------------------------------------
+        connect                       /etc/confluent/docker/run        Up       0.0.0.0:8083->8083/tcp, 9092/tcp                  
+        control-center                /etc/confluent/docker/run        Up       0.0.0.0:9021->9021/tcp, 0.0.0.0:9022->9022/tcp    
+        elasticsearch                 /bin/bash bin/es-docker          Up       0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp    
+        kafka-client                  bash -c -a echo Waiting fo ...   Exit 0                                                     
+        kafka1                        /etc/confluent/docker/run        Up       0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp, 
+                                                                        9092/tcp                                          
+        kafka2                        /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp  
+        kibana                        /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp                            
+        ksql-cli                      /bin/sh                          Up                                                         
+        ksql-server                   /etc/confluent/docker/run        Up       0.0.0.0:8088->8088/tcp                            
+        replicator-for-jar-transfer   sleep infinity                   Up       8083/tcp, 9092/tcp                                
+        restproxy                     /etc/confluent/docker/run        Up       8082/tcp, 0.0.0.0:8086->8086/tcp                  
+        schemaregistry                /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8085->8085/tcp                  
+        streams-demo                  /bin/sh -c /app/start.sh         Up       9092/tcp                                          
+        zookeeper                     /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp        
 
 2. To view sample messages for each topic, including
    ``wikipedia.parsed``:
