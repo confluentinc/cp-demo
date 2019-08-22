@@ -129,7 +129,7 @@ Topics
 6. Return to "All Topics", click on ``wikipedia.parsed.count-by-channel`` to view the Kafka Streams application
 output topic.
 
-   .. figure:: images/count-topic-view.png 
+   .. figure:: images/count-topic-view.png
       :alt: image
 
 7. View the schema for this topic. For `wikipedia.parsed`, the topic value is using a Schema registered with |sr| (the topic key is just a string).
