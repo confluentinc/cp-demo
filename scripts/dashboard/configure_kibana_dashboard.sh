@@ -1,6 +1,6 @@
 #!/bin/bash
 
-curl -X PUT -H "kbn-version: 5.5.2" -d '{"title":"wikipediabot","notExpandable":true}' http://localhost:5601/es_admin/.kibana/index-pattern/wikipediabot/_create 
+curl -X PUT -H "kbn-version: 5.5.2" -d '{"title":"wikipediabot","notExpandable":true, "timeFieldName": "CREATEDAT"}' http://localhost:5601/es_admin/.kibana/index-pattern/wikipediabot/_create
 curl -X POST -H "kbn-version: 5.5.2" -H "Content-Type: application/json;charset=UTF-8" -d '{"value":"wikipediabot"}' http://localhost:5601/api/kibana/settings/timelion:es.default_index
 curl -X POST -H "kbn-version: 5.5.2" -H "Content-Type: application/json;charset=UTF-8" -d '{"value":"CREATEDAT"}' http://localhost:5601/api/kibana/settings/timelion:es.timefield
 curl -X POST -H "kbn-version: 5.5.2" -H "Content-Type: application/json;charset=UTF-8" -d '{"value":"wikipediabot"}' http://localhost:5601/api/kibana/settings/defaultIndex

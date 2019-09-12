@@ -339,8 +339,7 @@ services:
       SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.schemaregistry.keystore.jks
       SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: confluent
       SCHEMA_REGISTRY_SSL_KEY_PASSWORD: confluent
-      # Disable SR client auth as temporary workaround to software bug
-      SCHEMA_REGISTRY_SSL_CLIENT_AUTH: "false"
+      SCHEMA_REGISTRY_SSL_CLIENT_AUTH: "true"
       SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "https"
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
     ports:
