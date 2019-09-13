@@ -13,7 +13,7 @@ services:
                   -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
                   -DrequireClientAuthScheme=sasl
     volumes:
-      - $PWD/scripts/security:/etc/kafka/secrets
+      - ./scripts/security:/etc/kafka/secrets
     ports:
       - "2181:2181"
 
@@ -25,7 +25,7 @@ services:
     depends_on:
       - zookeeper
     volumes:
-      - $PWD/scripts/security:/etc/kafka/secrets
+      - ./scripts/security:/etc/kafka/secrets
     ports:
       - "9091:9091"
       - "29091:29091"
@@ -79,7 +79,7 @@ services:
     depends_on:
       - zookeeper
     volumes:
-      - $PWD/scripts/security:/etc/kafka/secrets
+      - ./scripts/security:/etc/kafka/secrets
     ports:
       - "9092:9092"
       - "29092:29092"
@@ -138,10 +138,10 @@ services:
       - kafka2
       - schemaregistry
     volumes:
-      - $PWD/connect-plugins:/connect-plugins
+      - ./connect-plugins:/connect-plugins
       - mi3:/usr/share/java/kafka-connect-replicator/
-      - $PWD/connect-plugins/kafka-connect-transform-nullfilter/null-filter-4.0.0-SNAPSHOT.jar:/usr/share/java/kafka-connect-elasticsearch/null-filter-4.0.0-SNAPSHOT.jar
-      - $PWD/scripts/security:/etc/kafka/secrets
+      - ./connect-plugins/kafka-connect-transform-nullfilter/null-filter-4.0.0-SNAPSHOT.jar:/usr/share/java/kafka-connect-elasticsearch/null-filter-4.0.0-SNAPSHOT.jar
+      - ./scripts/security:/etc/kafka/secrets
     environment:
       CONNECT_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       CONNECT_REST_PORT: 8083
@@ -267,7 +267,7 @@ services:
       - "9021:9021"
       - "9022:9022"
     volumes:
-      - $PWD/scripts/security:/etc/kafka/secrets
+      - ./scripts/security:/etc/kafka/secrets
     environment:
       CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       CONTROL_CENTER_ZOOKEEPER_CONNECT: "zookeeper:2181"
@@ -320,7 +320,7 @@ services:
       - kafka1
       - kafka2
     volumes:
-      - $PWD/scripts/security:/etc/kafka/secrets
+      - ./scripts/security:/etc/kafka/secrets
     environment:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       SCHEMA_REGISTRY_HOST_NAME: schemaregistry
@@ -355,7 +355,7 @@ services:
       - kafka1
       - kafka2
     volumes:
-      - $PWD/scripts/security:/etc/kafka/secrets
+      - ./scripts/security:/etc/kafka/secrets
     # We defined a dependency on "kafka", but `depends_on` will NOT wait for the
     # dependencies to be "ready" before starting the "kafka-client"
     # container;  it waits only until the dependencies have started.  Hence we
@@ -408,7 +408,7 @@ services:
     ports:
       - "8088:8088"
     volumes:
-      - $PWD/scripts/security:/etc/kafka/secrets
+      - ./scripts/security:/etc/kafka/secrets
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
@@ -478,7 +478,7 @@ services:
       - connect
       - ksql-server
     volumes:
-      - $PWD/scripts/ksql/ksqlcommands:/tmp/ksqlcommands
+      - ./scripts/ksql/ksqlcommands:/tmp/ksqlcommands
     entrypoint: /bin/sh
     tty: true
   restproxy:
@@ -493,8 +493,8 @@ services:
     hostname: restproxy
     container_name: restproxy
     volumes:
-      - $PWD/scripts/security:/etc/kafka/secrets
-      - $PWD/scripts/app:/etc/kafka/app
+      - ./scripts/security:/etc/kafka/secrets
+      - ./scripts/app:/etc/kafka/app
     environment:
       KAFKA_REST_HOST_NAME: restproxy
       KAFKA_REST_BOOTSTRAP_SERVERS: "SASL_SSL://kafka1:9091,SASL_SSL://kafka2:9092"
@@ -549,7 +549,7 @@ services:
     hostname: streams-demo
     container_name: streams-demo
     volumes:
-      - $PWD/scripts/security:/etc/kafka/secrets
+      - ./scripts/security:/etc/kafka/secrets
     environment:
       KAFKA_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       KAFKA_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
