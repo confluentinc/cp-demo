@@ -101,14 +101,14 @@ Brokers
 Topics
 ------
 
-1. |c3| has a useful interface to manage topics in a Kafka cluster. Click on "Topics".
+#. |c3| has a useful interface to manage topics in a Kafka cluster. Click on "Topics".
 
-2. Scroll down and click on the topic ``wikipedia.parsed``.
+#. Scroll down and click on the topic ``wikipedia.parsed``.
 
-      .. figure:: images/topic_list_wikipedia.png
+   .. figure:: images/topic_list_wikipedia.png
          :alt: image
 
-3. View an overview of this topic:
+#. View an overview of this topic:
 
    - Throughput
    - Partition replication status
@@ -116,48 +116,52 @@ Topics
    .. figure:: images/topic_actions.png
       :alt: image
 
-4. View which brokers are leaders for which partitions and where all partitions reside.
+#. View which brokers are leaders for which partitions and where all partitions reside.
 
    .. figure:: images/topic_info.png
       :alt: image
 
-5. Inspect messages for this topic, in real-time.
+#. Inspect messages for this topic, in real-time.
 
    .. figure:: images/topic_inspect.png
       :alt: image
 
-6. Return to "All Topics", click on ``wikipedia.parsed.count-by-channel`` to view the Kafka Streams application output topic.
+#. Return to "All Topics", click on ``wikipedia.parsed.count-by-channel`` to view the Kafka Streams application output topic.
 
    .. figure:: images/count-topic-view.png
       :alt: image
 
-7. View the schema for this topic. For `wikipedia.parsed`, the topic value is using a Schema registered with |sr| (the topic key is just a string).
+#. View the schema for this topic. For `wikipedia.parsed`, the topic value is using a Schema registered with |sr| (the topic key is just a string).
 
    .. figure:: images/topic_schema.png
       :alt: image
 
-8. View configuration settings for this topic.
+#. View configuration settings for this topic.
 
    .. figure:: images/topic_settings.png
       :alt: image
 
-9. Return to the ``All topics`` view and click the **+ Add a topic** button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
+#. Return to the ``All topics`` view and click the **+ Add a topic** button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
 
-      .. figure:: images/create_topic.png
+   .. figure:: images/create_topic.png
          :alt: image
 
-10. Dataflow: you can derive which producers are writing to which topics and which consumers are reading from which topics. When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic named ``_confluent-monitoring``.
-   Kafka clients include any application that uses the Apache Kafka client API to connect to Kafka brokers, such as custom client code or any service that has embedded producers or consumers, such as Kafka Connect, KSQL, or a Kafka Streams application.
-   |c3| uses that topic to ensure that all messages are delivered and to provide statistics on throughput and latency performance.
-   From that same topic, you can also derive which producers are writing to which topics and which consumers are reading from which topics, and an example script is provided with the repo (note: this is for demo purposes only, not suitable for production). The command is:
+#.  Dataflow: you can derive which producers are writing to which topics and which consumers are reading from which topics.
+    When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic named ``_confluent-monitoring``.
+    Kafka clients include any application that uses the Apache Kafka client API to connect to Kafka brokers, such as
+    custom client code or any service that has embedded producers or consumers, such as Kafka Connect, KSQL, or a Kafka Streams application.
+    |c3| uses that topic to ensure that all messages are delivered and to provide statistics on throughput and latency
+    performance. From that same topic, you can also derive which producers are writing to which topics and which consumers
+    are reading from which topics, and an example script is provided with the repo (note: this is for demo purposes
+    only, not suitable for production). The command is:
 
-   .. sourcecode:: bash
+    .. sourcecode:: bash
 
       ./scripts/app/map_topics_clients.py
 
-   Your output should resemble:
+    Your output should resemble:
 
-   .. sourcecode:: bash
+    .. sourcecode:: bash
 
       Reading topic _confluent-monitoring for 60 seconds...please wait
 
@@ -383,24 +387,24 @@ Consumers
           ./scripts/app/start_consumer_app.sh 2
 
 10. Let this consumer group run for 2 minutes until |c3|
-   shows the consumer group ``app`` with steady consumption.
-   Notice that the consumers ``consumer_app_1`` and ``consumer_app_2``
-   now share consumption of the partitions in the topic
-   ``wikipedia.parsed``. 
+    shows the consumer group ``app`` with steady consumption.
+    Notice that the consumers ``consumer_app_1`` and ``consumer_app_2``
+    now share consumption of the partitions in the topic
+    ``wikipedia.parsed``.
 
-   .. figure:: images/consumer_start_two.png
+    .. figure:: images/consumer_start_two.png
       :alt: image
 
 
 11. Click "System health" and then a line in "Request latency".
 
-.. figure:: images/request_latency_find.png
-    :alt: image
+    .. figure:: images/request_latency_find.png
+        :alt: image
 
 12. This shows a breakdown of produce latencies (fetch latencies also available) through the entire `request lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
 
-.. figure:: images/slow_consumer_produce_latency_breakdown.png
-   :alt: image
+    .. figure:: images/slow_consumer_produce_latency_breakdown.png
+        :alt: image
 
 
 Data Streams: Over Consumption
@@ -1005,8 +1009,8 @@ The connectors used in this demo are configured to automatically read and write 
 
 3. View the new schema for the subject ``users-value``. From |c3|, click **MANAGEMENT -> Topics**. Scroll down to and click on the topic `users` and select "SCHEMA".
 
-.. figure:: images/schema1.png
-   :alt: image
+   .. figure:: images/schema1.png
+    :alt: image
    
    You may alternatively request the schema via the command line:
 
