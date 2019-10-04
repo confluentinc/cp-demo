@@ -53,8 +53,7 @@ Run demo
 -  git
 -  jq
 
-.. note:: If you prefer a non-Docker version and have Elasticsearch and Kibana running on your local machine, please follow `these instructions <https://github.com/confluentinc/examples/tree/5.2.1-post/wikipedia>`__.
-
+.. note:: If you prefer a non-Docker version and have Elasticsearch and Kibana running on your local machine, please follow :devx-examples:`these instructions|wikipedia`.
 
 1. Clone the `cp-demo GitHub repository <https://github.com/confluentinc/cp-demo>`__:
 
