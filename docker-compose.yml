@@ -1,7 +1,7 @@
 version: "2.2"
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:5.4.0-SNAPSHOT
+    image: confluentinc/cp-zookeeper:latest
     restart: always
     hostname: zookeeper
     container_name: zookeeper
@@ -18,7 +18,7 @@ services:
       - "2181:2181"
 
   kafka1:
-    image: confluentinc/cp-enterprise-kafka:5.4.0-SNAPSHOT
+    image: confluentinc/cp-server:5.4.0-beta1-2
     hostname: kafka1
     container_name: kafka1
     cpus: 0.7
@@ -71,8 +71,14 @@ services:
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
+      # Schema Validation
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
+      #KAFKA_CONFLUENT_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.truststore.jks"
+      #KAFKA_CONFLUENT_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: "confluent"
+      #KAFKA_CONFLUENT_SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.keystore.jks"
+      #KAFKA_CONFLUENT_SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: "confluent"
   kafka2:
-    image: confluentinc/cp-enterprise-kafka:5.4.0-SNAPSHOT
+    image: confluentinc/cp-server:5.4.0-beta1-2
     hostname: kafka2
     container_name: kafka2
     cpus: 0.7
@@ -125,8 +131,14 @@ services:
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
+      # Schema Validation
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
+      #KAFKA_CONFLUENT_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.truststore.jks"
+      #KAFKA_CONFLUENT_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: "confluent"
+      #KAFKA_CONFLUENT_SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.keystore.jks"
+      #KAFKA_CONFLUENT_SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: "confluent"
   connect:
-    image: confluentinc/cp-kafka-connect:5.4.0-SNAPSHOT
+    image: confluentinc/cp-kafka-connect:5.3.1
     container_name: connect
     cpus: 0.6
     restart: always
@@ -164,7 +176,7 @@ services:
       CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.4.0-SNAPSHOT.jar
+      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.3.1.jar
       # Connect worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
@@ -254,7 +266,7 @@ services:
       xpack.security.enabled: "false"
       discovery.type: "single-node"
   control-center:
-    image: confluentinc/cp-enterprise-control-center:5.4.0-SNAPSHOT
+    image: confluentinc/cp-enterprise-control-center:5.3.1
     container_name: control-center
     cpus: 0.7
     restart: always
@@ -311,7 +323,7 @@ services:
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.control-center.keystore.jks
                   -Djavax.net.ssl.keyStorePassword=confluent
   schemaregistry:
-    image: confluentinc/cp-schema-registry:5.4.0-SNAPSHOT
+    image: confluentinc/cp-schema-registry:5.4.0-beta1
     container_name: schemaregistry
     cpus: 0.4
     restart: always
@@ -347,7 +359,7 @@ services:
     ports:
       - 8085:8085
   kafka-client:
-    image: confluentinc/cp-enterprise-kafka:5.4.0-SNAPSHOT
+    image: confluentinc/cp-server:5.4.0-beta1-2
     hostname: kafka-client
     container_name: kafka-client
     cpus: 0.4
@@ -366,14 +378,14 @@ services:
                        cub kafka-ready -b kafka1:9091 1 60 --config /etc/kafka/kafka.properties && \
                        cub kafka-ready -b kafka2:9092 1 60 --config /etc/kafka/kafka.properties && \
                        sleep 5 && \
-                       kafka-topics --zookeeper zookeeper:2181 --topic users --create --replication-factor 2 --partitions 2 && \
-                       kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed --create --replication-factor 2 --partitions 2 && \
-                       kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed.count-by-channel --create --replication-factor 2 --partitions 2 && \
-                       kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.failed --create --replication-factor 2 --partitions 2 && \
-                       kafka-topics --zookeeper zookeeper:2181 --topic WIKIPEDIABOT --create --replication-factor 2 --partitions 2 && \
-                       kafka-topics --zookeeper zookeeper:2181 --topic WIKIPEDIANOBOT --create --replication-factor 2 --partitions 2 && \
-                       kafka-topics --zookeeper zookeeper:2181 --topic EN_WIKIPEDIA_GT_1 --create --replication-factor 2 --partitions 2 && \
-                       kafka-topics --zookeeper zookeeper:2181 --topic EN_WIKIPEDIA_GT_1_COUNTS --create --replication-factor 2 --partitions 2'"
+                       kafka-topics --zookeeper zookeeper:2181 --topic users --create --replication-factor 2 --partitions 2 --config confluent.value.schema.validation=true && \
+                       kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed --create --replication-factor 2 --partitions 2 --config confluent.value.schema.validation=true && \
+                       kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed.count-by-channel --create --replication-factor 2 --partitions 2 --config confluent.value.schema.validation=true && \
+                       kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.failed --create --replication-factor 2 --partitions 2 --config confluent.value.schema.validation=true && \
+                       kafka-topics --zookeeper zookeeper:2181 --topic WIKIPEDIABOT --create --replication-factor 2 --partitions 2 --config confluent.value.schema.validation=true && \
+                       kafka-topics --zookeeper zookeeper:2181 --topic WIKIPEDIANOBOT --create --replication-factor 2 --partitions 2 --config confluent.value.schema.validation=true && \
+                       kafka-topics --zookeeper zookeeper:2181 --topic EN_WIKIPEDIA_GT_1 --create --replication-factor 2 --partitions 2 --config confluent.value.schema.validation=true && \
+                       kafka-topics --zookeeper zookeeper:2181 --topic EN_WIKIPEDIA_GT_1_COUNTS --create --replication-factor 2 --partitions 2 --config confluent.value.schema.validation=true'"
     environment:
       # The following settings are listed here only to satisfy the image's requirements.
       # We override the image's `command` anyways, hence this container will not start a broker.
@@ -396,7 +408,7 @@ services:
       - "7073:7073"
 
   ksql-server:
-    image: confluentinc/cp-ksql-server:5.4.0-SNAPSHOT
+    image: confluentinc/cp-ksql-server:5.3.1
     hostname: ksql-server
     container_name: ksql-server
     cpus: 0.5
@@ -469,7 +481,7 @@ services:
       KSQL_KSQL_SERVER_UI_ENABLED: "false"
 
   ksql-cli:
-    image: confluentinc/cp-ksql-cli:5.4.0-SNAPSHOT
+    image: confluentinc/cp-ksql-cli:5.3.1
     container_name: ksql-cli
     cpus: 0.4
     depends_on:
@@ -481,7 +493,7 @@ services:
     entrypoint: /bin/sh
     tty: true
   restproxy:
-    image: confluentinc/cp-kafka-rest:5.4.0-SNAPSHOT
+    image: confluentinc/cp-kafka-rest:5.3.1
     restart: always
     cpus: 0.4
     depends_on:
@@ -529,7 +541,7 @@ services:
   # This container is just to transfer Replicator jars to the Connect worker
   # It is not used as a Connect worker
   replicator-for-jar-transfer:
-    image: confluentinc/cp-enterprise-replicator:5.4.0-SNAPSHOT
+    image: confluentinc/cp-enterprise-replicator:5.3.1
     hostname: replicator-for-jar-transfer
     container_name: replicator-for-jar-transfer
     volumes:
