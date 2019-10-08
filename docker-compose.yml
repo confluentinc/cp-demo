@@ -72,7 +72,7 @@ services:
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       # Schema Validation
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
-      # Until 5.4 GA: use KAFKA_OPTS workaround
+      # Until 5.4 GA (https://github.com/confluentinc/schema-registry/pull/957): use KAFKA_OPTS
       #KAFKA_CONFLUENT_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: "/etc/kafka/secrets/kafka.kafka1.truststore.jks"
       #KAFKA_CONFLUENT_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: "confluent"
       #KAFKA_CONFLUENT_SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: "/etc/kafka/secrets/kafka.kafka1.keystore.jks"
@@ -137,7 +137,7 @@ services:
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       # Schema Validation
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
-      # Until 5.4 GA: use KAFKA_OPTS workaround
+      # Until 5.4 GA (https://github.com/confluentinc/schema-registry/pull/957): use KAFKA_OPTS
       #KAFKA_CONFLUENT_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: "/etc/kafka/secrets/kafka.kafka1.truststore.jks"
       #KAFKA_CONFLUENT_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: "confluent"
       #KAFKA_CONFLUENT_SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: "/etc/kafka/secrets/kafka.kafka1.keystore.jks"
