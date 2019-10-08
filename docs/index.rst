@@ -966,8 +966,8 @@ All other users are not authorized to communicate with the cluster.
    Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
 
 
-|sr|
--------------------
+Data Governance with |sr|
+-------------------------
 
 The connectors used in this demo are configured to automatically read and write Avro-formatted data, leveraging the `Confluent Schema Registry <https://docs.confluent.io/current/schema-registry/docs/index.html>`__ .
 
@@ -1044,7 +1044,7 @@ The connectors used in this demo are configured to automatically read and write 
 	      Topic: users	Partition: 1	Leader: 2	Replicas: 2,1	Isr: 2,1	Offline: 	LiveObservers: 
 
 
-5. Notice that the topic ``users`` has a special configuration ``confluent.value.schema.validation=true`` which enables `Schema Validation <https://docs.confluent.io/current/release-notes/5-4-preview.html>`__, a Confluent Server feature that allows brokers to validate that data produced to the topic is using a valid schema in |sr|. Write a message to this topic without Avro, and it will result in a failure.
+5. Notice that the topic ``users`` has a special configuration ``confluent.value.schema.validation=true`` which enables `Schema Validation <https://docs.confluent.io/current/release-notes/5-4-preview.html>`__, a data governance feature in Confluent Server that gives operators a centralized location within the Kafka cluster itself to enforce data format correctness. Enabling Schema Validation allows brokers configured with ``confluent.schema.registry.url`` to validate that data produced to the topic is using a valid schema. For example, produce a non-Avro message to this topic, and it will result in a failure.
 
    .. sourcecode:: bash
 
