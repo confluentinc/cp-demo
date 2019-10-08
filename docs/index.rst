@@ -1029,6 +1029,29 @@ The connectors used in this demo are configured to automatically read and write 
        "schema": "{\"type\":\"record\",\"name\":\"user\",\"fields\":[{\"name\":\"username\",\"type\":\"string\"},{\"name\":\"userid\",\"type\":\"long\"}]}"
      }
 
+4. Describe the topic ``users``.
+
+   .. sourcecode:: bash
+
+      docker-compose exec kafka1 kafka-topics --describe --topic users --bootstrap-server kafka1:9091 --command-config /etc/kafka/secrets/client_without_interceptors.config
+
+   Your output should resemble:
+
+   .. sourcecode:: bash
+
+      Topic: users	PartitionCount: 2	ReplicationFactor: 2	Configs: confluent.value.schema.validation=true
+	      Topic: users	Partition: 0	Leader: 1	Replicas: 1,2	Isr: 1,2	Offline: 	LiveObservers: 
+	      Topic: users	Partition: 1	Leader: 2	Replicas: 2,1	Isr: 2,1	Offline: 	LiveObservers: 
+
+
+5. Notice that the topic ``users`` has a special configuration ``confluent.value.schema.validation=true`` which enables `Schema Validation <https://docs.confluent.io/current/release-notes/5-4-preview.html>`__.  Schema Validation is a Confluent Server feature that allows brokers to validate that data produced to the topic is using a valid schema in |sr|. Write a message to this topic without Avro, and it will result in a failure.
+
+   .. sourcecode:: bash
+
+      docker-compose exec connect kafka-console-producer --topic users --broker-list kafka1:9091 --producer.config /etc/kafka/secrets/client_without_interceptors.config
+
+
+
 
 Confluent REST Proxy
 --------------------
