@@ -966,8 +966,8 @@ All other users are not authorized to communicate with the cluster.
    Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
 
 
-|sr|
--------------------
+Data Governance with |sr|
+-------------------------
 
 The connectors used in this demo are configured to automatically read and write Avro-formatted data, leveraging the `Confluent Schema Registry <https://docs.confluent.io/current/schema-registry/docs/index.html>`__ .
 
@@ -996,7 +996,7 @@ The connectors used in this demo are configured to automatically read and write 
 
    .. sourcecode:: bash
 
-       docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' https://schemaregistry:8085/subjects/users-value/versions | jq .
+       docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' https://schemaregistry:8085/subjects/users-value/versions
 
    Your output should resemble:
 
@@ -1028,6 +1028,35 @@ The connectors used in this demo are configured to automatically read and write 
        "id": 6,
        "schema": "{\"type\":\"record\",\"name\":\"user\",\"fields\":[{\"name\":\"username\",\"type\":\"string\"},{\"name\":\"userid\",\"type\":\"long\"}]}"
      }
+
+4. Describe the topic ``users``.
+
+   .. sourcecode:: bash
+
+      docker-compose exec kafka1 kafka-topics --describe --topic users --bootstrap-server kafka1:9091 --command-config /etc/kafka/secrets/client_without_interceptors.config
+
+   Your output should resemble:
+
+   .. sourcecode:: bash
+
+      Topic: users	PartitionCount: 2	ReplicationFactor: 2	Configs: confluent.value.schema.validation=true
+	      Topic: users	Partition: 0	Leader: 1	Replicas: 1,2	Isr: 1,2	Offline: 	LiveObservers: 
+	      Topic: users	Partition: 1	Leader: 2	Replicas: 2,1	Isr: 2,1	Offline: 	LiveObservers: 
+
+
+5. Notice that the topic ``users`` has a special configuration ``confluent.value.schema.validation=true`` which enables `Schema Validation <https://docs.confluent.io/current/release-notes/5-4-preview.html>`__, a data governance feature in Confluent Server that gives operators a centralized location within the Kafka cluster itself to enforce data format correctness. Enabling Schema Validation allows brokers configured with ``confluent.schema.registry.url`` to validate that data produced to the topic is using a valid schema. For example, produce a non-Avro message to this topic, and it will result in a failure.
+
+   .. sourcecode:: bash
+
+      docker-compose exec connect kafka-console-producer --topic users --broker-list kafka1:9091 --producer.config /etc/kafka/secrets/client_without_interceptors.config
+
+6. Describe the topic ``wikipedia.parsed``, which is the topic that the `kafka-connect-irc` source connector is writing to. Notice that it also has enabled Schema Validation.
+
+   .. sourcecode:: bash
+
+      docker-compose exec kafka1 kafka-topics --describe --topic wikipedia.parsed --bootstrap-server kafka1:9091 --command-config /etc/kafka/secrets/client_without_interceptors.config
+
+
 
 
 Confluent REST Proxy
