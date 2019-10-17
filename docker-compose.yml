@@ -29,6 +29,7 @@ services:
     ports:
       - "9091:9091"
       - "29091:29091"
+    command: "bash -c 'if [ ! -f /etc/kafka/secrets/kafka.kafka1.keystore.jks ]; then echo \"ERROR: Did not find SSL certificates in /etc/kafka/secrets/ (did you remember to run ./scripts/start.sh instead of docker-compose up -d?)\" && exit 1 ; else /etc/confluent/docker/run ; fi'"
     environment:
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_SSL:SASL_SSL,SSL:SSL,SASL_SSL_HOST:SASL_SSL,PLAINTEXT:PLAINTEXT
@@ -94,6 +95,7 @@ services:
     ports:
       - "9092:9092"
       - "29092:29092"
+    command: "bash -c 'if [ ! -f /etc/kafka/secrets/kafka.kafka2.keystore.jks ]; then echo \"ERROR: Did not find SSL certificates in /etc/kafka/secrets/ (did you remember to run ./scripts/start.sh instead of docker-compose up -d?)\" && exit 1 ; else /etc/confluent/docker/run ; fi'"
     environment:
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_SSL:SASL_SSL,SSL:SSL,SASL_SSL_HOST:SASL_SSL,PLAINTEXT:PLAINTEXT
