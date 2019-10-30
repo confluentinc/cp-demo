@@ -32,7 +32,7 @@ analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 Use `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ for management and monitoring.
 
 
-.. figure:: images/drawing.png
+.. figure:: images/cp-demo-overview.jpg
     :alt: image
 
 
