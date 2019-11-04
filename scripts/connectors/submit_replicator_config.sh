@@ -19,7 +19,7 @@ DATA=$( cat << EOF
     "dest.kafka.ssl.keystore.password": "confluent",
     "dest.kafka.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"client\" password=\"client-secret\";",
     "dest.kafka.sasl.mechanism": "PLAIN",
-    "dest.kafka.replication.factor": 2,
+    "confluent.topic.replication.factor": 2,
     "src.kafka.bootstrap.servers": "kafka1:9091",
     "src.kafka.security.protocol": "SASL_SSL",
     "src.kafka.ssl.key.password": "confluent",
