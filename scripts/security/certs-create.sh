@@ -24,7 +24,7 @@ do
 				 -keyalg RSA \
 				 -storepass confluent \
 				 -keypass confluent \
-				 -deststoretype pkcs12
+				 -storetype pkcs12
 
 	# Create the certificate signing request (CSR)
 	keytool -keystore kafka.$i.keystore.jks -alias $i -certreq -file $i.csr -storepass confluent -keypass confluent -ext "SAN=dns:$i,dns:localhost"
