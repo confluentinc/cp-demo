@@ -1,7 +1,7 @@
 version: "2.2"
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:5.4.0-SNAPSHOT
     restart: always
     hostname: zookeeper
     container_name: zookeeper
@@ -42,6 +42,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_BROKER_RACK: "r1"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 2 
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka1:9091"
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SASL_SSL
       CONFLUENT_METRICS_REPORTER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
@@ -108,6 +109,7 @@ services:
       KAFKA_BROKER_ID: 2
       KAFKA_BROKER_RACK: "r1"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 2 
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka2:9092"
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SASL_SSL
       CONFLUENT_METRICS_REPORTER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
@@ -150,7 +152,7 @@ services:
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.kafka2.keystore.jks
                   -Djavax.net.ssl.keyStorePassword=confluent
   connect:
-    image: confluentinc/cp-kafka-connect:5.5.0-SNAPSHOT
+    image: confluentinc/cp-server-connect:5.5.0-SNAPSHOT
     container_name: connect
     cpus: 0.6
     restart: always
