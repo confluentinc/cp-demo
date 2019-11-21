@@ -152,7 +152,7 @@ services:
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.kafka2.keystore.jks
                   -Djavax.net.ssl.keyStorePassword=confluent
   connect:
-    image: confluentinc/cp-kafka-connect:5.4.0-SNAPSHOT
+    image: confluentinc/cp-server-connect:5.4.0-SNAPSHOT
     container_name: connect
     cpus: 0.6
     restart: always
