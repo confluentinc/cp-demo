@@ -733,25 +733,27 @@ solution, Confluent Replicator is also configured with security.
 
    .. figure:: images/replicator_topic_info.png
 
+5. Notice that because |crep| default is ``topic.config.sync=true``, then the replicated
+   topic ``wikipedia.parsed.replica`` has enabled |sv| just like the original
+   topic ``wikipedia.parsed``.
+   
+   .. figure:: images/wikipedia.parsed.replica.png
 
-5. **MANAGEMENT –> Kafka Connect**: pause the |crep| connector in **Settings**
+6. **MANAGEMENT –> Kafka Connect**: pause the |crep| connector in **Settings**
    by pressing the pause icon in the top right. This will stop
    consumption for the related consumer group.
 
    .. figure:: images/pause_connector_replicator.png
       :alt: image
 
-6. Observe that the ``connect-replicator`` consumer group has stopped
+7. Observe that the ``connect-replicator`` consumer group has stopped
    consumption.
 
    .. figure:: images/replicator_streams_stopped.png
 
+8. Restart the Replicator connector.
 
-
-
-5. Restart the Replicator connector.
-
-6. Observe that the ``connect-replicator`` consumer group has resumed
+9. Observe that the ``connect-replicator`` consumer group has resumed
    consumption. Notice several things:
 
    * Even though the consumer group `connect-replicator` was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
@@ -1044,13 +1046,13 @@ The connectors used in this demo are configured to automatically read and write 
 	      Topic: users	Partition: 1	Leader: 2	Replicas: 2,1	Isr: 2,1	Offline: 	LiveObservers: 
 
 
-5. Notice that the topic ``users`` has a special configuration ``confluent.value.schema.validation=true`` which enables `Schema Validation <https://docs.confluent.io/current/release-notes/5-4-preview.html>`__, a data governance feature in Confluent Server that gives operators a centralized location within the Kafka cluster itself to enforce data format correctness. Enabling Schema Validation allows brokers configured with ``confluent.schema.registry.url`` to validate that data produced to the topic is using a valid schema. For example, produce a non-Avro message to this topic, and it will result in a failure.
+5. Notice that the topic ``users`` has a special configuration ``confluent.value.schema.validation=true`` which enables `Schema Validation <https://docs.confluent.io/current/release-notes/5-4-preview.html>`__, a data governance feature in Confluent Server that gives operators a centralized location within the Kafka cluster itself to enforce data format correctness. Enabling |sv| allows brokers configured with ``confluent.schema.registry.url`` to validate that data produced to the topic is using a valid schema. For example, produce a non-Avro message to this topic, and it will result in a failure.
 
    .. sourcecode:: bash
 
       docker-compose exec connect kafka-console-producer --topic users --broker-list kafka1:9091 --producer.config /etc/kafka/secrets/client_without_interceptors.config
 
-6. Describe the topic ``wikipedia.parsed``, which is the topic that the `kafka-connect-irc` source connector is writing to. Notice that it also has enabled Schema Validation.
+6. Describe the topic ``wikipedia.parsed``, which is the topic that the `kafka-connect-irc` source connector is writing to. Notice that it also has enabled |sv|.
 
    .. sourcecode:: bash
 
