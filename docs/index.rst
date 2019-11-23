@@ -1074,7 +1074,7 @@ Confluent REST Proxy
 
 The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
 
-1. Use the REST Proxy, which is listening for HTTPS on port 8086, to produce a message to the topic ``users``, referencing schema id ``6``.
+1. Use the REST Proxy, which is listening for HTTPS on port 8086, to produce a message to the topic ``users``, referencing schema id ``6``. This schema was registered in |sr| in the previous section.
 
    .. sourcecode:: bash
 
