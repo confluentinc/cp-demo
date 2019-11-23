@@ -15,6 +15,11 @@ DATA=$( cat << EOF
     "key.converter.schema.registry.url": "https://schemaregistry:8085",
     "value.converter": "io.confluent.connect.avro.AvroConverter",
     "value.converter.schema.registry.url": "https://schemaregistry:8085",
+    "value.converter.schema.registry.ssl.truststore.location": "/etc/kafka/secrets/kafka.client.truststore.jks",
+    "value.converter.schema.registry.ssl.truststore.password": "confluent",
+    "value.converter.schema.registry.ssl.keystore.location": "/etc/kafka/secrets/kafka.client.keystore.jks",
+    "value.converter.schema.registry.ssl.keystore.password": "confluent",
+    "value.converter.schema.registry.ssl.protocol": "TLS",
     "schema.ignore": true
 
   }
