@@ -733,7 +733,7 @@ solution, Confluent Replicator is also configured with security.
 
    .. figure:: images/replicator_topic_info.png
 
-5. Notice that because |crep| default is ``topic.config.sync=true``, then the replicated
+5. Notice that because |crep| default is ``topic.config.sync=true`` (see |crep| :ref:`documentation <rep-destination-topics>`), then the replicated
    topic ``wikipedia.parsed.replica`` has enabled |sv| just like the original
    topic ``wikipedia.parsed``.
    
