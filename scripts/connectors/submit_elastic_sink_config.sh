@@ -19,7 +19,6 @@ DATA=$( cat << EOF
     "value.converter.schema.registry.ssl.truststore.password": "confluent",
     "value.converter.schema.registry.ssl.keystore.location": "/etc/kafka/secrets/kafka.client.keystore.jks",
     "value.converter.schema.registry.ssl.keystore.password": "confluent",
-    "value.converter.schema.registry.ssl.protocol": "TLS",
     "schema.ignore": true
 
   }

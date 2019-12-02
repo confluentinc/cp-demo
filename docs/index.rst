@@ -300,7 +300,6 @@ View messages in ``EN_WIKIPEDIA_GT_1``:
         --property schema.registry.ssl.truststore.password=confluent \
         --property schema.registry.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks \
         --property schema.registry.ssl.keystore.password=confluent  \
-        --property schema.registry.ssl.protocol=TLS \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
 
 Your output should resemble:
@@ -326,7 +325,6 @@ View messages in ``EN_WIKIPEDIA_GT_1_COUNTS``:
         --property schema.registry.ssl.truststore.password=confluent \
         --property schema.registry.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks \
         --property schema.registry.ssl.keystore.password=confluent  \
-        --property schema.registry.ssl.protocol=TLS \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
 
 Your output should resemble:
