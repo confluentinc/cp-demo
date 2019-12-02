@@ -11,5 +11,4 @@ docker exec connect kafka-avro-console-consumer \
   --property schema.registry.ssl.truststore.password=confluent \
   --property schema.registry.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks \
   --property schema.registry.ssl.keystore.password=confluent  \
-  --property schema.registry.ssl.protocol=TLS \
   --topic wikipedia.parsed.replica --group=test $ARGS
