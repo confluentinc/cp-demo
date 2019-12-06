@@ -412,8 +412,12 @@ services:
     volumes:
       - ./scripts/security:/etc/kafka/secrets
     environment:
-      KSQL_CONFIG_DIR: "/etc/ksql"
-      KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
+      KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j.properties"
+      KSQL_LOG4J_PROCESSING_LOG_BROKERLIST: kafka1:10091,kafka2:11091
+      KSQL_LOG4J_PROCESSING_LOG_TOPIC: ksql_processing_log
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_NAME: ksql_processing_log
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
+      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
       KSQL_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       KSQL_HOST_NAME: ksql-server
       KSQL_LISTENERS: "http://0.0.0.0:8088"
@@ -468,7 +472,6 @@ services:
       #KSQL_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
       #        username=\"client\" \
       #        password=\"client-secret\";"
-      KSQL_KSQL_SERVER_UI_ENABLED: "false"
 
   ksql-cli:
     image: confluentinc/cp-ksql-cli:5.3.1
