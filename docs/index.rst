@@ -335,13 +335,13 @@ Your output should resemble:
 
 .. sourcecode:: bash
 
-      SELECT SPLIT(wikipage, 'foobar')[2] FROM wikipedia;
+      SELECT SPLIT(wikipage, 'foobar')[2] FROM wikipedia EMIT CHANGES;
 
-Since the field `wikipage` in the stream `wikipedia` cannot be split in this way, KSQL writes errors in the processing log. View the processing log topic `default_ksql_processing_log` with topic inspection or the corresponding KSQL stream `KSQL_PROCESSING_LOG` with the KSQL editor.
+Since the field `wikipage` in the stream `wikipedia` cannot be split in this way, KSQL writes these errors into the processing log for each record. View the processing log topic `default_ksql_processing_log` with topic inspection (jump to offset 0/partition 0) or the corresponding KSQL stream `KSQL_PROCESSING_LOG` with the KSQL editor (set `auto.offset.reset=earliest`).
 
 .. sourcecode:: bash
 
-      SELECT * FROM KSQL_PROCESSING_LOG;
+      SELECT * FROM KSQL_PROCESSING_LOG EMIT CHANGES;
 
 
 
