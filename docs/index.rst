@@ -331,6 +331,19 @@ Your output should resemble:
       {"USERNAME":"B.Bhargava Teja","COUNT":3,"WIKIPAGE":"Niluvu Dopidi"}
       ...
 
+11. The `KSQL processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their KSQL queries. In this demo, the processing log is configured with a custom `log4j properties file <https://github.com/confluentinc/cp-demo/blob/master/scripts/security/log4j-secure.properties>`__ and writes entries into a Kafka topic. To see it in action, in the KSQL editor run the following query for 20 seconds:
+
+.. sourcecode:: bash
+
+      SELECT SPLIT(wikipage, 'foobar')[2] FROM wikipedia;
+
+Since the field `wikipage` in the stream `wikipedia` cannot be split in this way, KSQL writes errors in the processing log. View the processing log topic `default_ksql_processing_log` with topic inspection or the corresponding KSQL stream `KSQL_PROCESSING_LOG` with the KSQL editor.
+
+.. sourcecode:: bash
+
+      SELECT * FROM KSQL_PROCESSING_LOG;
+
+
 
 Consumers
 ---------
