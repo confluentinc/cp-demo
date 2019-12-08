@@ -412,10 +412,7 @@ services:
     volumes:
       - ./scripts/security:/etc/kafka/secrets
     environment:
-      KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j.properties"
-      KSQL_LOG4J_PROCESSING_LOG_BROKERLIST: kafka1:10091,kafka2:11091
-      KSQL_LOG4J_PROCESSING_LOG_TOPIC: ksql_processing_log
-      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_NAME: ksql_processing_log
+      KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/secrets/log4j-secure.properties"
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
       KSQL_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
