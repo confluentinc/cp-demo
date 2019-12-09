@@ -3,5 +3,5 @@
 input=/tmp/ksqlcommands
 while IFS= read -r line
 do
-  /tmp/run_ksql_cmd.sh "$line"
+  echo -e "$line\nexit" | ksql http://ksql-server:8088
 done < "$input"
