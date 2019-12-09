@@ -337,7 +337,7 @@ Your output should resemble:
 
       SELECT SPLIT(wikipage, 'foobar')[2] FROM wikipedia EMIT CHANGES;
 
-No records should be returned from this query. Since the field `wikipage` in the original stream `wikipedia` cannot be split in this way, KSQL writes these errors into the processing log for each record. View the processing log topic `default_ksql_processing_log` with topic inspection (jump to offset 0/partition 0) or the corresponding KSQL stream `KSQL_PROCESSING_LOG` with the KSQL editor (set `auto.offset.reset=earliest`).
+No records should be returned from this query. Since the field ``wikipage`` in the original stream ``wikipedia`` cannot be split in this way, KSQL writes these errors into the processing log for each record. View the processing log topic ``default_ksql_processing_log`` with topic inspection (jump to offset 0/partition 0) or the corresponding KSQL stream ``KSQL_PROCESSING_LOG`` with the KSQL editor (set ``auto.offset.reset=earliest``).
 
 .. sourcecode:: bash
 
