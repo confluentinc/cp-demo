@@ -485,6 +485,7 @@ services:
       - ksql-server
     volumes:
       - ./scripts/ksql/ksqlcommands:/tmp/ksqlcommands
+      - ./scripts/ksql/run_ksql_commands.sh:/tmp/run_ksql_commands.sh
     entrypoint: /bin/sh
     tty: true
   restproxy:
