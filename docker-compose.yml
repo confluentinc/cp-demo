@@ -240,6 +240,10 @@ services:
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.keystore.jks
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEY_PASSWORD: confluent
+      KAFKA_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.connect.truststore.jks
+                  -Djavax.net.ssl.trustStorePassword=confluent
+                  -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.connect.keystore.jks
+                  -Djavax.net.ssl.keyStorePassword=confluent
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
     container_name: elasticsearch
@@ -321,18 +325,6 @@ services:
       CONTROL_CENTER_REST_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.control-center.keystore.jks
       CONTROL_CENTER_REST_SSL_KEYSTORE_PASSWORD: confluent
       CONTROL_CENTER_REST_SSL_KEY_PASSWORD: confluent
-      KAFKA_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.control-center.truststore.jks
-                  -Djavax.net.ssl.trustStorePassword=confluent
-                  -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.control-center.keystore.jks
-                  -Djavax.net.ssl.keyStorePassword=confluent
-      CONNECT_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.control-center.truststore.jks
-                  -Djavax.net.ssl.trustStorePassword=confluent
-                  -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.control-center.keystore.jks
-                  -Djavax.net.ssl.keyStorePassword=confluent
-      CONTROL_CENTER_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.control-center.truststore.jks
-                  -Djavax.net.ssl.trustStorePassword=confluent
-                  -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.control-center.keystore.jks
-                  -Djavax.net.ssl.keyStorePassword=confluent
   schemaregistry:
     image: confluentinc/cp-schema-registry:5.4.x-latest
     container_name: schemaregistry
