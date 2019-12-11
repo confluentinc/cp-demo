@@ -351,6 +351,10 @@ No records should be returned from this query. Since the field ``wikipage`` in t
 
       SELECT * FROM KSQL_PROCESSING_LOG EMIT CHANGES;
 
+12. Click **Flow** to view the KSQL data flow between the KSQL queries:
+
+   .. figure:: images/ksql_flow.png
+      :alt: image
 
 
 Consumers

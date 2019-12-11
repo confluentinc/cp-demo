@@ -153,6 +153,7 @@ services:
       - kafka1
       - kafka2
       - schemaregistry
+      - replicator-for-jar-transfer
     volumes:
       - ./connect-plugins:/connect-plugins
       - mi3:/usr/share/java/kafka-connect-replicator/
@@ -181,6 +182,7 @@ services:
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
       CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.4.0-SNAPSHOT.jar
+      CONNECT_REST_EXTENSION_CLASSES: io.confluent.connect.replicator.monitoring.ReplicatorMonitoringExtension
       # Connect worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
@@ -269,7 +271,6 @@ services:
       - zookeeper
       - kafka1
       - kafka2
-      - connect
     ports:
       - "9021:9021"
       - "9022:9022"
@@ -538,7 +539,7 @@ services:
     container_name: replicator-for-jar-transfer
     volumes:
       - mi3:/usr/share/java/kafka-connect-replicator/
-    command: "sleep infinity"
+    command: "bash -c 'cp /usr/share/java/kafka-connect-replicator/replicator-rest-extension-*.jar /etc/kafka-connect/jars/; sleep infinity"
 
   streams-demo:
     image: cnfldemos/cp-demo-kstreams:0.0.2
