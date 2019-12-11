@@ -733,23 +733,28 @@ intra-cluster replication, *i.e.*, the source and destination Kafka
 clusters are the same. As with the rest of the components in the
 solution, Confluent Replicator is also configured with security.
 
-1. **Consumers**: monitor throughput and latency of Confluent Replicator.
+1. View Replicator status and throughput in a dedicated view in |c3|.
+
+   .. figure:: images/replicator_c3_view.png
+      :alt: image
+
+2. **Consumers**: monitor throughput and latency of Confluent Replicator.
    Replicator is a Kafka Connect source connector and has a corresponding consumer group ``connect-replicator``.
 
    .. figure:: images/replicator_consumer_group_list.png
       :alt: image
 
-2. View Replicator Consumer Lag.
+3. View Replicator Consumer Lag.
 
    .. figure:: images/replicator_consumer_lag.png
       :alt: image
 
-3. View Replicator Consumption metrics.
+4. View Replicator Consumption metrics.
 
    .. figure:: images/replicator_consumption.png
       :alt: image
 
-4. **Topics**: scroll down to view the topics called
+5. **Topics**: scroll down to view the topics called
    ``wikipedia.parsed`` (Replicator is consuming data from this topic)
    and ``wikipedia.parsed.replica`` (Replicator automatically created this topic and is
    copying data to it). Click on ``Consumer Groups`` for the topic
@@ -758,27 +763,27 @@ solution, Confluent Replicator is also configured with security.
 
    .. figure:: images/replicator_topic_info.png
 
-5. Notice that because |crep| default is ``topic.config.sync=true`` (see |crep| :ref:`documentation <rep-destination-topics>`), then the replicated
+6. Notice that because |crep| default is ``topic.config.sync=true`` (see |crep| :ref:`documentation <rep-destination-topics>`), then the replicated
    topic ``wikipedia.parsed.replica`` has enabled |sv| just like the original
    topic ``wikipedia.parsed`` (click on the ``Show full config`` button to see all values).
    
    .. figure:: images/wikipedia.parsed.replica.png
 
-6. **MANAGEMENT –> Kafka Connect**: pause the |crep| connector in **Settings**
+7. **MANAGEMENT –> Kafka Connect**: pause the |crep| connector in **Settings**
    by pressing the pause icon in the top right. This will stop
    consumption for the related consumer group.
 
    .. figure:: images/pause_connector_replicator.png
       :alt: image
 
-7. Observe that the ``connect-replicator`` consumer group has stopped
+8. Observe that the ``connect-replicator`` consumer group has stopped
    consumption.
 
    .. figure:: images/replicator_streams_stopped.png
 
-8. Restart the Replicator connector.
+9. Restart the Replicator connector.
 
-9. Observe that the ``connect-replicator`` consumer group has resumed
+10. Observe that the ``connect-replicator`` consumer group has resumed
    consumption. Notice several things:
 
    * Even though the consumer group `connect-replicator` was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
