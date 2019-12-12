@@ -166,52 +166,61 @@ Topics
 
       EN_WIKIPEDIA_GT_1
         producers
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-84e85189-4f37-460c-991f-bb7bbb4b5a58-StreamThread-12-producer
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-84e85189-4f37-460c-991f-bb7bbb4b5a58-StreamThread-9-producer
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4-b8fc329d-e285-4eb8-9c92-fd2a213f8c20-StreamThread-3-producer
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4-b8fc329d-e285-4eb8-9c92-fd2a213f8c20-StreamThread-4-producer
         consumers
-          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_3
-
+          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_6
+      
       EN_WIKIPEDIA_GT_1_COUNTS
         producers
-          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_3-df19ff7e-4d42-4b40-8133-a3632c86e42d-StreamThread-13-producer
-          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_3-df19ff7e-4d42-4b40-8133-a3632c86e42d-StreamThread-14-producer
+          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_6-745416e8-7a63-499c-aac9-89384a873912-StreamThread-1-producer
+          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_6-745416e8-7a63-499c-aac9-89384a873912-StreamThread-2-producer
         consumers
           EN_WIKIPEDIA_GT_1_COUNTS-consumer
-
+      
       WIKIPEDIABOT
         producers
-          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1-7d47ae21-e734-43da-9782-bae3191fc85a-StreamThread-7-producer
-          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1-7d47ae21-e734-43da-9782-bae3191fc85a-StreamThread-8-producer
+          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_3-739f5b65-8276-44d6-ac9f-581bde1a5676-StreamThread-1-producer
+          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_3-739f5b65-8276-44d6-ac9f-581bde1a5676-StreamThread-2-producer
         consumers
           connect-elasticsearch-ksql
-
+      
       WIKIPEDIANOBOT
         producers
-          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0-6f29b3fb-abf8-4c3e-bb8d-266cb5aa65c6-StreamThread-2-producer
-          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0-6f29b3fb-abf8-4c3e-bb8d-266cb5aa65c6-StreamThread-3-producer
+          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_2-96f48751-dc5c-46b9-b250-df0da0f88214-StreamThread-1-producer
+          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_2-96f48751-dc5c-46b9-b250-df0da0f88214-StreamThread-2-producer
         consumers
           WIKIPEDIANOBOT-consumer
-
-      _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-KSTREAM-AGGREGATE-STATE-STORE-0000000007-changelog
+      
+      _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4-Aggregate-aggregate-changelog
         producers
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-84e85189-4f37-460c-991f-bb7bbb4b5a58-StreamThread-12-producer
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-84e85189-4f37-460c-991f-bb7bbb4b5a58-StreamThread-9-producer
-
-      _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-KSTREAM-AGGREGATE-STATE-STORE-0000000007-repartition
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4-b8fc329d-e285-4eb8-9c92-fd2a213f8c20-StreamThread-3-producer
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4-b8fc329d-e285-4eb8-9c92-fd2a213f8c20-StreamThread-4-producer
+      
+      _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4-Aggregate-groupby-repartition
         producers
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2-84e85189-4f37-460c-991f-bb7bbb4b5a58-StreamThread-11-producer
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4-b8fc329d-e285-4eb8-9c92-fd2a213f8c20-StreamThread-1-producer
         consumers
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2
-
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4
+      
+      wikipedia-activity-monitor-KSTREAM-AGGREGATE-STATE-STORE-0000000002-changelog
+        producers
+          wikipedia-activity-monitor-StreamThread-1-producer
+      
       wikipedia.parsed
         producers
           connect-worker-producer
         consumers
-          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_1
-          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_0
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_2
+          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_3
+          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_2
+          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4
           connect-replicator
-
+          wikipedia-activity-monitor
+      
+      wikipedia.parsed.count-by-channel
+        producers
+          wikipedia-activity-monitor-StreamThread-1-producer
+      
       wikipedia.parsed.replica
         producers
           connect-worker-producer
@@ -299,7 +308,7 @@ View messages in ``EN_WIKIPEDIA_GT_1``:
         --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks \
         --property schema.registry.ssl.truststore.password=confluent \
         --property schema.registry.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks \
-        --property schema.registry.ssl.keystore.password=confluent  \
+        --property schema.registry.ssl.keystore.password=confluent \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
 
 Your output should resemble:
@@ -324,7 +333,7 @@ View messages in ``EN_WIKIPEDIA_GT_1_COUNTS``:
         --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks \
         --property schema.registry.ssl.truststore.password=confluent \
         --property schema.registry.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks \
-        --property schema.registry.ssl.keystore.password=confluent  \
+        --property schema.registry.ssl.keystore.password=confluent \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
 
 Your output should resemble:
@@ -1035,7 +1044,7 @@ All the applications and connectors used in this demo are configured to automati
    .. sourcecode:: bash
 
      {
-       "id": 6
+       "id": 7
      }
 
 3. View the new schema for the subject ``users-value``. From |c3|, click **MANAGEMENT -> Topics**. Scroll down to and click on the topic `users` and select "SCHEMA".
@@ -1057,7 +1066,7 @@ All the applications and connectors used in this demo are configured to automati
      {
        "subject": "users-value",
        "version": 1,
-       "id": 6,
+       "id": 7,
        "schema": "{\"type\":\"record\",\"name\":\"user\",\"fields\":[{\"name\":\"username\",\"type\":\"string\"},{\"name\":\"userid\",\"type\":\"long\"}]}"
      }
 
@@ -1096,18 +1105,18 @@ Confluent REST Proxy
 
 The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
 
-1. Use the REST Proxy, which is listening for HTTPS on port 8086, to produce a message to the topic ``users``, referencing schema id ``6``. This schema was registered in |sr| in the previous section.
+1. Use the REST Proxy, which is listening for HTTPS on port 8086, to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section.
 
    .. sourcecode:: bash
 
-     docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 6, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' https://restproxy:8086/topics/users
+     docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 7, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' https://restproxy:8086/topics/users
 
    Your output should resemble:
 
    .. sourcecode:: bash
 
 
-     {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":6}
+     {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":7}
 
 2. Create consumer instance ``my_avro_consumer``.
 
