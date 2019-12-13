@@ -92,7 +92,7 @@ ${DIR}/connectors/submit_elastic_sink_config.sh
 echo -e "\nConfigure Kibana dashboard:"
 ${DIR}/dashboard/configure_kibana_dashboard.sh
 
-echo -e "\n\nRun KSQL queries (~10 seconds):"
+echo -e "\n\nRun KSQL queries:"
 ${DIR}/ksql/run_ksql.sh
 
 echo -e "\nStart consumers for additional topics: WIKIPEDIANOBOT, EN_WIKIPEDIA_GT_1_COUNTS"
@@ -127,7 +127,6 @@ clusterId=$(curl -s -X GET http://localhost:9021/2.0/clusters/kafka/ | jq --raw-
 
 echo -e "\n\nRename the cluster in Control Center: ${clusterId}"
 curl -X PATCH -H "Content-Type: application/merge-patch+json" -d '{"displayName":"Kafka Raleigh"}' http://localhost:9021/2.0/clusters/kafka/$clusterId
-echo done;
 
 echo -e "\nConfigure triggers and actions in Control Center:"
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Consumption Difference","clusterId":"'$clusterId'","group":"connect-elasticsearch-ksql","metric":"CONSUMPTION_DIFF","condition":"GREATER_THAN","longValue":"0","lagMs":"10000"}' http://localhost:9021/2.0/alerts/triggers

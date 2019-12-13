@@ -153,11 +153,15 @@ services:
       - kafka1
       - kafka2
       - schemaregistry
+      - replicator-for-jar-transfer
     volumes:
       - ./connect-plugins:/connect-plugins
       - mi3:/usr/share/java/kafka-connect-replicator/
       - ./connect-plugins/kafka-connect-transform-nullfilter/null-filter-4.0.0-SNAPSHOT.jar:/usr/share/java/kafka-connect-elasticsearch/null-filter-4.0.0-SNAPSHOT.jar
       - ./scripts/security:/etc/kafka/secrets
+    command: "bash -c 'sleep 10 && \
+                       cp /usr/share/java/kafka-connect-replicator/replicator-rest-extension-*.jar /etc/kafka-connect/jars/ && \
+                       /etc/confluent/docker/run'"
     environment:
       CONNECT_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       CONNECT_REST_PORT: 8083
@@ -181,6 +185,7 @@ services:
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
       CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.5.0-SNAPSHOT.jar
+      CONNECT_REST_EXTENSION_CLASSES: io.confluent.connect.replicator.monitoring.ReplicatorMonitoringExtension
       # Connect worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
@@ -235,6 +240,11 @@ services:
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.keystore.jks
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEY_PASSWORD: confluent
+      # KAFKA_OPTS required for ReplicatorMonitoringExtension
+      KAFKA_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.connect.truststore.jks
+                  -Djavax.net.ssl.trustStorePassword=confluent
+                  -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.connect.keystore.jks
+                  -Djavax.net.ssl.keyStorePassword=confluent
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
     container_name: elasticsearch
@@ -269,7 +279,6 @@ services:
       - zookeeper
       - kafka1
       - kafka2
-      - connect
     ports:
       - "9021:9021"
       - "9022:9022"
