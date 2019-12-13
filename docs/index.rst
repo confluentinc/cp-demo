@@ -792,11 +792,12 @@ solution, Confluent Replicator is also configured with security.
 
 9. Restart the Replicator connector.
 
-10. Observe that the ``connect-replicator`` consumer group has resumed
-   consumption. Notice several things:
+10. Observe that the ``connect-replicator`` consumer group has resumed consumption. Notice several things:
 
    * Even though the consumer group `connect-replicator` was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
    * The latency peaks and then gradually decreases, because this is also relative to the produce timestamp.
+
+
 
 Security
 --------
