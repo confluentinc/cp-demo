@@ -74,10 +74,10 @@ while [[ ! $(docker-compose logs connect) =~ "Herder started" ]]; do
   fi
 done
 
-if [[ ! $(docker-compose exec connect timeout 3 nc -zv irc.wikimedia.org 6667) =~ "open" ]]; then
+docker-compose exec connect timeout 3 nc -zv irc.wikimedia.org 6667 || {
   echo -e "\nERROR: irc.wikimedia.org 6667 is unreachable. Please ensure connectivity before proceeding or try setting 'irc.server.port' to 8001 in scripts/connectors/submit_wikipedia_irc_config.sh\n"
   exit 1
-fi
+}
 
 echo -e "\nStart streaming from the IRC source connector:"
 ${DIR}/connectors/submit_wikipedia_irc_config.sh
