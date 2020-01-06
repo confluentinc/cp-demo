@@ -1034,7 +1034,7 @@ All the applications and connectors used in this demo are configured to automati
        "wikipedia.parsed-value"
      ]
 
-2. Register a new Avro schema (a record with two fields ``username`` and ``userid``) into |sr| for the value of a new topic ``users``. Note the schema id that it returns, e.g. below schema id is ``6``.
+2. Register a new Avro schema (a record with two fields ``username`` and ``userid``) into |sr| for the value of a new topic ``users``. Note the schema id that it returns, e.g. below schema id is ``7``.
 
    .. sourcecode:: bash
 
