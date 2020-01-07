@@ -86,12 +86,12 @@ def get_output():
     # 'timeout 60' should not be required but otherwise timer never kills the process 
     command = "docker-compose exec control-center bash -c 'timeout 60 /usr/bin/control-center-console-consumer /etc/confluent-control-center/control-center.properties --topic _confluent-monitoring --consumer.config /etc/kafka/secrets/client_without_interceptors.config'"
 
-    print "Reading topic _confluent-monitoring for 60 seconds...please wait"
+    print("Reading topic _confluent-monitoring for 60 seconds...please wait")
 
     try:
         proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     except Exception as e:
-        print e
+        print(e)
 
     my_timer = Timer(1, kill, [proc])
     try:
@@ -107,6 +107,7 @@ def get_output():
 topicMap = defaultdict(lambda: defaultdict(dict))
 
 monitoringData = get_output()
+
 for line in monitoringData.splitlines():
     
     try:
@@ -131,14 +132,14 @@ for line in monitoringData.splitlines():
 
 
 for topic in sorted(topicMap.keys()):
-    print "\n" + topic + ""
+    print("\n" + topic + "")
     producers = sorted(topicMap[topic]["PRODUCER"])
     if len(producers) > 0:
-        print "  producers"
+        print("  producers")
     for p in producers:
-        print "    " + p
+        print("    " + p)
     consumers = sorted(topicMap[topic]["CONSUMER"])
     if len(consumers) > 0:
-        print "  consumers"
+        print("  consumers")
     for c in consumers:
-        print "    " + c
+        print("    " + c)
