@@ -287,7 +287,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
    .. figure:: images/ksql_queries_list.png
       :alt: image
 
-8. View messages from different KSQL streams and tables. Click on your stream of choice and select **Query** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA;``, and it shows results for newly arriving data.
+8. View messages from different KSQL streams and tables. Click on your stream of choice and select **Query** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA emit changes;``, and it shows results for newly arriving data.
 
    .. figure:: images/ksql_query_topic.png
       :alt: image
