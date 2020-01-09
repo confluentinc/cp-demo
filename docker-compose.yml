@@ -245,6 +245,7 @@ services:
                   -Djavax.net.ssl.trustStorePassword=confluent
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.connect.keystore.jks
                   -Djavax.net.ssl.keyStorePassword=confluent
+      CONNECT_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
     container_name: elasticsearch
@@ -326,6 +327,7 @@ services:
       CONTROL_CENTER_REST_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.control-center.keystore.jks
       CONTROL_CENTER_REST_SSL_KEYSTORE_PASSWORD: confluent
       CONTROL_CENTER_REST_SSL_KEY_PASSWORD: confluent
+      CONTROL_CENTER_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
   schemaregistry:
     image: confluentinc/cp-schema-registry:5.4.x-latest
     container_name: schemaregistry
@@ -360,6 +362,7 @@ services:
       SCHEMA_REGISTRY_SSL_CLIENT_AUTH: "true"
       SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "https"
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
+      SCHEMA_REGISTRY_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
     ports:
       - 8085:8085
   kafka-client:
@@ -536,6 +539,7 @@ services:
       KAFKA_REST_CLIENT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
               username=\"client\" \
               password=\"client-secret\";"
+      KAFKA_REST_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
     ports:
       - 8086:8086
 
