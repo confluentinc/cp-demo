@@ -123,7 +123,7 @@ ${DIR}/connectors/submit_replicator_config.sh
 # If you have 'jq'
 clusterId=$(curl -s -X GET http://localhost:9021/2.0/clusters/kafka/ | jq --raw-output '.[0].clusterId')
 # If you don't have 'jq'
-#clusterId=$(curl -s -X GET http://localhost:9021/2.0/clusters/kafka/ | awk -v FS="(clusterId\":\"|\",\"displayName)" '{print $2}'
+#clusterId=$(curl -s -X GET http://localhost:9021/2.0/clusters/kafka/ | awk -v FS="(clusterId\":\"|\",\"displayName)" '{print $2}')
 
 echo -e "\n\nRename the cluster in Control Center: ${clusterId}"
 curl -X PATCH -H "Content-Type: application/merge-patch+json" -d '{"displayName":"Kafka Raleigh"}' http://localhost:9021/2.0/clusters/kafka/$clusterId
