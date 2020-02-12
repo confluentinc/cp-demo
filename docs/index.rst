@@ -22,8 +22,8 @@ transform
 `kafka-connect-transform-wikiedit <https://github.com/cjmatta/kafka-connect-transform-wikiedit>`__
 transforms these messages and then the messages are written to a Kafka
 cluster. This demo uses `KSQL <https://www.confluent.io/product/ksql/>`__
-and `Kafka Streams <http://docs.confluent.io/current/streams/index.html>`__
-for data processing. Then a Kafka sink connector
+and a `Kafka Streams <http://docs.confluent.io/current/streams/index.html>`__
+application for data processing. Then a Kafka sink connector
 `kafka-connect-elasticsearch <http://docs.confluent.io/current/connect/connect-elasticsearch/docs/elasticsearch_connector.html>`__
 streams the data out of Kafka, applying another custom Kafka Connect
 transform called NullFilter. The data is materialized into
@@ -376,7 +376,7 @@ Consumers
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumer_lag.png
       :alt: image
 
-4. View consumer lag for the Kafka Streams application under the consumer group id ``wikipedia-activity-monitor``.
+4. View consumer lag for the Kafka Streams application under the consumer group id ``wikipedia-activity-monitor``. This application is run by the `cnfldemos/cp-demo-kstreams <https://hub.docker.com/r/cnfldemos/cp-demo-kstreams>`__ Docker container (application `source code <https://github.com/confluentinc/demos-common/blob/master/src/main/java/io/confluent/demos/common/wiki/WikipediaActivityMonitor.java>`__).
 
    .. figure:: images/activity-monitor-consumer.png
       :alt: image
