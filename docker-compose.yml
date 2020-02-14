@@ -554,7 +554,7 @@ services:
     command: "sleep infinity"
 
   streams-demo:
-    image: cnfldemos/cp-demo-kstreams:0.0.2
+    image: cnfldemos/cp-demo-kstreams:0.0.5
     restart: always
     cpus: 0.4
     depends_on:
@@ -569,6 +569,10 @@ services:
     environment:
       KAFKA_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       KAFKA_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
+      KAFKA_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.truststore.jks"
+      KAFKA_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: "confluent"
+      KAFKA_SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.keystore.jks"
+      KAFKA_SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: "confluent"
       KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
       KAFKA_SSL_TRUSTSTORE_PASSWORD: confluent
       KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
@@ -602,11 +606,6 @@ services:
       KAFKA_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.keystore.jks
       KAFKA_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_PASSWORD: confluent
       KAFKA_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEY_PASSWORD: confluent
-      # the following assists https for schema registry
-      JAVA_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.control-center.truststore.jks
-                  -Djavax.net.ssl.trustStorePassword=confluent
-                  -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.control-center.keystore.jks
-                  -Djavax.net.ssl.keyStorePassword=confluent
 
 volumes:
     mi3: {}
