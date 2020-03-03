@@ -47,9 +47,9 @@ Run demo
 **Demo validated with:**
 
 -  Docker version 17.06.1-ce
--  Docker Compose version 1.14.0 with Docker Compose file format 2.2
+-  Docker Compose version 1.14.0 with Docker Compose file format 2.3
 -  Java version 1.8.0_92
--  MacOS 10.14.3 (note for `Ubuntu environments <https://github.com/confluentinc/cp-demo/issues/53>`__)
+-  MacOS 10.15.3 (note for `Ubuntu environments <https://github.com/confluentinc/cp-demo/issues/53>`__)
 -  git
 -  jq
 
