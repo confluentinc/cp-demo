@@ -268,7 +268,6 @@ services:
                        /etc/confluent/docker/run'"
     environment:
       CUB_CLASSPATH: '/etc/confluent/docker/docker-utils.jar:/usr/share/java/confluent-security/connect/*:/usr/share/java/kafka/*'
-      # CONNECT_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       CONNECT_BOOTSTRAP_SERVERS: "kafka1:10091"
       CONNECT_REST_PORT: 8083
       CONNECT_LISTENERS: "https://0.0.0.0:8083"
@@ -471,7 +470,6 @@ services:
       - ./conf:/tmp/conf
     environment:
       CUB_CLASSPATH: '/etc/confluent/docker/docker-utils.jar:/usr/share/java/confluent-security/schema-registry/*:/usr/share/java/schema-registry/*'
-      # SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka1:10091"
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
       SCHEMA_REGISTRY_HOST_NAME: schemaregistry
@@ -594,7 +592,6 @@ services:
       KSQL_KSQL_SERVICE_ID: "ksql-cluster"
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
-      # KSQL_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       KSQL_BOOTSTRAP_SERVERS: "kafka1:10091"
       KSQL_HOST_NAME: ksql-server
       KSQL_LISTENERS: "http://0.0.0.0:8088"
@@ -769,7 +766,6 @@ services:
     volumes:
       - ./scripts/security:/etc/kafka/secrets
     environment:
-      # KAFKA_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       KAFKA_BOOTSTRAP_SERVERS: "kafka1:10091"
       KAFKA_SCHEMA_REGISTRY_URL: "http://schemaregistry:8085"
       KAFKA_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.truststore.jks"
