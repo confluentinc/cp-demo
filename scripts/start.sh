@@ -52,9 +52,10 @@ echo "Waiting for the broker to be healthy"
 retry 30 5 container_healthy kafka1
 
 # Set role bindings
+sleep 5
 echo
 echo "Creating role bindings for service accounts"
-${DIR}/create-role-bindings.sh
+docker-compose exec confluent-tools bash -c "/tmp/create-role-bindings.sh"
 
 # start the rest of the cluster
 echo

@@ -802,6 +802,7 @@ Follow along with the `Security <https://www.youtube.com/watch?v=RwuF7cYcsec>`_ 
 All the components in this demo are enabled with many `security
 features <https://docs.confluent.io/current/security.html>`__:
 
+-  ref:`RBAC <rbac-overview>` enbabled for the entire platform
 -  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__
    for encryption, except for ZooKeeper which does not support SSL
 -  `SASL/PLAIN <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html>`__

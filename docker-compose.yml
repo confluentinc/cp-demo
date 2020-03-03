@@ -22,10 +22,12 @@ services:
     ports:
       - "2181:2181"
 
-  confluent-cli:
-    image: cnfltraining/training-tools:5.4
-    hostname: confluent-cli
-    container_name: confluent-cli
+  confluent-tools:
+    image: cnfltraining/training-tools:local
+    hostname: confluent-tools
+    container_name: confluent-tools
+    volumes:
+      - ./scripts/create-role-bindings.sh:/tmp/create-role-bindings.sh
     entrypoint: /bin/bash
     tty: true
 
@@ -54,7 +56,6 @@ services:
       - openldap
     volumes:
       - ./conf:/tmp/conf
-      - ./client-configs:/etc/client-configs
       - ./scripts/kafka-registered.sh:/etc/kafka-registered.sh
       - ./scripts/security:/etc/kafka/secrets
     ports:
