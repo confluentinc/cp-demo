@@ -100,6 +100,8 @@ docker-compose exec connect timeout 3 nc -zv irc.wikimedia.org 6667 || {
 echo -e "\nStart streaming from the IRC source connector:"
 ${DIR}/connectors/submit_wikipedia_irc_config.sh
 
+exit
+
 echo -e "\nProvide data mapping to Elasticsearch:"
 ${DIR}/dashboard/set_elasticsearch_mapping_bot.sh
 ${DIR}/dashboard/set_elasticsearch_mapping_count.sh
