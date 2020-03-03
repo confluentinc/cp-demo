@@ -165,6 +165,29 @@ confluent iam rolebinding create \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
+confluent iam rolebinding create \
+    --principal $KSQL_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Topic:EN_WIKIPEDIA \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
+confluent iam rolebinding create \
+    --principal $KSQL_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Subject:WIKIPEDIA \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID \
+    --schema-registry-cluster-id $SR
+
+confluent iam rolebinding create \
+    --principal $KSQL_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Subject:EN_WIKIPEDIA \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID \
+    --schema-registry-cluster-id $SR
+
 
 ################################### C3 ###################################
 echo "Creating C3 role bindings"

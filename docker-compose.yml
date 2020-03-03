@@ -23,7 +23,7 @@ services:
       - "2181:2181"
 
   confluent-tools:
-    image: cnfltraining/training-tools:local
+    image: cnfltraining/training-tools:5.4
     hostname: confluent-tools
     container_name: confluent-tools
     depends_on:
@@ -389,8 +389,6 @@ services:
       zookeeper:
         condition: service_healthy
       kafka1:
-        condition: service_healthy
-      ksql-server:
         condition: service_healthy
     ports:
       - "9021:9021"
