@@ -2,22 +2,15 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
+source ${DIR}/functions.sh
+
 #set -o nounset \
 #    -o errexit \
 #    -o verbose
 
-verify_installed()
-{
-  local cmd="$1"
-  if [[ $(type $cmd 2>&1) =~ "not found" ]]; then
-    echo -e "\nERROR: This script requires '$cmd'. Please install '$cmd' and run again.\n"
-    exit 1
-  fi
-}
 verify_installed "jq"
 verify_installed "docker-compose"
 verify_installed "keytool"
-verify_installed "confluent"
 verify_installed "docker"
 verify_installed "openssl"
 
@@ -42,25 +35,24 @@ openssl genrsa -out ./conf/keypair.pem 2048
 openssl rsa -in ./conf/keypair.pem -outform PEM -pubout -out ./conf/public.pem
 
 # Bring up Docker Compose
-echo -e "Starting Zookeeper, OpenLDAP and Kafka with MDS"
+echo -e "Starting Zookeeper, Kafka1, LDAP server"
 docker-compose up -d kafka1
 
 # wait for kafka container to be healthy
-source ./scripts/functions.sh
 echo
-echo "Waiting for the broker to be healthy"
+echo "Waiting for kafka1 to be healthy"
 retry 30 5 container_healthy kafka1
-
-# Set role bindings
-sleep 5
-echo
-echo "Creating role bindings for service accounts"
-docker-compose exec confluent-tools bash -c "/tmp/create-role-bindings.sh"
 
 # start the rest of the cluster
 echo
 echo "Starting the rest of the services"
 docker-compose up -d
+echo "..."
+
+# Set role bindings
+echo
+echo "Creating role bindings for service accounts"
+docker-compose exec confluent-tools bash -c "/tmp/create-role-bindings.sh"
 
 # Verify Confluent Control Center has started within MAX_WAIT seconds
 MAX_WAIT=300

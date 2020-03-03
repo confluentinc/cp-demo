@@ -26,6 +26,9 @@ services:
     image: cnfltraining/training-tools:local
     hostname: confluent-tools
     container_name: confluent-tools
+    depends_on:
+      - zookeeper
+      - kafka1
     volumes:
       - ./scripts/create-role-bindings.sh:/tmp/create-role-bindings.sh
     entrypoint: /bin/bash
