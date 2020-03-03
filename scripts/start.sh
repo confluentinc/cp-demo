@@ -73,7 +73,6 @@ if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
   exit 1
 fi
 
-
 # Verify Docker has the latest cp-kafka-connect image
 if [[ $(docker-compose logs connect) =~ "server returned information about unknown correlation ID" ]]; then
   echo -e "\nERROR: Please update the cp-kafka-connect image with 'docker-compose pull'\n"
@@ -151,6 +150,7 @@ echo -e "\nConfigure triggers and actions in Control Center:"
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Consumption Difference","clusterId":"'$clusterId'","group":"connect-elasticsearch-ksql","metric":"CONSUMPTION_DIFF","condition":"GREATER_THAN","longValue":"0","lagMs":"10000"}' http://localhost:9021/2.0/alerts/triggers
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Under Replicated Partitions","clusterId":"default","condition":"GREATER_THAN","longValue":"0","lagMs":"60000","brokerClusters":{"brokerClusters":["'$clusterId'"]},"brokerMetric":"UNDER_REPLICATED_TOPIC_PARTITIONS"}' http://localhost:9021/2.0/alerts/triggers
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Email Administrator","enabled":true,"triggerGuid":["'$(curl -s -X GET http://localhost:9021/2.0/alerts/triggers/ | jq --raw-output '.[0].guid')'","'$(curl -s -X GET http://localhost:9021/2.0/alerts/triggers/ | jq --raw-output '.[1].guid')'"],"maxSendRate":1,"intervalMs":"60000","email":{"address":"devnull@confluent.io","subject":"Confluent Control Center alert"}}' http://localhost:9021/2.0/alerts/actions
+
 
 echo -e "\n\n\n******************************************************************"
 echo -e "DONE! Connect to Confluent Control Center at http://localhost:9021"

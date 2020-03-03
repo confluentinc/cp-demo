@@ -293,7 +293,7 @@ services:
       CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.4.0-SNAPSHOT.jar
+      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.4.0.jar
       CONNECT_REST_EXTENSION_CLASSES: io.confluent.connect.replicator.monitoring.ReplicatorMonitoringExtension
       # Connect worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
@@ -494,8 +494,8 @@ services:
       SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: confluent
       SCHEMA_REGISTRY_SSL_KEY_PASSWORD: confluent
       SCHEMA_REGISTRY_SSL_CLIENT_AUTH: "true"
-      SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "http"
-      # SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: DEBUG
+      SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "https"
+      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
       SCHEMA_REGISTRY_KAFKASTORE_TOPIC: _schemas
       SCHEMA_REGISTRY_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
       SCHEMA_REGISTRY_DEBUG: 'true'

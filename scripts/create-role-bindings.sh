@@ -188,6 +188,14 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
+################################### Connector ###################################
+
+confluent iam rolebinding create \
+    --principal $CONNECT_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Subject:wikipedia.parsed \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID \
+    --schema-registry-cluster-id $SR
 
 ################################### C3 ###################################
 echo "Creating C3 role bindings"
@@ -214,5 +222,6 @@ echo "    KSQL service account: $KSQL_PRINCIPAL"
 echo "    C3 service account: $C3_PRINCIPAL"
 
 echo
-echo "To set service IDs as environment variables paste/run this in your shell:"
+echo "Service IDs as environment variables:"
 echo "    export KAFKA_ID=$KAFKA_CLUSTER_ID ; export CONNECT_ID=$CONNECT ; export SR_ID=$SR ; export KSQL_ID=$KSQL"
+echo
