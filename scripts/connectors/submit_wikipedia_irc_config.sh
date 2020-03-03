@@ -21,6 +21,9 @@ DATA=$( cat << EOF
     "value.converter.schema.registry.ssl.truststore.password": "confluent",
     "value.converter.schema.registry.ssl.keystore.location": "/etc/kafka/secrets/kafka.client.keystore.jks",
     "value.converter.schema.registry.ssl.keystore.password": "confluent",
+    "value.converter.basic.auth.credentials.source": "USER_INFO",
+    "value.converter.basic.auth.user.info": "fry:fry",
+    "producer.override.sasl.jaas.config": "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username=\"fry\" password=\"fry\" metadataServerUrls=\"http://kafka1:8090\";",
     "tasks.max": "1"
   }
 }

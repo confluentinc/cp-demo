@@ -655,7 +655,7 @@ services:
                               org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
                               username="zoidberg" \
                               password="zoidberg" \
-                              metadataServerUrls="https://kafka1:8090";
+                              metadataServerUrls="http://kafka1:8090";
 
   ksql-cli:
     image: confluentinc/cp-ksql-cli:5.4.0
