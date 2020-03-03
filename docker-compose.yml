@@ -135,7 +135,7 @@ services:
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       
       # Schema Validation
-      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schemaregistry:8085
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: https://schemaregistry:8085
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
 
       # ======================== CONFIGURE MDS ====================================
@@ -415,7 +415,7 @@ services:
 
       # ========================= other services ==============================
       # connect
-      CONTROL_CENTER_CONNECT_CONNECT1_CLUSTER: http://connect:8083
+      CONTROL_CENTER_CONNECT_CONNECT1_CLUSTER: https://connect:8083
 
       # ksql
       CONTROL_CENTER_KSQL_KSQL1_URL: http://ksql-server:8088
@@ -471,7 +471,7 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka1:10091"
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
       SCHEMA_REGISTRY_HOST_NAME: schemaregistry
-      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
+      SCHEMA_REGISTRY_LISTENERS: "https://0.0.0.0:8085"
       SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: SASL_SSL
 
       SCHEMA_REGISTRY_KAFKASTORE_SASL_JAAS_CONFIG: |
@@ -634,7 +634,7 @@ services:
       KSQL_KSQL_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: zoidberg:zoidberg
 
       # Schema Registry using HTTPS
-      KSQL_KSQL_SCHEMA_REGISTRY_URL: "http://schemaregistry:8085"
+      KSQL_KSQL_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
       KSQL_KSQL_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.truststore.jks"
       KSQL_KSQL_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: "confluent"
       KSQL_KSQL_SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.keystore.jks"
@@ -691,7 +691,7 @@ services:
       KAFKA_REST_BOOTSTRAP_SERVERS: "SASL_SSL://kafka1:10091"
       #
       KAFKA_REST_LISTENERS: "https://0.0.0.0:8086"
-      KAFKA_REST_SCHEMA_REGISTRY_URL: "http://schemaregistry:8085"
+      KAFKA_REST_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
       #KAFKA_REST_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
       #KAFKA_REST_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: confluent
       #KAFKA_REST_SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
@@ -765,7 +765,7 @@ services:
       - ./scripts/security:/etc/kafka/secrets
     environment:
       KAFKA_BOOTSTRAP_SERVERS: "kafka1:10091"
-      KAFKA_SCHEMA_REGISTRY_URL: "http://schemaregistry:8085"
+      KAFKA_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
       KAFKA_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.truststore.jks"
       KAFKA_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: "confluent"
       KAFKA_SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.keystore.jks"
