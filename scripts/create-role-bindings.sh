@@ -175,6 +175,14 @@ confluent iam rolebinding create \
 confluent iam rolebinding create \
     --principal $KSQL_PRINCIPAL \
     --role ResourceOwner \
+    --resource Subject:wikipedia \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID \
+    --schema-registry-cluster-id $SR
+
+confluent iam rolebinding create \
+    --principal $KSQL_PRINCIPAL \
+    --role ResourceOwner \
     --resource Subject:WIKIPEDIA \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \

@@ -69,7 +69,7 @@ Run demo
 
         ./scripts/start.sh
 
-4. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
+4. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Log in as super user ``professor`` and password ``professor``. Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
 
 5. View the data in the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
@@ -828,25 +828,21 @@ Encryption & Authentication
 
 Each broker has four listener ports:
 
--  PLAINTEXT port called ``PLAINTEXT`` for users with no security
-   enabled
+-  PLAINTEXT port called ``PLAINTEXT`` for users with no security enabled
 -  SSL port port called ``SSL`` for users with just SSL without SASL
--  SASL_SSL port called ``SASL_SSL`` for communication between services
-   inside Docker containers
--  SASL_SSL port called ``SASL_SSL_HOST`` for communication between any
-   potential services outside of Docker that communicate to the Docker
-   containers
+-  SASL_SSL port called ``INTERNAL`` for communication between services inside Docker containers
+-  SASL_SSL port called ``EXTERNAL`` for communication between any potential services outside of Docker that communicate to the Docker containers
 
 +---------------+--------+--------+
 | port          | kafka1 | kafka2 |
 +===============+========+========+
-| PLAINTEXT     | 10091  | 10092  |
+| PLAINTEXT     | 12091  | 12092  |
 +---------------+--------+--------+
 | SSL           | 11091  | 11092  |
 +---------------+--------+--------+
-| SASL_SSL      | 9091   | 9092   |
+| INTERNAL      | 9091   | 9092   |
 +---------------+--------+--------+
-| SASL_SSL_HOST | 29091  | 29092  |
+| EXTERNAL      | 10091  | 10092  |
 +---------------+--------+--------+
 
 -------------
