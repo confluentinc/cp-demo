@@ -105,8 +105,6 @@ services:
                                                                  org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
                                                                  publicKeyPath="/tmp/conf/public.pem";
 
-      # KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
-      # KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 2 
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka1:9091"
@@ -189,68 +187,6 @@ services:
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
 
-  # kafka2:
-  #   image: confluentinc/cp-server:5.4.0
-  #   hostname: kafka2
-  #   container_name: kafka2
-  #   cpus: 0.7
-  #   depends_on:
-  #     - zookeeper
-  #   volumes:
-  #     - ./scripts/security:/etc/kafka/secrets
-  #   ports:
-  #     - "9092:9092"
-  #     - "29092:29092"
-  #   command: "bash -c 'if [ ! -f /etc/kafka/secrets/kafka.kafka2.keystore.jks ]; then echo \"ERROR: Did not find SSL certificates in /etc/kafka/secrets/ (did you remember to run ./scripts/start.sh instead of docker-compose up -d?)\" && exit 1 ; else /etc/confluent/docker/run ; fi'"
-  #   environment:
-  #     KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_SSL:SASL_SSL,SSL:SSL,SASL_SSL_HOST:SASL_SSL,PLAINTEXT:PLAINTEXT
-  #     KAFKA_INTER_BROKER_LISTENER_NAME: SASL_SSL
-  #     KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka2:9092,SASL_SSL_HOST://localhost:29092,PLAINTEXT://kafka2:10092,SSL://kafka2:11092
-  #     KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.auth.SimpleAclAuthorizer
-  #     KAFKA_SUPER_USERS: User:admin;User:mds;User:professor;User:client;User:schemaregistry;User:restproxy;User:broker;User:connect;User:ANONYMOUS
-  #     KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=INFO"
-  #     KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
-  #     KAFKA_BROKER_ID: 2
-  #     KAFKA_BROKER_RACK: "r1"
-  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
-  #     KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 2 
-  #     CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka2:9092"
-  #     CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SASL_SSL
-  #     CONFLUENT_METRICS_REPORTER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
-  #       username=\"client\" \
-  #       password=\"client-secret\";"
-  #     CONFLUENT_METRICS_REPORTER_SASL_MECHANISM: PLAIN      
-  #     CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
-  #     CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_PASSWORD: confluent
-  #     CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
-  #     CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_PASSWORD: confluent
-  #     CONFLUENT_METRICS_REPORTER_SSL_KEY_PASSWORD: confluent
-  #     CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 2
-  #     CONFLUENT_METRICS_REPORTER_MAX_REQUEST_SIZE: 10485760
-  #     # To avoid race condition with control-center
-  #     CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: "false"
-  #     KAFKA_DELETE_TOPIC_ENABLE: "true"
-  #     KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
-  #     KAFKA_JMX_PORT: 9991
-  #     KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
-  #     KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
-  #     KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka2.keystore.jks
-  #     KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka2_keystore_creds
-  #     KAFKA_SSL_KEY_CREDENTIALS: kafka2_sslkey_creds
-  #     KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka2.truststore.jks
-  #     KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka2_truststore_creds
-  #     # enables 2-way authentication
-  #     KAFKA_SSL_CLIENT_AUTH: "required"
-  #     KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
-  #     KAFKA_ZOOKEEPER_SET_ACL: "true"
-  #     # Schema Validation
-  #     KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
-  #     KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
-  #                 -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.kafka2.truststore.jks
-  #                 -Djavax.net.ssl.trustStorePassword=confluent
-  #                 -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.kafka2.keystore.jks
-  #                 -Djavax.net.ssl.keyStorePassword=confluent
   connect:
     image: confluentinc/cp-server-connect:5.4.0
     container_name: connect
@@ -261,7 +197,6 @@ services:
     depends_on:
       - zookeeper
       - kafka1
-      # - kafka2
       - schemaregistry
       - replicator-for-jar-transfer
     volumes:
@@ -283,10 +218,6 @@ services:
       CONNECT_CONFIG_STORAGE_TOPIC: connect-configs
       CONNECT_OFFSET_STORAGE_TOPIC: connect-offsets
       CONNECT_STATUS_STORAGE_TOPIC: connect-statuses
-      # CONNECT_REPLICATION_FACTOR: 2
-      # CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 2
-      # CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 2
-      # CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 2
       CONNECT_REPLICATION_FACTOR: 1
       CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
@@ -560,7 +491,6 @@ services:
     depends_on:
       - zookeeper
       - kafka1
-      # - kafka2
     ports:
       - "8085:8085"
     volumes:
@@ -619,7 +549,6 @@ services:
     cpus: 0.4
     depends_on:
       - kafka1
-      # - kafka2
     volumes:
       - ./scripts/security:/etc/kafka/secrets
     # We defined a dependency on "kafka", but `depends_on` will NOT wait for the
@@ -669,7 +598,6 @@ services:
     restart: always
     depends_on:
       - kafka1
-      # - kafka2
       - connect
     ports:
       - "8088:8088"
@@ -775,7 +703,6 @@ services:
     depends_on:
       - zookeeper
       - kafka1
-      # - kafka2
       - schemaregistry
     hostname: restproxy
     container_name: restproxy
@@ -855,7 +782,6 @@ services:
     depends_on:
       - zookeeper
       - kafka1
-      # - kafka2
       - schemaregistry
     hostname: streams-demo
     container_name: streams-demo
