@@ -3,7 +3,6 @@
 ################################## GET KAFKA CLUSTER ID ########################
 ZK_CONTAINER=zookeeper
 ZK_PORT=2181
-echo "Retrieving Kafka cluster id from docker-container '$ZK_CONTAINER' port '$ZK_PORT'"
 KAFKA_CLUSTER_ID=$(zookeeper-shell $ZK_CONTAINER:$ZK_PORT get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
 if [ -z "$KAFKA_CLUSTER_ID" ]; then 
     echo "Failed to retrieve kafka cluster id from zookeeper"
@@ -110,9 +109,9 @@ declare -a ConnectResources=(
     "Topic:connect-configs" 
     "Topic:connect-offsets" 
     "Topic:connect-statuses" 
+    "Topic:_confluent-secrets"
     "Group:connect-cluster" 
     "Group:secret-registry" 
-    "Topic:_secrets"
 )
 for resource in ${ConnectResources[@]}
 do
@@ -209,19 +208,19 @@ confluent iam rolebinding create \
 
 ######################### print cluster ids and users again to make it easier to copypaste ###########
 
-echo "Finished setting up role bindings"
+echo "Cluster IDs:"
 echo "    kafka cluster id: $KAFKA_CLUSTER_ID"
 echo "    connect cluster id: $CONNECT"
 echo "    schema registry cluster id: $SR"
 echo "    ksql cluster id: $KSQL"
 echo
+echo "Cluster IDs as environment variables:"
+echo "    export KAFKA_ID=$KAFKA_CLUSTER_ID ; export CONNECT_ID=$CONNECT ; export SR_ID=$SR ; export KSQL_ID=$KSQL"
+echo
+echo "Service accounts:"
 echo "    super user account: $SUPER_USER_PRINCIPAL"
 echo "    connect service account: $CONNECT_PRINCIPAL"
 echo "    schema registry service account: $SR_PRINCIPAL"
 echo "    KSQL service account: $KSQL_PRINCIPAL"
 echo "    C3 service account: $C3_PRINCIPAL"
 
-echo
-echo "Service IDs as environment variables:"
-echo "    export KAFKA_ID=$KAFKA_CLUSTER_ID ; export CONNECT_ID=$CONNECT ; export SR_ID=$SR ; export KSQL_ID=$KSQL"
-echo
