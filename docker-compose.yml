@@ -270,7 +270,7 @@ services:
       CONNECT_BOOTSTRAP_SERVERS: "kafka1:10091"
       CONNECT_REST_PORT: 8083
       CONNECT_LISTENERS: "https://0.0.0.0:8083"
-      CONNECT_GROUP_ID: "connect"
+      CONNECT_GROUP_ID: "connect-cluster"
       CONNECT_PRODUCER_CLIENT_ID: "connect-worker-producer"
       CONNECT_CONFIG_STORAGE_TOPIC: connect-configs
       CONNECT_OFFSET_STORAGE_TOPIC: connect-offsets
@@ -301,6 +301,7 @@ services:
       CONNECT_SSL_TRUSTSTORE_PASSWORD: confluent
       CONNECT_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.keystore.jks
       CONNECT_SSL_KEYSTORE_PASSWORD: confluent
+      CONNECT_SSL_KEY_PASSWORD: confluent
 
       # Connect producer
       CONNECT_PRODUCER_SECURITY_PROTOCOL: SASL_SSL
