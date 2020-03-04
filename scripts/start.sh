@@ -36,12 +36,15 @@ openssl rsa -in ./conf/keypair.pem -outform PEM -pubout -out ./conf/public.pem
 
 # Bring up Docker Compose
 echo -e "Starting Zookeeper, Kafka1, LDAP server"
-docker-compose up -d kafka1
+docker-compose up -d kafka1 kafka2
 
 # wait for kafka container to be healthy
 echo
 echo "Waiting for kafka1 to be healthy"
 retry 30 5 container_healthy kafka1
+echo
+echo "Waiting for kafka2 to be healthy"
+retry 30 5 container_healthy kafka2
 
 # start the rest of the cluster
 echo
