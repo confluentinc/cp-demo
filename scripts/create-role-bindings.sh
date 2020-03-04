@@ -23,6 +23,7 @@ CONNECT_PRINCIPAL="User:fry"
 SR_PRINCIPAL="User:leela"
 KSQL_PRINCIPAL="User:zoidberg"
 C3_PRINCIPAL="User:hermes"
+CLIENT_PRINCIPAL="User:client"
 
 # Log into MDS
 if [[ $(type expect 2>&1) =~ "not found" ]]; then
@@ -297,6 +298,16 @@ confluent iam rolebinding create \
     --role SystemAdmin \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
+################################### Client ###################################
+echo "Creating streams-demo client role bindings"
+
+confluent iam rolebinding create \
+    --principal $CLIENT_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Subject:wikipedia \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID \
+    --schema-registry-cluster-id $SR
 
 ######################### print cluster ids and users again to make it easier to copypaste ###########
 

@@ -128,6 +128,10 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: kafka1_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka1.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka1_truststore_creds
+      KAFKA_LISTENER_NAME_EXTERNAL_SSL_PRINCIPAL_MAPPING_RULES: |
+               \
+               RULE:^CN=([a-zA-Z0-9.]*).*$$/$$1/L , \
+               DEFAULT
 
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       
@@ -795,7 +799,7 @@ services:
     volumes:
       - ./scripts/security:/etc/kafka/secrets
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: "kafka1:10091"
+      KAFKA_BOOTSTRAP_SERVERS: "kafka1:11091"
       KAFKA_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
       KAFKA_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.truststore.jks"
       KAFKA_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: "confluent"
@@ -807,11 +811,7 @@ services:
       KAFKA_SSL_KEYSTORE_PASSWORD: confluent
       KAFKA_SSL_KEY_PASSWORD: confluent
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
-      KAFKA_SECURITY_PROTOCOL: "SASL_SSL"
-      KAFKA_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
-              username=\"client\" \
-              password=\"client-secret\";"
-      KAFKA_SASL_MECHANISM: PLAIN
+      KAFKA_SECURITY_PROTOCOL: "SSL"
       KAFKA_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
       KAFKA_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SECURITY_PROTOCOL: SASL_SSL
       KAFKA_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
