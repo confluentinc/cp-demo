@@ -301,8 +301,9 @@ confluent iam rolebinding create \
 ################################### Client ###################################
 echo "Creating streams-demo client role bindings"
 
+# TODO: Change user from hermes (used by C3) to its own dedicated LDAP account
 confluent iam rolebinding create \
-    --principal $CLIENT_PRINCIPAL \
+    --principal $C3_PRINCIPAL \
     --role ResourceOwner \
     --resource Subject:wikipedia \
     --prefix \

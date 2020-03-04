@@ -728,10 +728,10 @@ services:
       #
       KAFKA_REST_LISTENERS: "https://0.0.0.0:8086"
       KAFKA_REST_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
-      #KAFKA_REST_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
-      #KAFKA_REST_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: confluent
-      #KAFKA_REST_SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
-      #KAFKA_REST_SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: confluent
+      KAFKA_REST_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
+      KAFKA_REST_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: confluent
+      KAFKA_REST_SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
+      KAFKA_REST_SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: confluent
       KAFKA_REST_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.restproxy.truststore.jks
       KAFKA_REST_SSL_TRUSTSTORE_PASSWORD: confluent
       KAFKA_REST_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.restproxy.keystore.jks
@@ -799,12 +799,8 @@ services:
     volumes:
       - ./scripts/security:/etc/kafka/secrets
     environment:
+      # Authenticate to brokers with mTLS
       KAFKA_BOOTSTRAP_SERVERS: "kafka1:11091"
-      KAFKA_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
-      KAFKA_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.truststore.jks"
-      KAFKA_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: "confluent"
-      KAFKA_SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.keystore.jks"
-      KAFKA_SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: "confluent"
       KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
       KAFKA_SSL_TRUSTSTORE_PASSWORD: confluent
       KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
@@ -812,6 +808,17 @@ services:
       KAFKA_SSL_KEY_PASSWORD: confluent
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KAFKA_SECURITY_PROTOCOL: "SSL"
+
+      # Authenticate to Schema Registry with LDAP
+      KAFKA_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
+      KAFKA_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.truststore.jks"
+      KAFKA_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: "confluent"
+      KAFKA_SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.keystore.jks"
+      KAFKA_SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: "confluent"
+      KAFKA_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE: "USER_INFO"
+      # TODO: Change user from hermes (used by C3) to its own dedicated LDAP account
+      KAFKA_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 'hermes:hermes'
+
       KAFKA_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
       KAFKA_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SECURITY_PROTOCOL: SASL_SSL
       KAFKA_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
