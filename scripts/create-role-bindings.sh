@@ -188,6 +188,7 @@ confluent iam rolebinding create \
     --schema-registry-cluster-id $SR
 
 ################################### Connector ###################################
+echo "Creating role bindings for the connectors"
 
 confluent iam rolebinding create \
     --principal $CONNECT_PRINCIPAL \

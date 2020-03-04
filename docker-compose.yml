@@ -362,6 +362,7 @@ services:
                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
                                 username="fry" \
                                 password="fry" \
+                                metadataServerUrls="http://kafka1:8090";
 
       # Consumer
       CONNECT_CONSUMER_SASL_MECHANISM: 'OAUTHBEARER'
@@ -379,6 +380,7 @@ services:
                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
                                 username="fry" \
                                 password="fry" \
+                                metadataServerUrls="http://kafka1:8090";
 
       # Default admin config
       CONNECT_ADMIN_SECURITY_PROTOCOL: SASL_SSL
