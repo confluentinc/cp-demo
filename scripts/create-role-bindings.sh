@@ -192,7 +192,36 @@ confluent iam rolebinding create \
 confluent iam rolebinding create \
     --principal $CONNECT_PRINCIPAL \
     --role ResourceOwner \
-    --resource Subject:wikipedia.parsed \
+    --resource Connector:wikipedia-irc \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID \
+    --connect-cluster-id $CONNECT
+
+confluent iam rolebinding create \
+    --principal $CONNECT_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Connector:replicate-topic \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID \
+    --connect-cluster-id $CONNECT
+
+confluent iam rolebinding create \
+    --principal $CONNECT_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Connector:elasticsearch-ksql \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID \
+    --connect-cluster-id $CONNECT
+
+confluent iam rolebinding create \
+    --principal $CONNECT_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Topic:wikipedia \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
+confluent iam rolebinding create \
+    --principal $CONNECT_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Subject:wikipedia \
+    --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
