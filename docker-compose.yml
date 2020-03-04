@@ -135,7 +135,13 @@ services:
       
       # Schema Validation
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: https://schemaregistry:8085
+      KAFKA_CONFLUENT_BASIC_AUTH_USER_INFO: 'professor:professor'
+      KAFKA_CONFLUENT_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
+                  -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.kafka1.truststore.jks
+                  -Djavax.net.ssl.trustStorePassword=confluent
+                  -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.kafka1.keystore.jks
+                  -Djavax.net.ssl.keyStorePassword=confluent
 
       # ======================== CONFIGURE MDS ====================================
       # Configure how MDS stores its data in a topic
