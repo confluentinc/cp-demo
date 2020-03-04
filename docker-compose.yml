@@ -465,7 +465,8 @@ services:
 
       # KSQL
       CONTROL_CENTER_KSQL_KSQL1_URL: http://ksql-server:8088
-      CONTROL_CENTER_KSQL_KSQL1_ADVERTISED_URL: http://localhost:8088 # access KSQL from the browser
+      # Access KSQL server from a browser on your localhost
+      CONTROL_CENTER_KSQL_KSQL1_ADVERTISED_URL: http://localhost:8088
 
       # Schema Registry
       CONTROL_CENTER_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
@@ -625,7 +626,7 @@ services:
     environment:
       CUB_CLASSPATH: '/usr/share/java/ksql-server/*:/usr/share/java/cp-base-new/*'
       KSQL_LOG4J_ROOT_LOGLEVEL: TRACE        
-      #KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/secrets/log4j-secure.properties"
+      KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/secrets/log4j-secure.properties"
       KSQL_KSQL_SERVICE_ID: "ksql-cluster"
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
