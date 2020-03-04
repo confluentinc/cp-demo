@@ -22,10 +22,10 @@ services:
     ports:
       - "2181:2181"
 
-  confluent-tools:
+  tools:
     image: cnfltraining/training-tools:5.4
-    hostname: confluent-tools
-    container_name: confluent-tools
+    hostname: tools
+    container_name: tools
     depends_on:
       - zookeeper
       - kafka1
@@ -133,9 +133,9 @@ services:
       
       # Schema Validation
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: https://schemaregistry:8085
-      KAFKA_CONFLUENT_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE: "USER_INFO"
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 'professor:professor'
-      KAFKA_CONFLUENT_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
+      KAFKA_CONFLUENT_BASIC_AUTH_CREDENTIALS_SOURCE: "USER_INFO"
       KAFKA_CONFLUENT_BASIC_AUTH_USER_INFO: 'professor:professor'
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
                   -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.kafka1.truststore.jks
@@ -229,7 +229,7 @@ services:
       CONNECT_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
       CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
-      CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
+      CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
       CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.4.0.jar
       CONNECT_REST_EXTENSION_CLASSES: io.confluent.connect.replicator.monitoring.ReplicatorMonitoringExtension

@@ -52,7 +52,7 @@ echo "..."
 # Set role bindings
 echo
 echo "Creating role bindings for service accounts"
-docker-compose exec confluent-tools bash -c "/tmp/create-role-bindings.sh"
+docker-compose exec tools bash -c "/tmp/create-role-bindings.sh"
 
 # Verify Confluent Control Center has started within MAX_WAIT seconds
 MAX_WAIT=300
@@ -153,6 +153,6 @@ curl -X POST -H "Content-Type: application/json" -d '{"name":"Email Administrato
 
 
 echo -e "\n\n\n******************************************************************"
-echo -e "DONE! Connect to Confluent Control Center at http://localhost:9021"
+echo -e "DONE! Connect to Confluent Control Center at http://localhost:9021 (login as professor/professor for full access)"
 echo -e "******************************************************************\n"
 
