@@ -138,6 +138,8 @@ docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schema
 echo -e "\nStart Confluent Replicator:"
 ${DIR}/connectors/submit_replicator_config.sh
 
+echo -e "\nGet cluster id:\n"
+
 # If you have 'jq'
 clusterId=$(curl -s -X GET http://localhost:9021/2.0/clusters/kafka/ | jq --raw-output '.[0].clusterId')
 # If you don't have 'jq'

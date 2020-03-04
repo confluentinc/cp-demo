@@ -109,8 +109,9 @@ declare -a ConnectResources=(
     "Topic:connect-configs" 
     "Topic:connect-offsets" 
     "Topic:connect-statuses" 
-    "Topic:_confluent-secrets"
     "Group:connect-cluster" 
+    "Topic:_confluent-monitoring"
+    "Topic:_confluent-secrets"
     "Group:secret-registry" 
 )
 for resource in ${ConnectResources[@]}
@@ -187,27 +188,13 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
-################################### Connector ###################################
-echo "Creating role bindings for the connectors"
+################################### Connectors ###################################
+echo "Creating role bindings for the wikipedia-irc connector"
 
 confluent iam rolebinding create \
     --principal $CONNECT_PRINCIPAL \
     --role ResourceOwner \
     --resource Connector:wikipedia-irc \
-    --kafka-cluster-id $KAFKA_CLUSTER_ID \
-    --connect-cluster-id $CONNECT
-
-confluent iam rolebinding create \
-    --principal $CONNECT_PRINCIPAL \
-    --role ResourceOwner \
-    --resource Connector:replicate-topic \
-    --kafka-cluster-id $KAFKA_CLUSTER_ID \
-    --connect-cluster-id $CONNECT
-
-confluent iam rolebinding create \
-    --principal $CONNECT_PRINCIPAL \
-    --role ResourceOwner \
-    --resource Connector:elasticsearch-ksql \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT
 
@@ -225,6 +212,50 @@ confluent iam rolebinding create \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
+
+echo "Creating role bindings for the replicate-topic connector"
+
+confluent iam rolebinding create \
+    --principal $CONNECT_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Connector:replicate-topic \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID \
+    --connect-cluster-id $CONNECT
+
+confluent iam rolebinding create \
+    --principal $CONNECT_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Topic:_confluent \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
+confluent iam rolebinding create \
+    --principal $CONNECT_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Group:connect-replicator \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID \
+
+echo "Creating role bindings for the elasticsearch-ksql connector"
+
+confluent iam rolebinding create \
+    --principal $CONNECT_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Connector:elasticsearch-ksql \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID \
+    --connect-cluster-id $CONNECT
+
+confluent iam rolebinding create \
+    --principal $CONNECT_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Group:connect-elasticsearch-ksql \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID \
+
+confluent iam rolebinding create \
+    --principal $CONNECT_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Topic:WIKIPEDIA \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 ################################### C3 ###################################
 echo "Creating C3 role bindings"
