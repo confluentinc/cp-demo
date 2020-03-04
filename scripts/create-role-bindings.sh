@@ -149,6 +149,12 @@ confluent iam rolebinding create \
 confluent iam rolebinding create \
     --principal $KSQL_PRINCIPAL \
     --role ResourceOwner \
+    --resource Topic:_confluent-monitoring \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
+confluent iam rolebinding create \
+    --principal $KSQL_PRINCIPAL \
+    --role ResourceOwner \
     --resource Topic:${KSQL}ksql_processing_log \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
