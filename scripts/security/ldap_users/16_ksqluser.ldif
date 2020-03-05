@@ -7,7 +7,7 @@ sn: Sheen
 givenName: KSQL
 cn: ksqlUser
 displayName: KSQL Sheen
-uidNumber: 10016
+uidNumber: 10026
 gidNumber: 5000
 userPassword: ksqlUser
 gecos: ksqlUser

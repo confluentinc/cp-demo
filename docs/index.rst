@@ -252,7 +252,7 @@ Connect
 KSQL
 ----
 
-In this demo, KSQL is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the `KSQL command file <https://github.com/confluentinc/cp-demo/blob/master/scripts/ksql/ksqlcommands>`__.
+In this demo, KSQL is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the :devx-cp-demo:`KSQL command file|scripts/ksql/ksqlcommands` .
 
 1. In the navigation bar, click **KSQL**.
 
@@ -802,7 +802,7 @@ Follow along with the `Security <https://www.youtube.com/watch?v=RwuF7cYcsec>`_ 
 All the components in this demo are enabled with many `security
 features <https://docs.confluent.io/current/security.html>`__:
 
--  ref:`RBAC <rbac-overview>` enabled for the entire platform (LDAP users: ``docker-compose exec openldap ldapsearch -x -h localhost -b dc=confluent,dc=io -D "cn=admin,dc=confluent,dc=io" -w admin | grep uid:``)
+-  ref:`RBAC <rbac-overview>` enabled for the entire platform
 -  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__
    for encryption, except for ZooKeeper which does not support SSL
 -  `SASL/PLAIN <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html>`__
@@ -839,7 +839,7 @@ Each broker has five listener ports:
 +---------------+----------------+------------------------------------------------------------------------+--------+--------+
 | SSL           | SSL            | With just SSL, no SASL                                                 | 11091  | 11092  |
 +---------------+----------------+------------------------------------------------------------------------+--------+--------+
-| CLEAR         | PLAINTEXT      | With no security enabled (unrealistic; for demo only)                  | 12091  | 12092  |
+| CLEAR         | PLAINTEXT      | No security enabled (unrealistic; for demo and learning only)          | 12091  | 12092  |
 +---------------+----------------+------------------------------------------------------------------------+--------+--------+
 
 
@@ -863,17 +863,15 @@ All other users are not authorized to communicate with the cluster.
           docker-compose logs kafka1 | grep "Registered broker 1"
           docker-compose logs kafka2 | grep "Registered broker 2"
 
-2. This demo `automatically
-   generates <https://github.com/confluentinc/cp-demo/blob/master/scripts/security/certs-create.sh>`__ simple SSL
+2. This demo :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` simple SSL
    certificates and creates keystores, truststores, and secures them
    with a password. To communicate with the brokers, Kafka clients may
    use any of the ports on which the brokers are listening. To use a
    security-enabled port, they must specify security parameters for
    keystores, truststores, password, or authentication so the Kafka
-   command line client tools pass the security configuration file `with
-   interceptors <https://github.com/confluentinc/cp-demo/blob/master/scripts/security/client_with_interceptors.config>`__ or
-   `without
-   interceptors <https://github.com/confluentinc/cp-demo/blob/master/scripts/security/client_without_interceptors.config>`__
+   command line client tools pass the security configuration file 
+   :devx-cp-demo:`with interceptors|scripts/security/client_with_interceptors.config` or
+   :devx-cp-demo:`without interceptors|scripts/security/client_without_interceptors.config` or
    with these security parameters. As an example, to communicate with
    the Kafka cluster to view all the active consumer groups:
 
@@ -1157,6 +1155,12 @@ Troubleshooting the demo
    change the container you are running the command from to be either ``kafka1`` or ``kafka2``.  This is because ZooKeeper is configured for
    `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, and
    any commands that communicate with ZooKeeper need properties set for ZooKeeper authentication.
+
+5. Run :devx-cp-demo:`validation scripts|scripts/validate/` to check that things are working.
+
+   .. sourcecode:: bash
+
+          cd scripts/validate/
 
       
 ========

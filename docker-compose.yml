@@ -796,7 +796,7 @@ services:
       KSQL_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
       KSQL_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
       KSQL_CONFLUENT_METADATA_BASIC_AUTH_CREDENTIALS_PROVIDER: USER_INFO
-      KSQL_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: ksqlUser:ksqlUser
+      KSQL_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: ksqlAdmin:ksqlAdmin
 
       # Credentials for kafka access
       KSQL_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
@@ -820,12 +820,12 @@ services:
       KSQL_SASL_JAAS_CONFIG: |
                               \
                               org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                              username="ksqlUser" \
-                              password="ksqlUser" \
+                              username="ksqlAdmin" \
+                              password="ksqlAdmin" \
                               metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
 
       KSQL_KSQL_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
-      KSQL_KSQL_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: ksqlUser:ksqlUser
+      KSQL_KSQL_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: ksqlAdmin:ksqlAdmin
 
       # Confluent Monitoring Interceptors for Control Center streams monitoring
       KSQL_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
@@ -841,8 +841,8 @@ services:
       KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: |
                               \
                               org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                              username="ksqlUser" \
-                              password="ksqlUser" \
+                              username="ksqlAdmin" \
+                              password="ksqlAdmin" \
                               metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
 
   ksql-cli:

@@ -52,6 +52,8 @@ docker-compose up -d
 echo "..."
 
 echo
+echo "Available LDAP users:"
+docker-compose exec openldap ldapsearch -x -h localhost -b dc=confluent,dc=io -D "cn=admin,dc=confluent,dc=io" -w admin | grep uid:
 echo "Creating role bindings for principals"
 docker-compose exec tools bash -c "/tmp/create-role-bindings.sh"
 
