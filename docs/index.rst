@@ -495,7 +495,7 @@ it has previously read.
    .. sourcecode:: bash
 
          docker-compose exec kafka1 kafka-consumer-groups \
-           --reset-offsets --group app --shift-by -200 --bootstrap-server kafka1:10091 \
+           --reset-offsets --group app --shift-by -200 --bootstrap-server kafka1:12091 \
            --all-topics --execute
 
    Your output should resemble:
@@ -591,7 +591,7 @@ skipping messages that will never be read.
    .. sourcecode:: bash
 
          docker-compose exec kafka1 kafka-consumer-groups \
-         --reset-offsets --group app --to-latest --bootstrap-server kafka1:10091 \
+         --reset-offsets --group app --to-latest --bootstrap-server kafka1:12091 \
          --all-topics --execute
 
    Your output should resemble:
@@ -826,24 +826,22 @@ features <https://docs.confluent.io/current/security.html>`__:
 Encryption & Authentication
 ---------------------------
 
-Each broker has four listener ports:
+Each broker has five listener ports:
 
--  PLAINTEXT port called ``PLAINTEXT`` for users with no security enabled
--  SSL port port called ``SSL`` for users with just SSL without SASL
--  SASL_SSL port called ``INTERNAL`` for communication between services inside Docker containers
--  SASL_SSL port called ``EXTERNAL`` for communication between any potential services outside of Docker that communicate to the Docker containers
++---------------+----------------+------------------------------------------------------------------------+--------+--------+
+| Name          | Protocol       | For users ...                                                          | kafka1 | kafka2 |
++===============+================+========================================================================+========+========+
+| N/A           | MDS            | Authorizing via RBAC                                                   | 8091   | 8092   |
++---------------+----------------+------------------------------------------------------------------------+--------+--------+
+| INTERNAL      | SASL_PLAINTEXT | Inside Docker containers                                               | 9091   | 9092   |
++---------------+----------------+------------------------------------------------------------------------+--------+--------+
+| EXTERNAL      | SASL_SSL       | Outside Docker containers communicating to the Docker containers       | 10091  | 10092  |
++---------------+----------------+------------------------------------------------------------------------+--------+--------+
+| SSL           | SSL            | With just SSL, no SASL                                                 | 11091  | 11092  |
++---------------+----------------+------------------------------------------------------------------------+--------+--------+
+| CLEAR         | PLAINTEXT      | With no security enabled (unrealistic; for demo only)                  | 12091  | 12092  |
++---------------+----------------+------------------------------------------------------------------------+--------+--------+
 
-+---------------+--------+--------+
-| port          | kafka1 | kafka2 |
-+===============+========+========+
-| PLAINTEXT     | 12091  | 12092  |
-+---------------+--------+--------+
-| SSL           | 11091  | 11092  |
-+---------------+--------+--------+
-| INTERNAL      | 9091   | 9092   |
-+---------------+--------+--------+
-| EXTERNAL      | 10091  | 10092  |
-+---------------+--------+--------+
 
 -------------
 Authorization
@@ -883,8 +881,8 @@ All other users are not authorized to communicate with the cluster.
 
    .. sourcecode:: bash
 
-           # PLAINTEXT port
-           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091
+           # CLEAR/PLAINTEXT port
+           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:12091
 
    * Communicate with brokers via the SASL_SSL port, and SASL_SSL parameters configured via the ``--command-config`` argument for command line tools or ``--consumer.config`` for kafka-console-consumer.
 
