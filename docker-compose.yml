@@ -315,7 +315,7 @@ services:
       KAFKA_LDAP_JAVA_NAMING_PROVIDER_URL: ldap://openldap:389
       # how to authenticate to LDAP
       KAFKA_LDAP_JAVA_NAMING_SECURITY_PRINCIPAL: cn=admin,dc=confluent,dc=io
-      KAFKA_LDAP_JAVA_NAMING_SECURITY_CREDENTIALS: GoodNewsEveryone
+      KAFKA_LDAP_JAVA_NAMING_SECURITY_CREDENTIALS: admin
       KAFKA_LDAP_JAVA_NAMING_SECURITY_AUTHENTICATION: simple
       # how to locate users and groups
       KAFKA_LDAP_SEARCH_MODE: USERS
