@@ -22,12 +22,12 @@ DATA=$( cat << EOF
     "value.converter.schema.registry.ssl.keystore.location": "/etc/kafka/secrets/kafka.client.keystore.jks",
     "value.converter.schema.registry.ssl.keystore.password": "confluent",
     "value.converter.basic.auth.credentials.source": "USER_INFO",
-    "value.converter.basic.auth.user.info": "fry:fry",
-    "producer.override.sasl.jaas.config": "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username=\"fry\" password=\"fry\" metadataServerUrls=\"http://kafka1:8090\";",
+    "value.converter.basic.auth.user.info": "connectUser:connectUser",
+    "producer.override.sasl.jaas.config": "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username=\"connectUser\" password=\"connectUser\" metadataServerUrls=\"http://kafka1:8090\";",
     "tasks.max": "1"
   }
 }
 EOF
 )
 
-docker-compose exec connect curl -X POST -H "${HEADER}" --data "${DATA}" --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u fry:fry https://connect:8083/connectors
+docker-compose exec connect curl -X POST -H "${HEADER}" --data "${DATA}" --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectUser:connectUser https://connect:8083/connectors

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # With RBAC enabled, C3 communication thru its REST endpoint requires JSON Web Tokens (JWT)
-JWT_TOKEN=$(curl -s -u hermes:hermes http://localhost:9021/api/metadata/security/1.0/authenticate | jq -r .auth_token)
+JWT_TOKEN=$(curl -s -u controlcenterUser:controlcenterUser http://localhost:9021/api/metadata/security/1.0/authenticate | jq -r .auth_token)
 
 # If you have 'jq'
 clusterId=$(curl -s -X GET -H "Authorization: Bearer ${JWT_TOKEN}" http://localhost:9021/2.0/clusters/kafka/ | jq --raw-output '.[0].clusterId')
