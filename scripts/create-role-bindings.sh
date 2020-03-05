@@ -19,7 +19,9 @@ C3=c3-cluster
 SUPER_USER=superUser
 SUPER_USER_PASSWORD=superUser
 SUPER_USER_PRINCIPAL="User:$SUPER_USER"
-CONNECT_PRINCIPAL="User:connectUser"
+CONNECT_PRINCIPAL="User:connectAdmin"
+CONNECTOR_SUBMITTER="User:connectorSubmitter"
+CONNECTOR_PRINCIPAL="User:connectorSA"
 SR_PRINCIPAL="User:schemaregistryUser"
 KSQL_PRINCIPAL="User:ksqlUser"
 C3_ADMIN="User:controlcenterAdmin"
@@ -216,21 +218,21 @@ confluent iam rolebinding create \
 echo "Creating role bindings for the wikipedia-irc connector"
 
 confluent iam rolebinding create \
-    --principal $CONNECT_PRINCIPAL \
+    --principal $CONNECTOR_SUBMITTER \
     --role ResourceOwner \
     --resource Connector:wikipedia-irc \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT
 
 confluent iam rolebinding create \
-    --principal $CONNECT_PRINCIPAL \
+    --principal $CONNECTOR_PRINCIPAL \
     --role ResourceOwner \
     --resource Topic:wikipedia \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
-    --principal $CONNECT_PRINCIPAL \
+    --principal $CONNECTOR_PRINCIPAL \
     --role ResourceOwner \
     --resource Subject:wikipedia \
     --prefix \
@@ -240,21 +242,21 @@ confluent iam rolebinding create \
 echo "Creating role bindings for the replicate-topic connector"
 
 confluent iam rolebinding create \
-    --principal $CONNECT_PRINCIPAL \
+    --principal $CONNECTOR_SUBMITTER \
     --role ResourceOwner \
     --resource Connector:replicate-topic \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT
 
 confluent iam rolebinding create \
-    --principal $CONNECT_PRINCIPAL \
+    --principal $CONNECTOR_PRINCIPAL \
     --role ResourceOwner \
     --resource Topic:_confluent \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
-    --principal $CONNECT_PRINCIPAL \
+    --principal $CONNECTOR_PRINCIPAL \
     --role ResourceOwner \
     --resource Group:connect-replicator \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
@@ -262,27 +264,27 @@ confluent iam rolebinding create \
 echo "Creating role bindings for the elasticsearch-ksql connector"
 
 confluent iam rolebinding create \
-    --principal $CONNECT_PRINCIPAL \
+    --principal $CONNECTOR_SUBMITTER \
     --role ResourceOwner \
     --resource Connector:elasticsearch-ksql \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT
 
 confluent iam rolebinding create \
-    --principal $CONNECT_PRINCIPAL \
+    --principal $CONNECTOR_PRINCIPAL \
     --role ResourceOwner \
     --resource Group:connect-elasticsearch-ksql \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
 
 confluent iam rolebinding create \
-    --principal $CONNECT_PRINCIPAL \
+    --principal $CONNECTOR_PRINCIPAL \
     --role ResourceOwner \
     --resource Topic:WIKIPEDIA \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
-    --principal $CONNECT_PRINCIPAL \
+    --principal $CONNECTOR_PRINCIPAL \
     --role ResourceOwner \
     --resource Subject:WIKIPEDIA \
     --prefix \
@@ -336,8 +338,10 @@ echo "    export KAFKA_ID=$KAFKA_CLUSTER_ID ; export CONNECT_ID=$CONNECT ; expor
 echo
 echo "Principals:"
 echo "    super user account: $SUPER_USER_PRINCIPAL"
-echo "    connect user: $CONNECT_PRINCIPAL"
-echo "    schema registry user: $SR_PRINCIPAL"
+echo "    Schema Registry user: $SR_PRINCIPAL"
+echo "    Connect Admin: $CONNECT_PRINCIPAL"
+echo "    Connector Submitter: $CONNECTOR_SUBMITTER"
+echo "    Connector Principal: $CONNECTOR_PRINCIPAL"
 echo "    KSQL user: $KSQL_PRINCIPAL"
 echo "    C3 Admin: $C3_ADMIN"
 echo "    Client service account: $CLIENT_PRINCIPAL"

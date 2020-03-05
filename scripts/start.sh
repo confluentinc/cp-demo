@@ -46,15 +46,13 @@ echo
 echo "Waiting for kafka2 to be healthy"
 retry 30 5 container_healthy kafka2
 
-# start the rest of the cluster
 echo
-echo "Starting the rest of the services"
+echo "Starting the remaining services"
 docker-compose up -d
 echo "..."
 
-# Set role bindings
 echo
-echo "Creating role bindings for service accounts"
+echo "Creating role bindings for principals"
 docker-compose exec tools bash -c "/tmp/create-role-bindings.sh"
 
 # Verify Confluent Control Center has started within MAX_WAIT seconds

@@ -425,8 +425,8 @@ services:
       CONNECT_SASL_JAAS_CONFIG: |
                                 \
                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                username="connectUser" \
-                                password="connectUser" \
+                                username="connectAdmin" \
+                                password="connectAdmin" \
                                 metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
 
       # Allow overriding configs on the connector level
@@ -438,16 +438,16 @@ services:
       CONNECT_PRODUCER_SASL_JAAS_CONFIG: |
                                 \
                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                username="connectUser" \
-                                password="connectUser" \
+                                username="connectAdmin" \
+                                password="connectAdmin" \
                                 metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_MECHANISM: 'OAUTHBEARER'
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_LOGIN_CALLBACK_HANDLER_CLASS: 'io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler'
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: |
                                 \
                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                username="connectUser" \
-                                password="connectUser" \
+                                username="connectAdmin" \
+                                password="connectAdmin" \
                                 metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
 
       # Consumer
@@ -456,16 +456,16 @@ services:
       CONNECT_CONSUMER_SASL_JAAS_CONFIG: |
                                 \
                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                username="connectUser" \
-                                password="connectUser" \
+                                username="connectAdmin" \
+                                password="connectAdmin" \
                                 metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_MECHANISM: 'OAUTHBEARER'
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_LOGIN_CALLBACK_HANDLER_CLASS: 'io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler'
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: |
                                 \
                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                username="connectUser" \
-                                password="connectUser" \
+                                username="connectAdmin" \
+                                password="connectAdmin" \
                                 metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
 
       # Default admin config
@@ -475,8 +475,8 @@ services:
       CONNECT_ADMIN_SASL_JAAS_CONFIG: |
                                 \
                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                username="connectUser" \
-                                password="connectUser" \
+                                username="connectAdmin" \
+                                password="connectAdmin" \
                                 metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
       CONNECT_ADMIN_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.truststore.jks
       CONNECT_ADMIN_SSL_TRUSTSTORE_PASSWORD: confluent
@@ -491,7 +491,7 @@ services:
       CONNECT_REST_SERVLET_INITIALIZOR_CLASSES: 'io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler'
       CONNECT_PUBLIC_KEY_PATH: /tmp/conf/public.pem
       CONNECT_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
-      CONNECT_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'connectUser:connectUser'
+      CONNECT_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'connectAdmin:connectAdmin'
       CONNECT_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: 'BASIC'
 
       # ========================= SECRET REGISTRY ==================================
@@ -511,8 +511,8 @@ services:
       CONNECT_CONFIG_PROVIDERS_SECRET_PARAM_KAFKASTORE_SASL_JAAS_CONFIG: |
                                 \
                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                username="connectUser" \
-                                password="connectUser" \
+                                username="connectAdmin" \
+                                password="connectAdmin" \
                                 metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
 
       # KAFKA_OPTS required for ReplicatorMonitoringExtension
@@ -908,8 +908,8 @@ services:
       KAFKA_REST_CLIENT_SASL_JAAS_CONFIG: |
                                           \
                                           org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                          username="connectUser" \
-                                          password="connectUser" \
+                                          username="connectAdmin" \
+                                          password="connectAdmin" \
                                           metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
       KAFKA_REST_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
 
@@ -922,7 +922,7 @@ services:
       # how to connect to MDS
       KAFKA_REST_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
       KAFKA_REST_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
-      KAFKA_REST_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'connectUser:connectUser'
+      KAFKA_REST_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'connectAdmin:connectAdmin'
 
 
   # This container is just to transfer Replicator jars to the Connect worker
