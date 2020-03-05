@@ -105,15 +105,14 @@ services:
                                                                  org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
                                                                  publicKeyPath="/tmp/conf/public.pem";
 
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 2
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka1:9091"
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SASL_PLAINTEXT
       CONFLUENT_METRICS_REPORTER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
         username=\"admin\" \
         password=\"admin-secret\";"
       CONFLUENT_METRICS_REPORTER_SASL_MECHANISM: PLAIN
-      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
       CONFLUENT_METRICS_REPORTER_MAX_REQUEST_SIZE: 10485760
       # To avoid race condition with control-center
       # CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: "false"
@@ -150,7 +149,7 @@ services:
       # ======================== CONFIGURE MDS ====================================
       # Configure how MDS stores its data in a topic
       # supposedly more stuff can be overridden with the same prefix
-      KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 2
 
       # Configure MDS listener and http server
       KAFKA_CONFLUENT_METADATA_SERVER_AUTHENTICATION_METHOD: BEARER
@@ -189,7 +188,7 @@ services:
 
       # ======================= CONFIGURE METRICS REPORTER =========================
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
-      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 2
 
 
   kafka2:
@@ -248,15 +247,14 @@ services:
                                                                  org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
                                                                  publicKeyPath="/tmp/conf/public.pem";
 
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 2
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka2:9092"
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SASL_PLAINTEXT
       CONFLUENT_METRICS_REPORTER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
         username=\"admin\" \
         password=\"admin-secret\";"
       CONFLUENT_METRICS_REPORTER_SASL_MECHANISM: PLAIN
-      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
       CONFLUENT_METRICS_REPORTER_MAX_REQUEST_SIZE: 10485760
       # To avoid race condition with control-center
       # CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: "false"
@@ -293,7 +291,7 @@ services:
       # ======================== CONFIGURE MDS ====================================
       # Configure how MDS stores its data in a topic
       # supposedly more stuff can be overridden with the same prefix
-      KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 2
 
       # Configure MDS listener and http server
       KAFKA_CONFLUENT_METADATA_SERVER_AUTHENTICATION_METHOD: BEARER
@@ -332,14 +330,14 @@ services:
 
       # ======================= CONFIGURE METRICS REPORTER =========================
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
-      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 2
 
 
   connect:
     image: confluentinc/cp-server-connect:5.4.0
     container_name: connect
     cpus: 0.6
-    #restart: always
+    restart: always
     ports:
       - "8083:8083"
     depends_on:
@@ -366,10 +364,10 @@ services:
       CONNECT_CONFIG_STORAGE_TOPIC: connect-configs
       CONNECT_OFFSET_STORAGE_TOPIC: connect-offsets
       CONNECT_STATUS_STORAGE_TOPIC: connect-statuses
-      CONNECT_REPLICATION_FACTOR: 1
-      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_REPLICATION_FACTOR: 2
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 2
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 2
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 2
       CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
       CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
@@ -573,9 +571,9 @@ services:
       CONTROL_CENTER_BOOTSTRAP_SERVERS: 'kafka1:10091'
       CONTROL_CENTER_ZOOKEEPER_CONNECT: 'zookeeper:2181'
 
-      CONTROL_CENTER_REPLICATION_FACTOR: 1
-      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_REPLICATION: 1
-      CONFLUENT_METRICS_TOPIC_REPLICATION: 1
+      CONTROL_CENTER_REPLICATION_FACTOR: 2
+      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_REPLICATION: 2
+      CONFLUENT_METRICS_TOPIC_REPLICATION: 2
       CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
       CONTROL_CENTER_METRICS_TOPIC_PARTITIONS: 1
@@ -769,7 +767,7 @@ services:
       start_period: 30s
     environment:
       CUB_CLASSPATH: '/usr/share/java/ksql-server/*:/usr/share/java/cp-base-new/*'
-      KSQL_LOG4J_ROOT_LOGLEVEL: TRACE        
+      KSQL_LOG4J_ROOT_LOGLEVEL: INFO
       KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/secrets/log4j-secure.properties"
       KSQL_KSQL_SERVICE_ID: "ksql-cluster"
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
