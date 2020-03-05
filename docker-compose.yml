@@ -32,6 +32,7 @@ services:
       - kafka1
     volumes:
       - ./scripts/create-role-bindings.sh:/tmp/create-role-bindings.sh
+      - ./scripts/functions.sh:/tmp/functions.sh
     entrypoint: /bin/bash
     tty: true
 

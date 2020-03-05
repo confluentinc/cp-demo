@@ -829,6 +829,7 @@ Encryption & Authentication
 Confluent Platform services and clients can authenticate via the OpenLDAP server running in the demo.
 The demo is configured with :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization.
 Each Kafka broker in the demo is configured with MDS and can talk to LDAP.
+Go through the next few sections to learn how RBAC works (particulary the sections on Data Governance with Schema Registry and REST Proxy).
 
 Each broker has five listener ports:
 
@@ -995,7 +996,13 @@ All other users are not authorized to communicate with the cluster.
 
           ./scripts/consumers/listen_wikipedia.parsed.sh SSL
 
-9. Because ZooKeeper is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, 
+9. View the role bindings that were configured for RBAC.
+
+   .. sourcecode:: bash
+
+          ./scripts/validate/validate_bindings.sh
+
+10. Because ZooKeeper is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, 
    any commands that communicate with ZooKeeper need properties set for ZooKeeper authentication. This authentication configuration is provided
    by the ``KAFKA_OPTS`` setting on the brokers. For example, notice that the `throttle script <scripts/app/throttle_consumer.sh>`__ runs on the
    Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
@@ -1006,40 +1013,66 @@ Data Governance with |sr|
 
 All the applications and connectors used in this demo are configured to automatically read and write Avro-formatted data, leveraging the `Confluent Schema Registry <https://docs.confluent.io/current/schema-registry/docs/index.html>`__ .
 
-1. View the |sr| subjects for topics that have registered schemas for their keys and/or values. Notice the security arguments passed into the ``curl`` command which are required to interact with |sr|, which is listening for HTTPS on port 8085.
+1. View the |sr| subjects for topics that have registered schemas for their keys and/or values. Notice the ``curl`` arguments include (a) TLS information required to interact with |sr| which is listening for HTTPS on port 8085, and (b) authentication credentials required for RBAC (using `superUser:superUser` to see all of them).
 
    .. sourcecode:: bash
 
-       docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectAdmin:connectAdmin https://schemaregistry:8085/subjects | jq .
+       docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://schemaregistry:8085/subjects | jq .
 
    Your output should resemble:
 
    .. sourcecode:: bash
 
+      [
+        "wikipedia.parsed.replica-value",
+        "EN_WIKIPEDIA_GT_1_COUNTS-value",
+        "WIKIPEDIABOT-value",
+        "_confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-Aggregate-aggregate-changelog-value",
+        "EN_WIKIPEDIA_GT_1-value",
+        "wikipedia.parsed.count-by-channel-value",
+        "_confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-Aggregate-groupby-repartition-value",
+        "WIKIPEDIANOBOT-value",
+        "wikipedia.parsed-value"
+      ]
 
-     [
-       "ksql_query_CTAS_EN_WIKIPEDIA_GT_1-KSQL_Agg_Query_1526914100640-changelog-value",
-       "ksql_query_CTAS_EN_WIKIPEDIA_GT_1-KSQL_Agg_Query_1526914100640-repartition-value",
-       "EN_WIKIPEDIA_GT_1_COUNTS-value",
-       "WIKIPEDIABOT-value",
-       "EN_WIKIPEDIA_GT_1-value",
-       "WIKIPEDIANOBOT-value",
-       "wikipedia.parsed-value"
-     ]
-
-2. Register a new Avro schema (a record with two fields ``username`` and ``userid``) into |sr| for the value of a new topic ``users``. Note the schema id that it returns, e.g. below schema id is ``7``.
+2. Instead of using the superUser credentials, now use the client credentials `appSA:appSA` (the user `appSA` exists in LDAP) to try to register a new Avro schema (a record with two fields ``username`` and ``userid``) into |sr| for the value of a new topic ``users``. It should fail due to an authorization error.
 
    .. sourcecode:: bash
 
-       docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' -u connectAdmin:connectAdmin https://schemaregistry:8085/subjects/users-value/versions
+       docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' -u appSA:appSA https://schemaregistry:8085/subjects/users-value/versions
 
    Your output should resemble:
 
    .. sourcecode:: bash
 
-     {
-       "id": 7
-     }
+      {"error_code":40403,"message":"User is denied operation Write on Subject: users-value"}
+
+3. Create a role binding for the client permitting it access to |sr|.
+
+   .. sourcecode:: bash
+
+      # First get the KAFKA_CLUSTER_ID
+      KAFKA_CLUSTER_ID=$(docker-compose exec zookeeper zookeeper-shell zookeeper:2181 get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
+
+      # Then create the role binding for the subject ``users-value``, i.e., the topic-value (versus the topic-key)
+      docker-compose exec tools bash -c "confluent iam rolebinding create \
+          --principal User:appSA \
+          --role ResourceOwner \
+          --resource Subject:users-value \
+          --kafka-cluster-id $KAFKA_CLUSTER_ID \
+          --schema-registry-cluster-id schema-registry"
+
+4. Again try to register the schema. It should pass this time.  Note the schema id that it returns, e.g. below schema id is ``7``.
+
+   .. sourcecode:: bash
+
+       docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' -u appSA:appSA https://schemaregistry:8085/subjects/users-value/versions
+
+   Your output should resemble:
+
+   .. sourcecode:: bash
+
+     {"id":7}
 
 3. View the new schema for the subject ``users-value``. From |c3|, click **MANAGEMENT -> Topics**. Scroll down to and click on the topic `users` and select "SCHEMA".
 
@@ -1050,12 +1083,11 @@ All the applications and connectors used in this demo are configured to automati
 
    .. sourcecode:: bash
 
-       docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectAdmin:connectAdmin https://schemaregistry:8085/subjects/users-value/versions/1 | jq .
+       docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://schemaregistry:8085/subjects/users-value/versions/1 | jq .
 
    Your output should resemble:
 
    .. sourcecode:: bash
-
 
      {
        "subject": "users-value",
@@ -1070,44 +1102,135 @@ Confluent REST Proxy
 
 The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
 
-1. Use the REST Proxy, which is listening for HTTPS on port 8086, to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section.
+1. Use the REST Proxy, which is listening for HTTPS on port 8086, to try to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
 
    .. sourcecode:: bash
 
-     docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 7, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' https://restproxy:8086/topics/users
+     docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 7, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' -u appSA:appSA https://restproxy:8086/topics/users
 
    Your output should resemble:
 
    .. sourcecode:: bash
 
+      {"offsets":[{"partition":null,"offset":null,"error_code":40301,"error":"Not authorized to access topics: [users]"}],"key_schema_id":null,"value_schema_id":7}
+
+2. Create a role binding for the client permitting it produce to the topic ``users``.
+
+   .. sourcecode:: bash
+
+      # First get the KAFKA_CLUSTER_ID
+      KAFKA_CLUSTER_ID=$(docker-compose exec zookeeper zookeeper-shell zookeeper:2181 get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
+
+      # Then create the role binding for the topic ``users``
+      docker-compose exec tools bash -c "confluent iam rolebinding create \
+          --principal User:appSA \
+          --role DeveloperWrite \
+          --resource Topic:users \
+          --kafka-cluster-id $KAFKA_CLUSTER_ID" 
+
+3. Again try to produce a message to the topic ``users``. It should pass this time.
+
+   .. sourcecode:: bash
+
+     docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 7, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' -u appSA:appSA https://restproxy:8086/topics/users
+
+   Your output should resemble:
+
+   .. sourcecode:: bash
 
      {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":7}
 
-2. Create consumer instance ``my_avro_consumer``.
+4. Create consumer instance ``my_avro_consumer``.
 
    .. sourcecode:: bash
 
-       docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"name": "my_consumer_instance", "format": "avro", "auto.offset.reset": "earliest"}' https://restproxy:8086/consumers/my_avro_consumer
+       docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"name": "my_consumer_instance", "format": "avro", "auto.offset.reset": "earliest"}' -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer
 
-3. Subscribe my_avro_consumer to the `users` topic
+   Your output should resemble:
 
    .. sourcecode:: bash
 
-       docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"topics":["users"]}' https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/subscription
+      {"instance_id":"my_consumer_instance","base_uri":"https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance"}
 
-4. Get messages for my_avro_consumer subscriptions
+5. Subscribe my_avro_consumer to the `users` topic
+
+   .. sourcecode:: bash
+
+       docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"topics":["users"]}' -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/subscription
+
+6. Try to consume messages for my_avro_consumer subscriptions. It should fail due to an authorization error.
+
+   .. sourcecode:: bash
+
+       docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
+  
+   Your output should resemble:
+
+   .. sourcecode:: bash
+
+        {"error_code":40301,"message":"Not authorized to access group: my_avro_consumer"} 
+
+7. Create a role binding for the client permitting it access to the consumer group ``my_avro_consumer``.
+
+   .. sourcecode:: bash
+
+      # First get the KAFKA_CLUSTER_ID
+      KAFKA_CLUSTER_ID=$(docker-compose exec zookeeper zookeeper-shell zookeeper:2181 get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
+
+      # Then create the role binding for the group ``my_avro_consumer``
+      docker-compose exec tools bash -c "confluent iam rolebinding create \
+          --principal User:appSA \
+          --role ResourceOwner \
+          --resource Group:my_avro_consumer \
+          --kafka-cluster-id $KAFKA_CLUSTER_ID"
+
+8. Again try to consume messages for my_avro_consumer subscriptions. It should fail due to a different authorization error.
 
    .. sourcecode:: bash
 
        # Note: Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
-       docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
-       docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
+       docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
+       docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
 
-5. Delete the consumer instance ``my_avro_consumer``.
+   Your output should resemble:
 
    .. sourcecode:: bash
 
-       docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
+      {"error_code":40301,"message":"Not authorized to access topics: [users]"}
+
+9. Create a role binding for the client permitting it access to the topic ``users``.
+
+   .. sourcecode:: bash
+
+      # First get the KAFKA_CLUSTER_ID
+      KAFKA_CLUSTER_ID=$(docker-compose exec zookeeper zookeeper-shell zookeeper:2181 get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
+
+      # Then create the role binding for the group ``my_avro_consumer``
+      docker-compose exec tools bash -c "confluent iam rolebinding create \
+          --principal User:appSA \
+          --role DeveloperRead \
+          --resource Topic:users \
+          --kafka-cluster-id $KAFKA_CLUSTER_ID"
+
+10. Again try to consume messages for my_avro_consumer subscriptions. It should pass this time.
+
+   .. sourcecode:: bash
+
+       # Note: Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
+       docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
+       docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
+
+    Your output should resemble:
+
+   .. sourcecode:: bash
+
+      [{"topic":"users","key":null,"value":{"userid":1,"username":"Bunny Smith"},"partition":1,"offset":0}]
+
+11. Delete the consumer instance ``my_avro_consumer``.
+
+   .. sourcecode:: bash
+
+       docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
 
 
 ========================
@@ -1124,23 +1247,27 @@ Troubleshooting the demo
 
    .. sourcecode:: bash
 
-       Name                          Command               State                          Ports                       
-       --------------------------------------------------------------------------------------------------------------------------
-        connect                       /etc/confluent/docker/run        Up       0.0.0.0:8083->8083/tcp, 9092/tcp                  
-        control-center                /etc/confluent/docker/run        Up       0.0.0.0:9021->9021/tcp, 0.0.0.0:9022->9022/tcp    
-        elasticsearch                 /bin/bash bin/es-docker          Up       0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp    
-        kafka-client                  bash -c -a echo Waiting fo ...   Exit 0                                                     
-        kafka1                        /etc/confluent/docker/run        Up       0.0.0.0:29091->29091/tcp, 0.0.0.0:9091->9091/tcp, 
-                                                                        9092/tcp                                          
-        kafka2                        /etc/confluent/docker/run        Up       0.0.0.0:29092->29092/tcp, 0.0.0.0:9092->9092/tcp  
-        kibana                        /bin/sh -c /usr/local/bin/ ...   Up       0.0.0.0:5601->5601/tcp                            
-        ksql-cli                      /bin/sh                          Up                                                         
-        ksql-server                   /etc/confluent/docker/run        Up       0.0.0.0:8088->8088/tcp                            
-        replicator-for-jar-transfer   sleep infinity                   Up       8083/tcp, 9092/tcp                                
-        restproxy                     /etc/confluent/docker/run        Up       8082/tcp, 0.0.0.0:8086->8086/tcp                  
-        schemaregistry                /etc/confluent/docker/run        Up       8081/tcp, 0.0.0.0:8085->8085/tcp                  
-        streams-demo                  /bin/sh -c /app/start.sh         Up       9092/tcp                                          
-        zookeeper                     /etc/confluent/docker/run        Up       0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp        
+                 Name                          Command                  State                                           Ports                                     
+      ------------------------------------------------------------------------------------------------------------------------------------------------------------
+      connect                       bash -c sleep 10 && cp /us ...   Up             0.0.0.0:8083->8083/tcp, 9092/tcp
+      control-center                /etc/confluent/docker/run        Up (healthy)   0.0.0.0:9021->9021/tcp, 0.0.0.0:9022->9022/tcp
+      elasticsearch                 /bin/bash bin/es-docker          Up             0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp
+      kafka-client                  bash -c -a echo Waiting fo ...   Exit 0
+      kafka1                        bash -c if [ ! -f /etc/kaf ...   Up (healthy)   0.0.0.0:10091->10091/tcp, 0.0.0.0:11091->11091/tcp, 0.0.0.0:12091->12091/tcp,
+                                                                                    0.0.0.0:8091->8091/tcp, 0.0.0.0:9091->9091/tcp, 9092/tcp
+      kafka2                        bash -c if [ ! -f /etc/kaf ...   Up (healthy)   0.0.0.0:10092->10092/tcp, 0.0.0.0:11092->11092/tcp, 0.0.0.0:12092->12092/tcp,
+                                                                                    0.0.0.0:8092->8092/tcp, 0.0.0.0:9092->9092/tcp
+      kibana                        /bin/sh -c /usr/local/bin/ ...   Up             0.0.0.0:5601->5601/tcp
+      ksql-cli                      /bin/sh                          Up
+      ksql-server                   /etc/confluent/docker/run        Up (healthy)   0.0.0.0:8088->8088/tcp
+      openldap                      /container/tool/run --copy ...   Up             0.0.0.0:389->389/tcp, 636/tcp
+      replicator-for-jar-transfer   sleep infinity                   Up             8083/tcp, 9092/tcp
+      restproxy                     /etc/confluent/docker/run        Up             8082/tcp, 0.0.0.0:8086->8086/tcp
+      schemaregistry                /etc/confluent/docker/run        Up             8081/tcp, 0.0.0.0:8085->8085/tcp
+      streams-demo                  /app/start.sh                    Up             9092/tcp
+      tools                         /bin/bash                        Up
+      zookeeper                     /etc/confluent/docker/run        Up (healthy)   0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
+
 
 2. To view sample messages for each topic, including
    ``wikipedia.parsed``:

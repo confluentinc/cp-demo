@@ -1,5 +1,8 @@
 #!/bin/bash -e
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+. ${DIR}/functions.sh
 
 ################################## GET KAFKA CLUSTER ID ########################
 KAFKA_CLUSTER_ID=$(zookeeper-shell zookeeper:2181 get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
@@ -27,29 +30,7 @@ KSQL_USER="User:ksqlUser"
 C3_ADMIN="User:controlcenterAdmin"
 CLIENT_PRINCIPAL="User:appSA"
 
-# Log into MDS
-if [[ $(type expect 2>&1) =~ "not found" ]]; then
-  echo "'expect' is not found. Install 'expect' and try again"
-  exit 1
-fi
-echo -e "\n# Login"
-OUTPUT=$(
-expect <<END
-  log_user 1
-  spawn confluent login --url $MDS_URL
-  expect "Username: "
-  send "${SUPER_USER}\r";
-  expect "Password: "
-  send "${SUPER_USER_PASSWORD}\r";
-  expect "Logged in as "
-  set result $expect_out(buffer)
-END
-)
-echo "$OUTPUT"
-if [[ ! "$OUTPUT" =~ "Logged in as" ]]; then
-  echo "Failed to log into your Metadata Server.  Please check all parameters and run again"
-  exit 1
-fi
+mds_login $MDS_URL ${SUPER_USER} ${SUPER_USER_PASSWORD}
 
 ################################### SETUP SUPERUSER ###################################
 echo "Creating Super User role bindings"
