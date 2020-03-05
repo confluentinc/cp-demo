@@ -16,14 +16,14 @@ SR=schema-registry
 KSQL=ksql-cluster
 C3=c3-cluster
 
-SUPER_USER=professor
-SUPER_USER_PASSWORD=professor
+SUPER_USER=superuserSA
+SUPER_USER_PASSWORD=superuserSA
 SUPER_USER_PRINCIPAL="User:$SUPER_USER"
-CONNECT_PRINCIPAL="User:fry"
-SR_PRINCIPAL="User:leela"
-KSQL_PRINCIPAL="User:zoidberg"
-C3_PRINCIPAL="User:hermes"
-CLIENT_PRINCIPAL="User:client"
+CONNECT_PRINCIPAL="User:connectSA"
+SR_PRINCIPAL="User:schemaregistrySA"
+KSQL_PRINCIPAL="User:ksqlSA"
+C3_PRINCIPAL="User:controlcenterSA"
+CLIENT_PRINCIPAL="User:appSA"
 
 # Log into MDS
 if [[ $(type expect 2>&1) =~ "not found" ]]; then
@@ -301,7 +301,7 @@ confluent iam rolebinding create \
 ################################### Client ###################################
 echo "Creating streams-demo client role bindings"
 
-# TODO: Change user from hermes (used by C3) to its own dedicated LDAP account
+# TODO: Change user from controlcenterSA (used by C3) to its own dedicated LDAP account
 confluent iam rolebinding create \
     --principal $C3_PRINCIPAL \
     --role ResourceOwner \

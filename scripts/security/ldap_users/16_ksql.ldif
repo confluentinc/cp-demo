@@ -1,0 +1,15 @@
+dn: cn=ksqlSA,ou=users,{{ LDAP_BASE_DN }}
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: ksqlSA
+sn: Sheen
+givenName: KSQL
+cn: ksqlSA
+displayName: KSQL Sheen
+uidNumber: 10016
+gidNumber: 5000
+userPassword: ksqlSA
+gecos: ksqlSA
+loginShell: /bin/bash
+homeDirectory: /home/ksqlSA

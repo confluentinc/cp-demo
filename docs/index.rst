@@ -69,7 +69,7 @@ Run demo
 
         ./scripts/start.sh
 
-4. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Log in as super user ``professor`` and password ``professor``. Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
+4. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Log in as super user ``superuserSA`` and password ``professor``. Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
 
 5. View the data in the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
@@ -802,7 +802,7 @@ Follow along with the `Security <https://www.youtube.com/watch?v=RwuF7cYcsec>`_ 
 All the components in this demo are enabled with many `security
 features <https://docs.confluent.io/current/security.html>`__:
 
--  ref:`RBAC <rbac-overview>` enbabled for the entire platform
+-  ref:`RBAC <rbac-overview>` enabled for the entire platform (LDAP users: ``docker-compose exec openldap ldapsearch -x -h localhost -b dc=confluent,dc=io -D "cn=admin,dc=confluent,dc=io" -w admin | grep uid:``)
 -  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__
    for encryption, except for ZooKeeper which does not support SSL
 -  `SASL/PLAIN <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html>`__
@@ -1009,7 +1009,7 @@ All the applications and connectors used in this demo are configured to automati
 
    .. sourcecode:: bash
 
-       docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u fry:fry https://schemaregistry:8085/subjects | jq .
+       docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectSA:connectSA https://schemaregistry:8085/subjects | jq .
 
    Your output should resemble:
 
@@ -1030,7 +1030,7 @@ All the applications and connectors used in this demo are configured to automati
 
    .. sourcecode:: bash
 
-       docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' -u fry:fry https://schemaregistry:8085/subjects/users-value/versions
+       docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' -u connectSA:connectSA https://schemaregistry:8085/subjects/users-value/versions
 
    Your output should resemble:
 
@@ -1049,7 +1049,7 @@ All the applications and connectors used in this demo are configured to automati
 
    .. sourcecode:: bash
 
-       docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u fry:fry https://schemaregistry:8085/subjects/users-value/versions/1 | jq .
+       docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectSA:connectSA https://schemaregistry:8085/subjects/users-value/versions/1 | jq .
 
    Your output should resemble:
 
