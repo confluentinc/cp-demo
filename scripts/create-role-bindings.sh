@@ -22,7 +22,7 @@ SUPER_USER_PRINCIPAL="User:$SUPER_USER"
 CONNECT_PRINCIPAL="User:connectUser"
 SR_PRINCIPAL="User:schemaregistryUser"
 KSQL_PRINCIPAL="User:ksqlUser"
-C3_PRINCIPAL="User:controlcenterUser"
+C3_ADMIN="User:controlcenterAdmin"
 CLIENT_PRINCIPAL="User:appSA"
 
 # Log into MDS
@@ -294,16 +294,16 @@ echo "Creating C3 role bindings"
 
 # C3 only needs SystemAdmin on the kafka cluster itself
 confluent iam rolebinding create \
-    --principal $C3_PRINCIPAL \
+    --principal $C3_ADMIN \
     --role SystemAdmin \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 ################################### Client ###################################
 echo "Creating streams-demo client role bindings"
 
-# TODO: Change user from controlcenterUser (used by C3) to its own dedicated LDAP account
+# TODO: Change user from controlcenterAdmin (used by C3) to its own dedicated LDAP account
 confluent iam rolebinding create \
-    --principal $C3_PRINCIPAL \
+    --principal $C3_ADMIN \
     --role ResourceOwner \
     --resource Subject:wikipedia \
     --prefix \
@@ -321,10 +321,10 @@ echo
 echo "Cluster IDs as environment variables:"
 echo "    export KAFKA_ID=$KAFKA_CLUSTER_ID ; export CONNECT_ID=$CONNECT ; export SR_ID=$SR ; export KSQL_ID=$KSQL"
 echo
-echo "Service accounts:"
+echo "Principals:"
 echo "    super user account: $SUPER_USER_PRINCIPAL"
 echo "    connect service account: $CONNECT_PRINCIPAL"
 echo "    schema registry service account: $SR_PRINCIPAL"
 echo "    KSQL service account: $KSQL_PRINCIPAL"
-echo "    C3 service account: $C3_PRINCIPAL"
+echo "    C3 Admin: $C3_ADMIN"
 

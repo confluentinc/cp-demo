@@ -626,7 +626,7 @@ services:
       CONTROL_CENTER_REST_AUTHENTICATION_METHOD: BEARER
       PUBLIC_KEY_PATH: /tmp/conf/public.pem
       
-      CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: controlcenterUser:controlcenterUser
+      CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: controlcenterAdmin:controlcenterAdmin
       CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
       
       CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SSL
@@ -637,8 +637,8 @@ services:
       CONTROL_CENTER_STREAMS_SASL_JAAS_CONFIG: |
                                                 \
                                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                                username="controlcenterUser" \
-                                                password="controlcenterUser" \
+                                                username="controlcenterAdmin" \
+                                                password="controlcenterAdmin" \
                                                 metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
 
 
@@ -715,7 +715,7 @@ services:
     # must control startup order more explicitly.
     # See https://docs.docker.com/compose/startup-order/
 
-    # TODO: re-enable Schema Validation when DG-274 is resolved
+    # Schema Validation disabled until DG-274 is resolved
     command: "bash -c -a 'echo Waiting for Kafka to be ready... && \
                        /etc/confluent/docker/configure && \
                        cub kafka-ready -b kafka1:10091 1 60 --config /etc/kafka/kafka.properties && \
@@ -965,8 +965,8 @@ services:
       KAFKA_SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.keystore.jks"
       KAFKA_SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: "confluent"
       KAFKA_BASIC_AUTH_CREDENTIALS_SOURCE: "USER_INFO"
-      # TODO: Change user from controlcenterUser (used by C3) to its own dedicated LDAP account
-      KAFKA_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 'controlcenterUser:controlcenterUser'
+      # TODO: Change user from controlcenterAdmin (used by C3) to its own dedicated LDAP account
+      KAFKA_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 'controlcenterAdmin:controlcenterAdmin'
 
       # Monitoring interceptors authenticate to brokers with mTLS
       KAFKA_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
