@@ -1,15 +1,15 @@
-dn: cn=schemaregistrySA,ou=users,{{ LDAP_BASE_DN }}
+dn: cn=schemaregistryUser,ou=users,{{ LDAP_BASE_DN }}
 objectClass: inetOrgPerson
 objectClass: posixAccount
 objectClass: shadowAccount
-uid: schemaregistrySA
+uid: schemaregistryUser
 sn: Sheen
 givenName: SchemaRegistry
-cn: schemaregistrySA
+cn: schemaregistryUser
 displayName: SchemaRegistry Sheen
 uidNumber: 10015
 gidNumber: 5000
-userPassword: schemaregistrySA
-gecos: schemaregistrySA
+userPassword: schemaregistryUser
+gecos: schemaregistryUser
 loginShell: /bin/bash
-homeDirectory: /home/schemaregistrySA
+homeDirectory: /home/schemaregistryUser

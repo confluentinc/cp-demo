@@ -16,13 +16,13 @@ SR=schema-registry
 KSQL=ksql-cluster
 C3=c3-cluster
 
-SUPER_USER=superuserSA
-SUPER_USER_PASSWORD=superuserSA
+SUPER_USER=superuser
+SUPER_USER_PASSWORD=superuser
 SUPER_USER_PRINCIPAL="User:$SUPER_USER"
-CONNECT_PRINCIPAL="User:connectSA"
-SR_PRINCIPAL="User:schemaregistrySA"
-KSQL_PRINCIPAL="User:ksqlSA"
-C3_PRINCIPAL="User:controlcenterSA"
+CONNECT_PRINCIPAL="User:connectUser"
+SR_PRINCIPAL="User:schemaregistryUser"
+KSQL_PRINCIPAL="User:ksqlUser"
+C3_PRINCIPAL="User:controlcenterUser"
 CLIENT_PRINCIPAL="User:appSA"
 
 # Log into MDS
@@ -301,7 +301,7 @@ confluent iam rolebinding create \
 ################################### Client ###################################
 echo "Creating streams-demo client role bindings"
 
-# TODO: Change user from controlcenterSA (used by C3) to its own dedicated LDAP account
+# TODO: Change user from controlcenterUser (used by C3) to its own dedicated LDAP account
 confluent iam rolebinding create \
     --principal $C3_PRINCIPAL \
     --role ResourceOwner \

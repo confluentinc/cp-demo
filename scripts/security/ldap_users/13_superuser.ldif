@@ -1,15 +1,15 @@
-dn: cn=superuserSA,ou=users,{{ LDAP_BASE_DN }}
+dn: cn=superuser,ou=users,{{ LDAP_BASE_DN }}
 objectClass: inetOrgPerson
 objectClass: posixAccount
 objectClass: shadowAccount
-uid: superuserSA
+uid: superuser
 sn: Sheen
 givenName: SuperUser
-cn: superuserSA
+cn: superuser
 displayName: SuperUser Sheen
 uidNumber: 10013
 gidNumber: 5000
-userPassword: superuserSA
-gecos: superuserSA
+userPassword: superuser
+gecos: superuser
 loginShell: /bin/bash
-homeDirectory: /home/superuserSA
+homeDirectory: /home/superuser

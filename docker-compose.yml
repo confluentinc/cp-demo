@@ -77,7 +77,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka1:9091,EXTERNAL://kafka1:10091,SSL://kafka1:11091
       
-      KAFKA_SUPER_USERS: User:admin;User:mds;User:superuserSA;User:client;User:schemaregistry;User:restproxy;User:broker;User:connect;User:ANONYMOUS
+      KAFKA_SUPER_USERS: User:admin;User:mds;User:superuser;User:client;User:schemaregistry;User:restproxy;User:broker;User:connect;User:ANONYMOUS
       KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=INFO"
       KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
 
@@ -136,9 +136,9 @@ services:
       # Schema Validation
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: https://schemaregistry:8085
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE: "USER_INFO"
-      KAFKA_CONFLUENT_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 'superuserSA:superuserSA'
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 'superuser:superuser'
       KAFKA_CONFLUENT_BASIC_AUTH_CREDENTIALS_SOURCE: "USER_INFO"
-      KAFKA_CONFLUENT_BASIC_AUTH_USER_INFO: 'superuserSA:superuserSA'
+      KAFKA_CONFLUENT_BASIC_AUTH_USER_INFO: 'superuser:superuser'
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
                   -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.kafka1.truststore.jks
                   -Djavax.net.ssl.trustStorePassword=confluent
@@ -219,7 +219,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka2:9092,EXTERNAL://kafka2:10092,SSL://kafka2:11092
       
-      KAFKA_SUPER_USERS: User:admin;User:mds;User:superuserSA;User:client;User:schemaregistry;User:restproxy;User:broker;User:connect;User:ANONYMOUS
+      KAFKA_SUPER_USERS: User:admin;User:mds;User:superuser;User:client;User:schemaregistry;User:restproxy;User:broker;User:connect;User:ANONYMOUS
       KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=INFO"
       KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
 
@@ -278,9 +278,9 @@ services:
       # Schema Validation
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: https://schemaregistry:8085
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE: "USER_INFO"
-      KAFKA_CONFLUENT_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 'superuserSA:superuserSA'
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 'superuser:superuser'
       KAFKA_CONFLUENT_BASIC_AUTH_CREDENTIALS_SOURCE: "USER_INFO"
-      KAFKA_CONFLUENT_BASIC_AUTH_USER_INFO: 'superuserSA:superuserSA'
+      KAFKA_CONFLUENT_BASIC_AUTH_USER_INFO: 'superuser:superuser'
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
                   -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.kafka2.truststore.jks
                   -Djavax.net.ssl.trustStorePassword=confluent
@@ -423,8 +423,8 @@ services:
       CONNECT_SASL_JAAS_CONFIG: |
                                 \
                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                username="connectSA" \
-                                password="connectSA" \
+                                username="connectUser" \
+                                password="connectUser" \
                                 metadataServerUrls="http://kafka1:8090";
 
       # Allow overriding configs on the connector level
@@ -436,16 +436,16 @@ services:
       CONNECT_PRODUCER_SASL_JAAS_CONFIG: |
                                 \
                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                username="connectSA" \
-                                password="connectSA" \
+                                username="connectUser" \
+                                password="connectUser" \
                                 metadataServerUrls="http://kafka1:8090";
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_MECHANISM: 'OAUTHBEARER'
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_LOGIN_CALLBACK_HANDLER_CLASS: 'io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler'
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: |
                                 \
                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                username="connectSA" \
-                                password="connectSA" \
+                                username="connectUser" \
+                                password="connectUser" \
                                 metadataServerUrls="http://kafka1:8090";
 
       # Consumer
@@ -454,16 +454,16 @@ services:
       CONNECT_CONSUMER_SASL_JAAS_CONFIG: |
                                 \
                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                username="connectSA" \
-                                password="connectSA" \
+                                username="connectUser" \
+                                password="connectUser" \
                                 metadataServerUrls="http://kafka1:8090";
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_MECHANISM: 'OAUTHBEARER'
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_LOGIN_CALLBACK_HANDLER_CLASS: 'io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler'
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: |
                                 \
                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                username="connectSA" \
-                                password="connectSA" \
+                                username="connectUser" \
+                                password="connectUser" \
                                 metadataServerUrls="http://kafka1:8090";
 
       # Default admin config
@@ -473,8 +473,8 @@ services:
       CONNECT_ADMIN_SASL_JAAS_CONFIG: |
                                 \
                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                username="connectSA" \
-                                password="connectSA" \
+                                username="connectUser" \
+                                password="connectUser" \
                                 metadataServerUrls="http://kafka1:8090";
       CONNECT_ADMIN_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.truststore.jks
       CONNECT_ADMIN_SSL_TRUSTSTORE_PASSWORD: confluent
@@ -486,7 +486,7 @@ services:
       CONNECT_REST_SERVLET_INITIALIZOR_CLASSES: 'io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler'
       CONNECT_PUBLIC_KEY_PATH: /tmp/conf/public.pem
       CONNECT_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8090
-      CONNECT_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'connectSA:connectSA'
+      CONNECT_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'connectUser:connectUser'
       CONNECT_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: 'BASIC'
 
       # ========================= SECRET REGISTRY ==================================
@@ -506,8 +506,8 @@ services:
       CONNECT_CONFIG_PROVIDERS_SECRET_PARAM_KAFKASTORE_SASL_JAAS_CONFIG: |
                                 \
                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                username="connectSA" \
-                                password="connectSA" \
+                                username="connectUser" \
+                                password="connectUser" \
                                 metadataServerUrls="http://kafka1:8090";
 
       # KAFKA_OPTS required for ReplicatorMonitoringExtension
@@ -620,7 +620,7 @@ services:
       CONTROL_CENTER_REST_AUTHENTICATION_METHOD: BEARER
       PUBLIC_KEY_PATH: /tmp/conf/public.pem
       
-      CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: controlcenterSA:controlcenterSA
+      CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: controlcenterUser:controlcenterUser
       CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8090
       
       CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SSL
@@ -631,8 +631,8 @@ services:
       CONTROL_CENTER_STREAMS_SASL_JAAS_CONFIG: |
                                                 \
                                                 org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                                username="controlcenterSA" \
-                                                password="controlcenterSA" \
+                                                username="controlcenterUser" \
+                                                password="controlcenterUser" \
                                                 metadataServerUrls="http://kafka1:8090";
 
 
@@ -662,8 +662,8 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_SASL_JAAS_CONFIG: |
                                                     \
                                                     org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                                    username="schemaregistrySA" \
-                                                    password="schemaregistrySA" \
+                                                    username="schemaregistryUser" \
+                                                    password="schemaregistryUser" \
                                                     metadataServerUrls="http://kafka1:8090";
       SCHEMA_REGISTRY_KAFKASTORE_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.schemaregistry.truststore.jks
       SCHEMA_REGISTRY_KAFKASTORE_SSL_TRUSTSTORE_PASSWORD: confluent
@@ -690,7 +690,7 @@ services:
       # how to connect to MDS
       SCHEMA_REGISTRY_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8090
       SCHEMA_REGISTRY_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
-      SCHEMA_REGISTRY_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: schemaregistrySA:schemaregistrySA
+      SCHEMA_REGISTRY_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: schemaregistryUser:schemaregistryUser
       # public key to verify tokens during authentication
       SCHEMA_REGISTRY_PUBLIC_KEY_PATH: /tmp/conf/public.pem
     ports:
@@ -789,7 +789,7 @@ services:
       KSQL_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8090
       KSQL_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
       KSQL_CONFLUENT_METADATA_BASIC_AUTH_CREDENTIALS_PROVIDER: USER_INFO
-      KSQL_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: ksqlSA:ksqlSA
+      KSQL_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: ksqlUser:ksqlUser
 
       # Credentials for kafka access
       KSQL_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
@@ -813,12 +813,12 @@ services:
       KSQL_SASL_JAAS_CONFIG: |
                               \
                               org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                              username="ksqlSA" \
-                              password="ksqlSA" \
+                              username="ksqlUser" \
+                              password="ksqlUser" \
                               metadataServerUrls="http://kafka1:8090";
 
       KSQL_KSQL_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
-      KSQL_KSQL_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: ksqlSA:ksqlSA
+      KSQL_KSQL_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: ksqlUser:ksqlUser
 
       # Confluent Monitoring Interceptors for Control Center streams monitoring
       KSQL_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
@@ -834,8 +834,8 @@ services:
       KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: |
                               \
                               org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                              username="ksqlSA" \
-                              password="ksqlSA" \
+                              username="ksqlUser" \
+                              password="ksqlUser" \
                               metadataServerUrls="http://kafka1:8090";
 
   ksql-cli:
@@ -900,8 +900,8 @@ services:
       KAFKA_REST_CLIENT_SASL_JAAS_CONFIG: |
                                           \
                                           org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-                                          username="connectSA" \
-                                          password="connectSA" \
+                                          username="connectUser" \
+                                          password="connectUser" \
                                           metadataServerUrls="http://kafka1:8090";
       KAFKA_REST_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
 
@@ -914,7 +914,7 @@ services:
       # how to connect to MDS
       KAFKA_REST_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8090
       KAFKA_REST_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
-      KAFKA_REST_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'connectSA:connectSA'
+      KAFKA_REST_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'connectUser:connectUser'
 
 
     ports:
@@ -960,8 +960,8 @@ services:
       KAFKA_SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.keystore.jks"
       KAFKA_SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: "confluent"
       KAFKA_BASIC_AUTH_CREDENTIALS_SOURCE: "USER_INFO"
-      # TODO: Change user from controlcenterSA (used by C3) to its own dedicated LDAP account
-      KAFKA_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 'controlcenterSA:controlcenterSA'
+      # TODO: Change user from controlcenterUser (used by C3) to its own dedicated LDAP account
+      KAFKA_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 'controlcenterUser:controlcenterUser'
 
       # Monitoring interceptors authenticate to brokers with mTLS
       KAFKA_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"

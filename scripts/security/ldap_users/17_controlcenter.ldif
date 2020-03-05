@@ -1,15 +1,15 @@
-dn: cn=controlcenterSA,ou=users,{{ LDAP_BASE_DN }}
+dn: cn=controlcenterUser,ou=users,{{ LDAP_BASE_DN }}
 objectClass: inetOrgPerson
 objectClass: posixAccount
 objectClass: shadowAccount
-uid: controlcenterSA
+uid: controlcenterUser
 sn: Sheen
 givenName: ControlCenter
-cn: controlcenterSA
+cn: controlcenterUser
 displayName: ControlCenter Sheen
 uidNumber: 10017
 gidNumber: 5000
-userPassword: controlcenterSA
-gecos: controlcenterSA
+userPassword: controlcenterUser
+gecos: controlcenterUser
 loginShell: /bin/bash
-homeDirectory: /home/controlcenterSA
+homeDirectory: /home/controlcenterUser

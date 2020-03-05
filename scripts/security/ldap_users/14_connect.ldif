@@ -1,15 +1,15 @@
-dn: cn=connectSA,ou=users,{{ LDAP_BASE_DN }}
+dn: cn=connectUser,ou=users,{{ LDAP_BASE_DN }}
 objectClass: inetOrgPerson
 objectClass: posixAccount
 objectClass: shadowAccount
-uid: connectSA
+uid: connectUser
 sn: Sheen
 givenName: Connect
-cn: connectSA
+cn: connectUser
 displayName: Connect Sheen
 uidNumber: 10014
 gidNumber: 5000
-userPassword: connectSA
-gecos: connectSA
+userPassword: connectUser
+gecos: connectUser
 loginShell: /bin/bash
-homeDirectory: /home/connectSA
+homeDirectory: /home/connectUser
