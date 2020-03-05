@@ -265,7 +265,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
    .. sourcecode:: bash
 
-        docker-compose exec ksql-cli ksql http://ksql-server:8088
+        docker-compose exec ksql-cli bash -c 'ksql -u ksqlUser -p ksqlUser http://ksql-server:8088'
 
 4. View the existing KSQL streams. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``).
 
@@ -292,7 +292,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
    .. figure:: images/ksql_query_topic.png
       :alt: image
 
-9. Click **KSQL Editor** and run the ``SHOW PROPERTIES;`` statement. You can see the configured KSQL server properties and check these values with the `docker-compose.yml` file.
+9. Click **KSQL Editor** and run the ``SHOW PROPERTIES;`` statement. You can see the configured KSQL server properties and check these values with the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
 
    .. figure:: images/ksql_properties.png
       :alt: image
