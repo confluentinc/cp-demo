@@ -21,7 +21,7 @@ DATA=$( cat << EOF
     "value.converter.schema.registry.ssl.keystore.password": "confluent",
     "value.converter.basic.auth.credentials.source": "USER_INFO",
     "value.converter.basic.auth.user.info": "connectUser:connectUser",
-    "producer.override.sasl.jaas.config": "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username=\"connectUser\" password=\"connectUser\" metadataServerUrls=\"http://kafka1:8090\";",
+    "producer.override.sasl.jaas.config": "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username=\"connectUser\" password=\"connectUser\" metadataServerUrls=\"http://kafka1:8091,http://kafka2:8092\";",
     "schema.ignore": true
 
   }

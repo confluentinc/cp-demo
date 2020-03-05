@@ -10,14 +10,14 @@ if [ -z "$KAFKA_CLUSTER_ID" ]; then
 fi
 
 ################################## SETUP VARIABLES #############################
-MDS_URL=http://kafka1:8090
+MDS_URL=http://kafka1:8091
 CONNECT=connect-cluster
 SR=schema-registry
 KSQL=ksql-cluster
 C3=c3-cluster
 
-SUPER_USER=superuser
-SUPER_USER_PASSWORD=superuser
+SUPER_USER=superUser
+SUPER_USER_PASSWORD=superUser
 SUPER_USER_PRINCIPAL="User:$SUPER_USER"
 CONNECT_PRINCIPAL="User:connectUser"
 SR_PRINCIPAL="User:schemaregistryUser"

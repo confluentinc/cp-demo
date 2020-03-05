@@ -124,7 +124,7 @@ ${DIR}/consumers/listen_EN_WIKIPEDIA_GT_1_COUNTS.sh
 MAX_WAIT=50
 CUR_WAIT=0
 echo -e "\nWaiting up to $MAX_WAIT seconds for wikipedia.parsed topic to be populated"
-while [[ ! $(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superuser:superuser https://schemaregistry:8085/subjects) =~ "wikipedia.parsed-value" ]]; do
+while [[ ! $(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://schemaregistry:8085/subjects) =~ "wikipedia.parsed-value" ]]; do
   sleep 3
   CUR_WAIT=$(( CUR_WAIT+3 ))
   if [[ "$CUR_WAIT" -gt "$MAX_WAIT" ]]; then
@@ -135,8 +135,8 @@ done
 
 # Register the same schema for the replicated topic wikipedia.parsed.replica as was created for the original topic wikipedia.parsed
 # In this case the replicated topic will register with the same schema ID as the original topic
-SCHEMA=$(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superuser:superuser https://schemaregistry:8085/subjects/wikipedia.parsed-value/versions/latest | jq .schema)
-docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -H "Content-Type: application/vnd.schemaregistry.v1+json" --data "{\"schema\": $SCHEMA}" -u superuser:superuser https://schemaregistry:8085/subjects/wikipedia.parsed.replica-value/versions
+SCHEMA=$(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed-value/versions/latest | jq .schema)
+docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -H "Content-Type: application/vnd.schemaregistry.v1+json" --data "{\"schema\": $SCHEMA}" -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed.replica-value/versions
 
 echo -e "\nStart Confluent Replicator:"
 ${DIR}/connectors/submit_replicator_config.sh
@@ -146,5 +146,5 @@ ${DIR}/control-center-modifications.sh
 
 
 echo -e "\n\n\n******************************************************************"
-echo -e "DONE! Connect to Confluent Control Center at http://localhost:9021 (login as superuser/superuser for full access)"
+echo -e "DONE! Connect to Confluent Control Center at http://localhost:9021 (login as superUser/superUser for full access)"
 echo -e "******************************************************************\n"
