@@ -942,7 +942,9 @@ services:
     depends_on:
       - zookeeper
       - kafka1
+      - kafka2
       - schemaregistry
+      - connect
     hostname: streams-demo
     container_name: streams-demo
     volumes:
@@ -965,8 +967,7 @@ services:
       KAFKA_SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: "/etc/kafka/secrets/kafka.client.keystore.jks"
       KAFKA_SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: "confluent"
       KAFKA_BASIC_AUTH_CREDENTIALS_SOURCE: "USER_INFO"
-      # TODO: Change user from controlcenterAdmin (used by C3) to its own dedicated LDAP account
-      KAFKA_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 'controlcenterAdmin:controlcenterAdmin'
+      KAFKA_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 'appSA:appSA'
 
       # Monitoring interceptors authenticate to brokers with mTLS
       KAFKA_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"

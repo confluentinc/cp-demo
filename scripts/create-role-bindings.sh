@@ -299,11 +299,24 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 ################################### Client ###################################
-echo "Creating streams-demo client role bindings"
+echo "Creating role bindings for the service account running the streams-demo application"
 
-# TODO: Change user from controlcenterAdmin (used by C3) to its own dedicated LDAP account
 confluent iam rolebinding create \
-    --principal $C3_ADMIN \
+    --principal $CLIENT_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Group:wikipedia \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
+confluent iam rolebinding create \
+    --principal $CLIENT_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Topic:wikipedia \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
+confluent iam rolebinding create \
+    --principal $CLIENT_PRINCIPAL \
     --role ResourceOwner \
     --resource Subject:wikipedia \
     --prefix \
@@ -323,8 +336,11 @@ echo "    export KAFKA_ID=$KAFKA_CLUSTER_ID ; export CONNECT_ID=$CONNECT ; expor
 echo
 echo "Principals:"
 echo "    super user account: $SUPER_USER_PRINCIPAL"
-echo "    connect service account: $CONNECT_PRINCIPAL"
-echo "    schema registry service account: $SR_PRINCIPAL"
-echo "    KSQL service account: $KSQL_PRINCIPAL"
+echo "    connect user: $CONNECT_PRINCIPAL"
+echo "    schema registry user: $SR_PRINCIPAL"
+echo "    KSQL user: $KSQL_PRINCIPAL"
 echo "    C3 Admin: $C3_ADMIN"
+echo "    Client service account: $CLIENT_PRINCIPAL"
+echo
+
 
