@@ -591,8 +591,8 @@ skipping messages that will never be read.
    .. sourcecode:: bash
 
          docker-compose exec kafka1 kafka-consumer-groups \
-         --reset-offsets --group app --to-latest --bootstrap-server kafka1:12091 \
-         --all-topics --execute
+           --reset-offsets --group app --to-latest --bootstrap-server kafka1:12091 \
+           --all-topics --execute
 
    Your output should resemble:
 
@@ -802,7 +802,7 @@ Follow along with the `Security <https://www.youtube.com/watch?v=RwuF7cYcsec>`_ 
 All the components in this demo are enabled with many `security
 features <https://docs.confluent.io/current/security.html>`__:
 
--  ref:`RBAC <rbac-overview>` enabled for the entire platform
+-  :ref:`RBAC <rbac-overview>` enabled for the entire platform
 -  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__
    for encryption, except for ZooKeeper which does not support SSL
 -  `SASL/PLAIN <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html>`__
@@ -826,21 +826,26 @@ features <https://docs.confluent.io/current/security.html>`__:
 Encryption & Authentication
 ---------------------------
 
+Confluent Platform services and clients can authenticate via the OpenLDAP server running in the demo.
+The demo is configured with :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization.
+Each Kafka broker in the demo is configured with MDS and can talk to LDAP.
+
 Each broker has five listener ports:
 
-+---------------+----------------+------------------------------------------------------------------------+--------+--------+
-| Name          | Protocol       | For users ...                                                          | kafka1 | kafka2 |
-+===============+================+========================================================================+========+========+
-| N/A           | MDS            | Authorizing via RBAC                                                   | 8091   | 8092   |
-+---------------+----------------+------------------------------------------------------------------------+--------+--------+
-| INTERNAL      | SASL_PLAINTEXT | Inside Docker containers                                               | 9091   | 9092   |
-+---------------+----------------+------------------------------------------------------------------------+--------+--------+
-| EXTERNAL      | SASL_SSL       | Outside Docker containers communicating to the Docker containers       | 10091  | 10092  |
-+---------------+----------------+------------------------------------------------------------------------+--------+--------+
-| SSL           | SSL            | With just SSL, no SASL                                                 | 11091  | 11092  |
-+---------------+----------------+------------------------------------------------------------------------+--------+--------+
-| CLEAR         | PLAINTEXT      | No security enabled (unrealistic; for demo and learning only)          | 12091  | 12092  |
-+---------------+----------------+------------------------------------------------------------------------+--------+--------+
++---------------+----------------+--------------------------------------------------------------------+--------+--------+
+| Name          | Protocol       | For users ...                                                      | kafka1 | kafka2 |
++===============+================+====================================================================+========+========+
+| N/A           | MDS            | Authorization via RBAC (platform components only, not end clients) | 8091   | 8092   |
++---------------+----------------+--------------------------------------------------------------------+--------+--------+
+| INTERNAL      | SASL_PLAINTEXT | Inside Docker containers                                           | 9091   | 9092   |
++---------------+----------------+--------------------------------------------------------------------+--------+--------+
+| EXTERNAL      | SASL_SSL       | Outside Docker containers communicating to the Docker containers   | 10091  | 10092  |
++---------------+----------------+--------------------------------------------------------------------+--------+--------+
+| SSL           | SSL            | With just SSL, no SASL                                             | 11091  | 11092  |
++---------------+----------------+--------------------------------------------------------------------+--------+--------+
+| CLEAR         | PLAINTEXT      | No security enabled (unrealistic; for demo and learning only)      | 12091  | 12092  |
++---------------+----------------+--------------------------------------------------------------------+--------+--------+
+
 
 
 -------------
