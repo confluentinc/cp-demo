@@ -1,10 +1,13 @@
 version: "2.3"
 services:
+
   zookeeper:
     image: confluentinc/cp-zookeeper:5.4.0
     restart: always
     hostname: zookeeper
     container_name: zookeeper
+    ports:
+      - "2181:2181"
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: "2181"
@@ -19,8 +22,6 @@ services:
       interval: 5s
       retries: 5
       start_period: 30s
-    ports:
-      - "2181:2181"
 
   tools:
     image: cnfltraining/training-tools:5.4
@@ -38,12 +39,12 @@ services:
     image: osixia/openldap:1.3.0
     hostname: openldap
     container_name: openldap
+    ports:
+        - "389:389"
     environment:
         LDAP_ORGANISATION: "Confluent"
         LDAP_DOMAIN: "confluent.io"
         LDAP_BASE_DN: "dc=confluent,dc=io"
-    ports:
-        - "389:389"
     volumes:
         - ./scripts/security/ldap_users:/container/service/slapd/assets/config/bootstrap/ldif/custom
     command: "--copy-service --loglevel debug"
@@ -60,17 +61,17 @@ services:
       - ./conf:/tmp/conf
       - ./scripts/kafka-registered.sh:/etc/kafka-registered.sh
       - ./scripts/security:/etc/kafka/secrets
-    ports:
-      - "8091:8091"
-      - "9091:9091"
-      - "10091:10091"
-      - "11091:11091"
     healthcheck:
       test: nc -z localhost 8091 && nc -z localhost 9091 && /etc/kafka-registered.sh zookeeper:2181
       interval: 3s
       retries: 15
       start_period: 30s
     command: "bash -c 'if [ ! -f /etc/kafka/secrets/kafka.kafka1.keystore.jks ]; then echo \"ERROR: Did not find SSL certificates in /etc/kafka/secrets/ (did you remember to run ./scripts/start.sh instead of docker-compose up -d?)\" && exit 1 ; else /etc/confluent/docker/run ; fi'"
+    ports:
+      - "8091:8091"
+      - "9091:9091"
+      - "10091:10091"
+      - "11091:11091"
     environment:
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:SASL_PLAINTEXT,EXTERNAL:SASL_SSL,SSL:SSL
@@ -81,9 +82,10 @@ services:
       KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=INFO"
       KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
 
-      KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       KAFKA_BROKER_ID: 1
       KAFKA_BROKER_RACK: "r1"
+      KAFKA_JMX_PORT: 9991
+
       KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
       KAFKA_SASL_ENABLED_MECHANISMS: PLAIN, OAUTHBEARER
 
@@ -95,7 +97,6 @@ services:
                                                             user_admin="admin-secret" \
                                                             user_mds="mds-secret";
 
-
       # Configure external listener
       KAFKA_LISTENER_NAME_EXTERNAL_OAUTHBEARER_SASL_SERVER_CALLBACK_HANDLER_CLASS: io.confluent.kafka.server.plugins.auth.token.TokenBearerValidatorCallbackHandler
       KAFKA_LISTENER_NAME_EXTERNAL_OAUTHBEARER_SASL_LOGIN_CALLBACK_HANDLER_CLASS: io.confluent.kafka.server.plugins.auth.token.TokenBearerServerLoginCallbackHandler
@@ -106,6 +107,10 @@ services:
 
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
       KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 2
+
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka1:9091"
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SASL_PLAINTEXT
       CONFLUENT_METRICS_REPORTER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
@@ -116,10 +121,6 @@ services:
       # To avoid race condition with control-center
       # CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: "false"
       CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: "true"
-
-      KAFKA_DELETE_TOPIC_ENABLE: "true"
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
-      KAFKA_JMX_PORT: 9991
 
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka1.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka1_keystore_creds
@@ -202,17 +203,17 @@ services:
       - ./conf:/tmp/conf
       - ./scripts/kafka-registered.sh:/etc/kafka-registered.sh
       - ./scripts/security:/etc/kafka/secrets
-    ports:
-      - "8092:8092"
-      - "9092:9092"
-      - "10092:10092"
-      - "11092:11092"
     healthcheck:
       test: nc -z localhost 8092 && nc -z localhost 9092 && /etc/kafka-registered.sh zookeeper:2181
       interval: 3s
       retries: 15
       start_period: 30s
     command: "bash -c 'if [ ! -f /etc/kafka/secrets/kafka.kafka2.keystore.jks ]; then echo \"ERROR: Did not find SSL certificates in /etc/kafka/secrets/ (did you remember to run ./scripts/start.sh instead of docker-compose up -d?)\" && exit 1 ; else /etc/confluent/docker/run ; fi'"
+    ports:
+      - "8092:8092"
+      - "9092:9092"
+      - "10092:10092"
+      - "11092:11092"
     environment:
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:SASL_PLAINTEXT,EXTERNAL:SASL_SSL,SSL:SSL
@@ -223,9 +224,10 @@ services:
       KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=INFO"
       KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
 
-      KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       KAFKA_BROKER_ID: 2
       KAFKA_BROKER_RACK: "r2"
+      KAFKA_JMX_PORT: 9992
+
       KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
       KAFKA_SASL_ENABLED_MECHANISMS: PLAIN, OAUTHBEARER
 
@@ -237,7 +239,6 @@ services:
                                                             user_admin="admin-secret" \
                                                             user_mds="mds-secret";
 
-
       # Configure external listener
       KAFKA_LISTENER_NAME_EXTERNAL_OAUTHBEARER_SASL_SERVER_CALLBACK_HANDLER_CLASS: io.confluent.kafka.server.plugins.auth.token.TokenBearerValidatorCallbackHandler
       KAFKA_LISTENER_NAME_EXTERNAL_OAUTHBEARER_SASL_LOGIN_CALLBACK_HANDLER_CLASS: io.confluent.kafka.server.plugins.auth.token.TokenBearerServerLoginCallbackHandler
@@ -248,6 +249,10 @@ services:
 
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
       KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 2
+
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka2:9092"
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SASL_PLAINTEXT
       CONFLUENT_METRICS_REPORTER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
@@ -258,10 +263,6 @@ services:
       # To avoid race condition with control-center
       # CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: "false"
       CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: "true"
-
-      KAFKA_DELETE_TOPIC_ENABLE: "true"
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
-      KAFKA_JMX_PORT: 9992
 
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka2.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka2_keystore_creds
@@ -337,8 +338,6 @@ services:
     container_name: connect
     cpus: 0.6
     restart: always
-    ports:
-      - "8083:8083"
     depends_on:
       - zookeeper
       - kafka1
@@ -353,6 +352,8 @@ services:
     command: "bash -c 'sleep 10 && \
                        cp /usr/share/java/kafka-connect-replicator/replicator-rest-extension-*.jar /etc/kafka-connect/jars/ && \
                        /etc/confluent/docker/run'"
+    ports:
+      - "8083:8083"
     environment:
       CUB_CLASSPATH: '/etc/confluent/docker/docker-utils.jar:/usr/share/java/confluent-security/connect/*:/usr/share/java/kafka/*'
       CONNECT_BOOTSTRAP_SERVERS: "kafka1:10091"
@@ -367,19 +368,20 @@ services:
       CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 2
       CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 2
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 2
+
       CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
       CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+
       CONNECT_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
       CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
       CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.4.0.jar
-      CONNECT_REST_EXTENSION_CLASSES: io.confluent.connect.replicator.monitoring.ReplicatorMonitoringExtension
 
-      # Connect worker
+      # Connect Worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.truststore.jks
       CONNECT_SSL_TRUSTSTORE_PASSWORD: confluent
@@ -387,7 +389,7 @@ services:
       CONNECT_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_SSL_KEY_PASSWORD: confluent
 
-      # Connect producer
+      # Connect Producer
       CONNECT_PRODUCER_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_PRODUCER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.truststore.jks
       CONNECT_PRODUCER_SSL_TRUSTSTORE_PASSWORD: confluent
@@ -402,7 +404,7 @@ services:
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEY_PASSWORD: confluent
 
-      # Connect consumer
+      # Connect Consumer
       CONNECT_CONSUMER_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_CONSUMER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.truststore.jks
       CONNECT_CONSUMER_SSL_TRUSTSTORE_PASSWORD: confluent
@@ -482,7 +484,10 @@ services:
       CONNECT_ADMIN_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_ADMIN_SSL_KEY_PASSWORD: confluent
 
-      CONNECT_REST_EXTENSION_CLASSES: 'io.confluent.connect.security.ConnectSecurityExtension,io.confluent.connect.secretregistry.ConnectSecretRegistryExtension'
+      # io.confluent.connect.replicator.monitoring.ReplicatorMonitoringExtension - Confluent Replicator
+      # io.confluent.connect.security.ConnectSecurityExtension - RBAC
+      # ,io.confluent.connect.secretregistry.ConnectSecretRegistryExtension - Secret Registry
+      CONNECT_REST_EXTENSION_CLASSES: io.confluent.connect.replicator.monitoring.ReplicatorMonitoringExtension,io.confluent.connect.security.ConnectSecurityExtension,io.confluent.connect.secretregistry.ConnectSecretRegistryExtension
       CONNECT_REST_SERVLET_INITIALIZOR_CLASSES: 'io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler'
       CONNECT_PUBLIC_KEY_PATH: /tmp/conf/public.pem
       CONNECT_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
@@ -551,8 +556,6 @@ services:
         condition: service_healthy
       kafka1:
         condition: service_healthy
-    ports:
-      - "9021:9021"
     volumes:
       - ./conf:/tmp/conf
       - ./scripts/security:/etc/kafka/secrets
@@ -561,6 +564,9 @@ services:
         interval: 3s
         retries: 15
         start_period: 30s
+    ports:
+      - "9021:9021"
+      - "9022:9022"
     environment:
       # CUB CLASSPATH
       CUB_CLASSPATH: '/etc/confluent/docker/docker-utils.jar:/usr/share/java/confluent-control-center/*:/usr/share/java/rest-utils/*:/usr/share/java/confluent-common/*'
@@ -644,11 +650,11 @@ services:
     depends_on:
       - zookeeper
       - kafka1
-    ports:
-      - "8085:8085"
     volumes:
       - ./scripts/security:/etc/kafka/secrets
       - ./conf:/tmp/conf
+    ports:
+      - "8085:8085"
     environment:
       CUB_CLASSPATH: '/etc/confluent/docker/docker-utils.jar:/usr/share/java/confluent-security/schema-registry/*:/usr/share/java/schema-registry/*'
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka1:10091"
@@ -693,8 +699,7 @@ services:
       SCHEMA_REGISTRY_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: schemaregistryUser:schemaregistryUser
       # public key to verify tokens during authentication
       SCHEMA_REGISTRY_PUBLIC_KEY_PATH: /tmp/conf/public.pem
-    ports:
-      - 8085:8085
+
   kafka-client:
     image: confluentinc/cp-server:5.4.0
     hostname: kafka-client
@@ -724,6 +729,8 @@ services:
                        kafka-topics --zookeeper zookeeper:2181 --topic EN_WIKIPEDIA_GT_1 --create --replication-factor 1 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic EN_WIKIPEDIA_GT_1_COUNTS --create --replication-factor 1 --partitions 2'"
 
+    ports:
+      - "7073:7073"
     environment:
       # The following settings are listed here only to satisfy the image's requirements.
       # We override the image's `command` anyways, hence this container will not start a broker.
@@ -742,8 +749,6 @@ services:
       KAFKA_SSL_KEY_PASSWORD: confluent
       KAFKA_ZOOKEEPER_SET_ACL: "true"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
-    ports:
-      - "7073:7073"
 
   ksql-server:
     image: confluentinc/cp-ksql-server:5.4.0
@@ -754,8 +759,6 @@ services:
     depends_on:
       - kafka1
       - connect
-    ports:
-      - "8088:8088"
     volumes:
       - ./conf:/tmp/conf
       - ./scripts/security:/etc/kafka/secrets
@@ -764,6 +767,8 @@ services:
       interval: 3s
       retries: 15
       start_period: 30s
+    ports:
+      - "8088:8088"
     environment:
       CUB_CLASSPATH: '/usr/share/java/ksql-server/*:/usr/share/java/cp-base-new/*'
       KSQL_LOG4J_ROOT_LOGLEVEL: INFO
@@ -851,6 +856,7 @@ services:
       - ./scripts/ksql/run_ksql_commands.sh:/tmp/run_ksql_commands.sh
     entrypoint: /bin/sh
     tty: true
+
   restproxy:
     image: confluentinc/cp-kafka-rest:5.4.0
     restart: always
@@ -865,6 +871,8 @@ services:
       - ./scripts/security:/etc/kafka/secrets
       - ./scripts/app:/etc/kafka/app
       - ./conf:/tmp/conf
+    ports:
+      - 8086:8086
     environment:
       KAFKA_REST_HOST_NAME: restproxy
       ### When changed from SASL to just SSL, this component works  
@@ -916,9 +924,6 @@ services:
       KAFKA_REST_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
       KAFKA_REST_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'connectUser:connectUser'
 
-
-    ports:
-      - 8086:8086
 
   # This container is just to transfer Replicator jars to the Connect worker
   # It is not used as a Connect worker

@@ -5,7 +5,7 @@ ZK_CONTAINER=zookeeper
 ZK_PORT=2181
 KAFKA_CLUSTER_ID=$(zookeeper-shell $ZK_CONTAINER:$ZK_PORT get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
 if [ -z "$KAFKA_CLUSTER_ID" ]; then 
-    echo "Failed to retrieve kafka cluster id from zookeeper"
+    echo "Failed to retrieve Kafka cluster id from ZooKeeper"
     exit 1
 fi
 
@@ -310,7 +310,7 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
-######################### print cluster ids and users again to make it easier to copypaste ###########
+######################### Print #########################
 
 echo "Cluster IDs:"
 echo "    kafka cluster id: $KAFKA_CLUSTER_ID"
