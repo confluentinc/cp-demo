@@ -177,8 +177,8 @@ services:
       KAFKA_LDAP_JAVA_NAMING_SECURITY_AUTHENTICATION: simple
       # How to locate users and groups
       KAFKA_LDAP_SEARCH_MODE: USERS
-      KAFKA_LDAP_USER_SEARCH_BASE: ou=people,dc=confluent,dc=io
-      KAFKA_LDAP_GROUP_SEARCH_BASE: ou=people,dc=confluent,dc=io
+      KAFKA_LDAP_USER_SEARCH_BASE: ou=users,dc=confluent,dc=io
+      KAFKA_LDAP_GROUP_SEARCH_BASE: ou=users,dc=confluent,dc=io
       KAFKA_LDAP_USER_NAME_ATTRIBUTE: uid
       KAFKA_LDAP_USER_OBJECT_CLASS: inetOrgPerson
       KAFKA_LDAP_USER_MEMBEROF_ATTRIBUTE: ou
@@ -319,8 +319,8 @@ services:
       KAFKA_LDAP_JAVA_NAMING_SECURITY_AUTHENTICATION: simple
       # how to locate users and groups
       KAFKA_LDAP_SEARCH_MODE: USERS
-      KAFKA_LDAP_USER_SEARCH_BASE: ou=people,dc=confluent,dc=io
-      KAFKA_LDAP_GROUP_SEARCH_BASE: ou=people,dc=confluent,dc=io
+      KAFKA_LDAP_USER_SEARCH_BASE: ou=users,dc=confluent,dc=io
+      KAFKA_LDAP_GROUP_SEARCH_BASE: ou=users,dc=confluent,dc=io
       KAFKA_LDAP_USER_NAME_ATTRIBUTE: uid
       KAFKA_LDAP_USER_OBJECT_CLASS: inetOrgPerson
       KAFKA_LDAP_USER_MEMBEROF_ATTRIBUTE: ou
