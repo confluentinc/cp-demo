@@ -69,7 +69,7 @@ Run demo
 
         ./scripts/start.sh
 
-4. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Log in as super user ``superUser`` and password ``superUser``. Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
+4. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Log in as ``superUser`` and password ``superUser``, a user with full access.
 
 5. To see the tail end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
@@ -166,42 +166,38 @@ Topics
 
       EN_WIKIPEDIA_GT_1
         producers
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4-b8fc329d-e285-4eb8-9c92-fd2a213f8c20-StreamThread-3-producer
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4-b8fc329d-e285-4eb8-9c92-fd2a213f8c20-StreamThread-4-producer
+          _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-31d073dc-a865-4767-b591-a69fa3ed2609-StreamThread-3-producer
+          _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-31d073dc-a865-4767-b591-a69fa3ed2609-StreamThread-4-producer
         consumers
-          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_6
+          _confluent-ksql-ksql-clusterquery_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_6
       
       EN_WIKIPEDIA_GT_1_COUNTS
         producers
-          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_6-745416e8-7a63-499c-aac9-89384a873912-StreamThread-1-producer
-          _confluent-ksql-default_query_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_6-745416e8-7a63-499c-aac9-89384a873912-StreamThread-2-producer
-        consumers
-          EN_WIKIPEDIA_GT_1_COUNTS-consumer
+          _confluent-ksql-ksql-clusterquery_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_6-f1aab97c-0d40-4d9c-b902-8b70ee20a7af-StreamThread-1-producer
+          _confluent-ksql-ksql-clusterquery_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_6-f1aab97c-0d40-4d9c-b902-8b70ee20a7af-StreamThread-2-producer
       
       WIKIPEDIABOT
         producers
-          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_3-739f5b65-8276-44d6-ac9f-581bde1a5676-StreamThread-1-producer
-          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_3-739f5b65-8276-44d6-ac9f-581bde1a5676-StreamThread-2-producer
+          _confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_3-73856d55-a996-4267-ad43-a291e8473eb7-StreamThread-1-producer
+          _confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_3-73856d55-a996-4267-ad43-a291e8473eb7-StreamThread-2-producer
         consumers
           connect-elasticsearch-ksql
       
       WIKIPEDIANOBOT
         producers
-          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_2-96f48751-dc5c-46b9-b250-df0da0f88214-StreamThread-1-producer
-          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_2-96f48751-dc5c-46b9-b250-df0da0f88214-StreamThread-2-producer
-        consumers
-          WIKIPEDIANOBOT-consumer
+          _confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIANOBOT_2-7845e732-6d79-4576-98bf-748e2e8401c3-StreamThread-1-producer
+          _confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIANOBOT_2-7845e732-6d79-4576-98bf-748e2e8401c3-StreamThread-2-producer
       
-      _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4-Aggregate-aggregate-changelog
+      _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-Aggregate-aggregate-changelog
         producers
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4-b8fc329d-e285-4eb8-9c92-fd2a213f8c20-StreamThread-3-producer
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4-b8fc329d-e285-4eb8-9c92-fd2a213f8c20-StreamThread-4-producer
+          _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-31d073dc-a865-4767-b591-a69fa3ed2609-StreamThread-3-producer
+          _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-31d073dc-a865-4767-b591-a69fa3ed2609-StreamThread-4-producer
       
-      _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4-Aggregate-groupby-repartition
+      _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-Aggregate-groupby-repartition
         producers
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4-b8fc329d-e285-4eb8-9c92-fd2a213f8c20-StreamThread-1-producer
+          _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-31d073dc-a865-4767-b591-a69fa3ed2609-StreamThread-1-producer
         consumers
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4
+          _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4
       
       wikipedia-activity-monitor-KSTREAM-AGGREGATE-STATE-STORE-0000000002-changelog
         producers
@@ -211,9 +207,9 @@ Topics
         producers
           connect-worker-producer
         consumers
-          _confluent-ksql-default_query_CSAS_WIKIPEDIABOT_3
-          _confluent-ksql-default_query_CSAS_WIKIPEDIANOBOT_2
-          _confluent-ksql-default_query_CTAS_EN_WIKIPEDIA_GT_1_4
+          _confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_3
+          _confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIANOBOT_2
+          _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4
           connect-replicator
           wikipedia-activity-monitor
       
@@ -224,6 +220,7 @@ Topics
       wikipedia.parsed.replica
         producers
           connect-worker-producer
+      
 
 Connect
 -------
@@ -814,6 +811,7 @@ All other users are not authorized to communicate with the cluster.
    Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
 
 
+
 Data Governance with |sr|
 -------------------------
 
@@ -824,6 +822,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 - Encryption: TLS, e.g. client has ``schema.registry.ssl.truststore.*`` configurations
 - Authentication: bearer token authentication from HTTP basic auth headers, e.g. client has ``schema.registry.basic.auth.user.info`` and ``basic.auth.credentials.source`` configurations
 - Authorization: |sr| uses the bearer token with RBAC to authorize the client
+
 
 
 #. View the |sr| subjects for topics that have registered schemas for their keys and/or values. Notice the ``curl`` arguments include (a) TLS information required to interact with |sr| which is listening for HTTPS on port 8085, and (b) authentication credentials required for RBAC (using `superUser:superUser` to see all of them).
@@ -1113,11 +1112,12 @@ Troubleshooting the demo
    `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, and
    any commands that communicate with ZooKeeper need properties set for ZooKeeper authentication.
 
-5. Run :devx-cp-demo:`validation scripts|scripts/validate/` to check that things are working.
+5. Run any of the :devx-cp-demo:`validation scripts|scripts/validate/` to check that things are working.
 
    .. sourcecode:: bash
 
           cd scripts/validate/
+
 
       
 ========
