@@ -44,7 +44,7 @@ Use `Confluent Control Center <https://www.confluent.io/product/control-center/>
 Run demo
 ========
 
-**Demo validated with:**
+Demo validated with:
 
 -  Docker version 17.06.1-ce
 -  Docker Compose version 1.14.0 with Docker Compose file format 2.3
@@ -54,6 +54,7 @@ Run demo
 -  jq
 
 .. note:: If you prefer a non-Docker version and have Elasticsearch and Kibana running on your local machine, please follow :devx-examples:`these instructions|wikipedia`.
+
 
 1. Clone the `cp-demo GitHub repository <https://github.com/confluentinc/cp-demo>`__:
 
@@ -318,6 +319,7 @@ No records should be returned from this query. Since the field ``wikipage`` in t
 .. sourcecode:: bash
 
       SELECT * FROM KSQL_PROCESSING_LOG EMIT CHANGES;
+
 
 
 Consumers
@@ -807,10 +809,7 @@ All other users are not authorized to communicate with the cluster.
 
           ./scripts/validate/validate_bindings.sh
 
-10. Because ZooKeeper is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, 
-   any commands that communicate with ZooKeeper need properties set for ZooKeeper authentication. This authentication configuration is provided
-   by the ``KAFKA_OPTS`` setting on the brokers. For example, notice that the `throttle script <scripts/app/throttle_consumer.sh>`__ runs on the
-   Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
+10. Because ZooKeeper is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, any commands that communicate with ZooKeeper need properties set for ZooKeeper authentication. This authentication configuration is provided by the ``KAFKA_OPTS`` setting on the brokers. For example, notice that the `throttle script <scripts/app/throttle_consumer.sh>`__ runs on the Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
 
 
 
@@ -826,7 +825,6 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 - Authorization: |sr| uses the bearer token with RBAC to authorize the client
 
 
-
 #. View the |sr| subjects for topics that have registered schemas for their keys and/or values. Notice the ``curl`` arguments include (a) TLS information required to interact with |sr| which is listening for HTTPS on port 8085, and (b) authentication credentials required for RBAC (using `superUser:superUser` to see all of them).
 
    .. sourcecode:: bash
@@ -837,16 +835,16 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. sourcecode:: bash
 
-      [
-        "wikipedia.parsed.replica-value",
-        "EN_WIKIPEDIA_GT_1_COUNTS-value",
-        "WIKIPEDIABOT-value",
-        "_confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-Aggregate-aggregate-changelog-value",
-        "EN_WIKIPEDIA_GT_1-value",
-        "wikipedia.parsed.count-by-channel-value",
-        "_confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-Aggregate-groupby-repartition-value",
-        "WIKIPEDIANOBOT-value",
-        "wikipedia.parsed-value"
+       [
+         "wikipedia.parsed.replica-value",
+         "EN_WIKIPEDIA_GT_1_COUNTS-value",
+         "WIKIPEDIABOT-value",
+         "_confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-Aggregate-aggregate-changelog-value",
+         "EN_WIKIPEDIA_GT_1-value",
+         "wikipedia.parsed.count-by-channel-value",
+         "_confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-Aggregate-groupby-repartition-value",
+         "WIKIPEDIANOBOT-value",
+         "wikipedia.parsed-value"
       ]
 
 #. Instead of using the superUser credentials, now use client credentials `noexist:noexist` (user does not exist in LDAP) to try to register a new Avro schema (a record with two fields ``username`` and ``userid``) into |sr| for the value of a new topic ``users``. It should fail due to an authorization error.
@@ -921,6 +919,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
        "id": 7,
        "schema": "{\"type\":\"record\",\"name\":\"user\",\"fields\":[{\"name\":\"username\",\"type\":\"string\"},{\"name\":\"userid\",\"type\":\"long\"}]}"
      }
+
 
 
 Confluent REST Proxy
