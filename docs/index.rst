@@ -307,8 +307,6 @@ View messages in ``EN_WIKIPEDIA_GT_1``:
         --property schema.registry.url=https://schemaregistry:8085 \
         --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks \
         --property schema.registry.ssl.truststore.password=confluent \
-        --property schema.registry.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks \
-        --property schema.registry.ssl.keystore.password=confluent \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
 
 Your output should resemble:
@@ -332,8 +330,6 @@ View messages in ``EN_WIKIPEDIA_GT_1_COUNTS``:
         --property schema.registry.url=https://schemaregistry:8085 \
         --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks \
         --property schema.registry.ssl.truststore.password=confluent \
-        --property schema.registry.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks \
-        --property schema.registry.ssl.keystore.password=confluent \
         --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
 
 Your output should resemble:
@@ -1012,6 +1008,12 @@ Data Governance with |sr|
 -------------------------
 
 All the applications and connectors used in this demo are configured to automatically read and write Avro-formatted data, leveraging the `Confluent Schema Registry <https://docs.confluent.io/current/schema-registry/docs/index.html>`__ .
+
+The security in place between |sr| and its clients is as follows:
+
+- Encryption: TLS, e.g. client has ``schema.registry.ssl.truststore.*`` configurations
+- Authentication: bearer token authentication from HTTP basic auth headers, e.g. client has ``schema.registry.basic.auth.user.info`` and ``basic.auth.credentials.source`` configurations
+- Authorization: |sr| uses the bearer token with RBAC to authorize the client
 
 1. View the |sr| subjects for topics that have registered schemas for their keys and/or values. Notice the ``curl`` arguments include (a) TLS information required to interact with |sr| which is listening for HTTPS on port 8085, and (b) authentication credentials required for RBAC (using `superUser:superUser` to see all of them).
 

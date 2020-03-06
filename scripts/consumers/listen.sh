@@ -7,8 +7,6 @@ docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 -
   --property schema.registry.url=https://schemaregistry:8085 \
   --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks \
   --property schema.registry.ssl.truststore.password=confluent \
-  --property schema.registry.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks \
-  --property schema.registry.ssl.keystore.password=confluent  \
   --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 1
   
 echo -e "\nWIKIPEDIABOT:"
@@ -16,8 +14,6 @@ docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 -
   --property schema.registry.url=https://schemaregistry:8085 \
   --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks \
   --property schema.registry.ssl.truststore.password=confluent \
-  --property schema.registry.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks \
-  --property schema.registry.ssl.keystore.password=confluent  \
   --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 1
   
 echo -e "\nWIKIPEDIANOBOT:"
@@ -25,8 +21,6 @@ docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 -
   --property schema.registry.url=https://schemaregistry:8085 \
   --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks \
   --property schema.registry.ssl.truststore.password=confluent \
-  --property schema.registry.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks \
-  --property schema.registry.ssl.keystore.password=confluent  \
   --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 1
 
 echo -e "\nEN_WIKIPEDIA_GT_1_COUNTS:"
@@ -34,6 +28,4 @@ docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 -
   --property schema.registry.url=https://schemaregistry:8085 \
   --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks \
   --property schema.registry.ssl.truststore.password=confluent \
-  --property schema.registry.ssl.keystore.location=/etc/kafka/secrets/kafka.client.keystore.jks \
-  --property schema.registry.ssl.keystore.password=confluent  \
   --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 1

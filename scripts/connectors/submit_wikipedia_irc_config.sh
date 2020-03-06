@@ -19,8 +19,6 @@ DATA=$( cat << EOF
     "value.converter.schema.registry.url": "https://schemaregistry:8085",
     "value.converter.schema.registry.ssl.truststore.location": "/etc/kafka/secrets/kafka.client.truststore.jks",
     "value.converter.schema.registry.ssl.truststore.password": "confluent",
-    "value.converter.schema.registry.ssl.keystore.location": "/etc/kafka/secrets/kafka.client.keystore.jks",
-    "value.converter.schema.registry.ssl.keystore.password": "confluent",
     "value.converter.basic.auth.credentials.source": "USER_INFO",
     "value.converter.basic.auth.user.info": "connectorSA:connectorSA",
     "producer.override.sasl.jaas.config": "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username=\"connectorSA\" password=\"connectorSA\" metadataServerUrls=\"http://kafka1:8091,http://kafka2:8092\";",
