@@ -429,38 +429,48 @@ Failed broker
 To simulate a failed broker, stop the Docker container running one of
 the two Kafka brokers.
 
-1. Stop the Docker container running Kafka broker 2.
+#. MDS is backed by a Confluent metadata topic. In production, leave its replication factor at default RF=3. In this demo, having two brokers it may have been desirable for RF=2. However, if RF=2 then automatically min.insync.replicas=2, and then stopping one broker would cause the whole cluster to fail. Instead, in order to be able to demonstrate a single broker failure, first move all the partitions of this topic to kafka1 (other topics have RF=2).
+
+   .. sourcecode:: bash
+
+      # Prepare to stop kafka2
+      # Demo workaround: when RF=2 move all the partitions of the Confluent metadata topic to kafka1
+      docker-compose exec kafka1 kafka-reassign-partitions --reassignment-json-file /tmp/partitions-to-move.json --execute --zookeeper zookeeper:2181
+      docker-compose exec kafka1 kafka-reassign-partitions --reassignment-json-file /tmp/partitions-to-move.json --verify --zookeeper zookeeper:2181
+      docker-compose exec kafka1 kafka-topics --bootstrap-server kafka1:12091  --describe --topic _confluent-metadata-auth
+
+#. Stop the Docker container running Kafka broker 2.
 
    .. sourcecode:: bash
 
           docker-compose stop kafka2
 
-2. After a few minutes, observe the Broker summary show that the number of brokers 
+#. After a few minutes, observe the Broker summary show that the number of brokers 
    has decreased from 2 to 1, and there are many under replicated
    partitions.
 
    .. figure:: images/broker_down_failed.png
       :alt: image
 
-3. View Topic information details to see that there are out of sync replicas on broker 2.
+#. View Topic information details to see that there are out of sync replicas on broker 2.
 
    .. figure:: images/broker_down_replicas.png
       :alt: image
 
-4. Restart the Docker container running Kafka broker 2.
+#. Restart the Docker container running Kafka broker 2.
 
    .. sourcecode:: bash
 
           docker-compose start kafka2
 
-5. After about a minute, observe the Broker summary in Confluent
+#. After about a minute, observe the Broker summary in Confluent
    Control Center. The broker count has recovered to 2, and the topic
    partitions are back to reporting no under replicated partitions.
 
    .. figure:: images/broker_down_steady.png
       :alt: image
 
-6. Click on the broker count ``2`` inside the "Broker uptime" box to view when
+#. Click on the broker count ``2`` inside the "Broker uptime" box to view when
    broker counts changed.
 
    .. figure:: images/broker_down_times.png

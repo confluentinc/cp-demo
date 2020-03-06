@@ -34,7 +34,7 @@ mkdir -p ./conf
 openssl genrsa -out ./conf/keypair.pem 2048
 openssl rsa -in ./conf/keypair.pem -outform PEM -pubout -out ./conf/public.pem
 
-# Bring up Docker Compose
+# Bring up base cluster and Confluent CLI
 docker-compose up -d zookeeper kafka1 kafka2 tools
 
 # wait for kafka container to be healthy
