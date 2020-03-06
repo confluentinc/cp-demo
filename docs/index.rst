@@ -29,7 +29,8 @@ streams the data out of Kafka, applying another custom Kafka Connect
 transform called NullFilter. The data is materialized into
 `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for
 analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
-Use `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ for management and monitoring.
+|crep-full| is also copying messages from a topic to another topic in the same cluster.
+`Confluent Control Center <https://www.confluent.io/product/control-center/>`__ is managing and monitoring the deployment.
 
 
 .. figure:: images/cp-demo-overview.jpg
@@ -70,7 +71,7 @@ Demo validated with:
 
         ./scripts/start.sh
 
-4. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Log in as ``superUser`` and password ``superUser``, a user with full access.
+4. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Log in as ``superUser`` and password ``superUser``, which has super user access to the cluster.
 
 5. To see the tail end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
@@ -539,12 +540,6 @@ solution, Confluent Replicator is also configured with security.
 
    .. figure:: images/replicator_topic_info.png
 
-#. Notice that because |crep| default is ``topic.config.sync=true`` (see |crep| :ref:`documentation <rep-destination-topics>`), then the replicated
-   topic ``wikipedia.parsed.replica`` has enabled |sv| just like the original
-   topic ``wikipedia.parsed`` (click on the ``Show full config`` button to see all values).
-   
-   .. figure:: images/wikipedia.parsed.replica.png
-
 #. **MANAGEMENT –> Kafka Connect**: pause the |crep| connector in **Settings**
    by pressing the pause icon in the top right. This will stop
    consumption for the related consumer group.
@@ -569,16 +564,18 @@ solution, Confluent Replicator is also configured with security.
 Security
 --------
 
-Follow along with the `Security <https://www.youtube.com/watch?v=RwuF7cYcsec>`_ video.
+Because the cluster has security features enabled, clients need to communicate to the right broker port and provide the appropriate credentials depending on the listener.
+This section explains the broker listeners and how to use them.
 
 All the components in this demo are enabled with many `security
 features <https://docs.confluent.io/current/security.html>`__:
 
+-  :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization
 -  :ref:`RBAC <rbac-overview>` enabled for the entire platform
 -  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__
-   for encryption, except for ZooKeeper which does not support SSL
+   for encryption, except for |zk| which does not support SSL
 -  `SASL/PLAIN <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html>`__
-   for authentication, except for ZooKeeper which is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__
+   for authentication, except for |zk| which is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__
 -  `Authorization <https://docs.confluent.io/current/kafka/authorization.html>`__.
    If a resource has no associated ACLs, then users are not allowed to
    access the resource, except super users
@@ -594,15 +591,8 @@ features <https://docs.confluent.io/current/security.html>`__:
     * If the ``PLAINTEXT`` security protocol is used, these ``ANONYMOUS`` usernames should not be configured as super users
     * Consider not even opening the ``PLAINTEXT`` port if ``SSL`` or ``SASL_SSL`` are configured
 
----------------------------
-Encryption & Authentication
----------------------------
-
 Confluent Platform services and clients can authenticate via the OpenLDAP server running in the demo.
-The demo is configured with :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization.
 Each Kafka broker in the demo is configured with MDS and can talk to LDAP.
-Go through the next few sections to learn how RBAC works (particulary the sections on Data Governance with Schema Registry and REST Proxy).
-
 Each broker has five listener ports:
 
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
@@ -619,12 +609,6 @@ Each broker has five listener ports:
 | CLEAR         | PLAINTEXT      | No security, available as a backdoor; for demo and learning only   | 12091  | 12092  |
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
 
-
-
-
--------------
-Authorization
--------------
 
 All the brokers in this demo authenticate as ``broker``, and all other
 services authenticate as their respective names. Per the broker configuration
@@ -732,7 +716,7 @@ All other users are not authorized to communicate with the cluster.
            --topic wikipedia.parsed \
            --max-messages 5
 
-5. TODO:
+5. Verify that user ``badapp`` cannot consume messages from topic ``wikipedia.parsed``.
 
    .. sourcecode:: bash
 
@@ -809,7 +793,7 @@ All other users are not authorized to communicate with the cluster.
 
           ./scripts/validate/validate_bindings.sh
 
-10. Because ZooKeeper is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, any commands that communicate with ZooKeeper need properties set for ZooKeeper authentication. This authentication configuration is provided by the ``KAFKA_OPTS`` setting on the brokers. For example, notice that the `throttle script <scripts/app/throttle_consumer.sh>`__ runs on the Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
+10. Because |zk| is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, any commands that communicate with |zk| need properties set for |zk| authentication. This authentication configuration is provided by the ``KAFKA_OPTS`` setting on the brokers. For example, notice that the `throttle script <scripts/app/throttle_consumer.sh>`__ runs on the Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
 
 
 
@@ -927,7 +911,7 @@ Confluent REST Proxy
 
 The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
 
-1. Use the REST Proxy, which is listening for HTTPS on port 8086, to try to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
+1. Use the |crest|, which is listening for HTTPS on port 8086, to try to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
 
    .. sourcecode:: bash
 
@@ -1062,6 +1046,8 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
 Troubleshooting the demo
 ========================
 
+Here are some suggestions on how to troubleshoot the demo.
+
 1. Verify the status of the Docker containers show ``Up`` state, except for the ``kafka-client`` container which is expected to have ``Exit 0`` state. If any containers are not up, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8 GB (default is 2 GB).
 
    .. sourcecode:: bash
@@ -1101,19 +1087,12 @@ Troubleshooting the demo
 
           ./scripts/consumers/listen.sh
 
-3. If the data streams monitoring appears to stop for the Kafka source
-   connector, restart the connect container.
-
-   .. sourcecode:: bash
-
-          docker-compose restart connect
-
-4. If a command that communicates with ZooKeeper appears to be failing with the error ``org.apache.zookeeper.KeeperException$NoAuthException``,
-   change the container you are running the command from to be either ``kafka1`` or ``kafka2``.  This is because ZooKeeper is configured for
+3. If a command that communicates with |zk| appears to be failing with the error ``org.apache.zookeeper.KeeperException$NoAuthException``,
+   change the container you are running the command from to be either ``kafka1`` or ``kafka2``.  This is because |zk| is configured for
    `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, and
-   any commands that communicate with ZooKeeper need properties set for ZooKeeper authentication.
+   any commands that communicate with |zk| need properties set for |zk| authentication.
 
-5. Run any of the :devx-cp-demo:`validation scripts|scripts/validate/` to check that things are working.
+4. Run any of the :devx-cp-demo:`validation scripts|scripts/validate/` to check that things are working.
 
    .. sourcecode:: bash
 
