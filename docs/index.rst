@@ -1,7 +1,7 @@
 .. _cp-demo:
 
-Confluent Platform Demo
-=======================
+Confluent Platform Demo (cp-demo)
+=================================
 
 This demo builds a full |cp| deployment with a Kafka event streaming application using `KSQL <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing.
 Follow the accompanying tutorial that steps through the demo so that you can learn how it all works together.
@@ -102,21 +102,22 @@ Guided Tutorial
 Brokers 
 -------
 
-1. Select the cluster named "Kafka Raleigh".
+#. Select the cluster named "Kafka Raleigh".
 
    .. figure:: images/cluster_raleigh.png
 
-2. Click on "Brokers".
+#. Click on "Brokers".
 
-3. View the status of the Brokers in the cluster, including:
-
-   - Production and Consumption metrics
-   - Broker uptime
-   - Partitions: online, under replicated, total replicas, out of sync replicas
-   - Disk utilization
-   - System: network pool usage, request pool usage
+#. View the status of the Brokers in the cluster:
 
    .. figure:: images/landing_page.png
+
+#. Click through on Production or Consumption to view: Production and Consumption metrics, Broker uptime, Partitions: online, under replicated, total replicas, out of sync replicas, Disk utilization, System: network pool usage, request pool usage.
+
+   .. figure:: images/broker_metrics.png
+
+
+
 
 Topics
 ------
@@ -396,7 +397,7 @@ Consumers
     .. figure:: images/consumer_start_two.png
       :alt: image
 
-#. This shows a breakdown of produce latencies (fetch latencies also available) through the entire `request lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
+#. From the **Brokers -> Production** view, click on a point in the bottom line graph to view a breakdown of latencies through the entire `request lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
 
     .. figure:: images/slow_consumer_produce_latency_breakdown.png
         :alt: image
