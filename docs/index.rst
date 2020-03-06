@@ -730,7 +730,9 @@ All other users are not authorized to communicate with the cluster.
            --topic wikipedia.parsed \
            --max-messages 5
 
-5. TODO: *********************** create LDAP & cert entry for unauthorized user
+5. TODO:
+
+   .. sourcecode:: bash
 
          docker-compose exec connect kafka-avro-console-consumer --bootstrap-server kafka1:11091,kafka2:11092 \
            --consumer-property security.protocol=SSL \
