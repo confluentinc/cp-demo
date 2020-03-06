@@ -396,12 +396,6 @@ Consumers
     .. figure:: images/consumer_start_two.png
       :alt: image
 
-
-#. Click "System health" and then a line in "Request latency".
-
-    .. figure:: images/request_latency_find.png
-        :alt: image
-
 #. This shows a breakdown of produce latencies (fetch latencies also available) through the entire `request lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
 
     .. figure:: images/slow_consumer_produce_latency_breakdown.png
