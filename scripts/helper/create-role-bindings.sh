@@ -369,6 +369,13 @@ confluent iam rolebinding create \
 confluent iam rolebinding create \
     --principal $CLIENT_PRINCIPAL \
     --role ResourceOwner \
+    --resource Group:app \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
+confluent iam rolebinding create \
+    --principal $CLIENT_PRINCIPAL \
+    --role ResourceOwner \
     --resource Topic:wikipedia \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
