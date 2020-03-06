@@ -434,7 +434,7 @@ the two Kafka brokers.
    .. sourcecode:: bash
 
       # Prepare to stop kafka2
-      # Demo workaround: when RF=2 move all the partitions of the Confluent metadata topic to kafka1
+      # In demo only (not required in production when RF=3): move all the partitions of the Confluent metadata topic to kafka1
       docker-compose exec kafka1 kafka-reassign-partitions --reassignment-json-file /tmp/partitions-to-move.json --execute --zookeeper zookeeper:2181
       docker-compose exec kafka1 kafka-reassign-partitions --reassignment-json-file /tmp/partitions-to-move.json --verify --zookeeper zookeeper:2181
       docker-compose exec kafka1 kafka-topics --bootstrap-server kafka1:12091  --describe --topic _confluent-metadata-auth
