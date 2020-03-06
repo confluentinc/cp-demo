@@ -35,7 +35,7 @@ openssl genrsa -out ./conf/keypair.pem 2048
 openssl rsa -in ./conf/keypair.pem -outform PEM -pubout -out ./conf/public.pem
 
 # Bring up Docker Compose
-echo -e "Starting Zookeeper, Kafka1, LDAP server"
+echo -e "Starting ZooKeeper, kafka1, LDAP server"
 docker-compose up -d kafka1 kafka2
 
 # wait for kafka container to be healthy
