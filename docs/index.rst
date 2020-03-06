@@ -636,13 +636,21 @@ Each broker has five listener ports:
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
 | INTERNAL      | SASL_PLAINTEXT | Inside Docker containers                                           | 9091   | 9092   |
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
-| EXTERNAL      | SASL_SSL       | Outside Docker containers communicating to the Docker containers   | 10091  | 10092  |
+| EXTERNAL      | SASL_SSL       | Outside Docker containers                                          | 10091  | 10092  |
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
-| SSL           | SSL            | With just SSL, no SASL                                             | 11091  | 11092  |
+| SSL           | SSL            | Outside Docker containers, with SSL and no SASL                    | 11091  | 11092  |
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
 | CLEAR         | PLAINTEXT      | No security enabled (unrealistic; for demo and learning only)      | 12091  | 12092  |
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
 
+
+In this demo, the clients that use each port:
+
+* MDS: for |cp| components to authenticate clients
+* SASL_PLAINTEXT: Confluent Metrics Reporters
+* SASL_SSL: |cp| components when they need to use impersonation
+* SSL: Kafka Streams application
+* PLAINTEXT: none, but available as a simple backdoor (do not configure this in production)
 
 
 -------------

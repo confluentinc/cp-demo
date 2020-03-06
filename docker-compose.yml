@@ -113,7 +113,7 @@ services:
       KAFKA_DELETE_TOPIC_ENABLE: "true"
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
 
-      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka1:9091"
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SASL_PLAINTEXT
       CONFLUENT_METRICS_REPORTER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
         username=\"admin\" \
@@ -254,7 +254,7 @@ services:
       KAFKA_DELETE_TOPIC_ENABLE: "true"
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
 
-      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka2:9092"
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SASL_PLAINTEXT
       CONFLUENT_METRICS_REPORTER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
         username=\"admin\" \
@@ -355,7 +355,7 @@ services:
       - "8083:8083"
     environment:
       CUB_CLASSPATH: '/etc/confluent/docker/docker-utils.jar:/usr/share/java/confluent-security/connect/*:/usr/share/java/kafka/*'
-      CONNECT_BOOTSTRAP_SERVERS: "kafka1:10091"
+      CONNECT_BOOTSTRAP_SERVERS: "kafka1:10091,kafka2:10092"
       CONNECT_REST_PORT: 8083
       CONNECT_LISTENERS: "https://0.0.0.0:8083"
       CONNECT_GROUP_ID: "connect-cluster"
@@ -497,7 +497,7 @@ services:
       CONNECT_CONFIG_PROVIDERS: 'secret'
       CONNECT_CONFIG_PROVIDERS_SECRET_CLASS: 'io.confluent.connect.secretregistry.rbac.config.provider.InternalSecretConfigProvider'
       CONNECT_CONFIG_PROVIDERS_SECRET_PARAM_MASTER_ENCRYPTION_KEY: 'password1234'
-      CONNECT_CONFIG_PROVIDERS_SECRET_PARAM_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka1:10091'
+      CONNECT_CONFIG_PROVIDERS_SECRET_PARAM_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka1:10091,kafka2:10092'
       CONNECT_CONFIG_PROVIDERS_SECRET_PARAM_KAFKASTORE_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_CONFIG_PROVIDERS_SECRET_PARAM_KAFKASTORE_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.truststore.jks
       CONNECT_CONFIG_PROVIDERS_SECRET_PARAM_KAFKASTORE_SSL_TRUSTSTORE_PASSWORD: confluent
@@ -572,7 +572,7 @@ services:
       # CUB_CLASSPATH: '/etc/confluent/docker/docker-utils.jar:/usr/share/java/confluent-control-center/*'
 
       # general settings
-      CONTROL_CENTER_BOOTSTRAP_SERVERS: 'kafka1:10091'
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: 'kafka1:10091,kafka2:10092'
       CONTROL_CENTER_ZOOKEEPER_CONNECT: 'zookeeper:2181'
 
       CONTROL_CENTER_REPLICATION_FACTOR: 2
@@ -654,7 +654,7 @@ services:
       - "8085:8085"
     environment:
       CUB_CLASSPATH: '/etc/confluent/docker/docker-utils.jar:/usr/share/java/confluent-security/schema-registry/*:/usr/share/java/schema-registry/*'
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka1:10091"
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka1:10091,kafka2:10092"
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
       SCHEMA_REGISTRY_HOST_NAME: schemaregistry
       SCHEMA_REGISTRY_LISTENERS: "https://0.0.0.0:8085"
@@ -770,7 +770,7 @@ services:
       KSQL_KSQL_SERVICE_ID: "ksql-cluster"
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
-      KSQL_BOOTSTRAP_SERVERS: "kafka1:10091"
+      KSQL_BOOTSTRAP_SERVERS: "kafka1:10091,kafka2:10092"
       KSQL_HOST_NAME: ksql-server
       KSQL_LISTENERS: "http://0.0.0.0:8088"
       KSQL_CACHE_MAX_BYTES_BUFFERING: 0
@@ -784,13 +784,13 @@ services:
       KSQL_CONFLUENT_METADATA_PUBLIC_KEY_PATH: /tmp/conf/public.pem
       KSQL_PUBLIC_KEY_PATH: /tmp/conf/public.pem
 
-      # How to connect to MDS
+      # Connect to MDS
       KSQL_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
       KSQL_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
       KSQL_CONFLUENT_METADATA_BASIC_AUTH_CREDENTIALS_PROVIDER: USER_INFO
       KSQL_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: ksqlAdmin:ksqlAdmin
 
-      # Credentials for kafka access
+      # Authenticate to brokers
       KSQL_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
       KSQL_SSL_TRUSTSTORE_PASSWORD: confluent
       KSQL_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
@@ -867,9 +867,7 @@ services:
       - 8086:8086
     environment:
       KAFKA_REST_HOST_NAME: restproxy
-      ### When changed from SASL to just SSL, this component works  
-      KAFKA_REST_BOOTSTRAP_SERVERS: "SASL_SSL://kafka1:10091"
-      #
+      KAFKA_REST_BOOTSTRAP_SERVERS: "SASL_SSL://kafka1:10091,SASL_SSL://kafka2:10092"
       KAFKA_REST_LISTENERS: "https://0.0.0.0:8086"
       KAFKA_REST_SCHEMA_REGISTRY_URL: "https://schemaregistry:8085"
       KAFKA_REST_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
@@ -880,18 +878,16 @@ services:
       KAFKA_REST_SSL_KEYSTORE_PASSWORD: confluent
       KAFKA_REST_SSL_KEY_PASSWORD: confluent
       KAFKA_REST_SSL_CLIENT_AUTH: "false"
-      #KAFKA_REST_CLIENT_SECURITY_PROTOCOL: SASL_SSL
       KAFKA_REST_CLIENT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.restproxy.truststore.jks
       KAFKA_REST_CLIENT_SSL_TRUSTSTORE_PASSWORD: confluent
       KAFKA_REST_CLIENT_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.restproxy.keystore.jks
       KAFKA_REST_CLIENT_SSL_KEYSTORE_PASSWORD: confluent
       KAFKA_REST_CLIENT_SSL_KEY_PASSWORD: confluent
-      # zookeeper connnect is for validating trial license
+      # ZooKeeper required to validate trial license
       KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:2181
       # =================== Credentials and classpath for cub kafka-ready ====================
       CUB_CLASSPATH: '/etc/confluent/docker/docker-utils.jar:/usr/share/java/confluent-security/kafka-rest/*:/usr/share/java/kafka-rest/*'
       
-#Commented out below to verify that SSL worked
       KAFKA_REST_CLIENT_SECURITY_PROTOCOL: SASL_SSL
       KAFKA_REST_CLIENT_SASL_MECHANISM: OAUTHBEARER
       KAFKA_REST_CLIENT_SASL_LOGIN_CALLBACK_HANDLER_CLASS: io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler
@@ -941,7 +937,7 @@ services:
       - ./scripts/security:/etc/kafka/secrets
     environment:
       # Authenticate to brokers with mTLS
-      KAFKA_BOOTSTRAP_SERVERS: "kafka1:11091"
+      KAFKA_BOOTSTRAP_SERVERS: "kafka1:11091,kafka2:11092"
       KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
       KAFKA_SSL_TRUSTSTORE_PASSWORD: confluent
       KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
