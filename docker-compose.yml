@@ -61,6 +61,7 @@ services:
     volumes:
       - ./conf:/tmp/conf
       - ./scripts/kafka-registered.sh:/etc/kafka-registered.sh
+      - ./scripts/partitions-to-move.json:/tmp/partitions-to-move.json
       - ./scripts/security:/etc/kafka/secrets
     healthcheck:
       test: nc -z localhost 8091 && nc -z localhost 9091 && /etc/kafka-registered.sh zookeeper:2181
@@ -146,9 +147,9 @@ services:
                   -Djavax.net.ssl.trustStorePassword=confluent
 
       # ======================== CONFIGURE MDS ====================================
-      # Configure how MDS stores its data in a topic
-      # supposedly more stuff can be overridden with the same prefix
-      KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 2
+      # In demo: RF=1 to be able to fail other broker (otherwise if RF=2, then min.insync.replicas=2 and you cannot fail other broker)
+      # In production: use the default value of 3
+      KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 1
 
       # Configure MDS listener and http server
       KAFKA_CONFLUENT_METADATA_SERVER_AUTHENTICATION_METHOD: BEARER
@@ -286,9 +287,9 @@ services:
                   -Djavax.net.ssl.trustStorePassword=confluent
 
       # ======================== CONFIGURE MDS ====================================
-      # Configure how MDS stores its data in a topic
-      # supposedly more stuff can be overridden with the same prefix
-      KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 2
+      # In demo: RF=1 to be able to fail other broker (otherwise if RF=2, then min.insync.replicas=2 and you cannot fail other broker)
+      # In production: use the default value of 3
+      KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 1
 
       # Configure MDS listener and http server
       KAFKA_CONFLUENT_METADATA_SERVER_AUTHENTICATION_METHOD: BEARER
