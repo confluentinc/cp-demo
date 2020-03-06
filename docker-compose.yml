@@ -31,8 +31,7 @@ services:
       - zookeeper
       - kafka1
     volumes:
-      - ./scripts/create-role-bindings.sh:/tmp/create-role-bindings.sh
-      - ./scripts/functions.sh:/tmp/functions.sh
+      - ./scripts/helper:/tmp/helper
     entrypoint: /bin/bash
     tty: true
 
@@ -60,11 +59,10 @@ services:
       - openldap
     volumes:
       - ./conf:/tmp/conf
-      - ./scripts/kafka-registered.sh:/etc/kafka-registered.sh
-      - ./scripts/partitions-to-move.json:/tmp/partitions-to-move.json
+      - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets
     healthcheck:
-      test: nc -z localhost 8091 && nc -z localhost 9091 && /etc/kafka-registered.sh zookeeper:2181
+      test: nc -z localhost 8091 && nc -z localhost 9091 && /tmp/helper/kafka-registered.sh zookeeper:2181
       interval: 3s
       retries: 15
       start_period: 30s
@@ -201,10 +199,10 @@ services:
       - openldap
     volumes:
       - ./conf:/tmp/conf
-      - ./scripts/kafka-registered.sh:/etc/kafka-registered.sh
+      - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets
     healthcheck:
-      test: nc -z localhost 8092 && nc -z localhost 9092 && /etc/kafka-registered.sh zookeeper:2181
+      test: nc -z localhost 8092 && nc -z localhost 9092 && /tmp/helper/kafka-registered.sh zookeeper:2181
       interval: 3s
       retries: 15
       start_period: 30s
@@ -754,6 +752,7 @@ services:
       - connect
     volumes:
       - ./conf:/tmp/conf
+      - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets
     healthcheck:
       test: nc -z localhost 8088
@@ -765,7 +764,7 @@ services:
     environment:
       CUB_CLASSPATH: '/usr/share/java/ksql-server/*:/usr/share/java/cp-base-new/*'
       KSQL_LOG4J_ROOT_LOGLEVEL: INFO
-      KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/secrets/log4j-secure.properties"
+      KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/tmp/helper/log4j-secure.properties"
       KSQL_KSQL_SERVICE_ID: "ksql-cluster"
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"

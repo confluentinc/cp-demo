@@ -2,7 +2,7 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-source ${DIR}/functions.sh
+source ${DIR}/helper/functions.sh
 
 #set -o nounset \
 #    -o errexit \
@@ -49,7 +49,7 @@ echo
 echo "Available LDAP users:"
 docker-compose exec openldap ldapsearch -x -h localhost -b dc=confluent,dc=io -D "cn=admin,dc=confluent,dc=io" -w admin | grep uid:
 echo "Creating role bindings for principals"
-docker-compose exec tools bash -c "/tmp/create-role-bindings.sh"
+docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh"
 
 echo
 docker-compose up -d kafka-client schemaregistry replicator-for-jar-transfer connect ksql-server control-center
@@ -150,7 +150,7 @@ echo -e "\nStart Confluent Replicator:"
 ${DIR}/connectors/submit_replicator_config.sh
 
 echo -e "\Confluent Control Center modifications:"
-${DIR}/control-center-modifications.sh
+${DIR}/helper/control-center-modifications.sh
 
 
 echo -e "\n\n\n******************************************************************"

@@ -71,7 +71,7 @@ Run demo
 
 4. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Log in as super user ``superUser`` and password ``superUser``. Click on the top right button that shows the current date, and change ``Last 4 hours`` to ``Last 30 minutes``.
 
-5. View the data in the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
+5. To see the tail end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
 
 ========
@@ -310,7 +310,7 @@ For comparison, view messages in the topic ``EN_WIKIPEDIA_GT_1_COUNTS`` (jump to
       :alt: image
 
 
-11. The `KSQL processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their KSQL queries. In this demo, the processing log is configured with a custom :devx-cp-demo:`log4j properties file|scripts/security/log4j-secure.properties` and writes entries into a Kafka topic. To see it in action, in the KSQL editor run the following query for 20 seconds:
+11. The `KSQL processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their KSQL queries. In this demo, the processing log is configured with a custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties` and writes entries into a Kafka topic. To see it in action, in the KSQL editor run the following query for 20 seconds:
 
 .. sourcecode:: bash
 
@@ -401,8 +401,9 @@ the two Kafka brokers.
 
       # Prepare to stop kafka2
       # In demo only (not required in production when RF=3): move all the partitions of the Confluent metadata topic to kafka1
-      docker-compose exec kafka1 kafka-reassign-partitions --reassignment-json-file /tmp/partitions-to-move.json --execute --zookeeper zookeeper:2181
-      docker-compose exec kafka1 kafka-reassign-partitions --reassignment-json-file /tmp/partitions-to-move.json --verify --zookeeper zookeeper:2181
+      docker-compose exec kafka1 kafka-topics --bootstrap-server kafka1:12091  --describe --topic _confluent-metadata-auth
+      docker-compose exec kafka1 kafka-reassign-partitions --reassignment-json-file /tmp/helper/partitions-to-move.json --execute --zookeeper zookeeper:2181
+      docker-compose exec kafka1 kafka-reassign-partitions --reassignment-json-file /tmp/helper/partitions-to-move.json --verify --zookeeper zookeeper:2181
       docker-compose exec kafka1 kafka-topics --bootstrap-server kafka1:12091  --describe --topic _confluent-metadata-auth
 
 #. Stop the Docker container running Kafka broker 2.
@@ -675,7 +676,7 @@ All other users are not authorized to communicate with the cluster.
 
            # TOKEN/SASL_SSL port
            docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091 \
-               --command-config /etc/kafka/secrets/client_without_interceptors_ssl.config
+               --command-config /etc/kafka/secrets/cp_service.config
 
    * If you try to communicate with brokers via the SASL_SSL port but don’t specify the SASL_SSL parameters, it will fail
 
@@ -699,8 +700,7 @@ All other users are not authorized to communicate with the cluster.
                --command-config /etc/kafka/secrets/client_sasl_plain.config
    
 
-
-3. Verify which authenticated users are configured to be super users.
+3. Verify which users are configured to be super users.
 
    .. sourcecode:: bash
 
@@ -713,25 +713,43 @@ All other users are not authorized to communicate with the cluster.
 
          KAFKA_SUPER_USERS=User:admin;User:mds;User:superUser;User:client;User:schemaregistry;User:restproxy;User:broker;User:connect;User:ANONYMOUS
 
-4. Verify that a user ``appSA`` (which is not a super user) can consume messages from topic ``wikipedia.parsed``:
+4. Verify that user ``appSA`` (which is not a super user) can consume messages from topic ``wikipedia.parsed``.  Notice that it is configured to authenticate to brokers with mTLS and authenticate to Schema Registry with LDAP.
 
    .. sourcecode:: bash
 
          docker-compose exec connect kafka-avro-console-consumer --bootstrap-server kafka1:11091,kafka2:11092 \
-           --property security.protocol=SSL \
-           --property ssl.truststore.location=/etc/kafka/secrets/kafka.appSA.truststore.jks \
-           --property ssl.truststore.password=confluent \
-           --property ssl.ruststore.location=/etc/kafka/secrets/kafka.appSA.truststore.jks \
-           --property ssl.keystore.password=confluent \
-           --property ssl.key.password=confluent \
+           --consumer-property security.protocol=SSL \
+           --consumer-property ssl.truststore.location=/etc/kafka/secrets/kafka.appSA.truststore.jks \
+           --consumer-property ssl.truststore.password=confluent \
+           --consumer-property ssl.keystore.location=/etc/kafka/secrets/kafka.appSA.keystore.jks \
+           --consumer-property ssl.keystore.password=confluent \
+           --consumer-property ssl.key.password=confluent \
            --property schema.registry.url=https://schemaregistry:8085 \
            --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.appSA.truststore.jks \
            --property schema.registry.ssl.truststore.password=confluent \
            --property basic.auth.credentials.source=USER_INFO \
            --property schema.registry.basic.auth.user.info=appSA:appSA \
+           --group wikipedia.test \
            --topic wikipedia.parsed \
-           --group=test
+           --max-messages 5
 
+5. TODO: *********************** create LDAP & cert entry for unauthorized user
+
+         docker-compose exec connect kafka-avro-console-consumer --bootstrap-server kafka1:11091,kafka2:11092 \
+           --consumer-property security.protocol=SSL \
+           --consumer-property ssl.truststore.location=/etc/kafka/secrets/kafka.badapp.truststore.jks \
+           --consumer-property ssl.truststore.password=confluent \
+           --consumer-property ssl.keystore.location=/etc/kafka/secrets/kafka.badapp.keystore.jks \
+           --consumer-property ssl.keystore.password=confluent \
+           --consumer-property ssl.key.password=confluent \
+           --property schema.registry.url=https://schemaregistry:8085 \
+           --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.badapp.truststore.jks \
+           --property schema.registry.ssl.truststore.password=confluent \
+           --property basic.auth.credentials.source=USER_INFO \
+           --property schema.registry.basic.auth.user.info=badapp:badapp \
+           --group wikipedia.test \
+           --topic wikipedia.parsed \
+           --max-messages 5
 
 6. Verify that the broker’s Authorizer logger logs the denial event. As
    shown in the log message, the user which authenticates via SSL has a
@@ -801,13 +819,14 @@ Data Governance with |sr|
 
 All the applications and connectors used in this demo are configured to automatically read and write Avro-formatted data, leveraging the `Confluent Schema Registry <https://docs.confluent.io/current/schema-registry/docs/index.html>`__ .
 
-The security in place between |sr| and its clients is as follows:
+The security in place between |sr| and the end clients, e.g. ``appSA``, is as follows:
 
 - Encryption: TLS, e.g. client has ``schema.registry.ssl.truststore.*`` configurations
 - Authentication: bearer token authentication from HTTP basic auth headers, e.g. client has ``schema.registry.basic.auth.user.info`` and ``basic.auth.credentials.source`` configurations
 - Authorization: |sr| uses the bearer token with RBAC to authorize the client
 
-1. View the |sr| subjects for topics that have registered schemas for their keys and/or values. Notice the ``curl`` arguments include (a) TLS information required to interact with |sr| which is listening for HTTPS on port 8085, and (b) authentication credentials required for RBAC (using `superUser:superUser` to see all of them).
+
+#. View the |sr| subjects for topics that have registered schemas for their keys and/or values. Notice the ``curl`` arguments include (a) TLS information required to interact with |sr| which is listening for HTTPS on port 8085, and (b) authentication credentials required for RBAC (using `superUser:superUser` to see all of them).
 
    .. sourcecode:: bash
 
@@ -829,7 +848,19 @@ The security in place between |sr| and its clients is as follows:
         "wikipedia.parsed-value"
       ]
 
-2. Instead of using the superUser credentials, now use the client credentials `appSA:appSA` (the user `appSA` exists in LDAP) to try to register a new Avro schema (a record with two fields ``username`` and ``userid``) into |sr| for the value of a new topic ``users``. It should fail due to an authorization error.
+#. Instead of using the superUser credentials, now use client credentials `noexist:noexist` (user does not exist in LDAP) to try to register a new Avro schema (a record with two fields ``username`` and ``userid``) into |sr| for the value of a new topic ``users``. It should fail due to an authorization error.
+
+   .. sourcecode:: bash
+
+       docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' -u noexist:noexist https://schemaregistry:8085/subjects/users-value/versions
+
+   Your output should resemble:
+
+   .. sourcecode:: bash
+
+        {"error_code":401,"message":"Unauthorized"}
+
+#. Instead of using credentials for a user that does not exist, now use the client credentials `appSA:appSA` (the user `appSA` exists in LDAP) to try to register a new Avro schema (a record with two fields ``username`` and ``userid``) into |sr| for the value of a new topic ``users``. It should fail due to an authorization error, with a different message than above.
 
    .. sourcecode:: bash
 
@@ -841,7 +872,7 @@ The security in place between |sr| and its clients is as follows:
 
       {"error_code":40403,"message":"User is denied operation Write on Subject: users-value"}
 
-3. Create a role binding for the client permitting it access to |sr|.
+#. Create a role binding for the ``appSA`` client permitting it access to |sr|.
 
    .. sourcecode:: bash
 
@@ -856,7 +887,7 @@ The security in place between |sr| and its clients is as follows:
           --kafka-cluster-id $KAFKA_CLUSTER_ID \
           --schema-registry-cluster-id schema-registry"
 
-4. Again try to register the schema. It should pass this time.  Note the schema id that it returns, e.g. below schema id is ``7``.
+#. Again try to register the schema. It should pass this time.  Note the schema id that it returns, e.g. below schema id is ``7``.
 
    .. sourcecode:: bash
 
@@ -868,7 +899,7 @@ The security in place between |sr| and its clients is as follows:
 
      {"id":7}
 
-3. View the new schema for the subject ``users-value``. From |c3|, click **MANAGEMENT -> Topics**. Scroll down to and click on the topic `users` and select "SCHEMA".
+#. View the new schema for the subject ``users-value``. From |c3|, click **MANAGEMENT -> Topics**. Scroll down to and click on the topic `users` and select "SCHEMA".
 
    .. figure:: images/schema1.png
     :alt: image
