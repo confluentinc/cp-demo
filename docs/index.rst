@@ -3,7 +3,9 @@
 Kafka Event Streaming Application
 =================================
 
-This demo shows users how to deploy a Kafka event streaming application using `KSQL <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing. All the components in the Confluent platform have security enabled end-to-end.
+This demo builds a full |cp| in deployment with a Kafka event streaming application using `KSQL <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing.
+Follow the accompanying tutorial that steps through the demo so that you can learn how it all works together.
+All the components in the Confluent platform have security enabled end-to-end.
 
 
 ========
@@ -30,6 +32,7 @@ transform called NullFilter. The data is materialized into
 `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for
 analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 |crep-full| is also copying messages from a topic to another topic in the same cluster.
+All data is using |sr-long| and Avro.
 `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ is managing and monitoring the deployment.
 
 
@@ -39,6 +42,22 @@ analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 
 .. note:: This is a Docker environment and has all services running on one host. Do not use this demo in production. It is meant exclusively to easily demo the |CP|. In production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production traffic. Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
 
+
+Data pattern is as follows:
+
++-------------------------------------+----------------------------+-------------------------------------+
+| Components                          | Consumes From              | Produces To                         |
++=====================================+============================+=====================================+
+| IRC source connector                | Wikipedia Edits            | `wikipedia.parsed`                  |
++-------------------------------------+----------------------------+-------------------------------------+
+| KSQL                                | `wikipedia.parsed`         | :devx-cp-demo:`KSQL streams and tables|scripts/ksql/ksqlcommands` |
++-------------------------------------+----------------------------+-------------------------------------+
+| Kafka Streams application           | `wikipedia.parsed`         | `wikipedia.parsed.count-by-channel` |
++-------------------------------------+----------------------------+-------------------------------------+
+| Confluent Replicator                | `wikipedia.parsed`         | `wikipedia.parsed.replica`          |
++-------------------------------------+----------------------------+-------------------------------------+
+| Elasticsearch sink connector        | `WIKIPEDIABOT` (from KSQL) | Elasticsearch/Kibana                |
++-------------------------------------+----------------------------+-------------------------------------+
 
 
 ========
@@ -76,9 +95,9 @@ Demo validated with:
 5. To see the tail end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
 
-========
-Playbook
-========
+===============
+Guided Tutorial
+===============
 
 Brokers 
 -------
