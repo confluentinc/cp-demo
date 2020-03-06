@@ -236,9 +236,9 @@ Connect
 
 3. Verify the connectors running in this demo:
 
-   - source connector ``wikipedia-irc``
-   - source connector ``replicate-topic``
-   - sink connector ``elasticsearch-ksql`` consuming from the Kafka topic ``WIKIPEDIABOT``
+   - source connector ``wikipedia-irc`` view the demo's IRC source connector :devx-cp-demo:`configuration file|scripts/connectors/submit_wikipedia_irc_config.sh`.
+   - source connector ``replicate-topic``: view the demo's |crep| connector :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_config.sh`.
+   - sink connector ``elasticsearch-ksql`` consuming from the Kafka topic ``WIKIPEDIABOT``: view the demo's Elasticsearch sink connector :devx-cp-demo:`configuration file|scripts/connectors/submit_elastic_sink_config.sh`.
 
    .. figure:: images/connector_list.png
 
@@ -360,57 +360,49 @@ No records should be returned from this query. Since the field ``wikipage`` in t
 Consumers
 ---------
 
-1. |c3| enables you to monitor consumer lag and throughput performance. Consumer lag is the topic's high water mark (latest offset for the topic that has been written) minus the current consumer offset (latest offset read for that topic by that consumer group). Keep in mind the topic's write rate and consumer group's read rate when you consider the significance the consumer lag's size. Click on "Consumers".
+#. |c3| enables you to monitor consumer lag and throughput performance. Consumer lag is the topic's high water mark (latest offset for the topic that has been written) minus the current consumer offset (latest offset read for that topic by that consumer group). Keep in mind the topic's write rate and consumer group's read rate when you consider the significance the consumer lag's size. Click on "Consumers".
 
-2. Consumer lag is available on a `per-consumer basis <https://docs.confluent.io/current/control-center/consumers.html#view-consumer-lag-details-for-a-consumer-group>`__, including embedded consumers in sink connectors (e.g., ``connect-replicator`` and ``connect-elasticsearch-ksql``), KSQL queries (e.g., consumer groups whose names start with ``_confluent-ksql-default_query_``), console consumers (e.g., ``WIKIPEDIANOBOT-consumer``), etc.  Consumer lag is also available on a `per-topic basis <https://docs.confluent.io/current/control-center/topics/view.html#view-consumer-lag-for-a-topic>`__.
+#. Consumer lag is available on a `per-consumer basis <https://docs.confluent.io/current/control-center/consumers.html#view-consumer-lag-details-for-a-consumer-group>`__, including embedded consumers in sink connectors (e.g., ``connect-replicator`` and ``connect-elasticsearch-ksql``), KSQL queries (e.g., consumer groups whose names start with ``_confluent-ksql-default_query_``), console consumers (e.g., ``WIKIPEDIANOBOT-consumer``), etc.  Consumer lag is also available on a `per-topic basis <https://docs.confluent.io/current/control-center/topics/view.html#view-consumer-lag-for-a-topic>`__.
 
    .. figure:: images/consumer_group_list.png
       :alt: image
 
-3. View consumer lag for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer group list.
+#. View consumer lag for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer group list.
 
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumer_lag.png
       :alt: image
 
-4. View consumer lag for the Kafka Streams application under the consumer group id ``wikipedia-activity-monitor``. This application is run by the `cnfldemos/cp-demo-kstreams <https://hub.docker.com/r/cnfldemos/cp-demo-kstreams>`__ Docker container (application `source code <https://github.com/confluentinc/demos-common/blob/master/src/main/java/io/confluent/demos/common/wiki/WikipediaActivityMonitor.java>`__).
+#. View consumer lag for the Kafka Streams application under the consumer group id ``wikipedia-activity-monitor``. This application is run by the `cnfldemos/cp-demo-kstreams <https://hub.docker.com/r/cnfldemos/cp-demo-kstreams>`__ Docker container (application `source code <https://github.com/confluentinc/demos-common/blob/master/src/main/java/io/confluent/demos/common/wiki/WikipediaActivityMonitor.java>`__).
 
    .. figure:: images/activity-monitor-consumer.png
       :alt: image
 
-5. With `Confluent Monitoring Interceptors <https://docs.confluent.io/current/control-center/installation/clients.html>`__, you may also view additional metrics related to production and consumption of messages, including:
-
-   - Throughput
-   - Failed consume requests
-   - Percent messages consumed
-   - End to end latency
-
-6. View consumption metrics for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer group list.
+#. Consumption metrics are available on a `per-consumer basis <https://docs.confluent.io/current/control-center/consumers.html#view-consumption-details-for-a-consumer-group>`__. These consumption charts are only populated if `Confluent Monitoring Interceptors <https://docs.confluent.io/current/control-center/installation/clients.html>`__ are configured, as they are in this demo. You can view ``% messages consumed`` and ``end-to-end latency``.  View consumption metrics for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer group list.
 
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumption.png
       :alt: image
 
-
-7. |c3| shows which consumers in a consumer group are consuming from which partitions and on which brokers those partitions reside.  |c3| updates as consumer rebalances occur in a consumer group.  Start consuming from topic ``wikipedia.parsed`` with a new consumer group ``app`` with one consumer ``consumer_app_1``. It runs in the background.
+#. |c3| shows which consumers in a consumer group are consuming from which partitions and on which brokers those partitions reside.  |c3| updates as consumer rebalances occur in a consumer group.  Start consuming from topic ``wikipedia.parsed`` with a new consumer group ``app`` with one consumer ``consumer_app_1``. It runs in the background.
 
    .. sourcecode:: bash
 
           ./scripts/app/start_consumer_app.sh 1
 
-8. Let this consumer group run for 2 minutes until |c3|
+#. Let this consumer group run for 2 minutes until |c3|
    shows the consumer group ``app`` with steady consumption.
    This consumer group ``app`` has a single consumer ``consumer_app_1`` consuming all of the partitions in the topic ``wikipedia.parsed``. 
 
    .. figure:: images/consumer_start_one.png
       :alt: image
 
-9. Add a second consumer ``consumer_app_2`` to the existing consumer
+#. Add a second consumer ``consumer_app_2`` to the existing consumer
    group ``app``.
 
    .. sourcecode:: bash
 
           ./scripts/app/start_consumer_app.sh 2
 
-10. Let this consumer group run for 2 minutes until |c3|
+#. Let this consumer group run for 2 minutes until |c3|
     shows the consumer group ``app`` with steady consumption.
     Notice that the consumers ``consumer_app_1`` and ``consumer_app_2``
     now share consumption of the partitions in the topic
@@ -420,208 +412,16 @@ Consumers
       :alt: image
 
 
-11. Click "System health" and then a line in "Request latency".
+#. Click "System health" and then a line in "Request latency".
 
     .. figure:: images/request_latency_find.png
         :alt: image
 
-12. This shows a breakdown of produce latencies (fetch latencies also available) through the entire `request lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
+#. This shows a breakdown of produce latencies (fetch latencies also available) through the entire `request lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
 
     .. figure:: images/slow_consumer_produce_latency_breakdown.png
         :alt: image
 
-
-Data Streams: Over Consumption
-------------------------------
-
-Streams monitoring in Control Center can highlight consumers that are
-over consuming some messages, which is an indication that consumers are
-processing a set of messages more than once. This may happen
-intentionally, for example an application with a software bug consumed
-and processed Kafka messages incorrectly, got a fix, and then
-reprocesses previous messages correctly. This may also happen
-unintentionally if an application crashes before committing processed
-messages. To simulate over consumption, we will use Kafka’s consumer
-offset reset tool to set the offset of the consumer group ``app`` to an
-earlier offset, thereby forcing the consumer group to reconsume messages
-it has previously read.
-
-.. note:: Data Streams view is enabled by setting `confluent.controlcenter.deprecated.views.enable=true`
-
-1. Click on ``Data streams``, and ``View Details`` for the consumer
-   group ``app``.
-
-   .. figure:: images/data_streams_app.png
-      :alt: image
-
-2. Scroll down to verify there are two consumers ``consumer_app_1`` and
-   ``consumer_app_2`` that were created in an earlier section. If these
-   two consumers are not running and were never started, start them as
-   described in the section `Consumers <#consumers>`__.
-   Let this consumer group run for two minutes, until |c3| stream
-   monitoring shows the consumer group ``app`` with steady consumption.
-
-   .. figure:: images/verify_two_consumers.png
-      :alt: image
-
-3. Stop the consumer group ``app`` to stop consuming from topic
-   ``wikipedia.parsed``. Note that the command below stops the consumers
-   gracefully with ``kill -15``, so the consumers follow the shutdown
-   sequence.
-
-   .. sourcecode:: bash
-
-          ./scripts/app/stop_consumer_app_group_graceful.sh
-
-4. Wait for 2 minutes to let messages continue to be written to the
-   topics for a while, without being consumed by the consumer group
-   ``app``. Notice the red bar which highlights that during the time
-   window when the consumer group was stopped, there were some messages
-   produced but not consumed. These messages are not missing, they are
-   just not consumed because the consumer group stopped.
-
-   .. figure:: images/over_consumption_before_2.png
-      :alt: image
-
-5. Reset the offset of the consumer group ``app`` by shifting 200
-   offsets backwards. The offset reset tool must be run when the
-   consumer is completely stopped. Offset values in output shown below
-   will vary.
-
-   .. sourcecode:: bash
-
-         docker-compose exec kafka1 kafka-consumer-groups \
-           --reset-offsets --group app --shift-by -200 --bootstrap-server kafka1:12091 \
-           --all-topics --execute
-
-   Your output should resemble:
-
-   .. sourcecode:: bash
-
-        TOPIC            PARTITION NEW-OFFSET
-        wikipedia.parsed 1         4071
-        wikipedia.parsed 0         7944
-
-6. Restart consuming from topic ``wikipedia.parsed`` with the consumer
-   group ``app`` with two consumers.
-
-   .. sourcecode:: bash
-
-          ./scripts/app/start_consumer_app.sh 1
-          ./scripts/app/start_consumer_app.sh 2
-
-7. Let this consumer group run for 2 minutes until Control Center stream
-   monitoring shows the consumer group ``app`` with steady consumption.
-   Notice several things:
-
-   -  Even though the consumer group ``app`` was not running for some of
-      this time, all messages are shown as delivered. This is because
-      all bars are time windows relative to produce timestamp.
-   -  For some time intervals, the the bars are red and consumption line
-      is above expected consumption because some messages were consumed
-      twice due to rewinding offsets.
-   -  The latency peaks and then gradually decreases, because this is
-      also relative to the produce timestamp.
-
-   .. figure:: images/over_consumption_after_2.png
-      :alt: image
-
-
-Data Streams: Under Consumption
--------------------------------
-
-Streams monitoring in Control Center can highlight consumers that are
-under consuming some messages. This may happen intentionally when
-consumers stop and restart and operators change the consumer offsets to
-the latest offset. This avoids delay processing messages that were
-produced while the consumers were stopped, especially when they care
-about real-time. This may also happen unintentionally if a consumer is
-offline for longer than the log retention period, or if a producer is
-configured for ``acks=0`` and a broker suddenly fails before having a
-chance to replicate data to other brokers. To simulate under
-consumption, we will use Kafka’s consumer offset reset tool to set the
-offset of the consumer group ``app`` to the latest offset, thereby
-skipping messages that will never be read.
-
-.. note:: Data Streams view is enabled by setting `confluent.controlcenter.deprecated.views.enable=true`
-
-1. Click on **Data streams**, and **View Details** for the consumer
-   group ``app``.
-
-   .. figure:: images/data_streams_app.png
-      :alt: image
-
-2. Scroll down to verify there are two consumers ``consumer_app_1`` and
-   ``consumer_app_2`` that were created in an earlier section. If these
-   two consumers are not running and were never started, start them as
-   described in the section `Consumers <#consumers>`__.
-   Let this consumer group run for two minutes, until |c3| stream
-   monitoring shows the consumer group ``app`` with steady consumption.
-
-   .. figure:: images/verify_two_consumers.png
-      :alt: image
-
-3. Stop the consumer group ``app`` to stop consuming from topic
-   ``wikipedia.parsed``. Note that the command below stops the consumers
-   ungracefully with ``kill -9``, so the consumers did not follow the
-   shutdown sequence.
-
-   .. sourcecode:: bash
-
-          ./scripts/app/stop_consumer_app_group_ungraceful.sh
-
-4. Wait for 2 minutes to let messages continue to be written to the
-   topics for a while, without being consumed by the consumer group
-   ``app``. Notice the red bar which highlights that during the time
-   window when the consumer group was stopped, there were some messages
-   produced but not consumed. These messages are not missing, they are
-   just not consumed because the consumer group stopped.
-
-   .. figure:: images/under_consumption_before.png
-      :alt: image
-
-5. Reset the offset of the consumer group ``app`` by setting it to
-   latest offset. The offset reset tool must be run when the consumer is
-   completely stopped. Offset values in output shown below will vary.
-
-   .. sourcecode:: bash
-
-         docker-compose exec kafka1 kafka-consumer-groups \
-           --reset-offsets --group app --to-latest --bootstrap-server kafka1:12091 \
-           --all-topics --execute
-
-   Your output should resemble:
-
-   .. sourcecode:: bash
-
-       TOPIC            PARTITION NEW-OFFSET
-       wikipedia.parsed 1         8601
-       wikipedia.parsed 0         15135 
-
-6. Restart consuming from topic ``wikipedia.parsed`` with the consumer
-   group ``app`` with two consumers.
-
-   .. sourcecode:: bash
-
-          ./scripts/app/start_consumer_app.sh 1
-          ./scripts/app/start_consumer_app.sh 2
-
-7. Let this consumer group run for two minutes, until |c3| stream
-   monitoring shows the consumer group ``app`` with steady consumption.
-   Notice that during the time period that the consumer group ``app``
-   was not running, no produced messages are shown as delivered.
-   The light blue indicates that perhaps the consumer group stopped ungracefully.
-
-   .. figure:: images/under_consumption_after.png
-      :alt: image
-
-8. Return to the Data Streams view, find the ``wikipedia-activity-monitor``,
-   click on ``View Details`` and then ``Topic partitions``.  From this view
-   you can see the consumption status of the various topic and partitions for the
-   Kafka Streams Application.
-
-   .. figure:: images/activity-monitor-streams.png
-      :alt: image
 
 Failed broker
 -------------
@@ -733,28 +533,28 @@ intra-cluster replication, *i.e.*, the source and destination Kafka
 clusters are the same. As with the rest of the components in the
 solution, Confluent Replicator is also configured with security.
 
-1. View Replicator status and throughput in a dedicated view in |c3|.
+#. View Replicator status and throughput in a dedicated view in |c3|.
 
    .. figure:: images/replicator_c3_view.png
       :alt: image
 
-2. **Consumers**: monitor throughput and latency of Confluent Replicator.
+#. **Consumers**: monitor throughput and latency of Confluent Replicator.
    Replicator is a Kafka Connect source connector and has a corresponding consumer group ``connect-replicator``.
 
    .. figure:: images/replicator_consumer_group_list.png
       :alt: image
 
-3. View Replicator Consumer Lag.
+#. View Replicator Consumer Lag.
 
    .. figure:: images/replicator_consumer_lag.png
       :alt: image
 
-4. View Replicator Consumption metrics.
+#. View Replicator Consumption metrics.
 
    .. figure:: images/replicator_consumption.png
       :alt: image
 
-5. **Topics**: scroll down to view the topics called
+#. **Topics**: scroll down to view the topics called
    ``wikipedia.parsed`` (Replicator is consuming data from this topic)
    and ``wikipedia.parsed.replica`` (Replicator automatically created this topic and is
    copying data to it). Click on ``Consumer Groups`` for the topic
@@ -763,27 +563,27 @@ solution, Confluent Replicator is also configured with security.
 
    .. figure:: images/replicator_topic_info.png
 
-6. Notice that because |crep| default is ``topic.config.sync=true`` (see |crep| :ref:`documentation <rep-destination-topics>`), then the replicated
+#. Notice that because |crep| default is ``topic.config.sync=true`` (see |crep| :ref:`documentation <rep-destination-topics>`), then the replicated
    topic ``wikipedia.parsed.replica`` has enabled |sv| just like the original
    topic ``wikipedia.parsed`` (click on the ``Show full config`` button to see all values).
    
    .. figure:: images/wikipedia.parsed.replica.png
 
-7. **MANAGEMENT –> Kafka Connect**: pause the |crep| connector in **Settings**
+#. **MANAGEMENT –> Kafka Connect**: pause the |crep| connector in **Settings**
    by pressing the pause icon in the top right. This will stop
    consumption for the related consumer group.
 
    .. figure:: images/pause_connector_replicator.png
       :alt: image
 
-8. Observe that the ``connect-replicator`` consumer group has stopped
+#. Observe that the ``connect-replicator`` consumer group has stopped
    consumption.
 
    .. figure:: images/replicator_streams_stopped.png
 
-9. Restart the Replicator connector.
+#. Restart the Replicator connector.
 
-10. Observe that the ``connect-replicator`` consumer group has resumed consumption. Notice several things:
+#. Observe that the ``connect-replicator`` consumer group has resumed consumption. Notice several things:
 
    * Even though the consumer group `connect-replicator` was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
    * The latency peaks and then gradually decreases, because this is also relative to the produce timestamp.
