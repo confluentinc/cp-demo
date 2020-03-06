@@ -89,7 +89,7 @@ def get_output():
     print("Reading topic _confluent-monitoring for 60 seconds...please wait")
 
     try:
-        proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        proc = subprocess.Popen(command, universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     except Exception as e:
         print(e)
 
