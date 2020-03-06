@@ -35,8 +35,7 @@ openssl genrsa -out ./conf/keypair.pem 2048
 openssl rsa -in ./conf/keypair.pem -outform PEM -pubout -out ./conf/public.pem
 
 # Bring up Docker Compose
-echo -e "Starting Zookeeper, Kafka1, LDAP server"
-docker-compose up -d kafka1 kafka2
+docker-compose up -d zookeeper kafka1 kafka2 tools
 
 # wait for kafka container to be healthy
 echo
@@ -47,15 +46,14 @@ echo "Waiting for kafka2 to be healthy"
 retry 30 5 container_healthy kafka2
 
 echo
-echo "Starting the remaining services"
-docker-compose up -d
-echo "..."
-
-echo
 echo "Available LDAP users:"
 docker-compose exec openldap ldapsearch -x -h localhost -b dc=confluent,dc=io -D "cn=admin,dc=confluent,dc=io" -w admin | grep uid:
 echo "Creating role bindings for principals"
 docker-compose exec tools bash -c "/tmp/create-role-bindings.sh"
+
+echo
+docker-compose up -d kafka-client schemaregistry replicator-for-jar-transfer connect ksql-server control-center
+echo "..."
 
 # Verify Confluent Control Center has started within MAX_WAIT seconds
 MAX_WAIT=300
@@ -69,6 +67,11 @@ while [[ ! $(docker-compose logs control-center) =~ "Started NetworkTrafficServe
     exit 1
   fi
 done
+
+echo
+docker-compose up -d ksql-cli restproxy kibana elasticsearch
+echo "..."
+
 
 # Verify Docker containers started
 if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
@@ -113,13 +116,6 @@ ${DIR}/connectors/submit_elastic_sink_config.sh
 echo -e "\nConfigure Kibana dashboard:"
 ${DIR}/dashboard/configure_kibana_dashboard.sh
 
-echo -e "\n\nRun KSQL queries:"
-${DIR}/ksql/run_ksql.sh
-
-echo -e "\nStart consumers for additional topics: WIKIPEDIANOBOT, EN_WIKIPEDIA_GT_1_COUNTS"
-${DIR}/consumers/listen_WIKIPEDIANOBOT.sh
-${DIR}/consumers/listen_EN_WIKIPEDIA_GT_1_COUNTS.sh
-
 # Verify wikipedia.parsed topic is populated and schema is registered
 MAX_WAIT=50
 CUR_WAIT=0
@@ -133,10 +129,22 @@ while [[ ! $(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka
   fi
 done
 
+echo -e "\n\nRun KSQL queries:"
+${DIR}/ksql/run_ksql.sh
+
+echo -e "\nStart consumers for additional topics: WIKIPEDIANOBOT, EN_WIKIPEDIA_GT_1_COUNTS"
+${DIR}/consumers/listen_WIKIPEDIANOBOT.sh
+${DIR}/consumers/listen_EN_WIKIPEDIA_GT_1_COUNTS.sh
+
 # Register the same schema for the replicated topic wikipedia.parsed.replica as was created for the original topic wikipedia.parsed
 # In this case the replicated topic will register with the same schema ID as the original topic
 SCHEMA=$(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed-value/versions/latest | jq .schema)
 docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -H "Content-Type: application/vnd.schemaregistry.v1+json" --data "{\"schema\": $SCHEMA}" -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed.replica-value/versions
+
+echo
+echo "Start the Kafka Streams application wikipedia-activity-monitor"
+docker-compose up -d streams-demo
+echo "..."
 
 echo -e "\nStart Confluent Replicator:"
 ${DIR}/connectors/submit_replicator_config.sh

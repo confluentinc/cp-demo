@@ -33,7 +33,7 @@ CLIENT_PRINCIPAL="User:appSA"
 mds_login $MDS_URL ${SUPER_USER} ${SUPER_USER_PASSWORD}
 
 ################################### SETUP SUPERUSER ###################################
-echo "Creating Super User role bindings"
+echo "Creating role bindings for Super User"
 
 confluent iam rolebinding create \
     --principal $SUPER_USER_PRINCIPAL  \
@@ -59,7 +59,7 @@ confluent iam rolebinding create \
     --ksql-cluster-id $KSQL
 
 ################################### SCHEMA REGISTRY ###################################
-echo "Creating Schema Registry role bindings"
+echo "Creating role bindings for Schema Registry"
 
 # SecurityAdmin on SR cluster itself
 confluent iam rolebinding create \
@@ -79,7 +79,7 @@ do
 done
 
 ################################### CONNECT Admin ###################################
-echo "Creating Connect Admin role bindings"
+echo "Creating role bindings for Connect Admin"
 
 # SecurityAdmin on the connect cluster itself
 confluent iam rolebinding create \
@@ -108,7 +108,7 @@ do
 done
 
 ################################### Connectors ###################################
-echo "Creating role bindings for the wikipedia-irc connector"
+echo "Creating role bindings for wikipedia-irc connector"
 
 confluent iam rolebinding create \
     --principal $CONNECTOR_SUBMITTER \
@@ -132,7 +132,7 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
-echo "Creating role bindings for the replicate-topic connector"
+echo "Creating role bindings for replicate-topic connector"
 
 confluent iam rolebinding create \
     --principal $CONNECTOR_SUBMITTER \
@@ -154,7 +154,7 @@ confluent iam rolebinding create \
     --resource Group:connect-replicator \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
 
-echo "Creating role bindings for the elasticsearch-ksql connector"
+echo "Creating role bindings for elasticsearch-ksql connector"
 
 confluent iam rolebinding create \
     --principal $CONNECTOR_SUBMITTER \
@@ -185,7 +185,7 @@ confluent iam rolebinding create \
     --schema-registry-cluster-id $SR
 
 ################################### KSQL Admin ###################################
-echo "Creating KSQL Admin role bindings"
+echo "Creating role bindings for KSQL Admin"
 
 confluent iam rolebinding create \
     --principal $KSQL_ADMIN \
@@ -289,7 +289,7 @@ confluent iam rolebinding create \
     --schema-registry-cluster-id $SR
 
 ################################### KSQL User ###################################
-echo "Creating KSQL User role bindings"
+echo "Creating role bindings for KSQL User"
 
 confluent iam rolebinding create \
     --principal $KSQL_USER \
@@ -347,8 +347,8 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
-################################### C3 ###################################
-echo "Creating C3 role bindings"
+############################## Control Center ###############################
+echo "Creating role bindings for Control Center"
 
 # C3 only needs SystemAdmin on the kafka cluster itself
 confluent iam rolebinding create \
@@ -357,7 +357,7 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 ################################### Client ###################################
-echo "Creating role bindings for the service account running the streams-demo application"
+echo "Creating role bindings for the streams-demo application"
 
 confluent iam rolebinding create \
     --principal $CLIENT_PRINCIPAL \
@@ -371,6 +371,12 @@ confluent iam rolebinding create \
     --role ResourceOwner \
     --resource Topic:wikipedia \
     --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
+confluent iam rolebinding create \
+    --principal $CLIENT_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Topic:_confluent-monitoring \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
