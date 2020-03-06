@@ -1,9 +1,9 @@
 .. _cp-demo:
 
-Kafka Event Streaming Application
-=================================
+Confluent Platform Demo
+=======================
 
-This demo builds a full |cp| in deployment with a Kafka event streaming application using `KSQL <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing.
+This demo builds a full |cp| deployment with a Kafka event streaming application using `KSQL <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing.
 Follow the accompanying tutorial that steps through the demo so that you can learn how it all works together.
 All the components in the Confluent platform have security enabled end-to-end.
 
@@ -121,7 +121,7 @@ Brokers
 Topics
 ------
 
-#. |c3| has a useful interface to manage topics in a Kafka cluster. Click on "Topics".
+#. |c3| can manage topics in a Kafka cluster. Click on "Topics".
 
 #. Scroll down and click on the topic ``wikipedia.parsed``.
 
@@ -305,7 +305,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
    .. figure:: images/ksql_queries_list.png
       :alt: image
 
-8. View messages from different KSQL streams and tables. Click on your stream of choice and select **Query** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA emit changes;``, and it shows results for newly arriving data.
+8. View messages from different KSQL streams and tables. Click on your stream of choice and select **Query** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA EMIT CHANGES;``, and it shows results for newly arriving data.
 
    .. figure:: images/ksql_query_topic.png
       :alt: image
@@ -319,13 +319,13 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
 View messages in the topic ``EN_WIKIPEDIA_GT_1`` (jump to offset 0/partition 0), and notice the nulls:
 
-   .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1.png
-      :alt: image
+.. figure:: images/messages_in_EN_WIKIPEDIA_GT_1.png
+   :alt: image
 
 For comparison, view messages in the topic ``EN_WIKIPEDIA_GT_1_COUNTS`` (jump to offset 0/partition 0), and notice no nulls:
 
-   .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1_COUNTS.png
-      :alt: image
+.. figure:: images/messages_in_EN_WIKIPEDIA_GT_1_COUNTS.png
+   :alt: image
 
 
 11. The `KSQL processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their KSQL queries. In this demo, the processing log is configured with a custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties` and writes entries into a Kafka topic. To see it in action, in the KSQL editor run the following query for 20 seconds:
