@@ -299,50 +299,16 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
 10. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
-View messages in ``EN_WIKIPEDIA_GT_1``:
+View messages in the topic ``EN_WIKIPEDIA_GT_1`` (jump to offset 0/partition 0), and notice the nulls:
 
-.. sourcecode:: bash
+   .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1.png
+      :alt: image
 
-      docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1 \
-        --property schema.registry.url=https://schemaregistry:8085 \
-        --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks \
-        --property schema.registry.ssl.truststore.password=confluent \
-        --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
+For comparison, view messages in the topic ``EN_WIKIPEDIA_GT_1_COUNTS`` (jump to offset 0/partition 0), and notice no nulls:
 
-Your output should resemble:
+   .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1_COUNTS.png
+      :alt: image
 
-.. sourcecode:: bash
-
-      null
-      {"USERNAME":"Atsme","WIKIPAGE":"Wikipedia:Articles for deletion/Metallurg Bratsk","COUNT":2}
-      null
-      null
-      null
-      {"USERNAME":"7.61.29.178","WIKIPAGE":"Tandem language learning","COUNT":2}
-      {"USERNAME":"Attar-Aram syria","WIKIPAGE":"Antiochus X Eusebes","COUNT":2}
-      ...
-
-View messages in ``EN_WIKIPEDIA_GT_1_COUNTS``:
-
-.. sourcecode:: bash
-
-   docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:9091 --topic EN_WIKIPEDIA_GT_1_COUNTS \
-        --property schema.registry.url=https://schemaregistry:8085 \
-        --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks \
-        --property schema.registry.ssl.truststore.password=confluent \
-        --consumer.config /etc/kafka/secrets/client_without_interceptors.config --max-messages 10
-
-Your output should resemble:
-
-.. sourcecode:: bash
-
-      {"USERNAME":"Atsme","COUNT":2,"WIKIPAGE":"Wikipedia:Articles for deletion/Metallurg Bratsk"}
-      {"USERNAME":"7.61.29.178","COUNT":2,"WIKIPAGE":"Tandem language learning"}
-      {"USERNAME":"Attar-Aram syria","COUNT":2,"WIKIPAGE":"Antiochus X Eusebes"}
-      {"USERNAME":"RonaldB","COUNT":2,"WIKIPAGE":"Wikipedia:Open proxy detection"}
-      {"USERNAME":"Dormskirk","COUNT":2,"WIKIPAGE":"Swindon Designer Outlet"}
-      {"USERNAME":"B.Bhargava Teja","COUNT":3,"WIKIPAGE":"Niluvu Dopidi"}
-      ...
 
 11. The `KSQL processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their KSQL queries. In this demo, the processing log is configured with a custom :devx-cp-demo:`log4j properties file|scripts/security/log4j-secure.properties` and writes entries into a Kafka topic. To see it in action, in the KSQL editor run the following query for 20 seconds:
 
@@ -640,27 +606,20 @@ Go through the next few sections to learn how RBAC works (particulary the sectio
 Each broker has five listener ports:
 
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
-| Name          | Protocol       | For users ...                                                      | kafka1 | kafka2 |
+| Name          | Protocol       | In this demo, used for ...                                         | kafka1 | kafka2 |
 +===============+================+====================================================================+========+========+
-| N/A           | MDS            | Authorization via RBAC (platform components only, not end clients) | 8091   | 8092   |
+| N/A           | MDS            | Authorization via RBAC                                             | 8091   | 8092   |
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
-| INTERNAL      | SASL_PLAINTEXT | Inside Docker containers                                           | 9091   | 9092   |
+| INTERNAL      | SASL_PLAINTEXT | CP Kafka clients (e.g. Confluent Metrics Reporter), SASL_PLAINTEXT | 9091   | 9092   |
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
-| EXTERNAL      | SASL_SSL       | Outside Docker containers                                          | 10091  | 10092  |
+| TOKEN         | SASL_SSL       | |cp| service (e.g. |sr|) when they need to use impersonation       | 10091  | 10092  |
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
-| SSL           | SSL            | Outside Docker containers, with SSL and no SASL                    | 11091  | 11092  |
+| SSL           | SSL            | End clients, (e.g. `stream-demo`), with SSL no SASL                | 11091  | 11092  |
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
-| CLEAR         | PLAINTEXT      | No security enabled (unrealistic; for demo and learning only)      | 12091  | 12092  |
+| CLEAR         | PLAINTEXT      | No security, available as a backdoor; for demo and learning only   | 12091  | 12092  |
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
 
 
-In this demo, the clients that use each port:
-
-* MDS: for |cp| components to authenticate clients
-* SASL_PLAINTEXT: Confluent Metrics Reporters
-* SASL_SSL: |cp| components when they need to use impersonation
-* SSL: Kafka Streams application
-* PLAINTEXT: none, but available as a simple backdoor (do not configure this in production)
 
 
 -------------
@@ -695,33 +654,50 @@ All other users are not authorized to communicate with the cluster.
    with these security parameters. As an example, to communicate with
    the Kafka cluster to view all the active consumer groups:
 
-   * Communicate with brokers via the PLAINTEXT port
+   * For demo only: Communicate with brokers via the PLAINTEXT port, client configurations are required
 
    .. sourcecode:: bash
 
            # CLEAR/PLAINTEXT port
            docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:12091
 
+   * End clients: Communicate with brokers via the SSL port, and SSL parameters configured via the ``--command-config`` argument for command line tools or ``--consumer.config`` for kafka-console-consumer.
+
+   .. sourcecode:: bash
+
+           # SSL/SSL port
+           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:11091 \
+               --command-config /etc/kafka/secrets/client_without_interceptors_ssl.config
+
    * Communicate with brokers via the SASL_SSL port, and SASL_SSL parameters configured via the ``--command-config`` argument for command line tools or ``--consumer.config`` for kafka-console-consumer.
 
    .. sourcecode:: bash
 
-           # SASL_SSL port with SASL_SSL parameters
-           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 \
-               --command-config /etc/kafka/secrets/client_without_interceptors.config
+           # TOKEN/SASL_SSL port
+           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091 \
+               --command-config /etc/kafka/secrets/client_without_interceptors_ssl.config
 
    * If you try to communicate with brokers via the SASL_SSL port but don’t specify the SASL_SSL parameters, it will fail
 
    .. sourcecode:: bash
 
-           # SASL_SSL port without SASL_SSL parameters
-           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091
+           # TOKEN/SASL_SSL port, without client configurations
+           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091
 
    Your output should resemble:
 
    .. sourcecode:: bash
 
-           Error: Executing consumer group command failed due to Request METADATA failed on brokers List(kafka1:9091 (id: -1 rack: null))
+           Error: Executing consumer group command failed due to Request METADATA failed on brokers List(kafka1:10091 (id: -1 rack: null))
+
+   * Communicate with brokers via the SASL_PLAINTEXT port, and SASL_PLAINTEXT parameters configured via the ``--command-config`` argument for command line tools or ``--consumer.config`` for kafka-console-consumer.
+
+   .. sourcecode:: bash
+
+           # INTERNAL/SASL_PLAIN port
+           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 \
+               --command-config /etc/kafka/secrets/client_sasl_plain.config
+   
 
 
 3. Verify which authenticated users are configured to be super users.
@@ -735,28 +711,27 @@ All other users are not authorized to communicate with the cluster.
 
    .. sourcecode:: bash
 
-         KAFKA_SUPER_USERS=User:client;User:schemaregistry;User:restproxy;User:broker;User:connect;User:ANONYMOUS
+         KAFKA_SUPER_USERS=User:admin;User:mds;User:superUser;User:client;User:schemaregistry;User:restproxy;User:broker;User:connect;User:ANONYMOUS
 
-4. Verify that a user ``client`` which authenticates via SASL can
-   consume messages from topic ``wikipedia.parsed``:
-
-   .. sourcecode:: bash
-
-          ./scripts/consumers/listen_wikipedia.parsed.sh SASL
-
-5. Verify that a user which authenticates via SSL cannot consume
-   messages from topic ``wikipedia.parsed``. It should fail with an exception.
+4. Verify that a user ``appSA`` (which is not a super user) can consume messages from topic ``wikipedia.parsed``:
 
    .. sourcecode:: bash
 
-         ./scripts/consumers/listen_wikipedia.parsed.sh SSL
+         docker-compose exec connect kafka-avro-console-consumer --bootstrap-server kafka1:11091,kafka2:11092 \
+           --property security.protocol=SSL \
+           --property ssl.truststore.location=/etc/kafka/secrets/kafka.appSA.truststore.jks \
+           --property ssl.truststore.password=confluent \
+           --property ssl.ruststore.location=/etc/kafka/secrets/kafka.appSA.truststore.jks \
+           --property ssl.keystore.password=confluent \
+           --property ssl.key.password=confluent \
+           --property schema.registry.url=https://schemaregistry:8085 \
+           --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.appSA.truststore.jks \
+           --property schema.registry.ssl.truststore.password=confluent \
+           --property basic.auth.credentials.source=USER_INFO \
+           --property schema.registry.basic.auth.user.info=appSA:appSA \
+           --topic wikipedia.parsed \
+           --group=test
 
-   Your output should resemble:
-
-   .. sourcecode:: bash
-
-       [2018-01-12 21:13:18,481] ERROR Unknown error when running consumer: (kafka.tools.ConsoleConsumer$)
-       org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]
 
 6. Verify that the broker’s Authorizer logger logs the denial event. As
    shown in the log message, the user which authenticates via SSL has a
@@ -767,7 +742,6 @@ All other users are not authorized to communicate with the cluster.
 
         # Authorizer logger logs the denied operation
         docker-compose logs kafka1 | grep kafka.authorizer.logger
-
 
    Your output should resemble:
 
