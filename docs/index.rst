@@ -4,7 +4,7 @@ Confluent Platform Demo (cp-demo)
 =================================
 
 This demo builds a full |cp| deployment with a Kafka event streaming application using `KSQL <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing.
-Follow the accompanying tutorial that steps through the demo so that you can learn how it all works together.
+Follow the accompanying guided tutorial that steps through the demo so that you can learn how it all works together.
 All the components in the Confluent platform have security enabled end-to-end.
 
 
@@ -73,24 +73,24 @@ Demo validated with:
 -  git
 -  jq
 
-.. note:: If you prefer a non-Docker version and have Elasticsearch and Kibana running on your local machine, please follow :devx-examples:`these instructions|wikipedia`.
+.. note:: If you prefer other non-Docker demos, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
 
 
-1. Clone the `cp-demo GitHub repository <https://github.com/confluentinc/cp-demo>`__:
+#. Clone the `confluentinc/cp-demo GitHub repository <https://github.com/confluentinc/cp-demo>`__:
 
    .. sourcecode:: bash
 
        git clone https://github.com/confluentinc/cp-demo
 
-2. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8GB (default is 2GB).
+#. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8GB (default is 2GB).
 
-3. From the ``cp-demo`` directory, start the entire demo by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This will take ~7 minutes to complete.
+#. From the ``cp-demo`` directory, start the entire demo by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This will take ~7 minutes to complete.
 
    .. sourcecode:: bash
 
         ./scripts/start.sh
 
-4. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Log in as ``superUser`` and password ``superUser``, which has super user access to the cluster.
+#. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Log in as ``superUser`` and password ``superUser``, which has super user access to the cluster.
 
 5. To see the tail end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
@@ -247,13 +247,13 @@ Topics
 Connect
 -------
 
-1. |c3| uses the Kafka Connect API to manage multiple `connect clusters <https://docs.confluent.io/current/control-center/docs/connect.html>`__.  Click on "Connect".
+#. |c3| uses the Kafka Connect API to manage multiple `connect clusters <https://docs.confluent.io/current/control-center/docs/connect.html>`__.  Click on "Connect".
 
-2. Select ``connect-default``, the name of the cluster of |kconnect| workers.
+#. Select ``connect-default``, the name of the cluster of |kconnect| workers.
 
    .. figure:: images/connect_default.png
 
-3. Verify the connectors running in this demo:
+#. Verify the connectors running in this demo:
 
    - source connector ``wikipedia-irc`` view the demo's IRC source connector :devx-cp-demo:`configuration file|scripts/connectors/submit_wikipedia_irc_config.sh`.
    - source connector ``replicate-topic``: view the demo's |crep| connector :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_config.sh`.
@@ -261,7 +261,7 @@ Connect
 
    .. figure:: images/connector_list.png
 
-4. Click any connector name to view or modify any details of the connector configuration and custom transforms.
+#. Click any connector name to view or modify any details of the connector configuration and custom transforms.
 
    .. figure:: images/connect_replicator_settings.png
 
@@ -273,50 +273,50 @@ KSQL
 
 In this demo, KSQL is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the :devx-cp-demo:`KSQL command file|scripts/ksql/ksqlcommands` .
 
-1. In the navigation bar, click **KSQL**.
+#. In the navigation bar, click **KSQL**.
 
-2. From the list of KSQL applications, select ``KSQL``.
+#. From the list of KSQL applications, select ``KSQL``.
 
    .. figure:: images/ksql_link.png
       :alt: image
 
-3. Alternatively, run KSQL CLI to get to the KSQL CLI prompt.
+#. Alternatively, run KSQL CLI to get to the KSQL CLI prompt.
 
    .. sourcecode:: bash
 
         docker-compose exec ksql-cli bash -c 'ksql -u ksqlUser -p ksqlUser http://ksql-server:8088'
 
-4. View the existing KSQL streams. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``).
+#. View the existing KSQL streams. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``).
 
    .. figure:: images/ksql_streams_list.png
       :alt: image
 
-5. Describe the schema (fields or columns) and source and sink of an existing KSQL stream. Click on ``WIKIPEDIA``.
+#. Describe the schema (fields or columns) and source and sink of an existing KSQL stream. Click on ``WIKIPEDIA``.
 
    .. figure:: images/wikipedia_describe.png
       :alt: image
 
-6. View the existing KSQL tables. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``).
+#. View the existing KSQL tables. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``).
 
    .. figure:: images/ksql_tables_list.png
       :alt: image
 
-7. View the existing KSQL queries, which are continuously running. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW QUERIES;``).
+#. View the existing KSQL queries, which are continuously running. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW QUERIES;``).
 
    .. figure:: images/ksql_queries_list.png
       :alt: image
 
-8. View messages from different KSQL streams and tables. Click on your stream of choice and select **Query** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA EMIT CHANGES;``, and it shows results for newly arriving data.
+#. View messages from different KSQL streams and tables. Click on your stream of choice and select **Query** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA EMIT CHANGES;``, and it shows results for newly arriving data.
 
    .. figure:: images/ksql_query_topic.png
       :alt: image
 
-9. Click **KSQL Editor** and run the ``SHOW PROPERTIES;`` statement. You can see the configured KSQL server properties and check these values with the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
+#. Click **KSQL Editor** and run the ``SHOW PROPERTIES;`` statement. You can see the configured KSQL server properties and check these values with the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
 
    .. figure:: images/ksql_properties.png
       :alt: image
 
-10. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
+#. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
 View messages in the topic ``EN_WIKIPEDIA_GT_1`` (jump to offset 0/partition 0), and notice the nulls:
 
@@ -328,8 +328,7 @@ For comparison, view messages in the topic ``EN_WIKIPEDIA_GT_1_COUNTS`` (jump to
 .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1_COUNTS.png
    :alt: image
 
-
-11. The `KSQL processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their KSQL queries. In this demo, the processing log is configured with a custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties` and writes entries into a Kafka topic. To see it in action, in the KSQL editor run the following query for 20 seconds:
+#. The `KSQL processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their KSQL queries. In this demo, the processing log is configured with a custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties` and writes entries into a Kafka topic. To see it in action, in the KSQL editor run the following query for 20 seconds:
 
 .. sourcecode:: bash
 
@@ -815,7 +814,7 @@ Confluent REST Proxy
 
 The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
 
-1. Use the |crest|, which is listening for HTTPS on port 8086, to try to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
+#. Use the |crest|, which is listening for HTTPS on port 8086, to try to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
 
    .. sourcecode:: bash
 
@@ -827,7 +826,7 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
 
       {"offsets":[{"partition":null,"offset":null,"error_code":40301,"error":"Not authorized to access topics: [users]"}],"key_schema_id":null,"value_schema_id":7}
 
-2. Create a role binding for the client permitting it produce to the topic ``users``.
+#. Create a role binding for the client permitting it produce to the topic ``users``.
 
    .. sourcecode:: bash
 
@@ -841,7 +840,7 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
           --resource Topic:users \
           --kafka-cluster-id $KAFKA_CLUSTER_ID" 
 
-3. Again try to produce a message to the topic ``users``. It should pass this time.
+#. Again try to produce a message to the topic ``users``. It should pass this time.
 
    .. sourcecode:: bash
 
@@ -853,7 +852,7 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
 
      {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":7}
 
-4. Create consumer instance ``my_avro_consumer``.
+#. Create consumer instance ``my_avro_consumer``.
 
    .. sourcecode:: bash
 
@@ -865,13 +864,13 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
 
       {"instance_id":"my_consumer_instance","base_uri":"https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance"}
 
-5. Subscribe my_avro_consumer to the `users` topic
+#. Subscribe ``my_avro_consumer`` to the ``users`` topic.
 
    .. sourcecode:: bash
 
        docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"topics":["users"]}' -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/subscription
 
-6. Try to consume messages for my_avro_consumer subscriptions. It should fail due to an authorization error.
+#. Try to consume messages for ``my_avro_consumer`` subscriptions. It should fail due to an authorization error.
 
    .. sourcecode:: bash
 
@@ -883,7 +882,7 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
 
         {"error_code":40301,"message":"Not authorized to access group: my_avro_consumer"} 
 
-7. Create a role binding for the client permitting it access to the consumer group ``my_avro_consumer``.
+#. Create a role binding for the client permitting it access to the consumer group ``my_avro_consumer``.
 
    .. sourcecode:: bash
 
@@ -897,7 +896,7 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
           --resource Group:my_avro_consumer \
           --kafka-cluster-id $KAFKA_CLUSTER_ID"
 
-8. Again try to consume messages for my_avro_consumer subscriptions. It should fail due to a different authorization error.
+#. Again try to consume messages for ``my_avro_consumer`` subscriptions. It should fail due to a different authorization error.
 
    .. sourcecode:: bash
 
@@ -911,21 +910,21 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
 
       {"error_code":40301,"message":"Not authorized to access topics: [users]"}
 
-9. Create a role binding for the client permitting it access to the topic ``users``.
+#. Create a role binding for the client permitting it access to the topic ``users``.
 
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
       KAFKA_CLUSTER_ID=$(docker-compose exec zookeeper zookeeper-shell zookeeper:2181 get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
 
-      # Then create the role binding for the group ``my_avro_consumer``
+      # Then create the role binding for the group my_avro_consumer
       docker-compose exec tools bash -c "confluent iam rolebinding create \
           --principal User:appSA \
           --role DeveloperRead \
           --resource Topic:users \
           --kafka-cluster-id $KAFKA_CLUSTER_ID"
 
-10. Again try to consume messages for my_avro_consumer subscriptions. It should pass this time.
+#. Again try to consume messages for ``my_avro_consumer`` subscriptions. It should pass this time.
 
    .. sourcecode:: bash
 
@@ -939,7 +938,7 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
 
       [{"topic":"users","key":null,"value":{"userid":1,"username":"Bunny Smith"},"partition":1,"offset":0}]
 
-11. Delete the consumer instance ``my_avro_consumer``.
+#. Delete the consumer instance ``my_avro_consumer``.
 
    .. sourcecode:: bash
 
@@ -1014,7 +1013,7 @@ to setup alerts from there.
    :alt: image
 
 
-1. This demo already has pre-configured triggers and actions. View the
+#. This demo already has pre-configured triggers and actions. View the
    Alerts ``Triggers`` screen, and click ``Edit`` against each trigger
    to see configuration details.
 
@@ -1029,7 +1028,7 @@ to setup alerts from there.
    .. figure:: images/alerts_triggers.png
       :alt: image
 
-2. If you followed the steps in the `failed broker <#failed-broker>`__
+#. If you followed the steps in the `failed broker <#failed-broker>`__
    section, view the Alert history to see that the trigger
    ``Under Replicated Partitions`` happened and caused an alert when you
    stopped broker 2.
@@ -1039,18 +1038,18 @@ to setup alerts from there.
       :alt: image
 
 
-3. You can also trigger the ``Consumption Difference`` trigger. In the
+#. You can also trigger the ``Consumption Difference`` trigger. In the
    Kafka Connect -> Sinks screen, edit the running Elasticsearch sink
    connector.
 
-4. In the Connect view, pause the Elasticsearch sink connector in Settings by
+#. In the Connect view, pause the Elasticsearch sink connector in Settings by
    pressing the pause icon in the top right. This will stop consumption
    for the related consumer group.
 
    .. figure:: images/pause_connector.png
       :alt: image
 
-5. View the Alert history to see that this trigger happened and caused
+#. View the Alert history to see that this trigger happened and caused
    an alert.
 
    .. figure:: images/trigger_history.png
@@ -1063,7 +1062,7 @@ Troubleshooting
 
 Here are some suggestions on how to troubleshoot the demo.
 
-1. Verify the status of the Docker containers show ``Up`` state, except for the ``kafka-client`` container which is expected to have ``Exit 0`` state. If any containers are not up, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8 GB (default is 2 GB).
+#. Verify the status of the Docker containers show ``Up`` state, except for the ``kafka-client`` container which is expected to have ``Exit 0`` state. If any containers are not up, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8 GB (default is 2 GB).
 
    .. sourcecode:: bash
 
@@ -1095,19 +1094,19 @@ Here are some suggestions on how to troubleshoot the demo.
       zookeeper                     /etc/confluent/docker/run        Up (healthy)   0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 
 
-2. To view sample messages for each topic, including
+#. To view sample messages for each topic, including
    ``wikipedia.parsed``:
 
    .. sourcecode:: bash
 
           ./scripts/consumers/listen.sh
 
-3. If a command that communicates with |zk| appears to be failing with the error ``org.apache.zookeeper.KeeperException$NoAuthException``,
+#. If a command that communicates with |zk| appears to be failing with the error ``org.apache.zookeeper.KeeperException$NoAuthException``,
    change the container you are running the command from to be either ``kafka1`` or ``kafka2``.  This is because |zk| is configured for
    `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, and
    any commands that communicate with |zk| need properties set for |zk| authentication.
 
-4. Run any of the :devx-cp-demo:`validation scripts|scripts/validate/` to check that things are working.
+#. Run any of the :devx-cp-demo:`validation scripts|scripts/validate/` to check that things are working.
 
    .. sourcecode:: bash
 
@@ -1119,7 +1118,7 @@ Here are some suggestions on how to troubleshoot the demo.
 Teardown
 ========
 
-1. Stop the consumer group ``app`` to stop consuming from topic
+#. Stop the consumer group ``app`` to stop consuming from topic
    ``wikipedia.parsed``. Note that the command below stops the consumers
    gracefully with ``kill -15``, so the consumers follow the shutdown
    sequence.
@@ -1128,7 +1127,7 @@ Teardown
 
          ./scripts/app/stop_consumer_app_group_graceful.sh
 
-2. Stop the Docker demo, destroy all components and clear all Docker
+#. Stop the Docker demo, destroy all components and clear all Docker
    volumes.
 
    .. sourcecode:: bash
