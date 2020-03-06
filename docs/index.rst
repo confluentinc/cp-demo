@@ -61,7 +61,7 @@ Data pattern is as follows:
 
 
 ========
-Run demo
+Run Demo
 ========
 
 Demo validated with:
@@ -408,116 +408,6 @@ Consumers
         :alt: image
 
 
-Failed broker
--------------
-
-To simulate a failed broker, stop the Docker container running one of
-the two Kafka brokers.
-
-#. MDS is backed by a Confluent metadata topic. In production, leave its replication factor at default RF=3. In this demo, having two brokers it may have been desirable for RF=2. However, if RF=2 then automatically min.insync.replicas=2, and then stopping one broker would cause the whole cluster to fail. Instead, in order to be able to demonstrate a single broker failure, first move all the partitions of this topic to kafka1 (other topics have RF=2).
-
-   .. sourcecode:: bash
-
-      # Prepare to stop kafka2
-      # In demo only (not required in production when RF=3): move all the partitions of the Confluent metadata topic to kafka1
-      docker-compose exec kafka1 kafka-topics --bootstrap-server kafka1:12091  --describe --topic _confluent-metadata-auth
-      docker-compose exec kafka1 kafka-reassign-partitions --reassignment-json-file /tmp/helper/partitions-to-move.json --execute --zookeeper zookeeper:2181
-      docker-compose exec kafka1 kafka-reassign-partitions --reassignment-json-file /tmp/helper/partitions-to-move.json --verify --zookeeper zookeeper:2181
-      docker-compose exec kafka1 kafka-topics --bootstrap-server kafka1:12091  --describe --topic _confluent-metadata-auth
-
-#. Stop the Docker container running Kafka broker 2.
-
-   .. sourcecode:: bash
-
-          docker-compose stop kafka2
-
-#. After a few minutes, observe the Broker summary show that the number of brokers 
-   has decreased from 2 to 1, and there are many under replicated
-   partitions.
-
-   .. figure:: images/broker_down_failed.png
-      :alt: image
-
-#. View Topic information details to see that there are out of sync replicas on broker 2.
-
-   .. figure:: images/broker_down_replicas.png
-      :alt: image
-
-#. Restart the Docker container running Kafka broker 2.
-
-   .. sourcecode:: bash
-
-          docker-compose start kafka2
-
-#. After about a minute, observe the Broker summary in Confluent
-   Control Center. The broker count has recovered to 2, and the topic
-   partitions are back to reporting no under replicated partitions.
-
-   .. figure:: images/broker_down_steady.png
-      :alt: image
-
-#. Click on the broker count ``2`` inside the "Broker uptime" box to view when
-   broker counts changed.
-
-   .. figure:: images/broker_down_times.png
-      :alt: image
-
-
-Alerting
---------
-
-There are many types of Control Center
-`alerts <https://docs.confluent.io/current/control-center/docs/alerts.html>`__
-and many ways to configure them. Use the Alerts management page to
-define triggers and actions, or click on individual resources
-to setup alerts from there.
-
-.. figure:: images/c3-alerts-bell-icon-initial.png
-   :alt: image
-
-
-1. This demo already has pre-configured triggers and actions. View the
-   Alerts ``Triggers`` screen, and click ``Edit`` against each trigger
-   to see configuration details.
-
-   -  The trigger ``Under Replicated Partitions`` happens when a broker
-      reports non-zero under replicated partitions, and it causes an
-      action ``Email Administrator``.
-   -  The trigger ``Consumption Difference`` happens when consumption
-      difference for the Elasticsearch connector consumer group is
-      greater than ``0``, and it causes an action
-      ``Email Administrator``.
-
-   .. figure:: images/alerts_triggers.png
-      :alt: image
-
-2. If you followed the steps in the `failed broker <#failed-broker>`__
-   section, view the Alert history to see that the trigger
-   ``Under Replicated Partitions`` happened and caused an alert when you
-   stopped broker 2.
-
-
-   .. figure:: images/alerts_triggers_under_replication_partitions.png
-      :alt: image
-
-
-3. You can also trigger the ``Consumption Difference`` trigger. In the
-   Kafka Connect -> Sinks screen, edit the running Elasticsearch sink
-   connector.
-
-4. In the Connect view, pause the Elasticsearch sink connector in Settings by
-   pressing the pause icon in the top right. This will stop consumption
-   for the related consumer group.
-
-   .. figure:: images/pause_connector.png
-      :alt: image
-
-5. View the Alert history to see that this trigger happened and caused
-   an alert.
-
-   .. figure:: images/trigger_history.png
-      :alt: image
-
 
 Replicator
 ----------
@@ -559,7 +449,7 @@ solution, Confluent Replicator is also configured with security.
 
    .. figure:: images/replicator_topic_info.png
 
-#. **MANAGEMENT –> Kafka Connect**: pause the |crep| connector in **Settings**
+#. **Connect**: pause the |crep| connector in **Settings**
    by pressing the pause icon in the top right. This will stop
    consumption for the related consumer group.
 
@@ -569,7 +459,7 @@ solution, Confluent Replicator is also configured with security.
 #. Observe that the ``connect-replicator`` consumer group has stopped
    consumption.
 
-   .. figure:: images/replicator_streams_stopped.png
+   .. figure:: images/replicator_stopped.png
 
 #. Restart the Replicator connector.
 
@@ -590,7 +480,7 @@ All the components in this demo are enabled with many `security
 features <https://docs.confluent.io/current/security.html>`__:
 
 -  :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization
--  :ref:`RBAC <rbac-overview>` enabled for the entire platform
+-  :ref:`Role-Based Access Control (RBAC) <rbac-overview>` enabled for the entire platform
 -  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__
    for encryption, except for |zk| which does not support SSL
 -  `SASL/PLAIN <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html>`__
@@ -637,7 +527,19 @@ that can communicate with the cluster are those that authenticate as
 that connect via the ``PLAINTEXT`` port (their username is ``ANONYMOUS``).
 All other users are not authorized to communicate with the cluster.
 
-1. Verify the ports on which the Kafka brokers are listening with the
+This demo :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` simple SSL
+certificates and creates keystores, truststores, and secures them
+with a password. To communicate with the brokers, Kafka clients may
+use any of the ports on which the brokers are listening. To use a
+security-enabled port, they must specify security parameters for
+keystores, truststores, password, or authentication so the Kafka
+command line client tools pass the security configuration file 
+:devx-cp-demo:`with interceptors|scripts/security/client_with_interceptors.config` or
+:devx-cp-demo:`without interceptors|scripts/security/client_without_interceptors.config` or
+with these security parameters. 
+
+
+#. Verify the ports on which the Kafka brokers are listening with the
    following command, and they should match the table shown below:
 
    .. sourcecode:: bash
@@ -645,26 +547,14 @@ All other users are not authorized to communicate with the cluster.
           docker-compose logs kafka1 | grep "Registered broker 1"
           docker-compose logs kafka2 | grep "Registered broker 2"
 
-2. This demo :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` simple SSL
-   certificates and creates keystores, truststores, and secures them
-   with a password. To communicate with the brokers, Kafka clients may
-   use any of the ports on which the brokers are listening. To use a
-   security-enabled port, they must specify security parameters for
-   keystores, truststores, password, or authentication so the Kafka
-   command line client tools pass the security configuration file 
-   :devx-cp-demo:`with interceptors|scripts/security/client_with_interceptors.config` or
-   :devx-cp-demo:`without interceptors|scripts/security/client_without_interceptors.config` or
-   with these security parameters. As an example, to communicate with
-   the Kafka cluster to view all the active consumer groups:
-
-   * For demo only: Communicate with brokers via the PLAINTEXT port, client configurations are required
+#. For demo only: Communicate with brokers via the PLAINTEXT port, client configurations are required
 
    .. sourcecode:: bash
 
            # CLEAR/PLAINTEXT port
            docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:12091
 
-   * End clients: Communicate with brokers via the SSL port, and SSL parameters configured via the ``--command-config`` argument for command line tools or ``--consumer.config`` for kafka-console-consumer.
+#. End clients: Communicate with brokers via the SSL port, and SSL parameters configured via the ``--command-config`` argument for command line tools or ``--consumer.config`` for kafka-console-consumer.
 
    .. sourcecode:: bash
 
@@ -672,7 +562,7 @@ All other users are not authorized to communicate with the cluster.
            docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:11091 \
                --command-config /etc/kafka/secrets/client_without_interceptors_ssl.config
 
-   * Communicate with brokers via the SASL_SSL port, and SASL_SSL parameters configured via the ``--command-config`` argument for command line tools or ``--consumer.config`` for kafka-console-consumer.
+#. Communicate with brokers via the SASL_SSL port, and SASL_SSL parameters configured via the ``--command-config`` argument for command line tools or ``--consumer.config`` for kafka-console-consumer.
 
    .. sourcecode:: bash
 
@@ -680,7 +570,7 @@ All other users are not authorized to communicate with the cluster.
            docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091 \
                --command-config /etc/kafka/secrets/cp_service.config
 
-   * If you try to communicate with brokers via the SASL_SSL port but don’t specify the SASL_SSL parameters, it will fail
+#. If you try to communicate with brokers via the SASL_SSL port but don’t specify the SASL_SSL parameters, it will fail
 
    .. sourcecode:: bash
 
@@ -693,7 +583,7 @@ All other users are not authorized to communicate with the cluster.
 
            Error: Executing consumer group command failed due to Request METADATA failed on brokers List(kafka1:10091 (id: -1 rack: null))
 
-   * Communicate with brokers via the SASL_PLAINTEXT port, and SASL_PLAINTEXT parameters configured via the ``--command-config`` argument for command line tools or ``--consumer.config`` for kafka-console-consumer.
+#. Communicate with brokers via the SASL_PLAINTEXT port, and SASL_PLAINTEXT parameters configured via the ``--command-config`` argument for command line tools or ``--consumer.config`` for kafka-console-consumer.
 
    .. sourcecode:: bash
 
@@ -702,7 +592,7 @@ All other users are not authorized to communicate with the cluster.
                --command-config /etc/kafka/secrets/client_sasl_plain.config
    
 
-3. Verify which users are configured to be super users.
+#. Verify which users are configured to be super users.
 
    .. sourcecode:: bash
 
@@ -715,7 +605,7 @@ All other users are not authorized to communicate with the cluster.
 
          KAFKA_SUPER_USERS=User:admin;User:mds;User:superUser;User:client;User:schemaregistry;User:restproxy;User:broker;User:connect;User:ANONYMOUS
 
-4. Verify that user ``appSA`` (which is not a super user) can consume messages from topic ``wikipedia.parsed``.  Notice that it is configured to authenticate to brokers with mTLS and authenticate to Schema Registry with LDAP.
+#. Verify that user ``appSA`` (which is not a super user) can consume messages from topic ``wikipedia.parsed``.  Notice that it is configured to authenticate to brokers with mTLS and authenticate to Schema Registry with LDAP.
 
    .. sourcecode:: bash
 
@@ -735,7 +625,7 @@ All other users are not authorized to communicate with the cluster.
            --topic wikipedia.parsed \
            --max-messages 5
 
-5. Verify that user ``badapp`` cannot consume messages from topic ``wikipedia.parsed``.
+#. Verify that user ``badapp`` cannot consume messages from topic ``wikipedia.parsed``.
 
    .. sourcecode:: bash
 
@@ -755,7 +645,7 @@ All other users are not authorized to communicate with the cluster.
            --topic wikipedia.parsed \
            --max-messages 5
 
-6. Verify that the broker’s Authorizer logger logs the denial event. As
+#. Verify that the broker’s Authorizer logger logs the denial event. As
    shown in the log message, the user which authenticates via SSL has a
    username ``CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US``, not
    just ``client``.
@@ -772,7 +662,7 @@ All other users are not authorized to communicate with the cluster.
         [2018-01-12 21:13:18,454] INFO Principal = User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US is Denied Operation = Describe from host = 172.23.0.7 on resource = Topic:wikipedia.parsed (kafka.authorizer.logger) [2018-01-12
         21:13:18,464] INFO Principal = User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US is Denied Operation = Describe from host = 172.23.0.7 on resource = Group:test (kafka.authorizer.logger) 
 
-7. Add an ACL that authorizes user
+#. Add an ACL that authorizes user
    ``CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US``, and then
    view the updated ACL configuration.
 
@@ -798,7 +688,7 @@ All other users are not authorized to communicate with the cluster.
        Current ACLs for resource ``Group:test``:
        User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US has Allow permission for operations: Read from hosts: \* 
 
-8. Verify that the user which authenticates via SSL is now authorized
+#. Verify that the user which authenticates via SSL is now authorized
    and can successfully consume some messages from topic
    ``wikipedia.parsed``.
 
@@ -806,13 +696,13 @@ All other users are not authorized to communicate with the cluster.
 
           ./scripts/consumers/listen_wikipedia.parsed.sh SSL
 
-9. View the role bindings that were configured for RBAC.
+#. View the role bindings that were configured for RBAC.
 
    .. sourcecode:: bash
 
           ./scripts/validate/validate_bindings.sh
 
-10. Because |zk| is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, any commands that communicate with |zk| need properties set for |zk| authentication. This authentication configuration is provided by the ``KAFKA_OPTS`` setting on the brokers. For example, notice that the `throttle script <scripts/app/throttle_consumer.sh>`__ runs on the Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
+#. Because |zk| is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, any commands that communicate with |zk| need properties set for |zk| authentication. This authentication configuration is provided by the ``KAFKA_OPTS`` setting on the brokers. For example, notice that the `throttle script <scripts/app/throttle_consumer.sh>`__ runs on the Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
 
 
 
@@ -901,7 +791,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
      {"id":7}
 
-#. View the new schema for the subject ``users-value``. From |c3|, click **MANAGEMENT -> Topics**. Scroll down to and click on the topic `users` and select "SCHEMA".
+#. View the new schema for the subject ``users-value``. From |c3|, click **Topics**. Scroll down to and click on the topic `users` and select "SCHEMA".
 
    .. figure:: images/schema1.png
     :alt: image
@@ -1061,9 +951,120 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
        docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
 
 
-========================
-Troubleshooting the demo
-========================
+Failed Broker
+-------------
+
+To simulate a failed broker, stop the Docker container running one of
+the two Kafka brokers.
+
+#. MDS is backed by a Confluent metadata topic. In production, leave its replication factor at default RF=3. In this demo, having two brokers it may have been desirable for RF=2. However, if RF=2 then automatically min.insync.replicas=2, and then stopping one broker would cause the whole cluster to fail. Instead, in order to be able to demonstrate a single broker failure, first move all the partitions of this topic to kafka1 (other topics have RF=2).
+
+   .. sourcecode:: bash
+
+      # Prepare to stop kafka2
+      # In demo only (not required in production when RF=3): move all the partitions of the Confluent metadata topic to kafka1
+      docker-compose exec kafka1 kafka-topics --bootstrap-server kafka1:12091  --describe --topic _confluent-metadata-auth
+      docker-compose exec kafka1 kafka-reassign-partitions --reassignment-json-file /tmp/helper/partitions-to-move.json --execute --zookeeper zookeeper:2181
+      docker-compose exec kafka1 kafka-reassign-partitions --reassignment-json-file /tmp/helper/partitions-to-move.json --verify --zookeeper zookeeper:2181
+      docker-compose exec kafka1 kafka-topics --bootstrap-server kafka1:12091  --describe --topic _confluent-metadata-auth
+
+#. Stop the Docker container running Kafka broker 2.
+
+   .. sourcecode:: bash
+
+          docker-compose stop kafka2
+
+#. After a few minutes, observe the Broker summary show that the number of brokers 
+   has decreased from 2 to 1, and there are many under replicated
+   partitions.
+
+   .. figure:: images/broker_down_failed.png
+      :alt: image
+
+#. View Topic information details to see that there are out of sync replicas on broker 2.
+
+   .. figure:: images/broker_down_replicas.png
+      :alt: image
+
+#. Restart the Docker container running Kafka broker 2.
+
+   .. sourcecode:: bash
+
+          docker-compose start kafka2
+
+#. After about a minute, observe the Broker summary in Confluent
+   Control Center. The broker count has recovered to 2, and the topic
+   partitions are back to reporting no under replicated partitions.
+
+   .. figure:: images/broker_down_steady.png
+      :alt: image
+
+#. Click on the broker count ``2`` inside the "Broker uptime" box to view when
+   broker counts changed.
+
+   .. figure:: images/broker_down_times.png
+      :alt: image
+
+
+Alerting
+--------
+
+There are many types of Control Center
+`alerts <https://docs.confluent.io/current/control-center/docs/alerts.html>`__
+and many ways to configure them. Use the Alerts management page to
+define triggers and actions, or click on individual resources
+to setup alerts from there.
+
+.. figure:: images/c3-alerts-bell-icon-initial.png
+   :alt: image
+
+
+1. This demo already has pre-configured triggers and actions. View the
+   Alerts ``Triggers`` screen, and click ``Edit`` against each trigger
+   to see configuration details.
+
+   -  The trigger ``Under Replicated Partitions`` happens when a broker
+      reports non-zero under replicated partitions, and it causes an
+      action ``Email Administrator``.
+   -  The trigger ``Consumption Difference`` happens when consumption
+      difference for the Elasticsearch connector consumer group is
+      greater than ``0``, and it causes an action
+      ``Email Administrator``.
+
+   .. figure:: images/alerts_triggers.png
+      :alt: image
+
+2. If you followed the steps in the `failed broker <#failed-broker>`__
+   section, view the Alert history to see that the trigger
+   ``Under Replicated Partitions`` happened and caused an alert when you
+   stopped broker 2.
+
+
+   .. figure:: images/alerts_triggers_under_replication_partitions.png
+      :alt: image
+
+
+3. You can also trigger the ``Consumption Difference`` trigger. In the
+   Kafka Connect -> Sinks screen, edit the running Elasticsearch sink
+   connector.
+
+4. In the Connect view, pause the Elasticsearch sink connector in Settings by
+   pressing the pause icon in the top right. This will stop consumption
+   for the related consumer group.
+
+   .. figure:: images/pause_connector.png
+      :alt: image
+
+5. View the Alert history to see that this trigger happened and caused
+   an alert.
+
+   .. figure:: images/trigger_history.png
+      :alt: image
+
+
+===============
+Troubleshooting
+===============
 
 Here are some suggestions on how to troubleshoot the demo.
 
