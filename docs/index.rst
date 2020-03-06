@@ -50,7 +50,7 @@ Data pattern is as follows:
 +=====================================+============================+=====================================+
 | IRC source connector                | Wikipedia Edits            | `wikipedia.parsed`                  |
 +-------------------------------------+----------------------------+-------------------------------------+
-| KSQL                                | `wikipedia.parsed`         | :devx-cp-demo:`KSQL streams and tables|scripts/ksql/ksqlcommands` |
+| KSQL                                | `wikipedia.parsed`         | KSQL streams and tables             |
 +-------------------------------------+----------------------------+-------------------------------------+
 | Kafka Streams application           | `wikipedia.parsed`         | `wikipedia.parsed.count-by-channel` |
 +-------------------------------------+----------------------------+-------------------------------------+
