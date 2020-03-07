@@ -966,7 +966,7 @@ the two Kafka brokers.
 
 #. Look at the production and consumption metrics and notice that the clients are all still working.
 
-   .. figure:: images/broker_down_replicas.png
+   .. figure:: images/broker_down_apps_working.png
       :alt: image
 
 #. Restart the Docker container running Kafka broker 2.
