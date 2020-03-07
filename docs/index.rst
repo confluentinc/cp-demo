@@ -484,13 +484,12 @@ features <https://docs.confluent.io/current/security.html>`__:
 .. note::
     This demo showcases a secure |CP| for educational purposes and is not meant to be complete best practices. There are certain differences between what is shown in the demo and what you should do in production:
 
-    * Each component should have its own username, instead of authenticating all users as ``client``
     * Authorize users only for operations that they need, instead of making all of them super users
     * If the ``PLAINTEXT`` security protocol is used, these ``ANONYMOUS`` usernames should not be configured as super users
     * Consider not even opening the ``PLAINTEXT`` port if ``SSL`` or ``SASL_SSL`` are configured
 
-Confluent Platform services and clients can authenticate via the OpenLDAP server running in the demo.
-Each Kafka broker in the demo is configured with MDS and can talk to LDAP.
+There is an OpenLDAP server running in the demo, and each Kafka broker in the demo is configured with MDS and can talk to LDAP so that it can authenticate clients and Confluent Platform services and clients.
+
 Each broker has five listener ports:
 
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
@@ -508,24 +507,9 @@ Each broker has five listener ports:
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
 
 
-All the brokers in this demo authenticate as ``broker``, and all other
-services authenticate as their respective names. Per the broker configuration
-parameter ``super.users``, as it is set in this demo, the only users
-that can communicate with the cluster are those that authenticate as
-``broker``, ``schemaregistry``, ``client``, ``restproxy``, ``client``, or users
-that connect via the ``PLAINTEXT`` port (their username is ``ANONYMOUS``).
-All other users are not authorized to communicate with the cluster.
-
-This demo :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` simple SSL
-certificates and creates keystores, truststores, and secures them
-with a password. To communicate with the brokers, Kafka clients may
-use any of the ports on which the brokers are listening. To use a
-security-enabled port, they must specify security parameters for
-keystores, truststores, password, or authentication so the Kafka
-command line client tools pass the security configuration file 
-:devx-cp-demo:`with interceptors|scripts/security/client_with_interceptors.config` or
-:devx-cp-demo:`without interceptors|scripts/security/client_without_interceptors.config` or
-with these security parameters. 
+This demo :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` simple SSL certificates and creates keystores, truststores, and secures them with a password. 
+End clients (non-CP clients) authenticate using mTLS via the broker SSL listener.
+They should never use the TOKEN listener which is meant only for internal communication between Confluent components.
 
 
 #. Verify the ports on which the Kafka brokers are listening with the
