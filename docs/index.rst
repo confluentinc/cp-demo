@@ -92,7 +92,7 @@ Demo validated with:
 
 #. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Log in as ``superUser`` and password ``superUser``, which has super user access to the cluster.
 
-5. To see the tail end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
+5. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
 
 ===============
@@ -328,7 +328,7 @@ For comparison, view messages in the topic ``EN_WIKIPEDIA_GT_1_COUNTS`` (jump to
 .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1_COUNTS.png
    :alt: image
 
-#. The `KSQL processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their KSQL queries. In this demo, the processing log is configured with a custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties` and writes entries into a Kafka topic. To see it in action, in the KSQL editor run the following query for 20 seconds:
+#. The `KSQL processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their KSQL queries. In this demo, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the KSQL editor run the following query for 20 seconds:
 
 .. sourcecode:: bash
 
@@ -473,18 +473,13 @@ This section explains the broker listeners and how to use them.
 All the components in this demo are enabled with many `security
 features <https://docs.confluent.io/current/security.html>`__:
 
--  :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization
--  :ref:`Role-Based Access Control (RBAC) <rbac-overview>` enabled for the entire platform
--  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__
-   for encryption, except for |zk| which does not support SSL
--  `SASL/PLAIN <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html>`__
-   for authentication, except for |zk| which is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__
--  `Authorization <https://docs.confluent.io/current/kafka/authorization.html>`__.
-   If a resource has no associated ACLs, then users are not allowed to
-   access the resource, except super users
--  `HTTPS for Control Center <https://docs.confluent.io/current/control-center/docs/installation/configuration.html#https-settings>`__
--  `HTTPS for Schema Registry <https://docs.confluent.io/current/schema-registry/docs/security.html>`__
--  `HTTPS for Connect <https://docs.confluent.io/current/connect/security.html#configuring-the-kconnect-rest-api-for-http-or-https>`__
+-  :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization. It is configured with the Confluent Server Authorizer and talks to LDAP to authenticate clients.
+-  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__ for encryption and mTLS, except for |zk| which does not support TLS.
+-  :ref:`Role-Based Access Control (RBAC) <rbac-overview>` for authorization. If a resource has no associated ACLs, then users are not allowed to access the resource, except super users.
+-  |zk| is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__.
+-  `HTTPS for Control Center <https://docs.confluent.io/current/control-center/docs/installation/configuration.html#https-settings>`__.
+-  `HTTPS for Schema Registry <https://docs.confluent.io/current/schema-registry/docs/security.html>`__.
+-  `HTTPS for Connect <https://docs.confluent.io/current/connect/security.html#configuring-the-kconnect-rest-api-for-http-or-https>`__.
 
 .. note::
     This demo showcases a secure |CP| for educational purposes and is not meant to be complete best practices. There are certain differences between what is shown in the demo and what you should do in production:
