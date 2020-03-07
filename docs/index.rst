@@ -474,7 +474,7 @@ All the components in this demo are enabled with many `security
 features <https://docs.confluent.io/current/security.html>`__:
 
 -  :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization. It is configured with the Confluent Server Authorizer and talks to LDAP to authenticate clients.
--  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__ for encryption and mTLS, except for |zk| which does not support TLS.
+-  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__ for encryption and mTLS, except for |zk| which does not support TLS. The demo :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password. 
 -  :ref:`Role-Based Access Control (RBAC) <rbac-overview>` for authorization. If a resource has no associated ACLs, then users are not allowed to access the resource, except super users.
 -  |zk| is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__.
 -  `HTTPS for Control Center <https://docs.confluent.io/current/control-center/docs/installation/configuration.html#https-settings>`__.
@@ -506,11 +506,13 @@ Each broker has five listener ports:
 | CLEAR         | PLAINTEXT      | No security, available as a backdoor; for demo and learning only   | 12091  | 12092  |
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
 
+End clients (non-CP clients):
 
-This demo :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` simple SSL certificates and creates keystores, truststores, and secures them with a password. 
-End clients (non-CP clients) authenticate using mTLS via the broker SSL listener.
-They should never use the TOKEN listener which is meant only for internal communication between Confluent components.
-
+- Authenticate using mTLS via the broker SSL listener.
+- If they are also using |sr|, authenticate to Schema Registry via LDAP.
+- If they are also using Confluent Monitoring interceptors, authenticate using mTLS via the broker SSL listener.
+- Should never use the TOKEN listener which is meant only for internal communication between Confluent components.
+- See :devx-cp-demo:`client configuration|env_files/streams-demo.env/` used in the demo by the ``streams-demo`` container running the Kafka Streams application ``wikipedia-activity-monitor``.
 
 #. Verify the ports on which the Kafka brokers are listening with the
    following command, and they should match the table shown below:
