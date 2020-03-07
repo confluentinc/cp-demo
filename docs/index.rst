@@ -579,7 +579,6 @@ with these security parameters.
            # INTERNAL/SASL_PLAIN port
            docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 \
                --command-config /etc/kafka/secrets/client_sasl_plain.config
-   
 
 #. Verify which users are configured to be super users.
 
@@ -594,7 +593,7 @@ with these security parameters.
 
          KAFKA_SUPER_USERS=User:admin;User:mds;User:superUser;User:client;User:schemaregistry;User:restproxy;User:broker;User:connect;User:ANONYMOUS
 
-#. Verify that user ``appSA`` (which is not a super user) can consume messages from topic ``wikipedia.parsed``.  Notice that it is configured to authenticate to brokers with mTLS and authenticate to Schema Registry with LDAP.
+#. Verify that LDAP user ``appSA`` (which is not a super user) can consume messages from topic ``wikipedia.parsed``.  Notice that it is configured to authenticate to brokers with mTLS and authenticate to Schema Registry with LDAP.
 
    .. sourcecode:: bash
 
@@ -614,7 +613,7 @@ with these security parameters.
            --topic wikipedia.parsed \
            --max-messages 5
 
-#. Verify that user ``badapp`` cannot consume messages from topic ``wikipedia.parsed``.
+#. Verify that LDAP user ``badapp`` cannot consume messages from topic ``wikipedia.parsed``.
 
    .. sourcecode:: bash
 
@@ -634,58 +633,63 @@ with these security parameters.
            --topic wikipedia.parsed \
            --max-messages 5
 
-#. Verify that the broker’s Authorizer logger logs the denial event. As
-   shown in the log message, the user which authenticates via SSL has a
-   username ``CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US``, not
-   just ``client``.
-
-   .. sourcecode:: bash
-
-        # Authorizer logger logs the denied operation
-        docker-compose logs kafka1 | grep kafka.authorizer.logger
-
    Your output should resemble:
 
    .. sourcecode:: bash
 
-        [2018-01-12 21:13:18,454] INFO Principal = User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US is Denied Operation = Describe from host = 172.23.0.7 on resource = Topic:wikipedia.parsed (kafka.authorizer.logger) [2018-01-12
-        21:13:18,464] INFO Principal = User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US is Denied Operation = Describe from host = 172.23.0.7 on resource = Group:test (kafka.authorizer.logger) 
+      ERROR [Consumer clientId=consumer-wikipedia.test-1, groupId=wikipedia.test] Topic authorization failed for topics [wikipedia.parsed]
+      org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]
 
-#. Add an ACL that authorizes user
-   ``CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US``, and then
-   view the updated ACL configuration.
+#. Add a role binding that permits ``badapp`` client to consume from topic ``wikipedia.parsed`` and its related subject in |sr|.
 
    .. sourcecode:: bash
 
-      docker-compose exec kafka1 /usr/bin/kafka-acls \
-        --authorizer-properties zookeeper.connect=zookeeper:2181 \
-        --add --topic wikipedia.parsed \
-        --allow-principal User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US \
-        --operation Read --group test
+      # First get the KAFKA_CLUSTER_ID
+      KAFKA_CLUSTER_ID=$(docker-compose exec zookeeper zookeeper-shell zookeeper:2181 get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
 
-      docker-compose exec kafka1 /usr/bin/kafka-acls \
-        --authorizer-properties zookeeper.connect=zookeeper:2181 \
-        --list --topic wikipedia.parsed --group test
+      # Then create the role binding for the topic ``wikipedia.parsed``
+      docker-compose exec tools bash -c "confluent iam rolebinding create \
+          --principal User:badapp \
+          --role ResourceOwner \
+          --resource Topic:wikipedia.parsed \
+          --kafka-cluster-id $KAFKA_CLUSTER_ID"
 
-   Your output should resemble:
+      # Then create the role binding for the group ``wikipedia.test``
+      docker-compose exec tools bash -c "confluent iam rolebinding create \
+          --principal User:badapp \
+          --role ResourceOwner \
+          --resource Group:wikipedia.test \
+          --kafka-cluster-id $KAFKA_CLUSTER_ID"
+
+      # Then create the role binding for the subject ``wikipedia.parsed-value``, i.e., the topic-value (versus the topic-key)
+      docker-compose exec tools bash -c "confluent iam rolebinding create \
+          --principal User:badapp \
+          --role ResourceOwner \
+          --resource Subject:wikipedia.parsed-value \
+          --kafka-cluster-id $KAFKA_CLUSTER_ID \
+          --schema-registry-cluster-id schema-registry"
+
+#. Verify that LDAP user ``badapp`` now can consume messages from topic ``wikipedia.parsed``.
 
    .. sourcecode:: bash
 
-       Current ACLs for resource ``Topic:wikipedia.parsed``:
-       User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US has Allow permission for operations: Read from hosts: \*
+         docker-compose exec connect kafka-avro-console-consumer --bootstrap-server kafka1:11091,kafka2:11092 \
+           --consumer-property security.protocol=SSL \
+           --consumer-property ssl.truststore.location=/etc/kafka/secrets/kafka.badapp.truststore.jks \
+           --consumer-property ssl.truststore.password=confluent \
+           --consumer-property ssl.keystore.location=/etc/kafka/secrets/kafka.badapp.keystore.jks \
+           --consumer-property ssl.keystore.password=confluent \
+           --consumer-property ssl.key.password=confluent \
+           --property schema.registry.url=https://schemaregistry:8085 \
+           --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.badapp.truststore.jks \
+           --property schema.registry.ssl.truststore.password=confluent \
+           --property basic.auth.credentials.source=USER_INFO \
+           --property schema.registry.basic.auth.user.info=badapp:badapp \
+           --group wikipedia.test \
+           --topic wikipedia.parsed \
+           --max-messages 5
 
-       Current ACLs for resource ``Group:test``:
-       User:CN=client,OU=TEST,O=CONFLUENT,L=PaloAlto,ST=Ca,C=US has Allow permission for operations: Read from hosts: \* 
-
-#. Verify that the user which authenticates via SSL is now authorized
-   and can successfully consume some messages from topic
-   ``wikipedia.parsed``.
-
-   .. sourcecode:: bash
-
-          ./scripts/consumers/listen_wikipedia.parsed.sh SSL
-
-#. View the role bindings that were configured for RBAC.
+#. View all the role bindings that were configured for RBAC in this cluster.
 
    .. sourcecode:: bash
 

@@ -5,7 +5,7 @@ set -o nounset \
     -o verbose
 
 # See what is in each keystore and truststore
-for i in kafka1 kafka2 client schemaregistry restproxy connect controlcenter ksqlserver appSA baddapp
+for i in kafka1 kafka2 client schemaregistry restproxy connect controlcenter ksqlserver appSA badapp
 
 do
         echo "------------------------------- $i keystore -------------------------------"
