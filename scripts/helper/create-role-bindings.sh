@@ -27,6 +27,7 @@ CONNECTOR_PRINCIPAL="User:connectorSA"
 SR_PRINCIPAL="User:schemaregistryUser"
 KSQL_ADMIN="User:ksqlAdmin"
 KSQL_USER="User:ksqlUser"
+KSQL_SERVER="User:ksqlserver"
 C3_ADMIN="User:controlcenterAdmin"
 CLIENT_PRINCIPAL="User:appSA"
 
@@ -346,6 +347,14 @@ confluent iam rolebinding create \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
+
+################################### KSQL Server #############################
+echo "Creating role bindings for KSQL Server (used for KSQL Processing Log)"
+confluent iam rolebinding create \
+    --principal $KSQL_SERVER \
+    --role ResourceOwner \
+    --resource Topic:${KSQL}ksql_processing_log \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 ############################## Control Center ###############################
 echo "Creating role bindings for Control Center"
