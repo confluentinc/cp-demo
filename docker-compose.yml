@@ -750,10 +750,14 @@ services:
     environment:
       CUB_CLASSPATH: '/usr/share/java/ksql-server/*:/usr/share/java/cp-base-new/*'
       KSQL_LOG4J_ROOT_LOGLEVEL: INFO
-      KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/tmp/helper/log4j-secure.properties"
+
       KSQL_KSQL_SERVICE_ID: "ksql-cluster"
+
+      KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/tmp/helper/log4j-secure.properties"
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_REPLICATION_FACTOR: 2
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
+
       KSQL_BOOTSTRAP_SERVERS: "kafka1:10091,kafka2:10092"
       KSQL_HOST_NAME: ksql-server
       KSQL_LISTENERS: "http://0.0.0.0:8088"
