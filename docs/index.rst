@@ -90,7 +90,7 @@ Demo validated with:
 
         ./scripts/start.sh
 
-#. Use Google Chrome to view the |c3| GUI at http://localhost:9021. Log in as ``superUser`` and password ``superUser``, which has super user access to the cluster.
+#. Use Google Chrome to view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
 
 5. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
@@ -936,11 +936,10 @@ Failed Broker
 To simulate a failed broker, stop the Docker container running one of
 the two Kafka brokers.
 
-#. MDS is backed by a Confluent metadata topic. In production, leave its replication factor at default RF=3. In this demo, having two brokers it may have been desirable for RF=2. However, if RF=2 then automatically min.insync.replicas=2, and then stopping one broker would cause the whole cluster to fail. Instead, in order to be able to demonstrate a single broker failure, first move all the partitions of this topic to kafka1 (other topics have RF=2).
+#. MDS is backed by a Confluent metadata topic called ``_confluent-metadata-auth``. In production, leave its replication factor at default RF=3. In this demo with two brokers, it may have been desirable for RF=2. However, if RF=2 then automatically min.insync.replicas=2 (code logic just for this topic, not all topics), and then stopping one broker would cause producing to this topic to fail. Instead, in order to be able to demonstrate a single broker failure, first move all the partitions of this topic to kafka1.
 
    .. sourcecode:: bash
 
-      # Prepare to stop kafka2
       # In demo only (not required in production when RF=3): move all the partitions of the Confluent metadata topic to kafka1
       docker-compose exec kafka1 kafka-topics --bootstrap-server kafka1:12091  --describe --topic _confluent-metadata-auth
       docker-compose exec kafka1 kafka-reassign-partitions --reassignment-json-file /tmp/helper/partitions-to-move.json --execute --zookeeper zookeeper:2181
@@ -961,6 +960,11 @@ the two Kafka brokers.
       :alt: image
 
 #. View Topic information details to see that there are out of sync replicas on broker 2.
+
+   .. figure:: images/broker_down_replicas.png
+      :alt: image
+
+#. Look at the production and consumption metrics and notice that the clients are all still working.
 
    .. figure:: images/broker_down_replicas.png
       :alt: image
