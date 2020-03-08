@@ -17,11 +17,6 @@ services:
                   -DrequireClientAuthScheme=sasl
     volumes:
       - ./scripts/security:/etc/kafka/secrets
-    healthcheck:
-      test: nc -z localhost 2181
-      interval: 5s
-      retries: 5
-      start_period: 30s
 
   tools:
     image: cnfltraining/training-tools:5.4
@@ -30,6 +25,7 @@ services:
     depends_on:
       - zookeeper
       - kafka1
+      - kafka2
     volumes:
       - ./scripts/helper:/tmp/helper
     entrypoint: /bin/bash
@@ -61,11 +57,6 @@ services:
       - ./conf:/tmp/conf
       - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets
-    healthcheck:
-      test: nc -z localhost 8091 && nc -z localhost 9091 && /tmp/helper/kafka-registered.sh zookeeper:2181
-      interval: 3s
-      retries: 15
-      start_period: 30s
     command: "bash -c 'if [ ! -f /etc/kafka/secrets/kafka.kafka1.keystore.jks ]; then echo \"ERROR: Did not find SSL certificates in /etc/kafka/secrets/ (did you remember to run ./scripts/start.sh instead of docker-compose up -d?)\" && exit 1 ; else /etc/confluent/docker/run ; fi'"
     ports:
       - 8091:8091
@@ -200,11 +191,6 @@ services:
       - ./conf:/tmp/conf
       - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets
-    healthcheck:
-      test: nc -z localhost 8092 && nc -z localhost 9092 && /tmp/helper/kafka-registered.sh zookeeper:2181
-      interval: 3s
-      retries: 15
-      start_period: 30s
     command: "bash -c 'if [ ! -f /etc/kafka/secrets/kafka.kafka2.keystore.jks ]; then echo \"ERROR: Did not find SSL certificates in /etc/kafka/secrets/ (did you remember to run ./scripts/start.sh instead of docker-compose up -d?)\" && exit 1 ; else /etc/confluent/docker/run ; fi'"
     ports:
       - 8092:8092
@@ -335,6 +321,7 @@ services:
     depends_on:
       - zookeeper
       - kafka1
+      - kafka2
       - schemaregistry
       - replicator-for-jar-transfer
     volumes:
@@ -542,18 +529,14 @@ services:
     hostname: control-center
     container_name: control-center
     depends_on:
-      zookeeper:
-        condition: service_healthy
-      kafka1:
-        condition: service_healthy
+      - zookeeper
+      - kafka1
+      - kafka2
+      - schemaregistry
+      - connect
     volumes:
       - ./conf:/tmp/conf
       - ./scripts/security:/etc/kafka/secrets
-    healthcheck:
-        test: nc -z localhost 9021
-        interval: 3s
-        retries: 15
-        start_period: 30s
     ports:
       - 9021:9021
       - "9022:9022"
@@ -634,6 +617,7 @@ services:
     depends_on:
       - zookeeper
       - kafka1
+      - kafka2
     volumes:
       - ./scripts/security:/etc/kafka/secrets
       - ./conf:/tmp/conf
@@ -688,7 +672,9 @@ services:
     container_name: kafka-client
     cpus: 0.4
     depends_on:
+      - zookeeper
       - kafka1
+      - kafka2
     volumes:
       - ./scripts/security:/etc/kafka/secrets
     # We defined a dependency on "kafka", but `depends_on` will NOT wait for the
@@ -739,17 +725,14 @@ services:
     cpus: 0.5
     restart: always
     depends_on:
+      - zookeeper
       - kafka1
+      - kafka2
       - connect
     volumes:
       - ./conf:/tmp/conf
       - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets
-    healthcheck:
-      test: nc -z localhost 8088
-      interval: 3s
-      retries: 15
-      start_period: 30s
     ports:
       - 8088:8088
     environment:
@@ -835,6 +818,7 @@ services:
     cpus: 0.4
     depends_on:
       - kafka1
+      - kafka2
       - connect
       - ksql-server
     volumes:
@@ -850,6 +834,7 @@ services:
     depends_on:
       - zookeeper
       - kafka1
+      - kafka2
       - schemaregistry
     hostname: restproxy
     container_name: restproxy

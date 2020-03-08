@@ -1,11 +1,12 @@
 #!/bin/bash
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+. ../helper/functions.sh
+
 ################################## GET KAFKA CLUSTER ID ########################
-KAFKA_CLUSTER_ID=$(docker-compose exec zookeeper zookeeper-shell zookeeper:2181 get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
-if [ -z "$KAFKA_CLUSTER_ID" ]; then
-    echo "Failed to retrieve Kafka cluster id from ZooKeeper"
-    exit 1
-fi
+KAFKA_CLUSTER_ID=$(host_check_kafka_cluster_registered)
+echo "KAFKA_CLUSTER_ID: $KAFKA_CLUSTER_ID"
 
 ################################## SETUP VARIABLES #############################
 MDS_URL=http://kafka1:8091
@@ -26,10 +27,11 @@ KSQL_USER="User:ksqlUser"
 C3_ADMIN="User:controlcenterAdmin"
 CLIENT_PRINCIPAL="User:appSA"
 BADAPP="User:badapp"
+LISTEN_PRINCIPAL="User:clientListen"
 
 ################################## Run through permutations #############################
 
-for p in $SUPER_USER_PRINCIPAL $CONNECT_ADMIN $CONNECTOR_SUBMITTER $CONNECTOR_PRINCIPAL $SR_PRINCIPAL $KSQL_ADMIN $KSQL_USER $C3_ADMIN $CLIENT_PRINCIPAL $BADAPP; do
+for p in $SUPER_USER_PRINCIPAL $CONNECT_ADMIN $CONNECTOR_SUBMITTER $CONNECTOR_PRINCIPAL $SR_PRINCIPAL $KSQL_ADMIN $KSQL_USER $C3_ADMIN $CLIENT_PRINCIPAL $BADAPP $LISTEN_PRINCIPAL; do
   for c in " " " --schema-registry-cluster-id $SR" " --connect-cluster-id $CONNECT" " --ksql-cluster-id $KSQL"; do
     echo
     echo "Showing bindings for principal $p and --kafka-cluster-id $KAFKA_CLUSTER_ID $c"

@@ -7,7 +7,7 @@ sn: Sheen
 givenName: BadApp
 cn: badapp
 displayName: BadApp Sheen
-uidNumber: 10018
+uidNumber: 10019
 gidNumber: 5000
 userPassword: badapp
 gecos: badapp

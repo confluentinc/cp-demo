@@ -5,11 +5,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 . ${DIR}/functions.sh
 
 ################################## GET KAFKA CLUSTER ID ########################
-KAFKA_CLUSTER_ID=$(zookeeper-shell zookeeper:2181 get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
-if [ -z "$KAFKA_CLUSTER_ID" ]; then 
-    echo "Failed to retrieve Kafka cluster id from ZooKeeper"
-    exit 1
-fi
+KAFKA_CLUSTER_ID=$(get_kafka_cluster_id_from_container)
+#echo "KAFKA_CLUSTER_ID: $KAFKA_CLUSTER_ID"
 
 ################################## SETUP VARIABLES #############################
 MDS_URL=http://kafka1:8091
@@ -30,10 +27,11 @@ KSQL_USER="User:ksqlUser"
 KSQL_SERVER="User:ksqlserver"
 C3_ADMIN="User:controlcenterAdmin"
 CLIENT_PRINCIPAL="User:appSA"
+LISTEN_PRINCIPAL="User:clientListen"
 
-mds_login $MDS_URL ${SUPER_USER} ${SUPER_USER_PASSWORD}
+mds_login $MDS_URL ${SUPER_USER} ${SUPER_USER_PASSWORD} || exit 1
 
-################################### SETUP SUPERUSER ###################################
+################################### SUPERUSER ###################################
 echo "Creating role bindings for Super User"
 
 confluent iam rolebinding create \
@@ -403,6 +401,60 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
+################################### Listen Client ###################################
+echo "Creating role bindings for the listen client application"
+
+confluent iam rolebinding create \
+    --principal $LISTEN_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Group:listen-consumer \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
+confluent iam rolebinding create \
+    --principal $LISTEN_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Topic:wikipedia \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
+confluent iam rolebinding create \
+    --principal $LISTEN_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Topic:WIKIPEDIA \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
+confluent iam rolebinding create \
+    --principal $LISTEN_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Topic:EN_WIKIPEDIA \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
+confluent iam rolebinding create \
+    --principal $LISTEN_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Subject:wikipedia \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID \
+    --schema-registry-cluster-id $SR
+
+confluent iam rolebinding create \
+    --principal $LISTEN_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Subject:WIKIPEDIA \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID \
+    --schema-registry-cluster-id $SR
+
+confluent iam rolebinding create \
+    --principal $LISTEN_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Subject:EN_WIKIPEDIA \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID \
+    --schema-registry-cluster-id $SR
+
 ######################### Print #########################
 
 echo "Cluster IDs:"
@@ -424,6 +476,7 @@ echo "    KSQL Admin: $KSQL_ADMIN"
 echo "    KSQL User: $KSQL_USER"
 echo "    C3 Admin: $C3_ADMIN"
 echo "    Client service account: $CLIENT_PRINCIPAL"
+echo "    Listen Client service account: $LISTEN_PRINCIPAL"
 echo
 
 
