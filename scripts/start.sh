@@ -35,7 +35,7 @@ sleep 5
 
 echo
 echo "Available LDAP users:"
-docker-compose exec openldap ldapsearch -x -h localhost -b dc=confluent,dc=io -D "cn=admin,dc=confluent,dc=io" -w admin | grep uid:
+docker-compose exec openldap ldapsearch -x -h localhost -b dc=confluentdemo,dc=io -D "cn=admin,dc=confluentdemo,dc=io" -w admin | grep uid:
 echo "Creating role bindings for principals"
 docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh"
 
