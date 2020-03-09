@@ -84,7 +84,7 @@ Demo validated with:
 
 #. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8GB (default is 2GB).
 
-#. From the ``cp-demo`` directory, start the entire demo by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This will take ~7 minutes to complete.
+#. From the ``cp-demo`` directory, start the entire demo by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This will take approximately 7 minutes to complete.
 
    .. sourcecode:: bash
 
@@ -147,12 +147,7 @@ Topics
    .. figure:: images/topic_inspect.png
       :alt: image
 
-#. Return to "All Topics", click on ``wikipedia.parsed.count-by-channel`` to view the Kafka Streams application output topic.
-
-   .. figure:: images/count-topic-view.png
-      :alt: image
-
-#. View the schema for this topic. For `wikipedia.parsed`, the topic value is using a Schema registered with |sr| (the topic key is just a string).
+#. View the schema for this topic. For ``wikipedia.parsed``, the topic value is using a Schema registered with |sr| (the topic key is just a string).
 
    .. figure:: images/topic_schema.png
       :alt: image
@@ -160,6 +155,11 @@ Topics
 #. View configuration settings for this topic.
 
    .. figure:: images/topic_settings.png
+      :alt: image
+
+#. Return to "All Topics", click on ``wikipedia.parsed.count-by-channel`` to view the output topic from the Kafka Streams application.
+
+   .. figure:: images/count-topic-view.png
       :alt: image
 
 #. Return to the ``All topics`` view and click the **+ Add a topic** button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
@@ -249,7 +249,7 @@ Connect
 
 #. |c3| uses the Kafka Connect API to manage multiple `connect clusters <https://docs.confluent.io/current/control-center/docs/connect.html>`__.  Click on "Connect".
 
-#. Select ``connect-default``, the name of the cluster of |kconnect| workers.
+#. Select ``connect1``, the name of the cluster of |kconnect| workers.
 
    .. figure:: images/connect_default.png
 
@@ -275,7 +275,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
 #. In the navigation bar, click **KSQL**.
 
-#. From the list of KSQL applications, select ``KSQL``.
+#. From the list of KSQL applications, select ``ksql1``.
 
    .. figure:: images/ksql_link.png
       :alt: image
@@ -396,11 +396,10 @@ Consumers
     .. figure:: images/consumer_start_two.png
       :alt: image
 
-#. From the **Brokers -> Production** view, click on a point in the bottom line graph to view a breakdown of latencies through the entire `request lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
+#. From the **Brokers -> Production** view, click on a point in the Request latency line graph to view a breakdown of latencies through the entire `request lifecycle <https://docs.confluent.io/current/control-center/docs/systemhealth.html>`__.
 
     .. figure:: images/slow_consumer_produce_latency_breakdown.png
-        :alt: image
-
+       :alt: image
 
 
 Replicator
@@ -936,7 +935,7 @@ Failed Broker
 To simulate a failed broker, stop the Docker container running one of
 the two Kafka brokers.
 
-#. MDS is backed by a Confluent metadata topic called ``_confluent-metadata-auth``. In production, leave its replication factor at default RF=3. In this demo with two brokers, it may have been desirable for RF=2. However, if RF=2 then automatically min.insync.replicas=2 (code logic just for this topic, not all topics), and then stopping one broker would cause producing to this topic to fail. Instead, in order to be able to demonstrate a single broker failure, first move all the partitions of this topic to kafka1.
+#. (This step is required only for cp-demo; it is not required in production) MDS is backed by a Confluent metadata topic called ``_confluent-metadata-auth``. In production, leave its replication factor at default RF=3. In this demo with two brokers, it may have been desirable for RF=2. However, if RF=2 then automatically min.insync.replicas=2 (code logic just for this topic, not all topics), and then stopping one broker would cause producing to this topic to fail. Instead, in order to be able to demonstrate a single broker failure, first move all the partitions of this topic to kafka1.
 
    .. sourcecode:: bash
 
