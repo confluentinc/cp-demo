@@ -34,7 +34,7 @@ verify_installed()
 preflight_checks()
 {
   # Verify appropriate tools are installed on host
-  for cmd in jq docker-compose keytool docker openssl; do
+  for cmd in jq docker-compose keytool docker openssl python; do
     verify_installed $cmd || exit 1
   done
 
