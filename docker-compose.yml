@@ -140,9 +140,7 @@ services:
                   -Djavax.net.ssl.trustStorePassword=confluent
 
       # MDS
-      # In demo: due to KCORE-201, RF=1 to be able to fail other broker (otherwise if RF=2, then min.insync.replicas=2 and you cannot fail other broker)
-      # In production: use the default value of 3
-      KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 2
       KAFKA_CONFLUENT_METADATA_SERVER_AUTHENTICATION_METHOD: BEARER
       KAFKA_CONFLUENT_METADATA_SERVER_LISTENERS: http://0.0.0.0:8091
       KAFKA_CONFLUENT_METADATA_SERVER_ADVERTISED_LISTENERS: http://kafka1:8091
@@ -274,9 +272,7 @@ services:
                   -Djavax.net.ssl.trustStorePassword=confluent
 
       # MDS
-      # In demo: due to KCORE-201, RF=1 to be able to fail other broker (otherwise if RF=2, then min.insync.replicas=2 and you cannot fail other broker)
-      # In production: use the default value of 3
-      KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 2
       KAFKA_CONFLUENT_METADATA_SERVER_AUTHENTICATION_METHOD: BEARER
       KAFKA_CONFLUENT_METADATA_SERVER_LISTENERS: http://0.0.0.0:8092
       KAFKA_CONFLUENT_METADATA_SERVER_ADVERTISED_LISTENERS: http://kafka2:8092
@@ -683,13 +679,13 @@ services:
     # must control startup order more explicitly.
     # See https://docs.docker.com/compose/startup-order/
 
-    # Schema Validation disabled until DG-274 is resolved
     command: "bash -c -a 'echo Waiting for Kafka to be ready... && \
               /etc/confluent/docker/configure && \
               cub kafka-ready -b kafka1:10091 1 60 --config /etc/kafka/kafka.properties && \
               sleep 5 && \
-              kafka-topics --zookeeper zookeeper:2181 --topic users --create --replication-factor 2 --partitions 2 --config confluent.value.schema.validation=false && \
-              kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed --create --replication-factor 2 --partitions 2 --config confluent.value.schema.validation=false && \
+              kafka-configs --zookeeper zookeeper:2181 --entity-type topics --entity-name _confluent-metadata-auth --alter --add-config min.insync.replicas=1 && \
+              kafka-topics --zookeeper zookeeper:2181 --topic users --create --replication-factor 2 --partitions 2 && \
+              kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed --create --replication-factor 2 --partitions 2  && \
               kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.parsed.count-by-channel --create --replication-factor 2 --partitions 2 && \
               kafka-topics --zookeeper zookeeper:2181 --topic wikipedia.failed --create --replication-factor 2 --partitions 2 && \
               kafka-topics --zookeeper zookeeper:2181 --topic WIKIPEDIABOT --create --replication-factor 2 --partitions 2 && \

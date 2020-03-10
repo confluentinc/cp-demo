@@ -924,16 +924,6 @@ Failed Broker
 To simulate a failed broker, stop the Docker container running one of
 the two Kafka brokers.
 
-#. (This step is required only for cp-demo; it is not required in production) MDS is backed by a Confluent metadata topic called ``_confluent-metadata-auth``. In production, leave its replication factor at default RF=3. In this demo with two brokers, it may have been desirable for RF=2. However, if RF=2 then automatically min.insync.replicas=2 (code logic just for this topic, not all topics), and then stopping one broker would cause producing to this topic to fail. Instead, in order to be able to demonstrate a single broker failure, first move all the partitions of this topic to kafka1.
-
-   .. sourcecode:: bash
-
-      # In demo only (not required in production when RF=3): move all the partitions of the Confluent metadata topic to kafka1
-      docker-compose exec kafka1 kafka-topics --bootstrap-server kafka1:12091  --describe --topic _confluent-metadata-auth
-      docker-compose exec kafka1 kafka-reassign-partitions --reassignment-json-file /tmp/helper/partitions-to-move.json --execute --zookeeper zookeeper:2181
-      docker-compose exec kafka1 kafka-reassign-partitions --reassignment-json-file /tmp/helper/partitions-to-move.json --verify --zookeeper zookeeper:2181
-      docker-compose exec kafka1 kafka-topics --bootstrap-server kafka1:12091  --describe --topic _confluent-metadata-auth
-
 #. Stop the Docker container running Kafka broker 2.
 
    .. sourcecode:: bash
