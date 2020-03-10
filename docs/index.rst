@@ -307,15 +307,15 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
 #. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
-    - View messages in the topic ``EN_WIKIPEDIA_GT_1`` (jump to offset 0/partition 0), and notice the nulls:
+- View messages in the topic ``EN_WIKIPEDIA_GT_1`` (jump to offset 0/partition 0), and notice the nulls:
 
-      .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1.png
-         :alt: image
+  .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1.png
+     :alt: image
 
-    - For comparison, view messages in the topic ``EN_WIKIPEDIA_GT_1_COUNTS`` (jump to offset 0/partition 0), and notice no nulls:
+- For comparison, view messages in the topic ``EN_WIKIPEDIA_GT_1_COUNTS`` (jump to offset 0/partition 0), and notice no nulls:
 
-      .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1_COUNTS.png
-         :alt: image
+  .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1_COUNTS.png
+     :alt: image
 
 #. The `KSQL processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their KSQL queries. In this demo, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the KSQL editor run the following query for 20 seconds:
 
