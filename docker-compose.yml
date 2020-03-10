@@ -535,7 +535,7 @@ services:
       - ./scripts/security:/etc/kafka/secrets
     ports:
       - 9021:9021
-      - "9022:9022"
+      - 9022:9022
     environment:
       # CUB CLASSPATH
       CUB_CLASSPATH: '/etc/confluent/docker/docker-utils.jar:/usr/share/java/confluent-control-center/*:/usr/share/java/rest-utils/*:/usr/share/java/confluent-common/*'

@@ -275,12 +275,12 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
         docker-compose exec ksql-cli bash -c 'ksql -u ksqlUser -p ksqlUser http://ksql-server:8088'
 
-#. View the existing KSQL streams. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``).
+#. View the existing KSQL streams. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``)
 
    .. figure:: images/ksql_streams_list.png
       :alt: image
 
-#. Describe the schema (fields or columns) and source and sink of an existing KSQL stream. Click on ``WIKIPEDIA``.
+#. Click on ``WIKIPEIDA`` to describe the schema (fields or columns) of an existing KSQL stream. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``DESCRIBE WIKIPEIDA;``)
 
    .. figure:: images/wikipedia_describe.png
       :alt: image
@@ -307,15 +307,15 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
 #. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
-View messages in the topic ``EN_WIKIPEDIA_GT_1`` (jump to offset 0/partition 0), and notice the nulls:
+    - View messages in the topic ``EN_WIKIPEDIA_GT_1`` (jump to offset 0/partition 0), and notice the nulls:
 
-.. figure:: images/messages_in_EN_WIKIPEDIA_GT_1.png
-   :alt: image
+      .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1.png
+         :alt: image
 
-For comparison, view messages in the topic ``EN_WIKIPEDIA_GT_1_COUNTS`` (jump to offset 0/partition 0), and notice no nulls:
+    - For comparison, view messages in the topic ``EN_WIKIPEDIA_GT_1_COUNTS`` (jump to offset 0/partition 0), and notice no nulls:
 
-.. figure:: images/messages_in_EN_WIKIPEDIA_GT_1_COUNTS.png
-   :alt: image
+      .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1_COUNTS.png
+         :alt: image
 
 #. The `KSQL processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their KSQL queries. In this demo, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the KSQL editor run the following query for 20 seconds:
 
@@ -341,7 +341,7 @@ Consumers
    .. figure:: images/consumer_group_list.png
       :alt: image
 
-#. View consumer lag for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer group list.
+#. View consumer lag for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_3`` in the consumer group list.
 
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumer_lag.png
       :alt: image
@@ -422,17 +422,8 @@ solution, Confluent Replicator is also configured with security.
    .. figure:: images/replicator_consumption.png
       :alt: image
 
-#. **Topics**: scroll down to view the topics called
-   ``wikipedia.parsed`` (Replicator is consuming data from this topic)
-   and ``wikipedia.parsed.replica`` (Replicator automatically created this topic and is
-   copying data to it). Click on ``Consumer Groups`` for the topic
-   ``wikipedia.parsed`` and observe that one of the consumer groups is
-   called ``connect-replicator``.
-
-   .. figure:: images/replicator_topic_info.png
-
 #. **Connect**: pause the |crep| connector in **Settings**
-   by pressing the pause icon in the top right. This will stop
+   by pressing the pause icon in the top right and wait for 10 seconds until it takes effect.  This will stop
    consumption for the related consumer group.
 
    .. figure:: images/pause_connector_replicator.png
