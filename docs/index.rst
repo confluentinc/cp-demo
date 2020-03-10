@@ -317,7 +317,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
   .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1_COUNTS.png
      :alt: image
 
-#. The `KSQL processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their KSQL queries. In this demo, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the KSQL editor run the following query for 20 seconds:
+11. The `KSQL processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their KSQL queries. In this demo, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the KSQL editor run the following query for 20 seconds:
 
 .. sourcecode:: bash
 
