@@ -1,29 +1,10 @@
 #!/bin/bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+. ${DIR}/helper/functions.sh
 
-#set -o nounset \
-#    -o errexit \
-#    -o verbose
-
-verify_installed()
-{
-  local cmd="$1"
-  if [[ $(type $cmd 2>&1) =~ "not found" ]]; then
-    echo -e "\nERROR: This script requires '$cmd'. Please install '$cmd' and run again.\n"
-    exit 1
-  fi
-}
-verify_installed "jq"
-verify_installed "docker-compose"
-verify_installed "keytool"
-
-# Verify Docker memory is increased to at least 8GB
-DOCKER_MEMORY=$(docker system info | grep Memory | grep -o "[0-9\.]\+")
-if (( $(echo "$DOCKER_MEMORY 7.0" | awk '{print ($1 < $2)}') )); then
-  echo -e "\nWARNING: Did you remember to increase the memory available to Docker to at least 8GB (default is 2GB)? Demo may otherwise not work properly.\n"
-  sleep 3
-fi
+# Do preflight checks
+preflight_checks || exit
 
 # Stop existing demo Docker containers
 ${DIR}/stop.sh
@@ -32,22 +13,43 @@ ${DIR}/stop.sh
 echo -e "Generate keys and certificates used for SSL"
 (cd ${DIR}/security && ./certs-create.sh)
 
-# Bring up Docker Compose
-echo -e "Bringing up Docker Compose"
-docker-compose up -d
+# Generating public and private keys for token signing
+echo "Generating public and private keys for token signing"
+mkdir -p ./conf
+openssl genrsa -out ./conf/keypair.pem 2048
+openssl rsa -in ./conf/keypair.pem -outform PEM -pubout -out ./conf/public.pem
 
-# Verify Confluent Control Center has started within MAX_WAIT seconds
+# Bring up base cluster and Confluent CLI
+docker-compose up -d zookeeper kafka1 kafka2 tools
+
+# Verify Kafka brokers have started
+MAX_WAIT=30
+echo "Waiting up to $MAX_WAIT seconds for Kafka brokers to be registered in ZooKeeper"
+retry $MAX_WAIT 5 host_check_kafka_cluster_registered
+
+# Verify MDS has started
+MAX_WAIT=60
+echo "Waiting up to $MAX_WAIT seconds for MDS to start"
+retry $MAX_WAIT 5 host_check_mds_up
+sleep 5
+
+echo
+echo "Available LDAP users:"
+docker-compose exec openldap ldapsearch -x -h localhost -b dc=confluentdemo,dc=io -D "cn=admin,dc=confluentdemo,dc=io" -w admin | grep uid:
+echo "Creating role bindings for principals"
+docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh"
+
+echo
+docker-compose up -d kafka-client schemaregistry replicator-for-jar-transfer connect control-center
+
+# Verify Confluent Control Center has started
 MAX_WAIT=300
-CUR_WAIT=0
 echo "Waiting up to $MAX_WAIT seconds for Confluent Control Center to start"
-while [[ ! $(docker-compose logs control-center) =~ "Started NetworkTrafficServerConnector" ]]; do
-  sleep 3
-  CUR_WAIT=$(( CUR_WAIT+3 ))
-  if [[ "$CUR_WAIT" -gt "$MAX_WAIT" ]]; then
-    echo -e "\nERROR: The logs in control-center container do not show 'Started NetworkTrafficServerConnector' after $MAX_WAIT seconds. Please troubleshoot with 'docker-compose ps' and 'docker-compose logs'.\n"
-    exit 1
-  fi
-done
+retry $MAX_WAIT 5 host_check_control_center_up
+
+echo
+docker-compose up -d ksql-server ksql-cli restproxy kibana elasticsearch
+echo "..."
 
 # Verify Docker containers started
 if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
@@ -61,18 +63,10 @@ if [[ $(docker-compose logs connect) =~ "server returned information about unkno
   exit 1
 fi
 
-# Verify Kafka Connect Worker has started within 120 seconds
+# Verify Kafka Connect Worker has started
 MAX_WAIT=120
-CUR_WAIT=0
-echo "Waiting up to $MAX_WAIT seconds for Kafka Connect Worker to start"
-while [[ ! $(docker-compose logs connect) =~ "Herder started" ]]; do
-  sleep 3
-  CUR_WAIT=$(( CUR_WAIT+3 ))
-  if [[ "$CUR_WAIT" -gt "$MAX_WAIT" ]]; then
-    echo -e "\nERROR: The logs in Kafka Connect container do not show 'Herder started'. Please troubleshoot with 'docker-compose ps' and 'docker-compose logs'.\n"
-    exit 1
-  fi
-done
+echo "Waiting up to $MAX_WAIT seconds for Connect to start"
+retry $MAX_WAIT 5 host_check_connect_up
 
 docker-compose exec connect timeout 3 nc -zv irc.wikimedia.org 6667 || {
   echo -e "\nERROR: irc.wikimedia.org 6667 is unreachable. Please ensure connectivity before proceeding or try setting 'irc.server.port' to 8001 in scripts/connectors/submit_wikipedia_irc_config.sh\n"
@@ -85,12 +79,21 @@ ${DIR}/connectors/submit_wikipedia_irc_config.sh
 echo -e "\nProvide data mapping to Elasticsearch:"
 ${DIR}/dashboard/set_elasticsearch_mapping_bot.sh
 ${DIR}/dashboard/set_elasticsearch_mapping_count.sh
+echo
 
 echo -e "\nStart streaming to Elasticsearch sink connector:"
 ${DIR}/connectors/submit_elastic_sink_config.sh
+echo
 
 echo -e "\nConfigure Kibana dashboard:"
 ${DIR}/dashboard/configure_kibana_dashboard.sh
+echo
+echo
+
+# Verify wikipedia.parsed topic is populated and schema is registered
+MAX_WAIT=60
+echo "Waiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
+retry $MAX_WAIT 5 host_check_schema_registered
 
 echo -e "\n\nRun KSQL queries:"
 ${DIR}/ksql/run_ksql.sh
@@ -99,42 +102,24 @@ echo -e "\nStart consumers for additional topics: WIKIPEDIANOBOT, EN_WIKIPEDIA_G
 ${DIR}/consumers/listen_WIKIPEDIANOBOT.sh
 ${DIR}/consumers/listen_EN_WIKIPEDIA_GT_1_COUNTS.sh
 
-# Verify wikipedia.parsed topic is populated and schema is registered
-MAX_WAIT=50
-CUR_WAIT=0
-echo -e "\nWaiting up to $MAX_WAIT seconds for wikipedia.parsed topic to be populated"
-while [[ ! $(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects) =~ "wikipedia.parsed-value" ]]; do
-  sleep 3
-  CUR_WAIT=$(( CUR_WAIT+3 ))
-  if [[ "$CUR_WAIT" -gt "$MAX_WAIT" ]]; then
-    echo -e "\nERROR: IRC connector is not populating the Kafka topic wikipedia.parsed. Please troubleshoot with 'docker-compose ps' and 'docker-compose logs'.\n"
-    exit 1
-  fi
-done
-
 # Register the same schema for the replicated topic wikipedia.parsed.replica as was created for the original topic wikipedia.parsed
 # In this case the replicated topic will register with the same schema ID as the original topic
-SCHEMA=$(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt https://schemaregistry:8085/subjects/wikipedia.parsed-value/versions/latest | jq .schema)
-docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -H "Content-Type: application/vnd.schemaregistry.v1+json" --data "{\"schema\": $SCHEMA}" https://schemaregistry:8085/subjects/wikipedia.parsed.replica-value/versions
+echo -e "\nRegister subject wikipedia.parsed.replica-value in Schema Registry"
+SCHEMA=$(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed-value/versions/latest | jq .schema)
+docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -H "Content-Type: application/vnd.schemaregistry.v1+json" --data "{\"schema\": $SCHEMA}" -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed.replica-value/versions
+
+echo
+echo "Start the Kafka Streams application wikipedia-activity-monitor"
+docker-compose up -d streams-demo
+echo "..."
 
 echo -e "\nStart Confluent Replicator:"
 ${DIR}/connectors/submit_replicator_config.sh
 
-# If you have 'jq'
-clusterId=$(curl -s -X GET http://localhost:9021/2.0/clusters/kafka/ | jq --raw-output '.[0].clusterId')
-# If you don't have 'jq'
-#clusterId=$(curl -s -X GET http://localhost:9021/2.0/clusters/kafka/ | awk -v FS="(clusterId\":\"|\",\"displayName)" '{print $2}')
-
-echo -e "\n\nRename the cluster in Control Center: ${clusterId}"
-curl -X PATCH -H "Content-Type: application/merge-patch+json" -d '{"displayName":"Kafka Raleigh"}' http://localhost:9021/2.0/clusters/kafka/$clusterId
-
-echo -e "\nConfigure triggers and actions in Control Center:"
-curl -X POST -H "Content-Type: application/json" -d '{"name":"Consumption Difference","clusterId":"'$clusterId'","group":"connect-elasticsearch-ksql","metric":"CONSUMPTION_DIFF","condition":"GREATER_THAN","longValue":"0","lagMs":"10000"}' http://localhost:9021/2.0/alerts/triggers
-curl -X POST -H "Content-Type: application/json" -d '{"name":"Under Replicated Partitions","clusterId":"default","condition":"GREATER_THAN","longValue":"0","lagMs":"60000","brokerClusters":{"brokerClusters":["'$clusterId'"]},"brokerMetric":"UNDER_REPLICATED_TOPIC_PARTITIONS"}' http://localhost:9021/2.0/alerts/triggers
-curl -X POST -H "Content-Type: application/json" -d '{"name":"Email Administrator","enabled":true,"triggerGuid":["'$(curl -s -X GET http://localhost:9021/2.0/alerts/triggers/ | jq --raw-output '.[0].guid')'","'$(curl -s -X GET http://localhost:9021/2.0/alerts/triggers/ | jq --raw-output '.[1].guid')'"],"maxSendRate":1,"intervalMs":"60000","email":{"address":"devnull@confluent.io","subject":"Confluent Control Center alert"}}' http://localhost:9021/2.0/alerts/actions
+echo -e "\n\nConfluent Control Center modifications:"
+${DIR}/helper/control-center-modifications.sh
 
 
-echo -e "\n\n\n******************************************************************"
-echo -e "DONE! Connect to Confluent Control Center at http://localhost:9021"
-echo -e "******************************************************************\n"
-
+echo -e "\n\n\n*****************************************************************************************************************"
+echo -e "DONE! Connect to Confluent Control Center at http://localhost:9021 (login as superUser/superUser for full access)"
+echo -e "*****************************************************************************************************************\n"
