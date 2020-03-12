@@ -441,6 +441,7 @@ solution, Confluent Replicator is also configured with security.
    * Even though the consumer group `connect-replicator` was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
    * The latency peaks and then gradually decreases, because this is also relative to the produce timestamp.
 
+#. Next step: Learn more about |crep| with the :ref:`Replicator Tutorial <replicator>`.
 
 
 Security
@@ -662,6 +663,7 @@ End clients (non-CP clients):
 
 #. Because |zk| is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, any commands that communicate with |zk| need properties set for |zk| authentication. This authentication configuration is provided by the ``KAFKA_OPTS`` setting on the brokers. For example, notice that the `throttle script <scripts/app/throttle_consumer.sh>`__ runs on the Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
 
+#. Next step: Learn more about security with the :ref:`Security Tutorial <security_tutorial>`.
 
 
 Data Governance with |sr|
@@ -771,6 +773,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
        "schema": "{\"type\":\"record\",\"name\":\"user\",\"fields\":[{\"name\":\"username\",\"type\":\"string\"},{\"name\":\"userid\",\"type\":\"long\"}]}"
      }
 
+#. Next step: Learn more about |sr| with the :ref:`Schema Registry Tutorial <schema_registry_tutorial>`.
 
 
 Confluent REST Proxy
