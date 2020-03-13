@@ -16,8 +16,7 @@ The use case is a Kafka event streaming application for real-time edits to real 
 Wikimedia Foundation has IRC channels that publish edits happening to real wiki pages (e.g. ``#en.wikipedia``, ``#en.wiktionary``) in real time.
 Using `Kafka Connect <http://docs.confluent.io/current/connect/index.html>`__, a Kafka source connector `kafka-connect-irc <https://github.com/cjmatta/kafka-connect-irc>`__ streams raw messages from these IRC channels, and a custom Kafka Connect transform `kafka-connect-transform-wikiedit <https://github.com/cjmatta/kafka-connect-transform-wikiedit>`__ transforms these messages and then the messages are written to a Kafka cluster.
 This demo uses `KSQL <https://www.confluent.io/product/ksql/>`__ and a `Kafka Streams <http://docs.confluent.io/current/streams/index.html>`__ application for data processing.
-Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.io/current/connect/connect-elasticsearch/docs/elasticsearch_connector.html>`__ streams the data out of Kafka, applying another custom Kafka Connect transform called NullFilter.
-The data is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
+Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.io/current/connect/connect-elasticsearch/docs/elasticsearch_connector.html>`__ streams the data out of Kafka, and the data is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 |crep-full| is also copying messages from a topic to another topic in the same cluster.
 All data is using |sr-long| and Avro.
 `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ is managing and monitoring the deployment.
@@ -441,6 +440,7 @@ solution, Confluent Replicator is also configured with security.
    * Even though the consumer group `connect-replicator` was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
    * The latency peaks and then gradually decreases, because this is also relative to the produce timestamp.
 
+#. Next step: Learn more about |crep| with the :ref:`Replicator Tutorial <replicator>`.
 
 
 Security
@@ -516,26 +516,20 @@ End clients (non-CP clients):
            docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:11091 \
                --command-config /etc/kafka/secrets/client_without_interceptors_ssl.config
 
-#. Communicate with brokers via the SASL_SSL port, and SASL_SSL parameters configured via the ``--command-config`` argument for command line tools or ``--consumer.config`` for kafka-console-consumer.
+#. If a client tries to communicate with brokers via the SSL port but does not specify the SSL parameters, it will fail
 
    .. sourcecode:: bash
 
-           # TOKEN/SASL_SSL port
-           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091 \
-               --command-config /etc/kafka/secrets/cp_service.config
-
-#. If you try to communicate with brokers via the SASL_SSL port but don’t specify the SASL_SSL parameters, it will fail
-
-   .. sourcecode:: bash
-
-           # TOKEN/SASL_SSL port, without client configurations
-           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091
+           # SSL/SSL port
+           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:11091
 
    Your output should resemble:
 
    .. sourcecode:: bash
 
-           Error: Executing consumer group command failed due to Request METADATA failed on brokers List(kafka1:10091 (id: -1 rack: null))
+           ERROR Uncaught exception in thread 'kafka-admin-client-thread | adminclient-1': (org.apache.kafka.common.utils.KafkaThread)
+           java.lang.OutOfMemoryError: Java heap space
+           ...
 
 #. Communicate with brokers via the SASL_PLAINTEXT port, and SASL_PLAINTEXT parameters configured via the ``--command-config`` argument for command line tools or ``--consumer.config`` for kafka-console-consumer.
 
@@ -556,7 +550,7 @@ End clients (non-CP clients):
 
    .. sourcecode:: bash
 
-         KAFKA_SUPER_USERS=User:admin;User:mds;User:superUser;User:client;User:schemaregistry;User:restproxy;User:broker;User:connect;User:ANONYMOUS
+         KAFKA_SUPER_USERS=User:admin;User:mds;User:superUser;User:ANONYMOUS
 
 #. Verify that LDAP user ``appSA`` (which is not a super user) can consume messages from topic ``wikipedia.parsed``.  Notice that it is configured to authenticate to brokers with mTLS and authenticate to Schema Registry with LDAP.
 
@@ -662,6 +656,7 @@ End clients (non-CP clients):
 
 #. Because |zk| is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, any commands that communicate with |zk| need properties set for |zk| authentication. This authentication configuration is provided by the ``KAFKA_OPTS`` setting on the brokers. For example, notice that the `throttle script <scripts/app/throttle_consumer.sh>`__ runs on the Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
 
+#. Next step: Learn more about security with the :ref:`Security Tutorial <security_tutorial>`.
 
 
 Data Governance with |sr|
@@ -771,6 +766,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
        "schema": "{\"type\":\"record\",\"name\":\"user\",\"fields\":[{\"name\":\"username\",\"type\":\"string\"},{\"name\":\"userid\",\"type\":\"long\"}]}"
      }
 
+#. Next step: Learn more about |sr| with the :ref:`Schema Registry Tutorial <schema_registry_tutorial>`.
 
 
 Confluent REST Proxy
