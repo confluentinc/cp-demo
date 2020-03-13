@@ -14,8 +14,7 @@ The use case is a Kafka event streaming application for real-time edits to real 
 Wikimedia Foundation has IRC channels that publish edits happening to real wiki pages (e.g. `#en.wikipedia`, `#en.wiktionary`) in real time.
 Using Kafka Connect, a Kafka source connector `kafka-connect-irc` streams raw messages from these IRC channels, and a custom Kafka Connect transform `kafka-connect-transform-wikiedit` transforms these messages and then the messages are written to a Kafka cluster.
 This demo uses KSQL and a Kafka Streams application for data processing.
-Then a Kafka sink connector `kafka-connect-elasticsearch`streams the data out of Kafka, applying another custom Kafka Connect transform called `NullFilter`.
-The data is materialized into Elasticsearch for analysis by Kibana.
+Then a Kafka sink connector `kafka-connect-elasticsearch`streams the data out of Kafka, and the data is materialized into Elasticsearch for analysis by Kibana.
 Confluent Replicator  is also copying messages from a topic to another topic in the same cluster.
 All data is using Confluent Schema Registry and Avro.
 Confluent Control Center is managing and monitoring the deployment.

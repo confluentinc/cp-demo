@@ -323,7 +323,6 @@ services:
     volumes:
       - ./connect-plugins:/connect-plugins
       - mi3:/usr/share/java/kafka-connect-replicator/
-      - ./connect-plugins/kafka-connect-transform-nullfilter/null-filter-4.0.0-SNAPSHOT.jar:/usr/share/java/kafka-connect-elasticsearch/null-filter-4.0.0-SNAPSHOT.jar
       - ./scripts/security:/etc/kafka/secrets
       - ./conf:/tmp/conf
     command: "bash -c 'sleep 10 && \
