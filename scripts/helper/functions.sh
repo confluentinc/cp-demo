@@ -10,7 +10,7 @@ retry() {
     do
         if (( attempt_num == max_attempts ))
         then
-            echo "Failed after $attempt_num attempts"
+            echo "ERROR: Failed after $attempt_num attempts. Please troubleshoot and run again."
             return 1
         else
             printf "."
