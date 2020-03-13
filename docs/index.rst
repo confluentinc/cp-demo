@@ -515,26 +515,20 @@ End clients (non-CP clients):
            docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:11091 \
                --command-config /etc/kafka/secrets/client_without_interceptors_ssl.config
 
-#. Communicate with brokers via the SASL_SSL port, and SASL_SSL parameters configured via the ``--command-config`` argument for command line tools or ``--consumer.config`` for kafka-console-consumer.
+#. If a client tries to communicate with brokers via the SSL port but does not specify the SSL parameters, it will fail
 
    .. sourcecode:: bash
 
-           # TOKEN/SASL_SSL port
-           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091 \
-               --command-config /etc/kafka/secrets/cp_service.config
-
-#. If you try to communicate with brokers via the SASL_SSL port but don’t specify the SASL_SSL parameters, it will fail
-
-   .. sourcecode:: bash
-
-           # TOKEN/SASL_SSL port, without client configurations
-           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:10091
+           # SSL/SSL port
+           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:11091
 
    Your output should resemble:
 
    .. sourcecode:: bash
 
-           Error: Executing consumer group command failed due to Request METADATA failed on brokers List(kafka1:10091 (id: -1 rack: null))
+           ERROR Uncaught exception in thread 'kafka-admin-client-thread | adminclient-1': (org.apache.kafka.common.utils.KafkaThread)
+           java.lang.OutOfMemoryError: Java heap space
+           ...
 
 #. Communicate with brokers via the SASL_PLAINTEXT port, and SASL_PLAINTEXT parameters configured via the ``--command-config`` argument for command line tools or ``--consumer.config`` for kafka-console-consumer.
 
@@ -555,7 +549,7 @@ End clients (non-CP clients):
 
    .. sourcecode:: bash
 
-         KAFKA_SUPER_USERS=User:admin;User:mds;User:superUser;User:client;User:schemaregistry;User:restproxy;User:broker;User:connect;User:ANONYMOUS
+         KAFKA_SUPER_USERS=User:admin;User:mds;User:superUser;User:ANONYMOUS
 
 #. Verify that LDAP user ``appSA`` (which is not a super user) can consume messages from topic ``wikipedia.parsed``.  Notice that it is configured to authenticate to brokers with mTLS and authenticate to Schema Registry with LDAP.
 
