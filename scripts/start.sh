@@ -25,12 +25,12 @@ docker-compose up -d zookeeper kafka1 kafka2 tools
 # Verify Kafka brokers have started
 MAX_WAIT=30
 echo "Waiting up to $MAX_WAIT seconds for Kafka brokers to be registered in ZooKeeper"
-retry $MAX_WAIT 5 host_check_kafka_cluster_registered || exit 1
+retry $MAX_WAIT host_check_kafka_cluster_registered || exit 1
 
 # Verify MDS has started
 MAX_WAIT=60
 echo "Waiting up to $MAX_WAIT seconds for MDS to start"
-retry $MAX_WAIT 5 host_check_mds_up || exit 1
+retry $MAX_WAIT host_check_mds_up || exit 1
 sleep 5
 
 echo
@@ -45,7 +45,7 @@ docker-compose up -d kafka-client schemaregistry replicator-for-jar-transfer con
 # Verify Confluent Control Center has started
 MAX_WAIT=300
 echo "Waiting up to $MAX_WAIT seconds for Confluent Control Center to start"
-retry $MAX_WAIT 5 host_check_control_center_up || exit 1
+retry $MAX_WAIT host_check_control_center_up || exit 1
 
 echo
 docker-compose up -d ksql-server ksql-cli restproxy kibana elasticsearch
@@ -66,7 +66,7 @@ fi
 # Verify Kafka Connect Worker has started
 MAX_WAIT=120
 echo "Waiting up to $MAX_WAIT seconds for Connect to start"
-retry $MAX_WAIT 5 host_check_connect_up || exit 1
+retry $MAX_WAIT host_check_connect_up || exit 1
 
 docker-compose exec connect timeout 3 nc -zv irc.wikimedia.org 6667 || {
   echo -e "\nERROR: irc.wikimedia.org 6667 is unreachable. Please ensure connectivity before proceeding or try setting 'irc.server.port' to 8001 in scripts/connectors/submit_wikipedia_irc_config.sh\n"
@@ -93,7 +93,7 @@ echo
 # Verify wikipedia.parsed topic is populated and schema is registered
 MAX_WAIT=60
 echo "Waiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
-retry $MAX_WAIT 5 host_check_schema_registered || exit 1
+retry $MAX_WAIT host_check_schema_registered || exit 1
 
 echo -e "\n\nRun KSQL queries:"
 ${DIR}/ksql/run_ksql.sh
