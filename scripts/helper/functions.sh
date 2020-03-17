@@ -9,7 +9,7 @@ retry() {
 
     until $cmd
     do
-        if (( curr_wait > max_wait ))
+        if (( curr_wait >= max_wait ))
         then
             echo "ERROR: Failed after $curr_wait seconds. Please troubleshoot and run again."
             return 1
