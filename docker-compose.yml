@@ -357,7 +357,7 @@ services:
       CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-6.0.0-SNAPSHOT.jar
+      CLASSPATH: "/etc/kafka-connect/jars/replicator-rest-extension-5.5.0-SNAPSHOT.jar:/usr/share/java/monitoring-interceptors/monitoring-interceptors-5.5.0-SNAPSHOT.jar"
 
       # Connect Worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
