@@ -250,6 +250,18 @@ confluent iam rolebinding create \
 confluent iam rolebinding create \
     --principal $KSQL_ADMIN \
     --role ResourceOwner \
+    --resource TransactionalId:${KSQL} \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
+confluent iam rolebinding create \
+    --principal $KSQL_ADMIN \
+    --role ResourceOwner \
+    --resource Topic:__transaction_state \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
+confluent iam rolebinding create \
+    --principal $KSQL_ADMIN \
+    --role ResourceOwner \
     --resource Subject:wikipedia \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \

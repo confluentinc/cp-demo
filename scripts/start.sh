@@ -67,6 +67,7 @@ fi
 MAX_WAIT=120
 echo "Waiting up to $MAX_WAIT seconds for Connect to start"
 retry $MAX_WAIT host_check_connect_up || exit 1
+sleep 2 # give connect an exta moment to fully mature
 
 docker-compose exec connect timeout 3 nc -zv irc.wikimedia.org 6667 || {
   echo -e "\nERROR: irc.wikimedia.org 6667 is unreachable. Please ensure connectivity before proceeding or try setting 'irc.server.port' to 8001 in scripts/connectors/submit_wikipedia_irc_config.sh\n"
