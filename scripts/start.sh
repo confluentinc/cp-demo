@@ -35,7 +35,13 @@ sleep 5
 
 echo
 echo "Available LDAP users:"
-docker-compose exec openldap ldapsearch -x -h localhost -b dc=confluentdemo,dc=io -D "cn=admin,dc=confluentdemo,dc=io" -w admin | grep uid:
+#docker-compose exec openldap ldapsearch -x -h localhost -b dc=confluentdemo,dc=io -D "cn=admin,dc=confluentdemo,dc=io" -w admin | grep uid:
+curl -u mds:mds -X POST "http://localhost:8091/security/1.0/principals/User%3Amds/roles/UserAdmin" \
+  -H "accept: application/json" -H "Content-Type: application/json" \
+  -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}"
+curl -u mds:mds -X POST "http://localhost:8091/security/1.0/rbac/principals" --silent \
+  -H "accept: application/json"  -H "Content-Type: application/json" \
+  -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}" | jq '.[]'
 echo "Creating role bindings for principals"
 docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh"
 
