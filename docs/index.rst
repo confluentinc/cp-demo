@@ -3,7 +3,7 @@
 Confluent Platform Demo (cp-demo)
 =================================
 
-This demo builds a full |cp| deployment with a Kafka event streaming application using `KSQL <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing.
+This demo builds a full |cp| deployment with a Kafka event streaming application using `ksqlDB <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing.
 Follow the accompanying guided tutorial that steps through the demo so that you can learn how it all works together.
 All the components in the Confluent platform have security enabled end-to-end.
 
@@ -15,7 +15,7 @@ Overview
 The use case is a Kafka event streaming application for real-time edits to real Wikipedia pages.
 Wikimedia Foundation has IRC channels that publish edits happening to real wiki pages (e.g. ``#en.wikipedia``, ``#en.wiktionary``) in real time.
 Using `Kafka Connect <http://docs.confluent.io/current/connect/index.html>`__, a Kafka source connector `kafka-connect-irc <https://github.com/cjmatta/kafka-connect-irc>`__ streams raw messages from these IRC channels, and a custom Kafka Connect transform `kafka-connect-transform-wikiedit <https://github.com/cjmatta/kafka-connect-transform-wikiedit>`__ transforms these messages and then the messages are written to a Kafka cluster.
-This demo uses `KSQL <https://www.confluent.io/product/ksql/>`__ and a `Kafka Streams <http://docs.confluent.io/current/streams/index.html>`__ application for data processing.
+This demo uses `ksqlDB <https://www.confluent.io/product/ksql/>`__ and a `Kafka Streams <http://docs.confluent.io/current/streams/index.html>`__ application for data processing.
 Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.io/current/connect/connect-elasticsearch/docs/elasticsearch_connector.html>`__ streams the data out of Kafka, and the data is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 |crep-full| is also copying messages from a topic to another topic in the same cluster.
 All data is using |sr-long| and Avro.
@@ -31,19 +31,19 @@ All data is using |sr-long| and Avro.
 
 Data pattern is as follows:
 
-+-------------------------------------+------------------------------+---------------------------------------+
-| Components                          | Consumes From                | Produces To                           |
-+=====================================+==============================+=======================================+
-| IRC source connector                | Wikipedia                    | ``wikipedia.parsed``                  |
-+-------------------------------------+------------------------------+---------------------------------------+
-| KSQL                                | ``wikipedia.parsed``         | KSQL streams and tables               |
-+-------------------------------------+------------------------------+---------------------------------------+
-| Kafka Streams application           | ``wikipedia.parsed``         | ``wikipedia.parsed.count-by-channel`` |
-+-------------------------------------+------------------------------+---------------------------------------+
-| Confluent Replicator                | ``wikipedia.parsed``         | ``wikipedia.parsed.replica``          |
-+-------------------------------------+------------------------------+---------------------------------------+
-| Elasticsearch sink connector        | ``WIKIPEDIABOT`` (from KSQL) | Elasticsearch/Kibana                  |
-+-------------------------------------+------------------------------+---------------------------------------+
++-------------------------------------+--------------------------------+---------------------------------------+
+| Components                          | Consumes From                  | Produces To                           |
++=====================================+================================+=======================================+
+| IRC source connector                | Wikipedia                      | ``wikipedia.parsed``                  |
++-------------------------------------+--------------------------------+---------------------------------------+
+| ksqlDB                              | ``wikipedia.parsed``           | ksqlDB streams and tables             |
++-------------------------------------+--------------------------------+---------------------------------------+
+| Kafka Streams application           | ``wikipedia.parsed``           | ``wikipedia.parsed.count-by-channel`` |
++-------------------------------------+--------------------------------+---------------------------------------+
+| Confluent Replicator                | ``wikipedia.parsed``           | ``wikipedia.parsed.replica``          |
++-------------------------------------+--------------------------------+---------------------------------------+
+| Elasticsearch sink connector        | ``WIKIPEDIABOT`` (from ksqlDB) | Elasticsearch/Kibana                  |
++-------------------------------------+--------------------------------+---------------------------------------+
 
 
 ========
@@ -158,7 +158,7 @@ Topics
 #.  Dataflow: you can derive which producers are writing to which topics and which consumers are reading from which topics.
     When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic named ``_confluent-monitoring``.
     Kafka clients include any application that uses the Apache Kafka client API to connect to Kafka brokers, such as
-    custom client code or any service that has embedded producers or consumers, such as Kafka Connect, KSQL, or a Kafka Streams application.
+    custom client code or any service that has embedded producers or consumers, such as Kafka Connect, ksqlDB, or a Kafka Streams application.
     |c3| uses that topic to ensure that all messages are delivered and to provide statistics on throughput and latency
     performance. From that same topic, you can also derive which producers are writing to which topics and which consumers
     are reading from which topics, and an example script is provided with the repo (note: this is for demo purposes
@@ -256,55 +256,55 @@ Connect
 
 .. _ksql-demo-3:
 
-KSQL
-----
+ksqlDB
+------
 
-In this demo, KSQL is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the :devx-cp-demo:`KSQL command file|scripts/ksql/ksqlcommands` .
+In this demo, ksqlDB is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the :devx-cp-demo:`ksqlDB command file|scripts/ksql/ksqlcommands` .
 
-#. In the navigation bar, click **KSQL**.
+#. In the navigation bar, click **ksqlDB**.
 
-#. From the list of KSQL applications, select ``ksql1``.
+#. From the list of ksqlDB applications, select ``ksql1``.
 
    .. figure:: images/ksql_link.png
       :alt: image
 
-#. Alternatively, run KSQL CLI to get to the KSQL CLI prompt.
+#. Alternatively, run ksqlDB CLI to get to the ksqlDB CLI prompt.
 
    .. sourcecode:: bash
 
         docker-compose exec ksql-cli bash -c 'ksql -u ksqlUser -p ksqlUser http://ksql-server:8088'
 
-#. View the existing KSQL streams. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``)
+#. View the existing ksqlDB streams. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``)
 
    .. figure:: images/ksql_streams_list.png
       :alt: image
 
-#. Click on ``WIKIPEIDA`` to describe the schema (fields or columns) of an existing KSQL stream. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``DESCRIBE WIKIPEIDA;``)
+#. Click on ``WIKIPEIDA`` to describe the schema (fields or columns) of an existing ksqlDB stream. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``DESCRIBE WIKIPEIDA;``)
 
    .. figure:: images/wikipedia_describe.png
       :alt: image
 
-#. View the existing KSQL tables. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``).
+#. View the existing ksqlDB tables. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``).
 
    .. figure:: images/ksql_tables_list.png
       :alt: image
 
-#. View the existing KSQL queries, which are continuously running. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW QUERIES;``).
+#. View the existing ksqlDB queries, which are continuously running. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``SHOW QUERIES;``).
 
    .. figure:: images/ksql_queries_list.png
       :alt: image
 
-#. View messages from different KSQL streams and tables. Click on your stream of choice and select **Query** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA EMIT CHANGES;``, and it shows results for newly arriving data.
+#. View messages from different ksqlDB streams and tables. Click on your stream of choice and select **Query** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA EMIT CHANGES;``, and it shows results for newly arriving data.
 
    .. figure:: images/ksql_query_topic.png
       :alt: image
 
-#. Click **KSQL Editor** and run the ``SHOW PROPERTIES;`` statement. You can see the configured KSQL server properties and check these values with the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
+#. Click **ksqlDB Editor** and run the ``SHOW PROPERTIES;`` statement. You can see the configured ksqlDB server properties and check these values with the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
 
    .. figure:: images/ksql_properties.png
       :alt: image
 
-#. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how KSQL windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
+#. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how ksqlDB windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
 - View messages in the topic ``EN_WIKIPEDIA_GT_1`` (jump to offset 0/partition 0), and notice the nulls:
 
@@ -316,13 +316,13 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
   .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1_COUNTS.png
      :alt: image
 
-11. The `KSQL processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their KSQL queries. In this demo, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the KSQL editor run the following query for 20 seconds:
+11. The `ksqlDB processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their ksqlDB queries. In this demo, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the ksqlDB editor run the following query for 20 seconds:
 
 .. sourcecode:: bash
 
       SELECT SPLIT(wikipage, 'foobar')[2] FROM wikipedia EMIT CHANGES;
 
-No records should be returned from this query. Since the field ``wikipage`` in the original stream ``wikipedia`` cannot be split in this way, KSQL writes these errors into the processing log for each record. View the processing log topic ``ksql-clusterksql_processing_log`` with topic inspection (jump to offset 0/partition 0) or the corresponding KSQL stream ``KSQL_PROCESSING_LOG`` with the KSQL editor (set ``auto.offset.reset=earliest``).
+No records should be returned from this query. Since the field ``wikipage`` in the original stream ``wikipedia`` cannot be split in this way, ksqlDB writes these errors into the processing log for each record. View the processing log topic ``ksql-clusterksql_processing_log`` with topic inspection (jump to offset 0/partition 0) or the corresponding ksqlDB stream ``KSQL_PROCESSING_LOG`` with the ksqlDB editor (set ``auto.offset.reset=earliest``).
 
 .. sourcecode:: bash
 
@@ -335,12 +335,12 @@ Consumers
 
 #. |c3| enables you to monitor consumer lag and throughput performance. Consumer lag is the topic's high water mark (latest offset for the topic that has been written) minus the current consumer offset (latest offset read for that topic by that consumer group). Keep in mind the topic's write rate and consumer group's read rate when you consider the significance the consumer lag's size. Click on "Consumers".
 
-#. Consumer lag is available on a `per-consumer basis <https://docs.confluent.io/current/control-center/consumers.html#view-consumer-lag-details-for-a-consumer-group>`__, including embedded consumers in sink connectors (e.g., ``connect-replicator`` and ``connect-elasticsearch-ksql``), KSQL queries (e.g., consumer groups whose names start with ``_confluent-ksql-default_query_``), console consumers (e.g., ``WIKIPEDIANOBOT-consumer``), etc.  Consumer lag is also available on a `per-topic basis <https://docs.confluent.io/current/control-center/topics/view.html#view-consumer-lag-for-a-topic>`__.
+#. Consumer lag is available on a `per-consumer basis <https://docs.confluent.io/current/control-center/consumers.html#view-consumer-lag-details-for-a-consumer-group>`__, including embedded consumers in sink connectors (e.g., ``connect-replicator`` and ``connect-elasticsearch-ksql``), ksqlDB queries (e.g., consumer groups whose names start with ``_confluent-ksql-default_query_``), console consumers (e.g., ``WIKIPEDIANOBOT-consumer``), etc.  Consumer lag is also available on a `per-topic basis <https://docs.confluent.io/current/control-center/topics/view.html#view-consumer-lag-for-a-topic>`__.
 
    .. figure:: images/consumer_group_list.png
       :alt: image
 
-#. View consumer lag for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_3`` in the consumer group list.
+#. View consumer lag for the persistent ksqlDB "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_3`` in the consumer group list.
 
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumer_lag.png
       :alt: image
@@ -350,7 +350,7 @@ Consumers
    .. figure:: images/activity-monitor-consumer.png
       :alt: image
 
-#. Consumption metrics are available on a `per-consumer basis <https://docs.confluent.io/current/control-center/consumers.html#view-consumption-details-for-a-consumer-group>`__. These consumption charts are only populated if `Confluent Monitoring Interceptors <https://docs.confluent.io/current/control-center/installation/clients.html>`__ are configured, as they are in this demo. You can view ``% messages consumed`` and ``end-to-end latency``.  View consumption metrics for the persistent KSQL "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer group list.
+#. Consumption metrics are available on a `per-consumer basis <https://docs.confluent.io/current/control-center/consumers.html#view-consumption-details-for-a-consumer-group>`__. These consumption charts are only populated if `Confluent Monitoring Interceptors <https://docs.confluent.io/current/control-center/installation/clients.html>`__ are configured, as they are in this demo. You can view ``% messages consumed`` and ``end-to-end latency``.  View consumption metrics for the persistent ksqlDB "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer group list.
 
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumption.png
       :alt: image

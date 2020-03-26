@@ -102,7 +102,7 @@ MAX_WAIT=60
 echo "Waiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
 retry $MAX_WAIT host_check_schema_registered || exit 1
 
-echo -e "\n\nRun KSQL queries:"
+echo -e "\n\nRun ksqlDB queries:"
 ${DIR}/ksql/run_ksql.sh
 
 echo -e "\nStart consumers for additional topics: WIKIPEDIANOBOT, EN_WIKIPEDIA_GT_1_COUNTS"
