@@ -235,6 +235,15 @@ Topics
 Connect
 -------
 
+This demo has three connectors:
+
+- IRC source connector
+- Elasticsearch sink connector
+- Confluent Replicator
+
+They are running on a |kconnect| worker that is configured with |cp| security features.
+The connect worker's embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
+
 #. |c3| uses the Kafka Connect API to manage multiple `connect clusters <https://docs.confluent.io/current/control-center/docs/connect.html>`__.  Click on "Connect".
 
 #. Select ``connect1``, the name of the cluster of |kconnect| workers.
@@ -260,6 +269,7 @@ KSQL
 ----
 
 In this demo, KSQL is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the :devx-cp-demo:`KSQL command file|scripts/ksql/ksqlcommands` .
+Its embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
 
 #. In the navigation bar, click **KSQL**.
 
