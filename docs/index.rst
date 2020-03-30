@@ -263,7 +263,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
 #. In the navigation bar, click **KSQL**.
 
-#. From the list of KSQL applications, select ``ksql1``.
+#. From the list of KSQL applications, select ``wikipedia``.
 
    .. figure:: images/ksql_link.png
       :alt: image
