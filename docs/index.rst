@@ -272,7 +272,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
 
    .. sourcecode:: bash
 
-        docker-compose exec ksql-cli bash -c 'ksql -u ksqlUser -p ksqlUser http://ksqldb-server:8088'
+        docker-compose exec ksqldb-cli bash -c 'ksql -u ksqlDBUser -p ksqlDBUser http://ksqldb-server:8088'
 
 #. View the existing KSQL streams. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``)
 
@@ -1037,7 +1037,7 @@ Here are some suggestions on how to troubleshoot the demo.
       kafka2                        bash -c if [ ! -f /etc/kaf ...   Up (healthy)   0.0.0.0:10092->10092/tcp, 0.0.0.0:11092->11092/tcp, 0.0.0.0:12092->12092/tcp,
                                                                                     0.0.0.0:8092->8092/tcp, 0.0.0.0:9092->9092/tcp
       kibana                        /bin/sh -c /usr/local/bin/ ...   Up             0.0.0.0:5601->5601/tcp
-      ksql-cli                      /bin/sh                          Up
+      ksqldb-cli                    /bin/sh                          Up
       ksqldb-server                 /etc/confluent/docker/run        Up (healthy)   0.0.0.0:8088->8088/tcp
       openldap                      /container/tool/run --copy ...   Up             0.0.0.0:389->389/tcp, 636/tcp
       replicator-for-jar-transfer   sleep infinity                   Up             8083/tcp, 9092/tcp
