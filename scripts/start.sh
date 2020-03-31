@@ -54,7 +54,7 @@ echo "Waiting up to $MAX_WAIT seconds for Confluent Control Center to start"
 retry $MAX_WAIT host_check_control_center_up || exit 1
 
 echo
-docker-compose up -d ksql-server ksql-cli restproxy kibana elasticsearch
+docker-compose up -d ksqldb-server ksqldb-cli restproxy kibana elasticsearch
 echo "..."
 
 # Verify Docker containers started

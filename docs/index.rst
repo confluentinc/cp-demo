@@ -235,6 +235,15 @@ Topics
 Connect
 -------
 
+This demo has three connectors:
+
+- IRC source connector
+- Elasticsearch sink connector
+- Confluent Replicator
+
+They are running on a |kconnect| worker that is configured with |cp| security features.
+The connect worker's embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
+
 #. |c3| uses the Kafka Connect API to manage multiple `connect clusters <https://docs.confluent.io/current/control-center/docs/connect.html>`__.  Click on "Connect".
 
 #. Select ``connect1``, the name of the cluster of |kconnect| workers.
@@ -260,6 +269,7 @@ ksqlDB
 ------
 
 In this demo, ksqlDB is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the :devx-cp-demo:`ksqlDB command file|scripts/ksql/ksqlcommands` .
+Its embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
 
 #. In the navigation bar, click **ksqlDB**.
 
@@ -272,7 +282,7 @@ In this demo, ksqlDB is authenticated and authorized to connect to the secured K
 
    .. sourcecode:: bash
 
-        docker-compose exec ksql-cli bash -c 'ksql -u ksqlUser -p ksqlUser http://ksql-server:8088'
+        docker-compose exec ksqldb-cli bash -c 'ksql -u ksqlDBUser -p ksqlDBUser http://ksqldb-server:8088'
 
 #. View the existing ksqlDB streams. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``)
 
@@ -1037,8 +1047,8 @@ Here are some suggestions on how to troubleshoot the demo.
       kafka2                        bash -c if [ ! -f /etc/kaf ...   Up (healthy)   0.0.0.0:10092->10092/tcp, 0.0.0.0:11092->11092/tcp, 0.0.0.0:12092->12092/tcp,
                                                                                     0.0.0.0:8092->8092/tcp, 0.0.0.0:9092->9092/tcp
       kibana                        /bin/sh -c /usr/local/bin/ ...   Up             0.0.0.0:5601->5601/tcp
-      ksql-cli                      /bin/sh                          Up
-      ksql-server                   /etc/confluent/docker/run        Up (healthy)   0.0.0.0:8088->8088/tcp
+      ksqldb-cli                    /bin/sh                          Up
+      ksqldb-server                 /etc/confluent/docker/run        Up (healthy)   0.0.0.0:8088->8088/tcp
       openldap                      /container/tool/run --copy ...   Up             0.0.0.0:389->389/tcp, 636/tcp
       replicator-for-jar-transfer   sleep infinity                   Up             8083/tcp, 9092/tcp
       restproxy                     /etc/confluent/docker/run        Up             8082/tcp, 0.0.0.0:8086->8086/tcp
