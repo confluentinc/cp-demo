@@ -581,7 +581,7 @@ services:
       CONTROL_CENTER_CONNECT_CONNECT1_CLUSTER: https://connect:8083
 
       # KSQL
-      CONTROL_CENTER_KSQL_WIKIPEDIA_URL: http://ksql-server:8088
+      CONTROL_CENTER_KSQL_WIKIPEDIA_URL: http://ksqldb-server:8088
       # Access KSQL server from a browser on your localhost
       CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL: http://localhost:8088
 
@@ -717,10 +717,10 @@ services:
       KAFKA_ZOOKEEPER_SET_ACL: 'true'
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
 
-  ksql-server:
-    image: confluentinc/cp-ksql-server:5.5.x-latest
-    hostname: ksql-server
-    container_name: ksql-server
+  ksqldb-server:
+    image: confluentinc/cp-ksqldb-server:5.5.x-latest
+    hostname: ksqldb-server
+    container_name: ksqldb-server
     cpus: 0.5
     restart: always
     depends_on:
@@ -735,7 +735,7 @@ services:
     ports:
       - 8088:8088
     environment:
-      CUB_CLASSPATH: '/usr/share/java/ksql-server/*:/usr/share/java/cp-base-new/*'
+      CUB_CLASSPATH: '/usr/share/java/ksqldb-server/*:/usr/share/java/cp-base-new/*'
       KSQL_LOG4J_ROOT_LOGLEVEL: INFO
 
       KSQL_KSQL_SERVICE_ID: "ksql-cluster"
@@ -749,7 +749,7 @@ services:
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: 'true'
 
       KSQL_BOOTSTRAP_SERVERS: kafka1:10091,kafka2:10092
-      KSQL_HOST_NAME: ksql-server
+      KSQL_HOST_NAME: ksqldb-server
       KSQL_LISTENERS: http://0.0.0.0:8088
       KSQL_CACHE_MAX_BYTES_BUFFERING: 0
       
@@ -819,7 +819,7 @@ services:
       - kafka1
       - kafka2
       - connect
-      - ksql-server
+      - ksqldb-server
     volumes:
       - ./scripts/ksql/ksqlcommands:/tmp/ksqlcommands
       - ./scripts/ksql/run_ksql_commands.sh:/tmp/run_ksql_commands.sh
