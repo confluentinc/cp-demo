@@ -131,6 +131,13 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
+# enable.idempotence=true requires IdempotentWrite
+confluent iam rolebinding create \
+    --principal $CONNECTOR_PRINCIPAL \
+    --role DeveloperWrite \
+    --resource Cluster:kafka-cluster \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
 echo "Creating role bindings for replicate-topic connector"
 
 confluent iam rolebinding create \
@@ -299,6 +306,13 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
+# enable.idempotence=true requires IdempotentWrite
+confluent iam rolebinding create \
+    --principal $KSQL_ADMIN \
+    --role DeveloperWrite \
+    --resource Cluster:kafka-cluster \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
 ################################### KSQL User ###################################
 echo "Creating role bindings for KSQL User"
 
@@ -357,6 +371,13 @@ confluent iam rolebinding create \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
+
+# enable.idempotence=true requires IdempotentWrite
+confluent iam rolebinding create \
+    --principal $KSQL_USER \
+    --role DeveloperWrite \
+    --resource Cluster:kafka-cluster \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 ################################### KSQL Server #############################
 echo "Creating role bindings for KSQL Server (used for KSQL Processing Log)"
