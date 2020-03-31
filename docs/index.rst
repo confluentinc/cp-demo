@@ -263,7 +263,7 @@ In this demo, ksqlDB is authenticated and authorized to connect to the secured K
 
 #. In the navigation bar, click **ksqlDB**.
 
-#. From the list of ksqlDB applications, select ``ksql1``.
+#. From the list of ksqlDB applications, select ``wikipedia``.
 
    .. figure:: images/ksql_link.png
       :alt: image
