@@ -824,7 +824,7 @@ services:
       - connect
       - ksqldb-server
     volumes:
-      - ./scripts/ksql/ksqlcommands:/tmp/ksqlcommands
+      - ./scripts/ksql/statements.sql:/tmp/statements.sql
       - ./scripts/ksql/run_ksql_commands.sh:/tmp/run_ksql_commands.sh
     entrypoint: /bin/sh
     tty: true
