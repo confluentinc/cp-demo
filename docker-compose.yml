@@ -724,6 +724,9 @@ services:
     container_name: ksqldb-server
     cpus: 0.5
     restart: always
+    healthcheck:
+      # Incompatible with RBAC
+      disable: true
     depends_on:
       - zookeeper
       - kafka1
