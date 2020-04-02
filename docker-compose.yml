@@ -725,7 +725,7 @@ services:
     cpus: 0.5
     restart: always
     healthcheck:
-      # Incompatible with RBAC
+      # healthcheck is currently incompatible with RBAC
       disable: true
     depends_on:
       - zookeeper
