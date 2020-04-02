@@ -19,7 +19,15 @@ mkdir -p ./conf
 openssl genrsa -out ./conf/keypair.pem 2048
 openssl rsa -in ./conf/keypair.pem -outform PEM -pubout -out ./conf/public.pem
 
-# Bring up base cluster and Confluent CLI
+# Bring up openldap and tools
+docker-compose up -d openldap
+sleep 5
+if [[ $(docker-compose ps openldap | grep Exit) =~ "Exit" ]] ; then
+  echo "ERROR: openldap container could not start. Troubleshoot and try again."
+  exit 1
+fi
+
+# Bring up base cluster
 docker-compose up -d zookeeper kafka1 kafka2 tools
 
 # Verify Kafka brokers have started
