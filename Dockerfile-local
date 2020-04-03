@@ -17,7 +17,7 @@ FROM confluentinc/cp-server-connect:5.5.x-latest
 
 ARG REPLICATOR_VERSION=5.5.0-SNAPSHOT
 
-ENV CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
+ENV CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins,/usr/share/confluent-hub-components"
 
 COPY confluentinc-kafka-connect-replicator-${REPLICATOR_VERSION}.zip /tmp/confluentinc-kafka-connect-replicator-${REPLICATOR_VERSION}.zip
 RUN confluent-hub install --no-prompt /tmp/confluentinc-kafka-connect-replicator-${REPLICATOR_VERSION}.zip
