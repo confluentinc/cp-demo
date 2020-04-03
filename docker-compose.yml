@@ -323,16 +323,10 @@ services:
       - kafka1
       - kafka2
       - schemaregistry
-    build:
-      context: .
-      dockerfile: Dockerfile
     volumes:
       - ./connect-plugins:/connect-plugins
       - ./scripts/security:/etc/kafka/secrets
       - ./conf:/tmp/conf
-    command: "bash -c 'sleep 10 && \
-              cp /usr/share/confluent-hub-components/confluentinc-kafka-connect-replicator/lib/replicator-rest-extension-5.4.1.jar /etc/kafka-connect/jars/ && \
-              /etc/confluent/docker/run'"
     ports:
       - 8083:8083
     environment:
@@ -363,7 +357,7 @@ services:
       CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins,/usr/share/confluent-hub-components"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CLASSPATH: "/etc/kafka-connect/jars/replicator-rest-extension-5.4.1.jar:/usr/share/java/monitoring-interceptors/monitoring-interceptors-5.5.0-SNAPSHOT.jar"
+      CLASSPATH: "/usr/share/confluent-hub-components/confluentinc-kafka-connect-replicator/lib/replicator-rest-extension-${REPLICATOR_VERSION}.jar:/usr/share/java/monitoring-interceptors/monitoring-interceptors-5.5.0-SNAPSHOT.jar"
 
       # Connect Worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
