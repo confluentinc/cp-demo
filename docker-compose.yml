@@ -314,6 +314,9 @@ services:
     container_name: connect
     cpus: 0.6
     restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile-confluenthub
     depends_on:
       - zookeeper
       - kafka1
