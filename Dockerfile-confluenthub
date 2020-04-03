@@ -13,10 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM confluentinc/cp-server-connect:5.5.x-latest
+FROM confluentinc/cp-server-connect-base:5.5.x-latest
 
-ARG REPLICATOR_VERSION=5.4.1
+ARG CONNECTOR_VERSION=5.4.1
 
 ENV CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins,/usr/share/confluent-hub-components"
 
-RUN confluent-hub install --no-prompt confluentinc/kafka-connect-replicator:${REPLICATOR_VERSION}
+# Install Confluent Replicator connector
+RUN confluent-hub install --no-prompt confluentinc/kafka-connect-replicator:${CONNECTOR_VERSION}
+
+# Install Elasticsearch connector
+RUN confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:${CONNECTOR_VERSION}

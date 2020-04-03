@@ -54,12 +54,12 @@ echo "Creating role bindings for principals"
 docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh"
 
 echo
-# Move REPLICATOR_VERSION to env_files/config.env in a future commit
-export REPLICATOR_VERSION=5.4.1
-if [[ "${REPLICATOR_VERSION}" =~ "SNAPSHOT" ]]; then
-  docker build --build-arg REPLICATOR_VERSION=${REPLICATOR_VERSION} -t confluentinc/cp-server-connect-with-replicator:5.5.x-latest -f Dockerfile-local .
+# Move CONNECTOR_VERSION to env_files/config.env in a future commit
+export CONNECTOR_VERSION=5.4.1
+if [[ "${CONNECTOR_VERSION}" =~ "SNAPSHOT" ]]; then
+  docker build --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t confluentinc/cp-server-connect-with-replicator:5.5.x-latest -f Dockerfile-local .
 else
-  docker build --build-arg REPLICATOR_VERSION=${REPLICATOR_VERSION} -t confluentinc/cp-server-connect-with-replicator:5.5.x-latest -f Dockerfile-confluenthub .
+  docker build --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t confluentinc/cp-server-connect-with-replicator:5.5.x-latest -f Dockerfile-confluenthub .
 fi
 docker-compose up -d kafka-client schemaregistry connect control-center
 
