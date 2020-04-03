@@ -13,7 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM confluentinc/cp-server-connect-base:5.5.x-latest
+ARG CP_VERSION
+
+FROM confluentinc/cp-server-connect-base:$CP_VERSION
 
 ARG CONNECTOR_VERSION=5.5.0-SNAPSHOT
 

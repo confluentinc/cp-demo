@@ -314,7 +314,7 @@ services:
 
 
   connect:
-    image: localbuild/connect-with-replicator:${CONFLUENT_DOCKER_TAG}
+    image: localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}
     container_name: connect
     cpus: 0.6
     restart: always
@@ -326,9 +326,6 @@ services:
       - kafka1
       - kafka2
       - schemaregistry
-    build:
-      context: .
-      dockerfile: Dockerfile-confluenthub
     volumes:
       - ./connect-plugins:/connect-plugins
       - ./scripts/security:/etc/kafka/secrets

@@ -2,6 +2,7 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 . ${DIR}/helper/functions.sh
+. ${DIR}/../env_files/config.env
 
 # Do preflight checks
 preflight_checks || exit
@@ -54,12 +55,11 @@ echo "Creating role bindings for principals"
 docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh"
 
 echo
-# Move CONNECTOR_VERSION to env_files/config.env in a future commit
-export CONNECTOR_VERSION=5.4.1
+echo "Building custom Docker image with connect version ${CONFLUENT_DOCKER_TAG} and connector version ${CONNECTOR_VERSION}"
 if [[ "${CONNECTOR_VERSION}" =~ "SNAPSHOT" ]]; then
-  docker build --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t confluentinc/cp-server-connect-with-replicator:5.5.x-latest -f Dockerfile-local .
+  docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f Dockerfile-local .
 else
-  docker build --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t confluentinc/cp-server-connect-with-replicator:5.5.x-latest -f Dockerfile-confluenthub .
+  docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f Dockerfile-confluenthub .
 fi
 docker-compose up -d kafka-client schemaregistry connect control-center
 
