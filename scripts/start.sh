@@ -53,11 +53,9 @@ curl -u mds:mds -X POST "http://localhost:8091/security/1.0/rbac/principals" --s
 echo "Creating role bindings for principals"
 docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh"
 
-# Intentionally pinning version (instead of 'latest') for controlled environment
-docker run -v $PWD/confluent-hub-components:/share/confluent-hub-components confluentinc/ksqldb-server:0.8.0 confluent-hub install --no-prompt confluentinc/kafka-connect-replicator:5.4.1
-
 echo
-docker-compose up -d kafka-client schemaregistry connect control-center
+docker-compose up -d --build connect
+docker-compose up -d kafka-client schemaregistry control-center
 
 # Verify Confluent Control Center has started
 MAX_WAIT=300
