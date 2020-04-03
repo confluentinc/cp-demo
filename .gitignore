@@ -15,4 +15,3 @@ scripts/security/*.der
 scripts/security/*.p12
 conf/
 ui/expanded
-**/confluent-hub-components/
