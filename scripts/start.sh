@@ -54,8 +54,14 @@ echo "Creating role bindings for principals"
 docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh"
 
 echo
-docker-compose up -d --build connect
-docker-compose up -d kafka-client schemaregistry control-center
+export REPLICATOR_VERSION=5.4.1
+docker rmi confluentinc/cp-server-connect-with-replicator:5.5.x-latest
+if [[ "${REPLICATOR_VERSION}" == "5.4.1" ]]; then
+  docker build -t confluentinc/cp-server-connect-with-replicator:5.5.x-latest -f Dockerfile-confluenthub .
+else
+  docker build -t confluentinc/cp-server-connect-with-replicator:5.5.x-latest -f Dockerfile-local .
+fi
+docker-compose up -d kafka-client schemaregistry control-center connect
 
 # Verify Confluent Control Center has started
 MAX_WAIT=300
