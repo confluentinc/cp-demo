@@ -17,6 +17,8 @@ FROM confluentinc/cp-server-connect:5.5.x-latest
 
 ENV CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
 
+# GA image posted on Confluent Hub
 RUN confluent-hub install --no-prompt confluentinc/kafka-connect-replicator:5.4.1
-#RUN confluent-hub install --no-prompt confluentinc/kafka-connect-replicator:5.5.0
+
+# Pre-GA image: requires access to pre-GA package of Confluent Replicator on local host
 #RUN confluent-hub install --no-prompt confluentinc-kafka-connect-replicator-5.5.0-SNAPSHOT.zip
