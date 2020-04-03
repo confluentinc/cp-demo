@@ -314,7 +314,7 @@ services:
 
 
   connect:
-    image: confluentinc/cp-server-connect:5.5.x-latest
+    image: confluentinc/cp-server-connect-with-replicator:5.5.x-latest
     container_name: connect
     cpus: 0.6
     restart: always
@@ -330,9 +330,8 @@ services:
       - ./connect-plugins:/connect-plugins
       - ./scripts/security:/etc/kafka/secrets
       - ./conf:/tmp/conf
-      - ./confluent-hub-components/:/usr/share/confluent-hub-components
     command: "bash -c 'sleep 10 && \
-              cp /usr/share/confluent-hub-components/confluentinc-kafka-connect-replicator/lib/replicator-rest-extension-*.jar /etc/kafka-connect/jars/ && \
+              cp /usr/share/confluent-hub-components/confluentinc-kafka-connect-replicator/lib/replicator-rest-extension-5.4.1.jar /etc/kafka-connect/jars/ && \
               /etc/confluent/docker/run'"
     ports:
       - 8083:8083
