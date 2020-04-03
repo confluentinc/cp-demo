@@ -55,7 +55,7 @@ docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh"
 
 echo
 # Move REPLICATOR_VERSION to env_files/config.env in a future commit
-export REPLICATOR_VERSION=5.5.0-SNAPSHOT
+export REPLICATOR_VERSION=5.4.1
 if [[ "${REPLICATOR_VERSION}" =~ "SNAPSHOT" ]]; then
   docker build --build-arg REPLICATOR_VERSION=${REPLICATOR_VERSION} -t confluentinc/cp-server-connect-with-replicator:5.5.x-latest -f Dockerfile-local .
 else
