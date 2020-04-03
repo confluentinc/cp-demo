@@ -314,7 +314,7 @@ services:
 
 
   connect:
-    image: confluentinc/cp-server-connect-with-replicator:5.5.x-latest
+    image: localbuild/connect-with-replicator:5.5.x-latest
     container_name: connect
     cpus: 0.6
     restart: always
@@ -360,7 +360,7 @@ services:
       CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins,/usr/share/confluent-hub-components"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CLASSPATH: "/usr/share/confluent-hub-components/confluentinc-kafka-connect-replicator/lib/replicator-rest-extension-${REPLICATOR_VERSION}.jar:/usr/share/java/monitoring-interceptors/monitoring-interceptors-5.5.0-SNAPSHOT.jar"
+      CLASSPATH: "/usr/share/confluent-hub-components/confluentinc-kafka-connect-replicator/lib/replicator-rest-extension-${CONNECTOR_VERSION}.jar:/usr/share/java/monitoring-interceptors/monitoring-interceptors-5.5.0-SNAPSHOT.jar"
 
       # Connect Worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
