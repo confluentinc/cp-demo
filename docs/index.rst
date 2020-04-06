@@ -145,6 +145,9 @@ Topics
    .. figure:: images/topic_settings.png
       :alt: image
 
+#. Notice that because |crep| default is ``topic.config.sync=true`` (see |crep| :ref:`documentation <rep-destination-topics>`),
+   then both the original topic ``wikipedia.parsed`` and the replicated topic ``wikipedia.parsed.replica`` have |sv| enabled.
+
 #. Return to "All Topics", click on ``wikipedia.parsed.count-by-channel`` to view the output topic from the Kafka Streams application.
 
    .. figure:: images/count-topic-view.png
@@ -775,6 +778,38 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
        "id": 7,
        "schema": "{\"type\":\"record\",\"name\":\"user\",\"fields\":[{\"name\":\"username\",\"type\":\"string\"},{\"name\":\"userid\",\"type\":\"long\"}]}"
      }
+
+#. Describe the topic ``users``.
+
+   .. sourcecode:: bash
+
+      docker-compose exec kafka1 kafka-topics --describe --topic users --bootstrap-server kafka1:9091 --command-config /etc/kafka/secrets/client_sasl_plain.config
+
+   Your output should resemble:
+
+   .. sourcecode:: bash
+
+      Topic: users	PartitionCount: 2	ReplicationFactor: 2	Configs: confluent.value.schema.validation=true
+	      Topic: users	Partition: 0	Leader: 1	Replicas: 1,2	Isr: 1,2	Offline: 	LiveObservers: 
+	      Topic: users	Partition: 1	Leader: 2	Replicas: 2,1	Isr: 2,1	Offline: 	LiveObservers: 
+
+#. Notice that the topic ``users`` has a special configuration ``confluent.value.schema.validation=true`` which enables `Schema Validation <https://docs.confluent.io/current/release-notes/5-4-preview.html>`__, a data governance feature in Confluent Server that gives operators a centralized location within the Kafka cluster itself to enforce data format correctness. Enabling |sv| allows brokers configured with ``confluent.schema.registry.url`` to validate that data produced to the topic is using a valid schema. For example, produce a non-Avro message to this topic, and it will result in a failure.
+
+   .. sourcecode:: bash
+
+      docker-compose exec connect kafka-console-producer --topic users --broker-list kafka1:9091 --producer.config /etc/kafka/secrets/client_without_interceptors.config
+
+#. Describe the topic ``wikipedia.parsed``, which is the topic that the `kafka-connect-irc` source connector is writing to. Notice that it also has enabled |sv|.
+
+   .. sourcecode:: bash
+
+      docker-compose exec kafka1 kafka-topics --describe --topic wikipedia.parsed --bootstrap-server kafka1:9091 --command-config /etc/kafka/secrets/client_sasl_plain.config
+
+#. Describe the topic ``wikipedia.parsed.parsed``, which is the topic that |crep| has replicated from ``wikipedia.parsed``. Notice that it also has enabled |sv|.
+
+   .. sourcecode:: bash
+
+      docker-compose exec kafka1 kafka-topics --describe --topic wikipedia.parsed.replica --bootstrap-server kafka1:9091 --command-config /etc/kafka/secrets/client_sasl_plain.config
 
 #. Next step: Learn more about |sr| with the :ref:`Schema Registry Tutorial <schema_registry_tutorial>`.
 
