@@ -740,6 +740,7 @@ services:
       - 8088:8088
     environment:
       CUB_CLASSPATH: '/usr/share/java/ksqldb-server/*:/usr/share/java/cp-base-new/*'
+      KSQL_LOG4J_ROOT_LOGLEVEL: INFO
 
       KSQL_KSQL_SERVICE_ID: "ksql-cluster"
       KSQL_KSQL_STREAMS_REPLICATION_FACTOR: 2
