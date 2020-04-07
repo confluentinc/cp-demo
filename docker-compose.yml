@@ -169,7 +169,6 @@ services:
       KAFKA_LDAP_SEARCH_MODE: GROUPS
       KAFKA_LDAP_GROUP_SEARCH_BASE: ou=groups,dc=confluentdemo,dc=io
       KAFKA_LDAP_GROUP_NAME_ATTRIBUTE: cn
-      KAFKA_LDAP_GROUP_OBJECT_CLASS: group
       KAFKA_LDAP_GROUP_MEMBER_ATTRIBUTE: memberUid
       KAFKA_LDAP_GROUP_OBJECT_CLASS: posixGroup
       KAFKA_LDAP_GROUP_MEMBER_ATTRIBUTE_PATTERN: cn=(.*),ou=users,dc=confluentdemo,dc=io
@@ -303,7 +302,6 @@ services:
       KAFKA_LDAP_SEARCH_MODE: GROUPS
       KAFKA_LDAP_GROUP_SEARCH_BASE: ou=groups,dc=confluentdemo,dc=io
       KAFKA_LDAP_GROUP_NAME_ATTRIBUTE: cn
-      KAFKA_LDAP_GROUP_OBJECT_CLASS: group
       KAFKA_LDAP_GROUP_MEMBER_ATTRIBUTE: memberUid
       KAFKA_LDAP_GROUP_OBJECT_CLASS: posixGroup
       KAFKA_LDAP_GROUP_MEMBER_ATTRIBUTE_PATTERN: cn=(.*),ou=users,dc=confluentdemo,dc=io
