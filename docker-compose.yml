@@ -167,12 +167,13 @@ services:
       KAFKA_LDAP_JAVA_NAMING_SECURITY_AUTHENTICATION: simple
       # How to locate users and groups
       KAFKA_LDAP_SEARCH_MODE: GROUPS
-      #KAFKA_LDAP_SEARCH_BASE: dc=confluentdemo,dc=io
+      KAFKA_LDAP_SEARCH_BASE: dc=confluentdemo,dc=io
       KAFKA_LDAP_GROUP_SEARCH_BASE: ou=groups,dc=confluentdemo,dc=io
       KAFKA_LDAP_GROUP_OBJECT_CLASS: posixGroup
       KAFKA_LDAP_GROUP_NAME_ATTRIBUTE: cn
       KAFKA_LDAP_GROUP_MEMBER_ATTRIBUTE: memberUid
       KAFKA_LDAP_GROUP_MEMBER_ATTRIBUTE_PATTERN: cn=(.*),ou=users,dc=confluentdemo,dc=io
+      KAFKA_LDAP_USER_MEMBEROF_ATTRIBUTE_PATTERN: cn=(.*),ou=users,dc=confluentdemo,dc=io
 
 
   kafka2:
@@ -297,12 +298,13 @@ services:
       KAFKA_LDAP_JAVA_NAMING_SECURITY_AUTHENTICATION: simple
       # how to locate users and groups
       KAFKA_LDAP_SEARCH_MODE: GROUPS
-      #KAFKA_LDAP_SEARCH_BASE: dc=confluentdemo,dc=io
+      KAFKA_LDAP_SEARCH_BASE: dc=confluentdemo,dc=io
       KAFKA_LDAP_GROUP_SEARCH_BASE: ou=groups,dc=confluentdemo,dc=io
       KAFKA_LDAP_GROUP_OBJECT_CLASS: posixGroup
       KAFKA_LDAP_GROUP_NAME_ATTRIBUTE: cn
       KAFKA_LDAP_GROUP_MEMBER_ATTRIBUTE: memberUid
       KAFKA_LDAP_GROUP_MEMBER_ATTRIBUTE_PATTERN: cn=(.*),ou=users,dc=confluentdemo,dc=io
+      KAFKA_LDAP_USER_MEMBEROF_ATTRIBUTE_PATTERN: cn=(.*),ou=users,dc=confluentdemo,dc=io
 
 
   connect:
