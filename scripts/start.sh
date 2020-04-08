@@ -42,15 +42,6 @@ echo "Waiting up to $MAX_WAIT seconds for MDS to start"
 retry $MAX_WAIT host_check_mds_up || exit 1
 sleep 5
 
-echo
-echo "Available LDAP users:"
-#docker-compose exec openldap ldapsearch -x -h localhost -b dc=confluentdemo,dc=io -D "cn=admin,dc=confluentdemo,dc=io" -w admin | grep uid:
-curl -u mds:mds -X POST "http://localhost:8091/security/1.0/principals/User%3Amds/roles/UserAdmin" \
-  -H "accept: application/json" -H "Content-Type: application/json" \
-  -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}"
-curl -u mds:mds -X POST "http://localhost:8091/security/1.0/rbac/principals" --silent \
-  -H "accept: application/json"  -H "Content-Type: application/json" \
-  -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}" | jq '.[]'
 echo "Creating role bindings for principals"
 docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh" || exit 1
 
@@ -147,6 +138,15 @@ ${DIR}/connectors/submit_replicator_config.sh
 echo -e "\n\nConfluent Control Center modifications:"
 ${DIR}/helper/control-center-modifications.sh
 
+echo
+echo -e "\nAvailable LDAP users:"
+#docker-compose exec openldap ldapsearch -x -h localhost -b dc=confluentdemo,dc=io -D "cn=admin,dc=confluentdemo,dc=io" -w admin | grep uid:
+curl -u mds:mds -X POST "http://localhost:8091/security/1.0/principals/User%3Amds/roles/UserAdmin" \
+  -H "accept: application/json" -H "Content-Type: application/json" \
+  -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}"
+curl -u mds:mds -X POST "http://localhost:8091/security/1.0/rbac/principals" --silent \
+  -H "accept: application/json"  -H "Content-Type: application/json" \
+  -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}" | jq '.[]'
 
 echo -e "\n\n\n*****************************************************************************************************************"
 echo -e "DONE! Connect to Confluent Control Center at http://localhost:9021 (login as superUser/superUser for full access)"

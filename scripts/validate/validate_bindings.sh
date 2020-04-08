@@ -29,6 +29,8 @@ CLIENT_PRINCIPAL="User:appSA"
 BADAPP="User:badapp"
 LISTEN_PRINCIPAL="User:clientListen"
 
+docker-compose exec tools bash -c ". /tmp/helper/functions.sh ; mds_login $MDS_URL ${SUPER_USER} ${SUPER_USER_PASSWORD}"
+
 ################################## Run through permutations #############################
 
 for p in $SUPER_USER_PRINCIPAL $CONNECT_ADMIN $CONNECTOR_SUBMITTER $CONNECTOR_PRINCIPAL $SR_PRINCIPAL $KSQL_ADMIN $KSQL_USER $C3_ADMIN $CLIENT_PRINCIPAL $BADAPP $LISTEN_PRINCIPAL; do
