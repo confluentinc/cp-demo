@@ -60,7 +60,6 @@ if [[ "${CONNECTOR_VERSION}" =~ "SNAPSHOT" ]]; then
   docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f Dockerfile-local .
 else
   docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f Dockerfile-confluenthub .
-fi
 docker-compose up -d kafka-client schemaregistry connect control-center
 
 # Verify Confluent Control Center has started
