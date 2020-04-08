@@ -776,6 +776,51 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
        "schema": "{\"type\":\"record\",\"name\":\"user\",\"fields\":[{\"name\":\"username\",\"type\":\"string\"},{\"name\":\"userid\",\"type\":\"long\"}]}"
      }
 
+#. Describe the topic ``users``. Notice that it has a special configuration ``confluent.value.schema.validation=true`` which enables :ref:`Schema Validation <schema_validation>`,  a data governance feature in Confluent Server that gives operators a centralized location within the Kafka cluster itself to enforce data format correctness. Enabling |sv| allows brokers configured with ``confluent.schema.registry.url`` to validate that data produced to the topic is using a valid schema.
+
+   .. sourcecode:: bash
+
+      docker-compose exec kafka1 kafka-topics --describe --topic users --bootstrap-server kafka1:9091 --command-config /etc/kafka/secrets/client_sasl_plain.config
+
+   Your output should resemble:
+
+   .. sourcecode:: bash
+
+      Topic: users	PartitionCount: 2	ReplicationFactor: 2	Configs: confluent.value.schema.validation=true
+	      Topic: users	Partition: 0	Leader: 1	Replicas: 1,2	Isr: 1,2	Offline: 	LiveObservers: 
+	      Topic: users	Partition: 1	Leader: 2	Replicas: 2,1	Isr: 2,1	Offline: 	LiveObservers: 
+
+#. Produce a non-Avro message to this topic using ``kafka-console-producer``, and it will result in a failure.
+
+   .. sourcecode:: bash
+
+      docker-compose exec connect kafka-console-producer --topic users --broker-list kafka1:11091 \
+           --producer-property security.protocol=SSL \
+           --producer-property ssl.truststore.location=/etc/kafka/secrets/kafka.appSA.truststore.jks \
+           --producer-property ssl.truststore.password=confluent \
+           --producer-property ssl.keystore.location=/etc/kafka/secrets/kafka.appSA.keystore.jks \
+           --producer-property ssl.keystore.password=confluent \
+           --producer-property ssl.key.password=confluent
+
+   The error should resemble:
+
+   .. sourcecode:: bash
+
+      ERROR Error when sending message to topic users with key: null, value: 5 bytes with error: (org.apache.kafka.clients.producer.internals.ErrorLoggingCallback)
+      org.apache.kafka.common.InvalidRecordException: This record has failed the validation on broker and hence be rejected.
+
+#. Describe the topic ``wikipedia.parsed``, which is the topic that the `kafka-connect-irc` source connector is writing to. Notice that it also has enabled |sv|.
+
+   .. sourcecode:: bash
+
+      docker-compose exec kafka1 kafka-topics --describe --topic wikipedia.parsed --bootstrap-server kafka1:9091 --command-config /etc/kafka/secrets/client_sasl_plain.config
+
+#. Describe the topic ``wikipedia.parsed.replica``, which is the topic that |crep| has replicated from ``wikipedia.parsed``. Notice that it also has enabled |sv|, because |crep| default is ``topic.config.sync=true`` (see |crep| :ref:`documentation <rep-destination-topics>`).
+
+   .. sourcecode:: bash
+
+      docker-compose exec kafka1 kafka-topics --describe --topic wikipedia.parsed.replica --bootstrap-server kafka1:9091 --command-config /etc/kafka/secrets/client_sasl_plain.config
+
 #. Next step: Learn more about |sr| with the :ref:`Schema Registry Tutorial <schema_registry_tutorial>`.
 
 
