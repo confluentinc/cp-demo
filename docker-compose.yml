@@ -175,8 +175,6 @@ services:
       KAFKA_LDAP_USER_SEARCH_BASE: ou=users,dc=confluentdemo,dc=io
       KAFKA_LDAP_USER_NAME_ATTRIBUTE: uid
       KAFKA_LDAP_USER_OBJECT_CLASS: inetOrgPerson
-      KAFKA_LDAP_USER_MEMBEROF_ATTRIBUTE: ou
-      KAFKA_LDAP_USER_MEMBEROF_ATTRIBUTE_PATTERN: cn=(.*),ou=users,dc=confluentdemo,dc=io
 
   kafka2:
     image: confluentinc/cp-server:5.4.1
@@ -308,8 +306,6 @@ services:
       KAFKA_LDAP_USER_SEARCH_BASE: ou=users,dc=confluentdemo,dc=io
       KAFKA_LDAP_USER_NAME_ATTRIBUTE: uid
       KAFKA_LDAP_USER_OBJECT_CLASS: inetOrgPerson
-      KAFKA_LDAP_USER_MEMBEROF_ATTRIBUTE: ou
-      KAFKA_LDAP_USER_MEMBEROF_ATTRIBUTE_PATTERN: cn=(.*),ou=users,dc=confluentdemo,dc=io
 
   connect:
     image: confluentinc/cp-server-connect:5.4.1
