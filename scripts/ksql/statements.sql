@@ -1,4 +1,4 @@
-CREATE STREAM wikipedia (CREATEDAT bigint, WIKIPAGE string, CHANNEL string, USERNAME string, COMMITMESSAGE string, BYTECHANGE integer, DIFFURL string, ISNEW boolean, ISMINOR boolean, ISBOT boolean, ISUNPATROLLED boolean) WITH (kafka_topic='wikipedia.parsed', value_format='AVRO');
+CREATE STREAM wikipedia WITH (kafka_topic='wikipedia.parsed', value_format='AVRO');
 CREATE STREAM wikipedianobot AS SELECT * FROM wikipedia WHERE isbot <> true;
 CREATE STREAM wikipediabot AS SELECT * FROM wikipedia WHERE isbot = true;
 CREATE TABLE en_wikipedia_gt_1 AS SELECT username, wikipage, count(*) AS COUNT FROM wikipedia WINDOW TUMBLING (size 300 second) WHERE channel = '#en.wikipedia' GROUP BY username, wikipage HAVING count(*) > 1;
