@@ -43,7 +43,7 @@ curl -u mds:mds -X POST "http://localhost:8091/security/1.0/rbac/principals" --s
   -H "accept: application/json"  -H "Content-Type: application/json" \
   -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}" | jq '.[]'
 echo "Creating role bindings for principals"
-docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh"
+docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh" || exit 1
 
 echo
 docker-compose up -d kafka-client schemaregistry replicator-for-jar-transfer connect control-center
