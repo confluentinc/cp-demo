@@ -1095,7 +1095,6 @@ Here are some suggestions on how to troubleshoot the demo.
       ksqldb-cli                    /bin/sh                          Up
       ksqldb-server                 /etc/confluent/docker/run        Up (healthy)   0.0.0.0:8088->8088/tcp
       openldap                      /container/tool/run --copy ...   Up             0.0.0.0:389->389/tcp, 636/tcp
-      replicator-for-jar-transfer   sleep infinity                   Up             8083/tcp, 9092/tcp
       restproxy                     /etc/confluent/docker/run        Up             8082/tcp, 0.0.0.0:8086->8086/tcp
       schemaregistry                /etc/confluent/docker/run        Up             8081/tcp, 0.0.0.0:8085->8085/tcp
       streams-demo                  /app/start.sh                    Up             9092/tcp
