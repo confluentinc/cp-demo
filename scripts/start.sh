@@ -9,11 +9,6 @@ preflight_checks || exit
 # Stop existing demo Docker containers
 ${DIR}/stop.sh
 
-jmxStack=$1
-if [[ ! -z "$jmxStack" ]]; then
-  setup_jmx $jmxStack
-fi
-
 # Generate keys and certificates used for SSL
 echo -e "Generate keys and certificates used for SSL"
 (cd ${DIR}/security && ./certs-create.sh)
