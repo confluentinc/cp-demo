@@ -13,5 +13,6 @@ openssl req -new -x509 -keyout snakeoil-ca-1.key -out snakeoil-ca-1.crt -days 36
 
 for i in kafka1 kafka2 client schemaregistry restproxy connect controlcenter ksqlserver appSA badapp clientListen
 do
+  echo "------------------------------- $i -------------------------------"
   ./certs-create-per-user.sh $i
 done

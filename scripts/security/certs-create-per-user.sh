@@ -2,8 +2,6 @@
 
 i=$1
 
-echo "------------------------------- $i -------------------------------"
-
 # Create host keystore
 keytool -genkey -noprompt \
 			 -alias $i \
