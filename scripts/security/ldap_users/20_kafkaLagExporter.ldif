@@ -1,0 +1,15 @@
+dn: cn=kafkaLagExporter,ou=users,{{ LDAP_BASE_DN }}
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: kafkaLagExporter
+sn: Sheen
+givenName: KafkaLagExporter
+cn: kafkaLagExporter
+displayName: KafkaLagExporter Sheen
+uidNumber: 10220
+gidNumber: 5000
+userPassword: kafkaLagExporter
+gecos: kafkaLagExporter
+loginShell: /bin/bash
+homeDirectory: /home/kafkaLagExporter

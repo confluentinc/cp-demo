@@ -137,3 +137,16 @@ END
     exit 1
   fi
 }
+
+setup_jmx() {
+  jmxStack=$1
+
+  echo "Configuring monitoring solution for $jmxStack"
+  [[ -d "jmx-monitoring-stacks" ]] || git clone https://github.com/confluentinc/jmx-monitoring-stacks.git
+  (cd jmx-monitoring-stacks && git fetch && git checkout DEVX-1696 && git pull)
+  yes | cp -f jmx-monitoring-stacks/${jmxStack}/docker-compose.override.yml .
+  ./jmx-monitoring-stacks/${jmxStack}/viz.sh
+
+  return 0
+}
+
