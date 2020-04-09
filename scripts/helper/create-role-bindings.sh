@@ -28,6 +28,8 @@ KSQL_SERVER="User:ksqlserver"
 C3_ADMIN="User:controlcenterAdmin"
 CLIENT_PRINCIPAL="User:appSA"
 LISTEN_PRINCIPAL="User:clientListen"
+KAFKA_LAG_EXPORTER_PRINCIPAL="User:kafkaLagExporter"
+
 
 mds_login $MDS_URL ${SUPER_USER} ${SUPER_USER_PASSWORD} || exit 1
 
@@ -455,6 +457,13 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
+################################ Kafka Lag Exporter ################################
+echo "Creating role bindings for Kafka lag exporter"
+confluent iam rolebinding create \
+    --principal $KAFKA_LAG_EXPORTER_PRINCIPAL \
+    --role SystemAdmin \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
 ######################### Print #########################
 
 echo "Cluster IDs:"
@@ -477,6 +486,7 @@ echo "    KSQL User: $KSQL_USER"
 echo "    C3 Admin: $C3_ADMIN"
 echo "    Client service account: $CLIENT_PRINCIPAL"
 echo "    Listen Client service account: $LISTEN_PRINCIPAL"
+echo "    Kafka Lag Exporter user: $KAFKA_LAG_EXPORTER_PRINCIPAL"
 echo
 
 

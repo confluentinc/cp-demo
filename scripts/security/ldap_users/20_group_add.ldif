@@ -72,3 +72,8 @@ dn: cn=KafkaDevelopers,ou=groups,{{ LDAP_BASE_DN }}
 changetype: modify
 add: memberuid
 memberuid: cn=clientListen,ou=users,{{ LDAP_BASE_DN }}
+
+dn: cn=KafkaDevelopers,ou=groups,{{ LDAP_BASE_DN }}
+changetype: modify
+add: memberuid
+memberuid: cn=kafkaLagExporter,ou=users,{{ LDAP_BASE_DN }}

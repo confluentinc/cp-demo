@@ -28,10 +28,11 @@ C3_ADMIN="User:controlcenterAdmin"
 CLIENT_PRINCIPAL="User:appSA"
 BADAPP="User:badapp"
 LISTEN_PRINCIPAL="User:clientListen"
+KAFKA_LAG_EXPORTER_PRINCIPAL="User:kafkaLagExporter"
 
 ################################## Run through permutations #############################
 
-for p in $SUPER_USER_PRINCIPAL $CONNECT_ADMIN $CONNECTOR_SUBMITTER $CONNECTOR_PRINCIPAL $SR_PRINCIPAL $KSQL_ADMIN $KSQL_USER $C3_ADMIN $CLIENT_PRINCIPAL $BADAPP $LISTEN_PRINCIPAL; do
+for p in $SUPER_USER_PRINCIPAL $CONNECT_ADMIN $CONNECTOR_SUBMITTER $CONNECTOR_PRINCIPAL $SR_PRINCIPAL $KSQL_ADMIN $KSQL_USER $C3_ADMIN $CLIENT_PRINCIPAL $BADAPP $LISTEN_PRINCIPAL $KAFKA_LAG_EXPORTER_PRINCIPAL; do
   for c in " " " --schema-registry-cluster-id $SR" " --connect-cluster-id $CONNECT" " --ksql-cluster-id $KSQL"; do
     echo
     echo "Showing bindings for principal $p and --kafka-cluster-id $KAFKA_CLUSTER_ID $c"
