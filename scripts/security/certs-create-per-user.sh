@@ -60,5 +60,3 @@ keytool -export -alias $i -file $i.der -keystore kafka.$i.keystore.jks -storepas
 openssl x509 -inform der -in $i.der -out $i.certificate.pem
 keytool -importkeystore -srckeystore kafka.$i.keystore.jks -destkeystore $i.keystore.p12 -deststoretype PKCS12 -deststorepass confluent -srcstorepass confluent -noprompt
 openssl pkcs12 -in $i.keystore.p12 -nodes -nocerts -out $i.key -passin pass:confluent
-
-return 0
