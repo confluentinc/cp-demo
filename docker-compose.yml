@@ -460,6 +460,8 @@ services:
       CONNECT_REST_EXTENSION_CLASSES: io.confluent.connect.replicator.monitoring.ReplicatorMonitoringExtension,io.confluent.connect.security.ConnectSecurityExtension,io.confluent.connect.secretregistry.ConnectSecretRegistryExtension
       CONNECT_REST_SERVLET_INITIALIZOR_CLASSES: 'io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler'
       CONNECT_PUBLIC_KEY_PATH: /tmp/conf/public.pem
+
+      # Used by Connect's REST layer to connect to MDS to verify tokens and authenticate clients
       CONNECT_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
       CONNECT_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'connectAdmin:connectAdmin'
       CONNECT_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: 'BASIC'
@@ -747,18 +749,12 @@ services:
       
       KSQL_KSQL_SECURITY_EXTENSION_CLASS: io.confluent.ksql.security.KsqlConfluentSecurityExtension
 
-      # Enable KSQL OAuth authentication
+      # Enable OAuth for ksqlDB's embedded Kafka clients that access and manage consumer groups and topics
       KSQL_REST_SERVLET_INITIALIZOR_CLASSES: io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler
       KSQL_WEBSOCKET_SERVLET_INITIALIZOR_CLASSES: io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler
       KSQL_OAUTH_JWT_PUBLIC_KEY_PATH: /tmp/conf/public.pem
       KSQL_CONFLUENT_METADATA_PUBLIC_KEY_PATH: /tmp/conf/public.pem
       KSQL_PUBLIC_KEY_PATH: /tmp/conf/public.pem
-
-      # Connect to MDS
-      KSQL_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
-      KSQL_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
-      KSQL_CONFLUENT_METADATA_BASIC_AUTH_CREDENTIALS_PROVIDER: USER_INFO
-      KSQL_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: ksqlAdmin:ksqlAdmin
 
       # Authenticate to brokers
       KSQL_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.ksqlserver.truststore.jks
@@ -772,6 +768,12 @@ services:
       KSQL_KSQL_SCHEMA_REGISTRY_URL: https://schemaregistry:8085
       KSQL_KSQL_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: "/etc/kafka/secrets/kafka.ksqlserver.truststore.jks"
       KSQL_KSQL_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: "confluent"
+
+      # Used by ksqlDB's REST layer to connect to MDS to verify tokens and authenticate clients
+      KSQL_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
+      KSQL_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
+      KSQL_CONFLUENT_METADATA_BASIC_AUTH_CREDENTIALS_PROVIDER: USER_INFO
+      KSQL_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: ksqlAdmin:ksqlAdmin
 
       # RBAC
       KSQL_SECURITY_PROTOCOL: SASL_SSL
@@ -873,10 +875,12 @@ services:
               metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
       KAFKA_REST_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
 
-      # RBAC and MDS
+      # Enable OAuth for REST Proxy's embedded Kafka client that accesses and manages consumer groups and topics
       KAFKA_REST_KAFKA_REST_RESOURCE_EXTENSION_CLASS: io.confluent.kafkarest.security.KafkaRestSecurityResourceExtension
       KAFKA_REST_REST_SERVLET_INITIALIZOR_CLASSES: io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler
       KAFKA_REST_PUBLIC_KEY_PATH: /tmp/conf/public.pem
+
+      # Used by REST Proxy to connect to MDS to verify tokens and authenticate clients
       KAFKA_REST_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
       KAFKA_REST_CLIENT_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
       KAFKA_REST_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
