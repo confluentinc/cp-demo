@@ -1,4 +1,4 @@
-ESTsion: "2.3"
+version: "2.3"
 services:
 
   zookeeper:
@@ -25,7 +25,7 @@ services:
       ZOOKEEPER_AUTH_PROVIDER_SASL: org.apache.zookeeper.server.auth.SASLAuthenticationProvider
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_jaas.conf
     volumes:
-      - ./scripts/security:/etc/kafka/secrets 
+      - ./scripts/security:/etc/kafka/secrets
 
   tools:
     image: cnfltraining/training-tools:5.4
