@@ -756,6 +756,12 @@ services:
       KSQL_CONFLUENT_METADATA_PUBLIC_KEY_PATH: /tmp/conf/public.pem
       KSQL_PUBLIC_KEY_PATH: /tmp/conf/public.pem
 
+      # Used by ksqlDB's REST layer to connect to MDS to verify tokens and authenticate clients
+      KSQL_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
+      KSQL_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
+      KSQL_CONFLUENT_METADATA_BASIC_AUTH_CREDENTIALS_PROVIDER: USER_INFO
+      KSQL_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: ksqlAdmin:ksqlAdmin
+
       # Authenticate to brokers
       KSQL_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.ksqlserver.truststore.jks
       KSQL_SSL_TRUSTSTORE_PASSWORD: confluent
@@ -768,12 +774,6 @@ services:
       KSQL_KSQL_SCHEMA_REGISTRY_URL: https://schemaregistry:8085
       KSQL_KSQL_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: "/etc/kafka/secrets/kafka.ksqlserver.truststore.jks"
       KSQL_KSQL_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: "confluent"
-
-      # Used by ksqlDB's REST layer to connect to MDS to verify tokens and authenticate clients
-      KSQL_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
-      KSQL_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
-      KSQL_CONFLUENT_METADATA_BASIC_AUTH_CREDENTIALS_PROVIDER: USER_INFO
-      KSQL_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: ksqlAdmin:ksqlAdmin
 
       # RBAC
       KSQL_SECURITY_PROTOCOL: SASL_SSL
