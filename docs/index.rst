@@ -484,7 +484,7 @@ Zookeeper has two listener ports:
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
 | Name          | Protocol       | In this demo, used for ...                                         | zookeeper       |
 +===============+================+====================================================================+=================+
-| N/A           | SASL/DIGEST-MD5| Validating of Trial License (no TLS support) for Rest and SR       | 2181            |
+| N/A           | SASL/DIGEST-MD5| Validating trial license for |crest| and |sr| (no TLS support)      | 2181            |
 +---------------+----------------+--------------------------------------------------------------------+-----------------+
 | N/A           | SASL_PLAINTEXT | Broker communication (kafka1, kafka2)                              | 2182            |
 +---------------+----------------+--------------------------------------------------------------------+-----------------+
@@ -1154,4 +1154,3 @@ Teardown
    .. sourcecode:: bash
 
           ./scripts/stop.sh
-
