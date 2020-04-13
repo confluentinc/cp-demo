@@ -93,7 +93,6 @@ declare -a ConnectResources=(
     "Topic:connect-offsets" 
     "Topic:connect-statuses" 
     "Group:connect-cluster" 
-    "Topic:_confluent-monitoring"
     "Topic:_confluent-secrets"
     "Group:secret-registry" 
 )
@@ -182,6 +181,12 @@ confluent iam rolebinding create \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
+
+confluent iam rolebinding create \
+    --principal $CONNECTOR_PRINCIPAL \
+    --role ResourceOwner \
+    --resource Topic:_confluent-monitoring \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 ################################### KSQL Admin ###################################
 echo "Creating role bindings for KSQL Admin"
