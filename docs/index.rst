@@ -201,7 +201,12 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
    .. figure:: images/ksql_link.png
       :alt: image
 
-#. Alternatively, run ksqlDB CLI to get to the ksqlDB CLI prompt.
+#. View the ksqlDB Flow to see the streams and tables created in the demo, and how they relate to one another.
+
+   .. figure:: images/ksqldb_flow.png
+      :alt: image
+
+#. Use |c3| to interact with ksqlDB, or run ksqlDB CLI to get to the ksqlDB CLI prompt.
 
    .. sourcecode:: bash
 
