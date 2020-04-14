@@ -182,12 +182,6 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
-confluent iam rolebinding create \
-    --principal $CONNECTOR_PRINCIPAL \
-    --role ResourceOwner \
-    --resource Topic:_confluent-monitoring \
-    --kafka-cluster-id $KAFKA_CLUSTER_ID
-
 ################################### KSQL Admin ###################################
 echo "Creating role bindings for KSQL Admin"
 
