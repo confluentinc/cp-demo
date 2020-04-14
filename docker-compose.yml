@@ -379,11 +379,6 @@ services:
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.keystore.jks
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEY_PASSWORD: confluent
-      CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: |
-              org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-              username="connectAdmin" \
-              password="connectAdmin" \
-              metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
 
       # Connect Consumer
       CONNECT_CONSUMER_SECURITY_PROTOCOL: SASL_SSL
@@ -399,11 +394,6 @@ services:
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.keystore.jks
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEY_PASSWORD: confluent
-      CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: |
-              org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-              username="connectAdmin" \
-              password="connectAdmin" \
-              metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
 
       # RBAC
       CONNECT_SASL_MECHANISM: 'OAUTHBEARER'
@@ -422,12 +412,22 @@ services:
       CONNECT_PRODUCER_SASL_LOGIN_CALLBACK_HANDLER_CLASS: 'io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler'
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_MECHANISM: 'OAUTHBEARER'
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_LOGIN_CALLBACK_HANDLER_CLASS: 'io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler'
+      CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: |
+              org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
+              username="connectAdmin" \
+              password="connectAdmin" \
+              metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
 
       # Consumer
       CONNECT_CONSUMER_SASL_MECHANISM: 'OAUTHBEARER'
       CONNECT_CONSUMER_SASL_LOGIN_CALLBACK_HANDLER_CLASS: 'io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler'
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_MECHANISM: 'OAUTHBEARER'
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_LOGIN_CALLBACK_HANDLER_CLASS: 'io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler'
+      CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: |
+              org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
+              username="connectAdmin" \
+              password="connectAdmin" \
+              metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
 
       # Default admin config
       CONNECT_ADMIN_SECURITY_PROTOCOL: SASL_SSL
