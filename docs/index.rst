@@ -465,7 +465,7 @@ features <https://docs.confluent.io/current/security.html>`__:
 -  :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization. It is configured with the Confluent Server Authorizer and talks to LDAP to authenticate clients.
 -  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__ for encryption and mTLS. The demo :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password. 
 -  :ref:`Role-Based Access Control (RBAC) <rbac-overview>` for authorization. If a resource has no associated ACLs, then users are not allowed to access the resource, except super users.
--  |zk| is configured for `SSL <https://docs.confluent.io/current/security/zk-security.html#mtls>`__ AND `SASL/DIGEST-MD5 <https://docs.confluent.io/current/security/zk-security.html#sasl-with-digest-md5>`__.
+-  |zk| is configured for `SSL <https://docs.confluent.io/current/security/zk-security.html#mtls>`__ AND `SASL/DIGEST-MD5 <https://docs.confluent.io/current/security/zk-security.html#sasl-with-digest-md5>`__ (Note: `No |crest| and |sr| TLS support with trial licenses <https://docs.confluent.io/5.5.0/release-notes/index.html#schema-registry>`__).
 -  `HTTPS for Control Center <https://docs.confluent.io/current/control-center/docs/installation/configuration.html#https-settings>`__.
 -  `HTTPS for Schema Registry <https://docs.confluent.io/current/schema-registry/docs/security.html>`__.
 -  `HTTPS for Connect <https://docs.confluent.io/current/connect/security.html#configuring-the-kconnect-rest-api-for-http-or-https>`__.
@@ -484,7 +484,7 @@ Zookeeper has two listener ports:
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
 | Name          | Protocol       | In this demo, used for ...                                         | zookeeper       |
 +===============+================+====================================================================+=================+
-| N/A           | SASL/DIGEST-MD5| Validating trial license for |crest| and |sr| (`no TLS support <https://docs.confluent.io/5.5.0/release-notes/index.html#schema-registry>`__)     | 2181            |
+| N/A           | SASL/DIGEST-MD5| Validating trial license for |crest| and |sr|. (no TLS support)    | 2181            |
 +---------------+----------------+--------------------------------------------------------------------+-----------------+
 | N/A           | SASL_PLAINTEXT | Broker communication (kafka1, kafka2)                              | 2182            |
 +---------------+----------------+--------------------------------------------------------------------+-----------------+
