@@ -484,7 +484,7 @@ Zookeeper has two listener ports:
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
 | Name          | Protocol       | In this demo, used for ...                                         | zookeeper       |
 +===============+================+====================================================================+=================+
-| N/A           | SASL/DIGEST-MD5| Validating trial license for |crest| and |sr| (no TLS support)      | 2181            |
+| N/A           | SASL/DIGEST-MD5| Validating trial license for |crest| and |sr| (`no TLS support <https://docs.confluent.io/5.5.0/release-notes/index.html#schema-registry>`__)     | 2181            |
 +---------------+----------------+--------------------------------------------------------------------+-----------------+
 | N/A           | SASL_PLAINTEXT | Broker communication (kafka1, kafka2)                              | 2182            |
 +---------------+----------------+--------------------------------------------------------------------+-----------------+
