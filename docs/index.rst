@@ -155,83 +155,6 @@ Topics
    .. figure:: images/create_topic.png
          :alt: image
 
-#.  Dataflow: you can derive which producers are writing to which topics and which consumers are reading from which topics.
-    When Confluent Monitoring Interceptors are configured on Kafka clients, they write metadata to a topic named ``_confluent-monitoring``.
-    Kafka clients include any application that uses the Apache Kafka client API to connect to Kafka brokers, such as
-    custom client code or any service that has embedded producers or consumers, such as Kafka Connect, ksqlDB, or a Kafka Streams application.
-    |c3| uses that topic to ensure that all messages are delivered and to provide statistics on throughput and latency
-    performance. From that same topic, you can also derive which producers are writing to which topics and which consumers
-    are reading from which topics, and an example script is provided with the repo (note: this is for demo purposes
-    only, not suitable for production). The command is:
-
-    .. sourcecode:: bash
-
-      ./scripts/app/map_topics_clients.py
-
-    Your output should resemble:
-
-    .. sourcecode:: bash
-
-      Reading topic _confluent-monitoring for 60 seconds...please wait
-
-      EN_WIKIPEDIA_GT_1
-        producers
-          _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-31d073dc-a865-4767-b591-a69fa3ed2609-StreamThread-3-producer
-          _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-31d073dc-a865-4767-b591-a69fa3ed2609-StreamThread-4-producer
-        consumers
-          _confluent-ksql-ksql-clusterquery_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_6
-      
-      EN_WIKIPEDIA_GT_1_COUNTS
-        producers
-          _confluent-ksql-ksql-clusterquery_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_6-f1aab97c-0d40-4d9c-b902-8b70ee20a7af-StreamThread-1-producer
-          _confluent-ksql-ksql-clusterquery_CSAS_EN_WIKIPEDIA_GT_1_COUNTS_6-f1aab97c-0d40-4d9c-b902-8b70ee20a7af-StreamThread-2-producer
-      
-      WIKIPEDIABOT
-        producers
-          _confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_3-73856d55-a996-4267-ad43-a291e8473eb7-StreamThread-1-producer
-          _confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_3-73856d55-a996-4267-ad43-a291e8473eb7-StreamThread-2-producer
-        consumers
-          connect-elasticsearch-ksql
-      
-      WIKIPEDIANOBOT
-        producers
-          _confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIANOBOT_2-7845e732-6d79-4576-98bf-748e2e8401c3-StreamThread-1-producer
-          _confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIANOBOT_2-7845e732-6d79-4576-98bf-748e2e8401c3-StreamThread-2-producer
-      
-      _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-Aggregate-aggregate-changelog
-        producers
-          _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-31d073dc-a865-4767-b591-a69fa3ed2609-StreamThread-3-producer
-          _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-31d073dc-a865-4767-b591-a69fa3ed2609-StreamThread-4-producer
-      
-      _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-Aggregate-groupby-repartition
-        producers
-          _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-31d073dc-a865-4767-b591-a69fa3ed2609-StreamThread-1-producer
-        consumers
-          _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4
-      
-      wikipedia-activity-monitor-KSTREAM-AGGREGATE-STATE-STORE-0000000002-changelog
-        producers
-          wikipedia-activity-monitor-StreamThread-1-producer
-      
-      wikipedia.parsed
-        producers
-          connect-worker-producer
-        consumers
-          _confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_3
-          _confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIANOBOT_2
-          _confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4
-          connect-replicator
-          wikipedia-activity-monitor
-      
-      wikipedia.parsed.count-by-channel
-        producers
-          wikipedia-activity-monitor-StreamThread-1-producer
-      
-      wikipedia.parsed.replica
-        producers
-          connect-worker-producer
-      
-
 Connect
 -------
 
@@ -278,7 +201,12 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
    .. figure:: images/ksql_link.png
       :alt: image
 
-#. Alternatively, run ksqlDB CLI to get to the ksqlDB CLI prompt.
+#. View the ksqlDB Flow to see the streams and tables created in the demo, and how they relate to one another.
+
+   .. figure:: images/ksqldb_flow.png
+      :alt: image
+
+#. Use |c3| to interact with ksqlDB, or run ksqlDB CLI to get to the ksqlDB CLI prompt.
 
    .. sourcecode:: bash
 
