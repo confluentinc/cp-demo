@@ -326,13 +326,13 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
   .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1_COUNTS.png
      :alt: image
 
-11. The `ksqlDB processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their ksqlDB queries. In this demo, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the ksqlDB editor run the following query for 20 seconds:
+11. The `ksqlDB processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their ksqlDB queries. In this demo, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the ksqlDB editor run the following "bad" query for 20 seconds:
 
 .. sourcecode:: bash
 
-      SELECT SPLIT(wikipage, 'foobar')[2] FROM wikipedia EMIT CHANGES;
+      SELECT ucase(cast(null as varchar)) FROM wikipedia EMIT CHANGES;
 
-No records should be returned from this query. Since the field ``wikipage`` in the original stream ``wikipedia`` cannot be split in this way, ksqlDB writes these errors into the processing log for each record. View the processing log topic ``ksql-clusterksql_processing_log`` with topic inspection (jump to offset 0/partition 0) or the corresponding ksqlDB stream ``KSQL_PROCESSING_LOG`` with the ksqlDB editor (set ``auto.offset.reset=earliest``).
+No records should be returned from this query. ksqlDB writes errors into the processing log for each record. View the processing log topic ``ksql-clusterksql_processing_log`` with topic inspection (jump to offset 0/partition 0) or the corresponding ksqlDB stream ``KSQL_PROCESSING_LOG`` with the ksqlDB editor (set ``auto.offset.reset=earliest``).
 
 .. sourcecode:: bash
 
