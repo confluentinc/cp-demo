@@ -512,7 +512,7 @@ services:
     environment:
       xpack.security.enabled: 'false'
       discovery.type: "single-node"
-      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+      ES_JAVA_OPTS: "-Xms750m -Xmx750m"
 
   kibana:
     image: docker.elastic.co/kibana/kibana:5.5.2
