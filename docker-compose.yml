@@ -499,6 +499,14 @@ services:
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.connect.keystore.jks
                   -Djavax.net.ssl.keyStorePassword=confluent
       CONNECT_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
+
+      # Reduce Connect memory utilization
+      KAFKA_JVM_PERFORMANCE_OPTS: -server -XX:+UseG1GC -XX:GCTimeRatio=1
+                  -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20
+                  -XX:MaxGCPauseMillis=10000 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent
+                  -XX:MaxInlineLevel=15 -Djava.awt.headless=true
+
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
     container_name: elasticsearch
@@ -512,7 +520,7 @@ services:
     environment:
       xpack.security.enabled: 'false'
       discovery.type: "single-node"
-      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+      ES_JAVA_OPTS: "-Xms750m -Xmx750m"
 
   kibana:
     image: docker.elastic.co/kibana/kibana:5.5.2
