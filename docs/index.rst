@@ -217,7 +217,7 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
    .. figure:: images/ksql_streams_list.png
       :alt: image
 
-#. Click on ``WIKIPEIDA`` to describe the schema (fields or columns) of an existing ksqlDB stream. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``DESCRIBE WIKIPEIDA;``)
+#. Click on ``WIKIPEDIA`` to describe the schema (fields or columns) of an existing ksqlDB stream. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``DESCRIBE WIKIPEDIA;``)
 
    .. figure:: images/wikipedia_describe.png
       :alt: image
