@@ -384,11 +384,7 @@ solution, Confluent Replicator is also configured with security.
 Security
 --------
 
-Because the cluster has security features enabled, clients need to communicate to the right broker port and provide the appropriate credentials depending on the listener.
-This section explains the broker listeners and how to use them.
-
-All the components in this demo are enabled with many `security
-features <https://docs.confluent.io/current/security.html>`__:
+All the |cp| components and clients in this demo are enabled with many `security features <https://docs.confluent.io/current/security.html>`__.
 
 -  :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization. It is configured with the Confluent Server Authorizer and talks to LDAP to authenticate clients.
 -  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__ for encryption and mTLS. The demo :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password. 
@@ -397,6 +393,8 @@ features <https://docs.confluent.io/current/security.html>`__:
 -  `HTTPS for Control Center <https://docs.confluent.io/current/control-center/docs/installation/configuration.html#https-settings>`__.
 -  `HTTPS for Schema Registry <https://docs.confluent.io/current/schema-registry/docs/security.html>`__.
 -  `HTTPS for Connect <https://docs.confluent.io/current/connect/security.html#configuring-the-kconnect-rest-api-for-http-or-https>`__.
+
+You can see each component's security configuration in the demo's :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
 
 .. note::
     This demo showcases a secure |CP| for educational purposes and is not meant to be complete best practices. There are certain differences between what is shown in the demo and what you should do in production:
