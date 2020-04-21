@@ -279,7 +279,7 @@ In this demo, KSQL is authenticated and authorized to connect to the secured Kaf
    .. figure:: images/ksql_streams_list.png
       :alt: image
 
-#. Click on ``WIKIPEIDA`` to describe the schema (fields or columns) of an existing KSQL stream. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``DESCRIBE WIKIPEIDA;``)
+#. Click on ``WIKIPEDIA`` to describe the schema (fields or columns) of an existing KSQL stream. (If you are using the KSQL CLI, at the ``ksql>`` prompt type ``DESCRIBE WIKIPEDIA;``)
 
    .. figure:: images/wikipedia_describe.png
       :alt: image
