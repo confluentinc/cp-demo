@@ -1124,7 +1124,7 @@ Here are some suggestions on how to troubleshoot the demo.
 
    .. sourcecode:: bash
 
-          ./scripts/validate/validate_tools_token.sh 
+          ./scripts/helper/refresh_mds_login.sh 
       
 ========
 Teardown
