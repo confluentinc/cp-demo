@@ -27,7 +27,7 @@ C3_ADMIN="User:controlcenterAdmin"
 CLIENT_NAME="appSA"
 CLIENT_PRINCIPAL="User:$CLIENT_NAME"
 
-docker-compose exec tools bash -c ". /tmp/helper/functions.sh ; mds_login $MDS_URL ${SUPER_USER} ${SUPER_USER_PASSWORD}"
+../helper/refresh_mds_login.sh
 
 ################################## RUN ########################################
 
