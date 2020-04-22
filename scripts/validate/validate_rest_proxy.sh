@@ -8,15 +8,11 @@ if [ -z "$KAFKA_CLUSTER_ID" ]; then
 fi
 
 ################################## SETUP VARIABLES #############################
-MDS_URL=http://kafka1:8091
 CONNECT=connect-cluster
 SR=schema-registry
 KSQLDB=ksql-cluster
 C3=c3-cluster
 
-SUPER_USER=superUser
-SUPER_USER_PASSWORD=superUser
-SUPER_USER_PRINCIPAL="User:$SUPER_USER"
 CONNECT_ADMIN="User:connectAdmin"
 CONNECTOR_SUBMITTER="User:connectorSubmitter"
 CONNECTOR_PRINCIPAL="User:connectorSA"
@@ -27,7 +23,7 @@ C3_ADMIN="User:controlcenterAdmin"
 CLIENT_NAME="appSA"
 CLIENT_PRINCIPAL="User:$CLIENT_NAME"
 
-../helper/refresh_mds_login.sh
+./scripts/helper/refresh_mds_login.sh
 
 ################################## RUN ########################################
 
