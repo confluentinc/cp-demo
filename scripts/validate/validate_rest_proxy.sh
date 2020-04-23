@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
 ################################## GET KAFKA CLUSTER ID ########################
 KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
 if [ -z "$KAFKA_CLUSTER_ID" ]; then
@@ -23,7 +25,7 @@ C3_ADMIN="User:controlcenterAdmin"
 CLIENT_NAME="appSA"
 CLIENT_PRINCIPAL="User:$CLIENT_NAME"
 
-./scripts/helper/refresh_mds_login.sh
+${DIR}/../helper/refresh_mds_login.sh
 
 ################################## RUN ########################################
 
