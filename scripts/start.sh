@@ -4,6 +4,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 . ${DIR}/helper/functions.sh
 . ${DIR}/../env_files/config.env
 
+DOCKER_COMPOSE_OPTS=${DOCKER_COMPOSE_OPTS:-""}
+
 # Do preflight checks
 preflight_checks || exit
 
@@ -29,7 +31,7 @@ if [[ $(docker-compose ps openldap | grep Exit) =~ "Exit" ]] ; then
 fi
 
 # Bring up base cluster and Confluent CLI
-docker-compose up -d zookeeper kafka1 kafka2 tools
+docker-compose ${DOCKER_COMPOSE_OPTS} up -d zookeeper kafka1 kafka2 tools
 
 # Verify Kafka brokers have started
 MAX_WAIT=30
@@ -46,6 +48,7 @@ echo "Creating role bindings for principals"
 docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh" || exit 1
 
 echo
+
 echo "Building custom Docker image with Connect version ${CONFLUENT_DOCKER_TAG} and connector version ${CONNECTOR_VERSION}"
 if [[ "${CONNECTOR_VERSION}" =~ "SNAPSHOT" ]]; then
   echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f Dockerfile-local ."
@@ -60,7 +63,7 @@ else
     exit 1;
   }
 fi
-docker-compose up -d kafka-client schemaregistry connect control-center
+docker-compose ${DOCKER_COMPOSE_OPTS} up -d kafka-client schemaregistry connect control-center
 
 # Verify Confluent Control Center has started
 MAX_WAIT=300
@@ -68,7 +71,7 @@ echo "Waiting up to $MAX_WAIT seconds for Confluent Control Center to start"
 retry $MAX_WAIT host_check_control_center_up || exit 1
 
 echo
-docker-compose up -d ksqldb-server ksqldb-cli restproxy kibana elasticsearch
+docker-compose ${DOCKER_COMPOSE_OPTS} up -d ksqldb-server ksqldb-cli restproxy kibana elasticsearch
 echo "..."
 
 # Verify Docker containers started
@@ -131,7 +134,7 @@ docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schema
 
 echo
 echo "Start the Kafka Streams application wikipedia-activity-monitor"
-docker-compose up -d streams-demo
+docker-compose ${DOCKER_COMPOSE_OPTS} up -d streams-demo
 echo "..."
 
 echo -e "\nStart Confluent Replicator:"
