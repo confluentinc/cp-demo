@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ROOT_CA_DIR=$(realpath $(dirname "${BASH_SOURCE[0]}"))
+echo $ROOT_CA_DIR
 i=$1
 
 # Create host keystore
@@ -18,7 +20,7 @@ keytool -keystore kafka.$i.keystore.jks -alias $i -certreq -file $i.csr -storepa
 #openssl req -in $i.csr -text -noout
 
 # Sign the host certificate with the certificate authority (CA)
-openssl x509 -req -CA snakeoil-ca-1.crt -CAkey snakeoil-ca-1.key -in $i.csr -out $i-ca1-signed.crt -days 9999 -CAcreateserial -passin pass:confluent -extensions v3_req -extfile <(cat <<EOF
+openssl x509 -req -CA ${ROOT_CA_DIR}/snakeoil-ca-1.crt -CAkey ${ROOT_CA_DIR}/snakeoil-ca-1.key -in $i.csr -out $i-ca1-signed.crt -days 9999 -CAcreateserial -passin pass:confluent -extensions v3_req -extfile <(cat <<EOF
 [req]
 distinguished_name = req_distinguished_name
 x509_extensions = v3_req
@@ -35,7 +37,7 @@ EOF
 #openssl x509 -noout -text -in $i-ca1-signed.crt
 
 # Sign and import the CA cert into the keystore
-keytool -noprompt -keystore kafka.$i.keystore.jks -alias CARoot -import -file snakeoil-ca-1.crt -storepass confluent -keypass confluent
+keytool -noprompt -keystore kafka.$i.keystore.jks -alias CARoot -import -file ${ROOT_CA_DIR}/snakeoil-ca-1.crt -storepass confluent -keypass confluent
 #keytool -list -v -keystore kafka.$i.keystore.jks -storepass confluent
 
 # Sign and import the host certificate into the keystore
@@ -43,7 +45,7 @@ keytool -noprompt -keystore kafka.$i.keystore.jks -alias $i -import -file $i-ca1
 #keytool -list -v -keystore kafka.$i.keystore.jks -storepass confluent
 
 # Create truststore and import the CA cert
-keytool -noprompt -keystore kafka.$i.truststore.jks -alias CARoot -import -file snakeoil-ca-1.crt -storepass confluent -keypass confluent
+keytool -noprompt -keystore kafka.$i.truststore.jks -alias CARoot -import -file ${ROOT_CA_DIR}/snakeoil-ca-1.crt -storepass confluent -keypass confluent
 
 # Save creds
 echo "confluent" > ${i}_sslkey_creds
