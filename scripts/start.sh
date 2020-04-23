@@ -97,6 +97,11 @@ docker-compose exec connect timeout 3 nc -zv irc.wikimedia.org 6667 || {
 echo -e "\nStart streaming from the IRC source connector:"
 ${DIR}/connectors/submit_wikipedia_irc_config.sh
 
+# Verify wikipedia.parsed topic is populated and schema is registered
+MAX_WAIT=120
+echo "Waiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
+retry $MAX_WAIT host_check_schema_registered || exit 1
+
 echo -e "\nProvide data mapping to Elasticsearch:"
 ${DIR}/dashboard/set_elasticsearch_mapping_bot.sh
 ${DIR}/dashboard/set_elasticsearch_mapping_count.sh
@@ -110,11 +115,6 @@ echo -e "\nConfigure Kibana dashboard:"
 ${DIR}/dashboard/configure_kibana_dashboard.sh
 echo
 echo
-
-# Verify wikipedia.parsed topic is populated and schema is registered
-MAX_WAIT=60
-echo "Waiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
-retry $MAX_WAIT host_check_schema_registered || exit 1
 
 echo -e "\n\nRun ksqlDB queries:"
 ${DIR}/ksql/run_ksql.sh
