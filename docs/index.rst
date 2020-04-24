@@ -232,7 +232,7 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
    .. figure:: images/ksql_queries_list.png
       :alt: image
 
-#. View messages from different ksqlDB streams and tables. Click on your stream of choice and select **Query** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA EMIT CHANGES;``, and it shows results for newly arriving data.
+#. View messages from different ksqlDB streams and tables. Click on your stream of choice and then click **Query stream** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA EMIT CHANGES;``, and it shows results for newly arriving data.
 
    .. figure:: images/ksql_query_topic.png
       :alt: image
@@ -278,7 +278,7 @@ Consumers
    .. figure:: images/consumer_group_list.png
       :alt: image
 
-#. View consumer lag for the persistent ksqlDB "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_3`` in the consumer group list.
+#. View consumer lag for the persistent ksqlDB "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_5`` in the consumer group list.
 
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumer_lag.png
       :alt: image
@@ -941,8 +941,9 @@ the two Kafka brokers.
    .. figure:: images/broker_down_steady.png
       :alt: image
 
-#. Click on the broker count ``2`` inside the "Broker uptime" box to view when
-   broker counts changed.
+#. Click on the broker count ``2`` inside the "Brokers" box and when
+   the "Brokers overview" pane appears, click inside the "Partitioning
+   and replication" box to view when broker counts changed.
 
    .. figure:: images/broker_down_times.png
       :alt: image
