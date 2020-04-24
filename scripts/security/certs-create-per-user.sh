@@ -1,7 +1,6 @@
 #!/bin/bash
 
 ROOT_CA_DIR=$(realpath $(dirname "${BASH_SOURCE[0]}"))
-echo $ROOT_CA_DIR
 i=$1
 
 # Create host keystore
