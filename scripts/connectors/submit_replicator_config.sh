@@ -43,6 +43,7 @@ DATA=$( cat << EOF
     "src.consumer.confluent.monitoring.interceptor.sasl.jaas.config": "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username=\"connectorSA\" password=\"connectorSA\" metadataServerUrls=\"http://kafka1:8091,http://kafka2:8092\";",
     "src.consumer.confluent.monitoring.interceptor.sasl.mechanism": "OAUTHBEARER",   
     "src.consumer.group.id": "connect-replicator",
+    "src.kafka.timestamps.topic.replication.factor": 2,
     "src.kafka.timestamps.producer.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor",
     "src.kafka.timestamps.producer.confluent.monitoring.interceptor.security.protocol": "SASL_SSL",
     "src.kafka.timestamps.producer.confluent.monitoring.interceptor.bootstrap.servers": "kafka1:10091",
