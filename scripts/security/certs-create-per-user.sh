@@ -1,7 +1,6 @@
 #!/bin/bash
 
 SCRIPT_SOURCE=$( dirname ${BASH_SOURCE[0]})
-ROOT_CA_DIR=${ROOT_CA_DIR-$SCRIPT_SOURCE}
 
 i=$1
 
