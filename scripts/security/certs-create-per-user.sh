@@ -1,6 +1,9 @@
 #!/bin/bash
 
-ROOT_CA_DIR=$(realpath $(dirname "${BASH_SOURCE[0]}"))
+SCRIPT_PATH=$(dirname ${BASH_SOURCE[0]})
+. ${SCRIPT_PATH}/../helper/fullpath.sh
+
+ROOT_CA_DIR=$(fullpath $(dirname "${BASH_SOURCE[0]}"))
 i=$1
 
 # Create host keystore
