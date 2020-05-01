@@ -28,7 +28,7 @@ services:
       - ./scripts/security:/etc/kafka/secrets
 
   tools:
-    image: cnfltraining/training-tools:5.4
+    image: cnfltraining/training-tools:5.5
     hostname: tools
     container_name: tools
     depends_on:
