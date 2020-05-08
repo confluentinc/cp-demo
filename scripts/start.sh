@@ -16,9 +16,9 @@ echo -e "Generate keys and certificates used for SSL"
 
 # Generating public and private keys for token signing
 echo "Generating public and private keys for token signing"
-mkdir -p ./conf
-openssl genrsa -out ./conf/keypair.pem 2048
-openssl rsa -in ./conf/keypair.pem -outform PEM -pubout -out ./conf/public.pem
+mkdir -p ${DIR}/security/keypair
+openssl genrsa -out ${DIR}/security/keypair/keypair.pem 2048
+openssl rsa -in ${DIR}/security/keypair/keypair.pem -outform PEM -pubout -out ${DIR}/security/keypair/public.pem
 
 # Bring up openldap
 docker-compose up -d openldap
@@ -54,8 +54,8 @@ if [[ "${CONNECTOR_VERSION}" =~ "SNAPSHOT" ]]; then
     exit 1;
   }
 else
-  echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f Dockerfile-confluenthub ."
-  docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f Dockerfile-confluenthub . || {
+  echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f ${DIR}/../Dockerfile-confluenthub ."
+  docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f ${DIR}/../Dockerfile-confluenthub . || {
     echo "ERROR: Docker image build failed. Please troubleshoot and try again."
     exit 1;
   }

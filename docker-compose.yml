@@ -76,7 +76,7 @@ services:
       - zookeeper
       - openldap
     volumes:
-      - ./conf:/tmp/conf
+      - ./scripts/security/keypair:/tmp/conf
       - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets
     command: "bash -c 'if [ ! -f /etc/kafka/secrets/kafka.kafka1.keystore.jks ]; then echo \"ERROR: Did not find SSL certificates in /etc/kafka/secrets/ (did you remember to run ./scripts/start.sh instead of docker-compose up -d?)\" && exit 1 ; else /etc/confluent/docker/run ; fi'"
@@ -214,7 +214,7 @@ services:
       - zookeeper
       - openldap
     volumes:
-      - ./conf:/tmp/conf
+      - ./scripts/security/keypair:/tmp/conf
       - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets
     command: "bash -c 'if [ ! -f /etc/kafka/secrets/kafka.kafka2.keystore.jks ]; then echo \"ERROR: Did not find SSL certificates in /etc/kafka/secrets/ (did you remember to run ./scripts/start.sh instead of docker-compose up -d?)\" && exit 1 ; else /etc/confluent/docker/run ; fi'"
@@ -359,7 +359,7 @@ services:
     volumes:
       - ./connect-plugins:/connect-plugins
       - ./scripts/security:/etc/kafka/secrets
-      - ./conf:/tmp/conf
+      - ./scripts/security/keypair:/tmp/conf
     ports:
       - 8083:8083
     environment:
@@ -558,7 +558,7 @@ services:
       - schemaregistry
       - connect
     volumes:
-      - ./conf:/tmp/conf
+      - ./scripts/security/keypair:/tmp/conf
       - ./scripts/security:/etc/kafka/secrets
     ports:
       - 9021:9021
@@ -641,7 +641,7 @@ services:
       - kafka2
     volumes:
       - ./scripts/security:/etc/kafka/secrets
-      - ./conf:/tmp/conf
+      - ./scripts/security/keypair:/tmp/conf
     ports:
       - 8085:8085
     environment:
@@ -755,7 +755,7 @@ services:
       - kafka2
       - connect
     volumes:
-      - ./conf:/tmp/conf
+      - ./scripts/security/keypair:/tmp/conf
       - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets
     ports:
@@ -871,7 +871,7 @@ services:
     volumes:
       - ./scripts/security:/etc/kafka/secrets
       - ./scripts/app:/etc/kafka/app
-      - ./conf:/tmp/conf
+      - ./scripts/security/keypair:/tmp/conf
     ports:
       - 8086:8086
     environment:
