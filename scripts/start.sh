@@ -16,9 +16,9 @@ echo -e "Generate keys and certificates used for SSL"
 
 # Generating public and private keys for token signing
 echo "Generating public and private keys for token signing"
-mkdir -p ./conf
-openssl genrsa -out ./conf/keypair.pem 2048
-openssl rsa -in ./conf/keypair.pem -outform PEM -pubout -out ./conf/public.pem
+mkdir -p ${DIR}/security/keypair
+openssl genrsa -out ${DIR}/security/keypair/keypair.pem 2048
+openssl rsa -in ${DIR}/security/keypair/keypair.pem -outform PEM -pubout -out ${DIR}/security/keypair/public.pem
 
 # Bring up openldap
 docker-compose up -d openldap

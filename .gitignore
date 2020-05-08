@@ -3,16 +3,16 @@
 
 .DS_Store
 *.idea
-scripts/security/*.crt
-scripts/security/*.csr
-scripts/security/*_creds
-scripts/security/*.jks
-scripts/security/*.srl
-scripts/security/*.key
-scripts/security/*.req
-scripts/security/*.pem
-scripts/security/*.der
-scripts/security/*.p12
-conf/
+**/*.crt
+**/*.csr
+**/*_creds
+**/*.jks
+**/*.srl
+**/*.key
+**/*.req
+**/*.pem
+**/*.der
+**/*.p12
+**/keypair/
 ui/expanded
 *.zip
