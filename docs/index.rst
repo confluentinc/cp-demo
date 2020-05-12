@@ -314,16 +314,16 @@ Consumers
           ./scripts/app/start_consumer_app.sh 2
 
 #. Let this consumer group run for 2 minutes until |c3|
-    shows the consumer group ``app`` with steady consumption.
-    Notice that the consumers ``consumer_app_1`` and ``consumer_app_2``
-    now share consumption of the partitions in the topic
-    ``wikipedia.parsed``.
+   shows the consumer group ``app`` with steady consumption.
+   Notice that the consumers ``consumer_app_1`` and ``consumer_app_2``
+   now share consumption of the partitions in the topic
+   ``wikipedia.parsed``.
 
     .. figure:: images/consumer_start_two.png
       :alt: image
 
 #. From the **Brokers -> Consumers** view, click on a point in the Request latency
-    line graph to view a breakdown of latencies through the entire `request lifecycle <https://docs.confluent.io/current/control-center/brokers.html#consumption-metrics-panel>`__.
+   line graph to view a breakdown of latencies through the entire `request lifecycle <https://docs.confluent.io/current/control-center/brokers.html#consumption-metrics-panel>`__.
 
     .. figure:: images/slow_consumer_produce_latency_breakdown.png
        :alt: image
