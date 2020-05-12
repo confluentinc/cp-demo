@@ -1030,6 +1030,18 @@ Here are some monitoring stacks you can use for reference at https://github.com/
 
 #. `Jolokia + Elasticsearch + Kibana <https://github.com/confluentinc/jmx-monitoring-stacks>`__:
 
+   .. figure:: images/monitoring/jolokia-elastic-kibana-1.png
+      :alt: image
+      :width: 500px
+
+   .. figure:: images/monitoring/jolokia-elastic-kibana-2.png
+      :alt: image
+      :width: 500px
+
+   .. figure:: images/monitoring/jolokia-elastic-kibana-3.png
+      :alt: image
+      :width: 500px
+
 
 
 ===============
