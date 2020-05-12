@@ -1005,6 +1005,33 @@ to setup alerts from there.
       :alt: image
 
 
+Monitoring
+----------
+
+|c3| helps users managed their |cp| deployment and provides an opinionated view of |ak| monitoring.
+Many |cp| users do not need more extensive integrations and can go into production with |c3|, but if needed, |cp| can integrate with any number of monitoring solutions like Prometheus, Grafana, Datadog, and Splunk.
+These JMX-based monitoring stacks allow users to setup monitoring across multiple parts of their organization, many outside of Kafka, and to have a single pane of glass.
+
+Here are some monitoring stacks you can use for reference at https://github.com/confluentinc/jmx-monitoring-stacks that can be run with ``cp-demo``:
+
+#. `JMX Exporter + Prometheus + Grafana <https://github.com/confluentinc/jmx-monitoring-stacks>`__:
+
+   .. figure:: images/monitoring/jmxexporter-prometheus-grafana-1.png
+      :alt: image
+      :width: 500px
+
+   .. figure:: images/monitoring/jmxexporter-prometheus-grafana-2.png
+      :alt: image
+      :width: 500px
+
+   .. figure:: images/monitoring/jmxexporter-prometheus-grafana-3.png
+      :alt: image
+      :width: 500px
+
+#. `Jolokia + Elasticsearch + Kibana <https://github.com/confluentinc/jmx-monitoring-stacks>`__:
+
+
+
 ===============
 Troubleshooting
 ===============
