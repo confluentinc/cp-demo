@@ -322,7 +322,7 @@ Consumers
     .. figure:: images/consumer_start_two.png
       :alt: image
 
-#. From the **Brokers -> Consumers** view, click on a point in the Request latency
+#. From the **Brokers -> Consumption** view, click on a point in the Request latency
    line graph to view a breakdown of latencies through the entire `request lifecycle <https://docs.confluent.io/current/control-center/brokers.html#consumption-metrics-panel>`__.
 
     .. figure:: images/slow_consumer_produce_latency_breakdown.png
