@@ -1005,6 +1005,51 @@ to setup alerts from there.
       :alt: image
 
 
+==========
+Monitoring
+==========
+
+This tutorial has demonstrated how |c3| helps users manage their |cp| deployment and how it provides monitoring capabilities for the cluster and applications.
+For most |cp| users the |c3| monitoring and integrations are sufficent for production usage; however, some users wish to integrate with other monitoring solutions like Prometheus, Grafana, Datadog, and Splunk.
+The following JMX-based monitoring stacks help users setup a 'single pane of glass' monitoring solution for all their organization's services and applications, including Kafka.
+
+Here are some examples of monitoring stacks that integrate with |cp|:
+
+#. `JMX Exporter + Prometheus + Grafana <https://github.com/confluentinc/jmx-monitoring-stacks>`__ (runnable with cp-demo from https://github.com/confluentinc/jmx-monitoring-stacks):
+
+   .. figure:: images/monitoring/jmxexporter-prometheus-grafana-1.png
+      :alt: image
+      :width: 500px
+
+   .. figure:: images/monitoring/jmxexporter-prometheus-grafana-2.png
+      :alt: image
+      :width: 500px
+
+   .. figure:: images/monitoring/jmxexporter-prometheus-grafana-3.png
+      :alt: image
+      :width: 500px
+
+#. `Jolokia + Elasticsearch + Kibana <https://github.com/confluentinc/jmx-monitoring-stacks>`__ (runnable with cp-demo from https://github.com/confluentinc/jmx-monitoring-stacks):
+
+   .. figure:: images/monitoring/jolokia-elastic-kibana-1.png
+      :alt: image
+      :width: 500px
+
+   .. figure:: images/monitoring/jolokia-elastic-kibana-2.png
+      :alt: image
+      :width: 500px
+
+   .. figure:: images/monitoring/jolokia-elastic-kibana-3.png
+      :alt: image
+      :width: 500px
+
+#. `Monitoring Confluent Platform with Datadog <https://www.confluent.io/blog/confluent-datadog-integration-kafka-monitoring-metrics>`__:
+
+   .. figure:: images/monitoring/datadog-dashboard.png
+      :alt: image
+      :width: 500px
+
+
 ===============
 Troubleshooting
 ===============
