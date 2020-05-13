@@ -1011,7 +1011,7 @@ Monitoring
 
 This tutorial has demonstrated how |c3| helps users manage their |cp| deployment and how it provides monitoring capabilities for the cluster and applications.
 For most |cp| users the |c3| monitoring and integrations are sufficent for production usage; however, some users wish to integrate with other monitoring solutions like Prometheus, Grafana, Datadog, and Splunk.
-These JMX-based monitoring stacks allow users to setup monitoring across multiple parts of their organization, many outside of Kafka, and to have a single pane of glass.
+The following JMX-based monitoring stacks help users setup a 'single pane of glass' monitoring solution for all their organization's services and applications, including Kafka.
 
 Here are some examples of monitoring stacks that integrate with |cp|:
 
