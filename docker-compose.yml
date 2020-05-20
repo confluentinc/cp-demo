@@ -927,7 +927,7 @@ services:
 
 
   streams-demo:
-    image: cnfldemos/cp-demo-kstreams:0.0.5
+    image: cnfldemos/cp-demo-kstreams:0.0.6
     restart: always
     cpus: 0.4
     depends_on:
