@@ -184,7 +184,6 @@ services:
       # Configure Confluent Server Authorizer
       KAFKA_AUTHORIZER_CLASS_NAME: io.confluent.kafka.security.authorizer.ConfluentServerAuthorizer
       KAFKA_CONFLUENT_AUTHORIZER_ACCESS_RULE_PROVIDERS: CONFLUENT,ZK_ACL
-      KAFKA_CONFLUENT_AUTHORIZER_GROUP_PROVIDER: RBAC
 
       # Configure MDS to talk to AD/LDAP
       KAFKA_LDAP_JAVA_NAMING_FACTORY_INITIAL: com.sun.jndi.ldap.LdapCtxFactory
@@ -322,7 +321,6 @@ services:
       # Configure Confluent Server Authorizer
       KAFKA_AUTHORIZER_CLASS_NAME: io.confluent.kafka.security.authorizer.ConfluentServerAuthorizer
       KAFKA_CONFLUENT_AUTHORIZER_ACCESS_RULE_PROVIDERS: CONFLUENT,ZK_ACL
-      KAFKA_CONFLUENT_AUTHORIZER_GROUP_PROVIDER: RBAC
 
       # Configure MDS to talk to AD/LDAP
       KAFKA_LDAP_JAVA_NAMING_FACTORY_INITIAL: com.sun.jndi.ldap.LdapCtxFactory
