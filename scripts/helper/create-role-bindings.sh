@@ -2,7 +2,7 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-. ${DIR}/functions.sh
+source ${DIR}/functions.sh
 
 ################################## GET KAFKA CLUSTER ID ########################
 KAFKA_CLUSTER_ID=$(get_kafka_cluster_id_from_container)
