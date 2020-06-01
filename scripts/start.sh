@@ -1,8 +1,8 @@
 #!/bin/bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-. ${DIR}/helper/functions.sh
-. ${DIR}/../env_files/config.env
+source ${DIR}/helper/functions.sh
+source ${DIR}/../env_files/config.env
 
 # Do preflight checks
 preflight_checks || exit
