@@ -4,9 +4,9 @@ objectClass: posixAccount
 objectClass: shadowAccount
 uid: ksqlDBUser
 sn: Sheen
-givenName: KSQL
+givenName: ksqlDB
 cn: ksqlDBUser
-displayName: KSQL Sheen
+displayName: ksqlDB Sheen
 uidNumber: 10026
 gidNumber: 5000
 userPassword: ksqlDBUser

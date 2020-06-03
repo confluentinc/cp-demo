@@ -12,7 +12,7 @@ KAFKA_CLUSTER_ID=$(get_kafka_cluster_id_from_container)
 MDS_URL=http://kafka1:8091
 CONNECT=connect-cluster
 SR=schema-registry
-KSQL=ksql-cluster
+KSQLDB=ksql-cluster
 C3=c3-cluster
 
 SUPER_USER=superUser
@@ -22,9 +22,9 @@ CONNECT_ADMIN="User:connectAdmin"
 CONNECTOR_SUBMITTER="User:connectorSubmitter"
 CONNECTOR_PRINCIPAL="User:connectorSA"
 SR_PRINCIPAL="User:schemaregistryUser"
-KSQL_ADMIN="User:ksqlDBAdmin"
-KSQL_USER="User:ksqlDBUser"
-KSQL_SERVER="User:ksqldbserver"
+KSQLDB_ADMIN="User:ksqlDBAdmin"
+KSQLDB_USER="User:ksqlDBUser"
+KSQLDB_SERVER="User:ksqldbserver"
 C3_ADMIN="User:controlcenterAdmin"
 CLIENT_PRINCIPAL="User:appSA"
 LISTEN_PRINCIPAL="User:clientListen"
@@ -55,7 +55,7 @@ confluent iam rolebinding create \
     --principal $SUPER_USER_PRINCIPAL \
     --role SystemAdmin \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
-    --ksql-cluster-id $KSQL
+    --ksql-cluster-id $KSQLDB
 
 ################################### SCHEMA REGISTRY ###################################
 echo "Creating role bindings for Schema Registry"
@@ -160,19 +160,19 @@ confluent iam rolebinding create \
     --resource Group:connect-replicator \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
 
-echo "Creating role bindings for elasticsearch-ksql connector"
+echo "Creating role bindings for elasticsearch-ksqldb connector"
 
 confluent iam rolebinding create \
     --principal $CONNECTOR_SUBMITTER \
     --role ResourceOwner \
-    --resource Connector:elasticsearch-ksql \
+    --resource Connector:elasticsearch-ksqldb \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT
 
 confluent iam rolebinding create \
     --principal $CONNECTOR_PRINCIPAL \
     --role ResourceOwner \
-    --resource Group:connect-elasticsearch-ksql \
+    --resource Group:connect-elasticsearch-ksqldb \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
 
 confluent iam rolebinding create \
@@ -190,78 +190,78 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
-################################### KSQL Admin ###################################
-echo "Creating role bindings for KSQL Admin"
+################################### ksqlDB Admin ###################################
+echo "Creating role bindings for ksqlDB Admin"
 
 confluent iam rolebinding create \
-    --principal $KSQL_ADMIN \
+    --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
-    --resource KsqlCluster:$KSQL \
+    --resource KsqlCluster:$KSQLDB \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
-    --ksql-cluster-id $KSQL
+    --ksql-cluster-id $KSQLDB
 
 confluent iam rolebinding create \
-    --principal $KSQL_ADMIN \
+    --principal $KSQLDB_ADMIN \
     --role DeveloperRead \
-    --resource Group:_confluent-ksql-${KSQL} \
+    --resource Group:_confluent-ksql-${KSQLDB} \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
-    --principal $KSQL_ADMIN \
+    --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
-    --resource Topic:_confluent-ksql-${KSQL} \
+    --resource Topic:_confluent-ksql-${KSQLDB} \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
-    --principal $KSQL_ADMIN \
+    --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
-    --resource Subject:_confluent-ksql-${KSQL} \
+    --resource Subject:_confluent-ksql-${KSQLDB} \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
 confluent iam rolebinding create \
-    --principal $KSQL_ADMIN \
+    --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource Topic:_confluent-monitoring \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
-    --principal $KSQL_ADMIN \
+    --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
-    --resource Topic:${KSQL}ksql_processing_log \
+    --resource Topic:${KSQLDB}ksql_processing_log \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
-    --principal $KSQL_ADMIN \
+    --principal $KSQLDB_ADMIN \
     --role DeveloperRead \
     --resource Topic:wikipedia.parsed \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
-    --principal $KSQL_ADMIN \
+    --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource Topic:WIKIPEDIA \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
-    --principal $KSQL_ADMIN \
+    --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource Topic:EN_WIKIPEDIA \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
-    --principal $KSQL_ADMIN \
+    --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
-    --resource TransactionalId:${KSQL} \
+    --resource TransactionalId:${KSQLDB} \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
-    --principal $KSQL_ADMIN \
+    --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource Subject:wikipedia \
     --prefix \
@@ -269,7 +269,7 @@ confluent iam rolebinding create \
     --schema-registry-cluster-id $SR
 
 confluent iam rolebinding create \
-    --principal $KSQL_ADMIN \
+    --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource Subject:WIKIPEDIA \
     --prefix \
@@ -277,7 +277,7 @@ confluent iam rolebinding create \
     --schema-registry-cluster-id $SR
 
 confluent iam rolebinding create \
-    --principal $KSQL_ADMIN \
+    --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource Subject:EN_WIKIPEDIA \
     --prefix \
@@ -285,7 +285,7 @@ confluent iam rolebinding create \
     --schema-registry-cluster-id $SR
 
 confluent iam rolebinding create \
-    --principal $KSQL_ADMIN \
+    --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource Subject:WIKIPEDIA \
     --prefix \
@@ -293,7 +293,7 @@ confluent iam rolebinding create \
     --schema-registry-cluster-id $SR
 
 confluent iam rolebinding create \
-    --principal $KSQL_ADMIN \
+    --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource Subject:EN_WIKIPEDIA \
     --prefix \
@@ -302,42 +302,42 @@ confluent iam rolebinding create \
 
 # enable.idempotence=true requires IdempotentWrite
 confluent iam rolebinding create \
-    --principal $KSQL_ADMIN \
+    --principal $KSQLDB_ADMIN \
     --role DeveloperWrite \
     --resource Cluster:kafka-cluster \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-################################### KSQL User ###################################
-echo "Creating role bindings for KSQL User"
+################################### ksqlDB User ###################################
+echo "Creating role bindings for ksqlDB User"
 
 confluent iam rolebinding create \
-    --principal $KSQL_USER \
+    --principal $KSQLDB_USER \
     --role DeveloperWrite \
-    --resource KsqlCluster:$KSQL \
+    --resource KsqlCluster:$KSQLDB \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
-    --ksql-cluster-id $KSQL
+    --ksql-cluster-id $KSQLDB
 
 confluent iam rolebinding create \
-    --principal $KSQL_USER \
+    --principal $KSQLDB_USER \
     --role DeveloperRead \
-    --resource Group:_confluent-ksql-${KSQL} \
+    --resource Group:_confluent-ksql-${KSQLDB} \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
-    --principal $KSQL_USER \
+    --principal $KSQLDB_USER \
     --role DeveloperRead \
-    --resource Topic:${KSQL}ksql_processing_log \
+    --resource Topic:${KSQLDB}ksql_processing_log \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
-    --principal $KSQL_USER \
+    --principal $KSQLDB_USER \
     --role DeveloperRead \
     --resource Topic:wikipedia.parsed \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
-    --principal $KSQL_USER \
+    --principal $KSQLDB_USER \
     --role ResourceOwner \
     --resource Subject:wikipedia \
     --prefix \
@@ -345,21 +345,21 @@ confluent iam rolebinding create \
     --schema-registry-cluster-id $SR
 
 confluent iam rolebinding create \
-    --principal $KSQL_USER \
+    --principal $KSQLDB_USER \
     --role ResourceOwner \
     --resource Topic:WIKIPEDIA \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
-    --principal $KSQL_USER \
+    --principal $KSQLDB_USER \
     --role ResourceOwner \
     --resource Topic:EN_WIKIPEDIA \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 confluent iam rolebinding create \
-    --principal $KSQL_USER \
+    --principal $KSQLDB_USER \
     --role ResourceOwner \
     --resource Subject:WIKIPEDIA \
     --prefix \
@@ -367,7 +367,7 @@ confluent iam rolebinding create \
     --schema-registry-cluster-id $SR
 
 confluent iam rolebinding create \
-    --principal $KSQL_USER \
+    --principal $KSQLDB_USER \
     --role ResourceOwner \
     --resource Subject:EN_WIKIPEDIA \
     --prefix \
@@ -376,17 +376,17 @@ confluent iam rolebinding create \
 
 # enable.idempotence=true requires IdempotentWrite
 confluent iam rolebinding create \
-    --principal $KSQL_USER \
+    --principal $KSQLDB_USER \
     --role DeveloperWrite \
     --resource Cluster:kafka-cluster \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-################################### KSQL Server #############################
-echo "Creating role bindings for KSQL Server (used for KSQL Processing Log)"
+################################### KSQLDB Server #############################
+echo "Creating role bindings for KSQLDB Server (used for KSQLDB Processing Log)"
 confluent iam rolebinding create \
-    --principal $KSQL_SERVER \
+    --principal $KSQLDB_SERVER \
     --role ResourceOwner \
-    --resource Topic:${KSQL}ksql_processing_log \
+    --resource Topic:${KSQLDB}ksql_processing_log \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 ############################## Control Center ###############################
@@ -502,10 +502,10 @@ echo "Cluster IDs:"
 echo "    kafka cluster id: $KAFKA_CLUSTER_ID"
 echo "    connect cluster id: $CONNECT"
 echo "    schema registry cluster id: $SR"
-echo "    ksql cluster id: $KSQL"
+echo "    ksql cluster id: $KSQLDB"
 echo
 echo "Cluster IDs as environment variables:"
-echo "    export KAFKA_ID=$KAFKA_CLUSTER_ID ; export CONNECT_ID=$CONNECT ; export SR_ID=$SR ; export KSQL_ID=$KSQL"
+echo "    export KAFKA_ID=$KAFKA_CLUSTER_ID ; export CONNECT_ID=$CONNECT ; export SR_ID=$SR ; export KSQLDB_ID=$KSQLDB"
 echo
 echo "Principals:"
 echo "    super user account: $SUPER_USER_PRINCIPAL"
@@ -513,8 +513,8 @@ echo "    Schema Registry user: $SR_PRINCIPAL"
 echo "    Connect Admin: $CONNECT_ADMIN"
 echo "    Connector Submitter: $CONNECTOR_SUBMITTER"
 echo "    Connector Principal: $CONNECTOR_PRINCIPAL"
-echo "    KSQL Admin: $KSQL_ADMIN"
-echo "    KSQL User: $KSQL_USER"
+echo "    ksqlDB Admin: $KSQLDB_ADMIN"
+echo "    ksqlDB User: $KSQLDB_USER"
 echo "    C3 Admin: $C3_ADMIN"
 echo "    Client service account: $CLIENT_PRINCIPAL"
 echo "    Listen Client service account: $LISTEN_PRINCIPAL"

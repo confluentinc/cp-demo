@@ -601,9 +601,9 @@ services:
       # Connect
       CONTROL_CENTER_CONNECT_CONNECT1_CLUSTER: https://connect:8083
 
-      # KSQL
+      # ksqlDB
       CONTROL_CENTER_KSQL_WIKIPEDIA_URL: http://ksqldb-server:8088
-      # Access KSQL server from a browser on your localhost
+      # Access ksqlDB server from a browser on your localhost
       CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL: http://localhost:8088
 
       # Schema Registry
