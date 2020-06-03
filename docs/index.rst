@@ -191,7 +191,7 @@ The connect worker's embedded producer is configured to be idempotent, exactly-o
 ksqlDB
 ------
 
-In this demo, ksqlDB is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the :devx-cp-demo:`ksqlDB command file|scripts/ksqldb/statements.sql` .
+In this demo, ksqlDB is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the :devx-cp-demo:`ksqlDB command file|scripts/ksqlDB/statements.sql` .
 Its embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
 
 #. In the navigation bar, click **ksqlDB**.
