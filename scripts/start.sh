@@ -118,7 +118,7 @@ echo
 echo
 
 echo -e "\n\nRun ksqlDB queries:"
-${DIR}/ksqlDB/run_ksql.sh
+${DIR}/ksqlDB/run_ksqlDB.sh
 
 echo -e "\nStart consumers for additional topics: WIKIPEDIANOBOT, EN_WIKIPEDIA_GT_1_COUNTS"
 ${DIR}/consumers/listen_WIKIPEDIANOBOT.sh
