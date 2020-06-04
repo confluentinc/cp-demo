@@ -382,7 +382,7 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
 ################################### KSQLDB Server #############################
-echo "Creating role bindings for KSQLDB Server (used for KSQLDB Processing Log)"
+echo "Creating role bindings for ksqlDB Server (used for ksqlDB Processing Log)"
 confluent iam rolebinding create \
     --principal $KSQLDB_SERVER \
     --role ResourceOwner \
