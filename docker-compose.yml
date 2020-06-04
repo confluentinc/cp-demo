@@ -850,8 +850,8 @@ services:
       - connect
       - ksqldb-server
     volumes:
-      - ./scripts/ksql/statements.sql:/tmp/statements.sql
-      - ./scripts/ksql/run_ksql_commands.sh:/tmp/run_ksql_commands.sh
+      - ./scripts/ksqlDB/statements.sql:/tmp/statements.sql
+      - ./scripts/ksqlDB/run_ksqlDB_commands.sh:/tmp/run_ksqlDB_commands.sh
     entrypoint: /bin/sh
     tty: true
 
