@@ -46,12 +46,12 @@ memberuid: cn=schemaregistryUser,ou=users,{{ LDAP_BASE_DN }}
 dn: cn=KafkaDevelopers,ou=groups,{{ LDAP_BASE_DN }}
 changetype: modify
 add: memberuid
-memberuid: cn=ksqlAdmin,ou=users,{{ LDAP_BASE_DN }}
+memberuid: cn=ksqlDBAdmin,ou=users,{{ LDAP_BASE_DN }}
 
 dn: cn=KafkaDevelopers,ou=groups,{{ LDAP_BASE_DN }}
 changetype: modify
 add: memberuid
-memberuid: cn=ksqlUser,ou=users,{{ LDAP_BASE_DN }}
+memberuid: cn=ksqlDBUser,ou=users,{{ LDAP_BASE_DN }}
 
 dn: cn=KafkaDevelopers,ou=groups,{{ LDAP_BASE_DN }}
 changetype: modify
