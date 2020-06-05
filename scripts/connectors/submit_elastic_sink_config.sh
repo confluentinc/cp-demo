@@ -3,7 +3,7 @@
 HEADER="Content-Type: application/json"
 DATA=$( cat << EOF
 {
-  "name": "elasticsearch-ksql",
+  "name": "elasticsearch-ksqldb",
   "config": {
     "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
     "consumer.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor",

@@ -601,9 +601,9 @@ services:
       # Connect
       CONTROL_CENTER_CONNECT_CONNECT1_CLUSTER: https://connect:8083
 
-      # KSQL
+      # ksqlDB
       CONTROL_CENTER_KSQL_WIKIPEDIA_URL: http://ksqldb-server:8088
-      # Access KSQL server from a browser on your localhost
+      # Access ksqlDB server from a browser on your localhost
       CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL: http://localhost:8088
 
       # Schema Registry
@@ -798,16 +798,16 @@ services:
       KSQL_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: ksqlDBAdmin:ksqlDBAdmin
 
       # Authenticate to brokers
-      KSQL_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.ksqldbserver.truststore.jks
+      KSQL_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.ksqlDBserver.truststore.jks
       KSQL_SSL_TRUSTSTORE_PASSWORD: confluent
-      KSQL_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.ksqldbserver.keystore.jks
+      KSQL_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.ksqlDBserver.keystore.jks
       KSQL_SSL_KEYSTORE_PASSWORD: confluent
       KSQL_SSL_KEY_PASSWORD: confluent
       KSQL_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
 
       # Schema Registry using HTTPS
       KSQL_KSQL_SCHEMA_REGISTRY_URL: https://schemaregistry:8085
-      KSQL_KSQL_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: "/etc/kafka/secrets/kafka.ksqldbserver.truststore.jks"
+      KSQL_KSQL_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: "/etc/kafka/secrets/kafka.ksqlDBserver.truststore.jks"
       KSQL_KSQL_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: "confluent"
 
       # Enable OAuth for ksqlDB's embedded Kafka clients that access and manage consumer groups and topics
@@ -826,9 +826,9 @@ services:
       # Confluent Monitoring Interceptors for Control Center streams monitoring
       KSQL_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
       KSQL_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"    
-      KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.ksqldbserver.truststore.jks
+      KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.ksqlDBserver.truststore.jks
       KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_PASSWORD: confluent
-      KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.ksqldbserver.keystore.jks
+      KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.ksqlDBserver.keystore.jks
       KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_PASSWORD: confluent
       KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEY_PASSWORD: confluent
       KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SECURITY_PROTOCOL: SASL_SSL
@@ -850,8 +850,8 @@ services:
       - connect
       - ksqldb-server
     volumes:
-      - ./scripts/ksql/statements.sql:/tmp/statements.sql
-      - ./scripts/ksql/run_ksql_commands.sh:/tmp/run_ksql_commands.sh
+      - ./scripts/ksqlDB/statements.sql:/tmp/statements.sql
+      - ./scripts/ksqlDB/run_ksqlDB_commands.sh:/tmp/run_ksqlDB_commands.sh
     entrypoint: /bin/sh
     tty: true
 
