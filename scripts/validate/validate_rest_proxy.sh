@@ -11,7 +11,7 @@ fi
 MDS_URL=http://kafka1:8091
 CONNECT=connect-cluster
 SR=schema-registry
-KSQL=ksql-cluster
+KSQLDB=ksql-cluster
 C3=c3-cluster
 
 SUPER_USER=superUser
@@ -21,8 +21,8 @@ CONNECT_ADMIN="User:connectAdmin"
 CONNECTOR_SUBMITTER="User:connectorSubmitter"
 CONNECTOR_PRINCIPAL="User:connectorSA"
 SR_PRINCIPAL="User:schemaregistryUser"
-KSQL_ADMIN="User:ksqlDBAdmin"
-KSQL_USER="User:ksqlDBUser"
+KSQLDB_ADMIN="User:ksqlDBAdmin"
+KSQLDB_USER="User:ksqlDBUser"
 C3_ADMIN="User:controlcenterAdmin"
 CLIENT_NAME="appSA"
 CLIENT_PRINCIPAL="User:$CLIENT_NAME"
