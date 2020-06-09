@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -euo pipefail
+IFS=$'\n\t'
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ${DIR}/helper/functions.sh
 source ${DIR}/../env_files/config.env
@@ -97,11 +100,6 @@ MAX_WAIT=120
 echo
 echo "Waiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
 retry $MAX_WAIT host_check_schema_registered || exit 1
-
-echo -e "\nProvide data mapping to Elasticsearch:"
-${DIR}/dashboard/set_elasticsearch_mapping_bot.sh
-${DIR}/dashboard/set_elasticsearch_mapping_count.sh
-echo
 
 echo -e "\nStart streaming to Elasticsearch sink connector:"
 ${DIR}/connectors/submit_elastic_sink_config.sh
