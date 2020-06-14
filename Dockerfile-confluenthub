@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:experimental
 #
 # Copyright 2020 Confluent Inc.
 #
@@ -24,5 +25,21 @@ ENV CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins,/usr/share/confluent-
 # Install Confluent Replicator connector
 RUN confluent-hub install --no-prompt confluentinc/kafka-connect-replicator:${CONNECTOR_VERSION}
 
+RUN apt-get update && \
+    apt-get install -y git
+
+RUN useradd cp-kafka-connect-build
+USER cp-kafka-connect-build
+WORKDIR /home/cp-kafka-connect-build
+
+RUN curl -sL http://apache.mirrors.pair.com/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz | tar zx && \
+    curl -sL https://github.com/javabrett/Jest/archive/add-pipeline-parameter.zip | jar x && \
+    curl -sL https://github.com/confluentinc/kafka-connect-elasticsearch/archive/index-param-support.zip | jar x
+
+COPY --chown=cp-kafka-connect-build .m2/settings.xml /home/cp-kafka-connect-build/.m2/settings.xml
+RUN --mount=type=cache,uid=1000,target=/home/cp-kafka-connect-build/.m2/repository /bin/bash -c "cd ~/Jest-add-pipeline-parameter;$HOME/apache-maven-3.6.3/bin/mvn install -DskipTests"
+RUN --mount=type=cache,uid=1000,target=/home/cp-kafka-connect-build/.m2/repository /bin/bash -c "cd ~/kafka-connect-elasticsearch-index-param-support;$HOME/apache-maven-3.6.3/bin/mvn package"
+
 # Install Elasticsearch connector
-RUN confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:${CONNECTOR_VERSION}
+USER root
+RUN confluent-hub install --no-prompt /home/cp-kafka-connect-build/kafka-connect-elasticsearch-index-param-support/target/components/packages/confluentinc-kafka-connect-elasticsearch-5.5.0.zip

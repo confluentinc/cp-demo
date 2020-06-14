@@ -7,6 +7,22 @@ This demo and accompanying tutorial show users how to deploy an Apache Kafka® e
 - [Overview](#overview)
 - [Documentation](#documentation)
 
+## FF-1556 index/bulk query-string parameter support (this branch)
+
+This branch contains additional configuration and Connect docker-container build to allow testing of Elasticsearch Connector PR https://github.com/confluentinc/kafka-connect-elasticsearch/pull/418 , which adds support for configuring query-string paramters to be sent with index and bulk Elasticsearch API requests.
+
+In order to test this for a specific use-case, using Elasticsearch ingest pipelines, for example to allow a rounded-date-time-field based index-name, this also requires a patch and snapshot build of the Elasticsearch connector underlying Jest API client: https://github.com/searchbox-io/Jest/pull/679 .  This branch incorporates that patch into the connector build.
+
+To test:
+
+- I had trouble building the Elasticsearch connector without access to Confluent Artifactory - so you will need to copy-in your Maven `.m2/settings.xml` to same path in this repo (it is `.gitignore`-d)
+- `export DOCKER_BUILDKIT=1` in the current shell
+- Run demo as normal.  Use the Elasticsearch API, or Kibana, to see documents being created in the `wikipediabot` index.
+- Review and run `scripts/elasticsearch/create_pipeline.sh` to create a processing pipeline named `/wikipediabot-createdat-monthlyindex`
+- Review and run `scripts/connectors/update_elastic_sink_config_with_pipeline.sh`, which updates the Elasticsearch sink connector to add configuration property `"elasticsearch.index.param.pipeline": "wikipediabot-createdat-monthlyindex"`.
+- Revisit Kibana and define an index pattern `wikipediabot-*`.  You should see records being indexed by a prefixed, rounded date-based name based on field `CREATEDAT`.
+
+The existing version of Elasticsearch did not support `date_index_name` processors on a epoch-based date-time field, so this demo necessitated a rushed Elasticsearch/Kibana upgrade - you will find that the normal dashboards are not intact, but it is sufficient to check that documents appear in date-based prefixed indexes.
 
 ## Overview
 

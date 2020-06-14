@@ -16,3 +16,5 @@
 **/keypair/
 ui/expanded
 *.zip
+
+.m2
