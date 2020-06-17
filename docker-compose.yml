@@ -1,7 +1,7 @@
 version: "2.1"
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:4.1.4-SNAPSHOT
+    image: confluentinc/cp-zookeeper:4.1.4
     restart: always
     hostname: zookeeper
     container_name: zookeeper
@@ -16,7 +16,7 @@ services:
     ports:
       - "2181:2181"
   kafka1:
-    image: confluentinc/cp-enterprise-kafka:4.1.4-SNAPSHOT
+    image: confluentinc/cp-enterprise-kafka:4.1.4
     hostname: kafka1
     container_name: kafka1
     depends_on:
@@ -68,7 +68,7 @@ services:
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   kafka2:
-    image: confluentinc/cp-enterprise-kafka:4.1.4-SNAPSHOT
+    image: confluentinc/cp-enterprise-kafka:4.1.4
     hostname: kafka2
     container_name: kafka2
     depends_on:
@@ -120,7 +120,7 @@ services:
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
   connect:
-    image: confluentinc/cp-kafka-connect:4.1.4-SNAPSHOT
+    image: confluentinc/cp-kafka-connect:4.1.4
     container_name: connect
     restart: always
     ports:
@@ -154,7 +154,7 @@ services:
       CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.1.jar
+      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.4.jar
       # Connect worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
@@ -242,7 +242,7 @@ services:
       xpack.security.enabled: "false"
       discovery.type: "single-node"
   control-center:
-    image: confluentinc/cp-enterprise-control-center:4.1.4-SNAPSHOT
+    image: confluentinc/cp-enterprise-control-center:4.1.4
     container_name: control-center
     restart: always
     depends_on:
@@ -277,7 +277,7 @@ services:
       CONTROL_CENTER_STREAMS_SSL_KEY_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
   schemaregistry:
-    image: confluentinc/cp-schema-registry:4.1.4-SNAPSHOT
+    image: confluentinc/cp-schema-registry:4.1.4
     container_name: schemaregistry
     #restart: always
     depends_on:
@@ -312,7 +312,7 @@ services:
     ports:
       - 8085:8085
   kafka-client:
-    image: confluentinc/cp-enterprise-kafka:4.1.4-SNAPSHOT
+    image: confluentinc/cp-enterprise-kafka:4.1.4
     hostname: kafka-client
     container_name: kafka-client
     depends_on:
@@ -377,7 +377,7 @@ services:
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.client.keystore.jks
                   -Djavax.net.ssl.keyStorePassword=confluent
   restproxy:
-    image: confluentinc/cp-kafka-rest:4.1.4-SNAPSHOT
+    image: confluentinc/cp-kafka-rest:4.1.4
     depends_on:
       - zookeeper
       - kafka1
@@ -421,7 +421,7 @@ services:
       - 8086:8086
 
   replicator:
-    image: confluentinc/cp-enterprise-replicator:4.1.4-SNAPSHOT
+    image: confluentinc/cp-enterprise-replicator:4.1.4
     hostname: replicator
     container_name: replicator
     volumes:
