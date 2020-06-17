@@ -31,13 +31,8 @@ fi
 # Bring up base cluster and Confluent CLI
 docker-compose up -d zookeeper kafka1 kafka2 tools
 
-# Verify Kafka brokers have started
-MAX_WAIT=30
-echo "Waiting up to $MAX_WAIT seconds for Kafka brokers to be registered in ZooKeeper"
-retry $MAX_WAIT host_check_kafka_cluster_registered || exit 1
-
 # Verify MDS has started
-MAX_WAIT=60
+MAX_WAIT=90
 echo "Waiting up to $MAX_WAIT seconds for MDS to start"
 retry $MAX_WAIT host_check_mds_up || exit 1
 sleep 5
