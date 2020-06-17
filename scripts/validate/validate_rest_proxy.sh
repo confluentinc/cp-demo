@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ################################## GET KAFKA CLUSTER ID ########################
-KAFKA_CLUSTER_ID=$(docker-compose exec zookeeper zookeeper-shell zookeeper:2181 get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
+KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
 if [ -z "$KAFKA_CLUSTER_ID" ]; then
-    echo "Failed to retrieve Kafka cluster id from ZooKeeper"
+    echo "Failed to retrieve Kafka cluster id"
     exit 1
 fi
 
