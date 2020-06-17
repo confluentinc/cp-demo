@@ -553,7 +553,7 @@ End clients (non-CP clients):
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(docker-compose exec zookeeper zookeeper-shell zookeeper:2181 get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
 
       # Then create the role binding for the topic ``wikipedia.parsed``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -672,7 +672,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(docker-compose exec zookeeper zookeeper-shell zookeeper:2181 get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
 
       # Then create the role binding for the subject ``users-value``, i.e., the topic-value (versus the topic-key)
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -786,7 +786,7 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(docker-compose exec zookeeper zookeeper-shell zookeeper:2181 get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
 
       # Then create the role binding for the topic ``users``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -842,7 +842,7 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(docker-compose exec zookeeper zookeeper-shell zookeeper:2181 get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
 
       # Then create the role binding for the group ``my_avro_consumer``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -870,7 +870,7 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(docker-compose exec zookeeper zookeeper-shell zookeeper:2181 get /cluster/id 2> /dev/null | grep \"version\" | jq -r .id)
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
 
       # Then create the role binding for the group my_avro_consumer
       docker-compose exec tools bash -c "confluent iam rolebinding create \
