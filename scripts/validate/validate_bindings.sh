@@ -25,6 +25,7 @@ SR_PRINCIPAL="User:schemaregistryUser"
 KSQLDB_ADMIN="User:ksqlDBAdmin"
 KSQLDB_USER="User:ksqlDBUser"
 C3_ADMIN="User:controlcenterAdmin"
+REST_ADMIN="User:restAdmin"
 CLIENT_PRINCIPAL="User:appSA"
 BADAPP="User:badapp"
 LISTEN_PRINCIPAL="User:clientListen"
@@ -33,7 +34,7 @@ docker-compose exec tools bash -c ". /tmp/helper/functions.sh ; mds_login $MDS_U
 
 ################################## Run through permutations #############################
 
-for p in $SUPER_USER_PRINCIPAL $CONNECT_ADMIN $CONNECTOR_SUBMITTER $CONNECTOR_PRINCIPAL $SR_PRINCIPAL $KSQLDB_ADMIN $KSQLDB_USER $C3_ADMIN $CLIENT_PRINCIPAL $BADAPP $LISTEN_PRINCIPAL; do
+for p in $SUPER_USER_PRINCIPAL $CONNECT_ADMIN $CONNECTOR_SUBMITTER $CONNECTOR_PRINCIPAL $SR_PRINCIPAL $KSQLDB_ADMIN $KSQLDB_USER $C3_ADMIN $REST_ADMIN $CLIENT_PRINCIPAL $BADAPP $LISTEN_PRINCIPAL; do
   for c in " " " --schema-registry-cluster-id $SR" " --connect-cluster-id $CONNECT" " --ksql-cluster-id $KSQLDB"; do
     echo
     echo "Showing bindings for principal $p and --kafka-cluster-id $KAFKA_CLUSTER_ID $c"
