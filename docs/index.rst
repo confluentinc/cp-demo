@@ -1089,7 +1089,7 @@ Here are some suggestions on how to troubleshoot the demo.
 
 #. If any containers are not in ``Up`` state, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8 GB (default is 2 GB).
 
-#. For those containers that are not in ``Up`` state, look for error messages and exceptions in the logs at ``docker-compose logs [container]`` command.
+#. For those Docker containers that are not in ``Up`` state, view the container's logs with the command ``docker-compose logs [container]`` and look for error messages and exceptions.
 
    .. sourcecode:: bash
 
