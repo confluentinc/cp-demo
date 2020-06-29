@@ -1057,7 +1057,7 @@ Troubleshooting
 
 Here are some suggestions on how to troubleshoot the demo.
 
-#. Verify the status of the Docker containers show ``Up`` state, except for the ``kafka-client`` container which is expected to have ``Exit 0`` state. If any containers are not up, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8 GB (default is 2 GB).
+#. Verify the status of the Docker containers show ``Up`` state, except for the ``kafka-client`` container which is expected to have ``Exit 0`` state.
 
    .. sourcecode:: bash
 
@@ -1087,6 +1087,13 @@ Here are some suggestions on how to troubleshoot the demo.
       tools                         /bin/bash                        Up
       zookeeper                     /etc/confluent/docker/run        Up (healthy)   0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 
+#. If any containers are not in ``Up`` state, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8 GB (default is 2 GB).
+
+#. For those Docker containers that are not in ``Up`` state, view the container's logs with the command ``docker-compose logs [container]`` and look for error messages and exceptions.
+
+   .. sourcecode:: bash
+
+        docker-compose logs
 
 #. To view sample messages for each topic, including
    ``wikipedia.parsed``:
