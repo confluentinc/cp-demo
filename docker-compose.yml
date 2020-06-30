@@ -784,8 +784,7 @@ services:
       KSQL_KSQL_SECURITY_EXTENSION_CLASS: io.confluent.ksql.security.KsqlConfluentSecurityExtension
 
       # Enable bearer token authentication which allows the identity of the ksqlDB end user to be propagated to Kafka for authorization
-      KSQL_REST_SERVLET_INITIALIZOR_CLASSES: io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler
-      KSQL_WEBSOCKET_SERVLET_INITIALIZOR_CLASSES: io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler
+      KSQL_KSQL_AUTHENTICATION_PLUGIN_CLASS: io.confluent.ksql.security.VertxBearerOrBasicAuthenticationPlugin
       KSQL_OAUTH_JWT_PUBLIC_KEY_PATH: /tmp/conf/public.pem
       KSQL_CONFLUENT_METADATA_PUBLIC_KEY_PATH: /tmp/conf/public.pem
       KSQL_PUBLIC_KEY_PATH: /tmp/conf/public.pem
@@ -893,8 +892,6 @@ services:
       KAFKA_REST_CLIENT_SSL_KEYSTORE_PASSWORD: confluent
       KAFKA_REST_CLIENT_SSL_KEY_PASSWORD: confluent
 
-      # ZooKeeper required to validate trial license
-      KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:2181
 
       # Credentials and classpath for cub kafka-ready
       CUB_CLASSPATH: '/usr/share/java/cp-base-new/*:/usr/share/java/confluent-security/kafka-rest/*:/usr/share/java/kafka-rest/*'
