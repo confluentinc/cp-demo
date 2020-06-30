@@ -14,6 +14,7 @@ CONNECT=connect-cluster
 SR=schema-registry
 KSQLDB=ksql-cluster
 C3=c3-cluster
+LICENSE_RESOURCE="Topic:_confluent-license"
 
 SUPER_USER=superUser
 SUPER_USER_PASSWORD=superUser
@@ -26,6 +27,7 @@ KSQLDB_ADMIN="User:ksqlDBAdmin"
 KSQLDB_USER="User:ksqlDBUser"
 KSQLDB_SERVER="User:ksqlDBserver"
 C3_ADMIN="User:controlcenterAdmin"
+REST_ADMIN="User:restAdmin"
 CLIENT_PRINCIPAL="User:appSA"
 LISTEN_PRINCIPAL="User:clientListen"
 
@@ -74,6 +76,15 @@ do
         --principal $SR_PRINCIPAL \
         --role ResourceOwner \
         --resource $resource \
+        --kafka-cluster-id $KAFKA_CLUSTER_ID
+done
+
+for role in DeveloperRead DeveloperWrite
+do
+    confluent iam rolebinding create \
+        --principal $SR_PRINCIPAL \
+        --role $role \
+        --resource $LICENSE_RESOURCE \
         --kafka-cluster-id $KAFKA_CLUSTER_ID
 done
 
@@ -398,6 +409,17 @@ confluent iam rolebinding create \
     --role SystemAdmin \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
+############################## Rest Proxy ###############################
+echo "Creating role bindings for Rest Proxy"
+for role in DeveloperRead DeveloperWrite
+do
+    confluent iam rolebinding create \
+        --principal $REST_ADMIN \
+        --role $role \
+        --resource $LICENSE_RESOURCE \
+        --kafka-cluster-id $KAFKA_CLUSTER_ID
+done
+
 ################################### Client ###################################
 echo "Creating role bindings for the streams-demo application"
 
@@ -516,6 +538,7 @@ echo "    Connector Principal: $CONNECTOR_PRINCIPAL"
 echo "    ksqlDB Admin: $KSQLDB_ADMIN"
 echo "    ksqlDB User: $KSQLDB_USER"
 echo "    C3 Admin: $C3_ADMIN"
+echo "    Rest Admin: $REST_ADMIN"
 echo "    Client service account: $CLIENT_PRINCIPAL"
 echo "    Listen Client service account: $LISTEN_PRINCIPAL"
 echo
