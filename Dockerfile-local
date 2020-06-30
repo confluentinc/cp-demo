@@ -26,5 +26,4 @@ COPY confluentinc-kafka-connect-replicator-${CONNECTOR_VERSION}.zip /tmp/conflue
 RUN confluent-hub install --no-prompt /tmp/confluentinc-kafka-connect-replicator-${CONNECTOR_VERSION}.zip
 
 # Install Elasticsearch connector
-COPY confluentinc-kafka-connect-elasticsearch-${CONNECTOR_VERSION}.zip /tmp/confluentinc-kafka-connect-elasticsearch-${CONNECTOR_VERSION}.zip
-RUN confluent-hub install --no-prompt /tmp/confluentinc-kafka-connect-elasticsearch-${CONNECTOR_VERSION}.zip
+RUN confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:latest
