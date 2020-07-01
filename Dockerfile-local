@@ -15,7 +15,7 @@
 
 ARG CP_VERSION
 
-FROM confluentinc/cp-server-connect-base:$CP_VERSION
+FROM confluentinc/cp-server-connect-base:${CP_VERSION}
 
 ARG CONNECTOR_VERSION=5.5.0-SNAPSHOT
 
