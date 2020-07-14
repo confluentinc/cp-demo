@@ -11,7 +11,7 @@ retry() {
     do
         if (( curr_wait >= max_wait ))
         then
-            echo "ERROR: Failed after $curr_wait seconds. Please troubleshoot and run again."
+            echo "ERROR: Failed after $curr_wait seconds. Please troubleshoot and run again. For troubleshooting instructions see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
             return 1
         else
             printf "."

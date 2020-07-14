@@ -24,7 +24,7 @@ openssl rsa -in ${DIR}/security/keypair/keypair.pem -outform PEM -pubout -out ${
 docker-compose up -d openldap
 sleep 5
 if [[ $(docker-compose ps openldap | grep Exit) =~ "Exit" ]] ; then
-  echo "ERROR: openldap container could not start. Troubleshoot and try again."
+  echo "ERROR: openldap container could not start. Troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
   exit 1
 fi
 
@@ -45,13 +45,13 @@ echo "Building custom Docker image with Connect version ${CONFLUENT_DOCKER_TAG} 
 if [[ "${CONNECTOR_VERSION}" =~ "SNAPSHOT" ]]; then
   echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f Dockerfile-local ."
   docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f Dockerfile-local . || {
-    echo "ERROR: Docker image build failed. Please troubleshoot and try again."
+    echo "ERROR: Docker image build failed. Please troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
     exit 1;
   }
 else
   echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f ${DIR}/../Dockerfile-confluenthub ."
   docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f ${DIR}/../Dockerfile-confluenthub . || {
-    echo "ERROR: Docker image build failed. Please troubleshoot and try again."
+    echo "ERROR: Docker image build failed. Please troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
     exit 1;
   }
 fi
