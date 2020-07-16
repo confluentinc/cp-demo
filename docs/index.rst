@@ -450,7 +450,7 @@ End clients (non-CP clients):
           docker-compose logs kafka1 | grep "Registered broker 1"
           docker-compose logs kafka2 | grep "Registered broker 2"
 
-#. For demo only: Communicate with brokers via the PLAINTEXT port, client configurations are required
+#. For demo only: Communicate with brokers via the PLAINTEXT port, client security configurations are not required
 
    .. sourcecode:: bash
 
