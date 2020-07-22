@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
 ################################## GET KAFKA CLUSTER ID ########################
 KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
 if [ -z "$KAFKA_CLUSTER_ID" ]; then
@@ -8,15 +10,11 @@ if [ -z "$KAFKA_CLUSTER_ID" ]; then
 fi
 
 ################################## SETUP VARIABLES #############################
-MDS_URL=http://kafka1:8091
 CONNECT=connect-cluster
 SR=schema-registry
 KSQLDB=ksql-cluster
 C3=c3-cluster
 
-SUPER_USER=superUser
-SUPER_USER_PASSWORD=superUser
-SUPER_USER_PRINCIPAL="User:$SUPER_USER"
 CONNECT_ADMIN="User:connectAdmin"
 CONNECTOR_SUBMITTER="User:connectorSubmitter"
 CONNECTOR_PRINCIPAL="User:connectorSA"
@@ -27,7 +25,7 @@ C3_ADMIN="User:controlcenterAdmin"
 CLIENT_NAME="appSA"
 CLIENT_PRINCIPAL="User:$CLIENT_NAME"
 
-docker-compose exec tools bash -c ". /tmp/helper/functions.sh ; mds_login $MDS_URL ${SUPER_USER} ${SUPER_USER_PASSWORD}"
+${DIR}/../helper/refresh_mds_login.sh
 
 ################################## RUN ########################################
 
