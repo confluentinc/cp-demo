@@ -1113,14 +1113,14 @@ Here are some suggestions on how to troubleshoot the demo.
 
           cd scripts/validate/
 
-#. If running cluster for a while, and ``tools`` service returns:
+#. If you are running ``cp-demo`` for a long time and issuing Confluent CLI commands on the ``tools`` container that return:
 
    .. sourcecode:: bash
 
           Your token has expired. You are now logged out.
           Error: You must log in to run that command.
 
-   Then run the following command to refresh the token:
+   Then run the following command, which refreshes the token by logging back in to MDS:
 
    .. sourcecode:: bash
 
