@@ -3,9 +3,9 @@
 Confluent Platform Demo (cp-demo)
 =================================
 
-This demo builds a full |cp| deployment with a Kafka event streaming application using `ksqlDB <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing.
+This demo builds a full |cp| deployment with a Kafka event streaming application using `ksqlDB <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing, and all the components in the Confluent platform have security enabled end-to-end.
+
 Follow the accompanying guided tutorial that steps through the demo so that you can learn how it all works together.
-All the components in the Confluent platform have security enabled end-to-end.
 
 
 ========
@@ -80,7 +80,9 @@ Demo validated with:
 
 #. Use Google Chrome to view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
 
-5. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
+#. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
+
+#. After you run through the guided tutorial below, apply the concepts you learn here in |ccloud|, a fully managed, cloud-native event streaming platform powered by |ak|.
 
 
 ===============
