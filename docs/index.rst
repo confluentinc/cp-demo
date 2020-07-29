@@ -3,7 +3,7 @@
 Confluent Platform Demo (cp-demo)
 =================================
 
-This demo builds a full |cp| deployment with an |ak| event streaming application using `ksqlDB <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing, and all the components have security enabled end-to-end.
+This demo builds a full |cp| deployment with an |ak-tm| event streaming application using `ksqlDB <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing, and all the components have security enabled end-to-end.
 Follow the accompanying guided tutorial that steps through the demo so that you can learn how it all works together.
 
 
@@ -14,7 +14,7 @@ Overview
 Use Case
 --------
 
-The use case is an |ak| event streaming application that processes real-time edits to real Wikipedia pages.
+The use case is an |ak-tm| event streaming application that processes real-time edits to real Wikipedia pages.
 
 .. figure:: images/cp-demo-overview.jpg
     :alt: image
