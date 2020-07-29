@@ -3,16 +3,22 @@
 Confluent Platform Demo (cp-demo)
 =================================
 
-This demo builds a full |cp| deployment with a Kafka event streaming application using `ksqlDB <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing.
+This demo builds a full |cp| deployment with an |ak-tm| event streaming application using `ksqlDB <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing, and all the components have security enabled end-to-end.
 Follow the accompanying guided tutorial that steps through the demo so that you can learn how it all works together.
-All the components in the Confluent platform have security enabled end-to-end.
 
 
 ========
 Overview
 ========
 
-The use case is a Kafka event streaming application for real-time edits to real Wikipedia pages.
+Use Case
+--------
+
+The use case is an |ak-tm| event streaming application that processes real-time edits to real Wikipedia pages.
+
+.. figure:: images/cp-demo-overview.jpg
+    :alt: image
+
 Wikimedia Foundation has IRC channels that publish edits happening to real wiki pages (e.g. ``#en.wikipedia``, ``#en.wiktionary``) in real time.
 Using `Kafka Connect <http://docs.confluent.io/current/connect/index.html>`__, a Kafka source connector `kafka-connect-irc <https://github.com/cjmatta/kafka-connect-irc>`__ streams raw messages from these IRC channels, and a custom Kafka Connect transform `kafka-connect-transform-wikiedit <https://github.com/cjmatta/kafka-connect-transform-wikiedit>`__ transforms these messages and then the messages are written to a Kafka cluster.
 This demo uses `ksqlDB <https://www.confluent.io/product/ksql/>`__ and a `Kafka Streams <http://docs.confluent.io/current/streams/index.html>`__ application for data processing.
@@ -21,13 +27,8 @@ Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.
 All data is using |sr-long| and Avro.
 `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ is managing and monitoring the deployment.
 
-
-.. figure:: images/cp-demo-overview.jpg
-    :alt: image
-
-
-.. note:: This is a Docker environment and has all services running on one host. Do not use this demo in production. It is meant exclusively to easily demo the |CP|. In production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production traffic. Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
-
+Data Pattern
+------------
 
 Data pattern is as follows:
 
@@ -50,7 +51,10 @@ Data pattern is as follows:
 Run Demo
 ========
 
-Demo validated with:
+Prerequisites
+-------------
+
+This demo has been validated with:
 
 -  Docker version 17.06.1-ce
 -  Docker Compose version 1.14.0 with Docker Compose file format 2.3
@@ -60,8 +64,21 @@ Demo validated with:
 -  git
 -  jq
 
-.. note:: If you prefer other non-Docker demos, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
+Docker
+------
 
+This is a Docker environment and has all services running on one host.
+It is meant exclusively to easily demo the |CP|, but do not deploy all |cp| services on a single host in production.
+
+Also, in production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production data.
+Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
+
+If you prefer non-Docker demos, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
+
+Start Demo
+----------
+
+#. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8GB (default is 2GB).
 
 #. Clone the `confluentinc/cp-demo GitHub repository <https://github.com/confluentinc/cp-demo>`__:
 
@@ -69,7 +86,12 @@ Demo validated with:
 
        git clone https://github.com/confluentinc/cp-demo
 
-#. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8GB (default is 2GB).
+#. Navigate to the ``cp-demo`` directory and switch to the |cp| release branch:
+
+   .. codewithvars:: bash
+
+      cd cp-demo
+      git checkout |release_post_branch|
 
 #. From the ``cp-demo`` directory, start the entire demo by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This will take approximately 7 minutes to complete.
 
@@ -77,9 +99,13 @@ Demo validated with:
 
         ./scripts/start.sh
 
-#. Use Google Chrome to view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
+#. Using a web browser, view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
 
-5. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
+#. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
+
+#. After you run through the guided tutorial below, apply the concepts you learn here to build your own event streaming pipeline in |ccloud|, a fully managed, cloud-native event streaming platform powered by |ak|.
+
+.. note:: When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
 
 
 ===============
@@ -403,7 +429,7 @@ You can see each component's security configuration in the demo's :devx-cp-demo:
     * If the ``PLAINTEXT`` security protocol is used, these ``ANONYMOUS`` usernames should not be configured as super users
     * Consider not even opening the ``PLAINTEXT`` port if ``SSL`` or ``SASL_SSL`` are configured
 
-There is an OpenLDAP server running in the demo, and each Kafka broker in the demo is configured with MDS and can talk to LDAP so that it can authenticate clients and Confluent Platform services and clients.
+There is an OpenLDAP server running in the demo, and each Kafka broker in the demo is configured with MDS and can talk to LDAP so that it can authenticate clients and |cp| services and clients.
 
 Zookeeper has two listener ports:
 
