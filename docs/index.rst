@@ -11,7 +11,10 @@ Follow the accompanying guided tutorial that steps through the demo so that you 
 Overview
 ========
 
-The use case is an |ak| event streaming application for real-time edits to real Wikipedia pages.
+Use Case
+--------
+
+The use case is an |ak| event streaming application that processes real-time edits to real Wikipedia pages.
 
 .. figure:: images/cp-demo-overview.jpg
     :alt: image
@@ -24,8 +27,8 @@ Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.
 All data is using |sr-long| and Avro.
 `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ is managing and monitoring the deployment.
 
-.. note:: This is a Docker environment and has all services running on one host. Do not use this demo in production. It is meant exclusively to easily demo the |CP|. In production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production traffic. Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
-
+Data Pattern
+------------
 
 Data pattern is as follows:
 
@@ -43,12 +46,26 @@ Data pattern is as follows:
 | Elasticsearch sink connector        | ``WIKIPEDIABOT`` (from ksqlDB) | Elasticsearch/Kibana                  |
 +-------------------------------------+--------------------------------+---------------------------------------+
 
+About Docker
+------------
+
+This is a Docker environment and has all services running on one host.
+It is meant exclusively to easily demo the |CP|, but do not deploy all |cp| services on a single host in production.
+
+Also, in production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production traffic.
+Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
+
+If you prefer non-Docker demos, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
+
 
 ========
 Run Demo
 ========
 
-Demo validated with:
+Prerequisites
+-------------
+
+This demo has been validated with:
 
 -  Docker version 17.06.1-ce
 -  Docker Compose version 1.14.0 with Docker Compose file format 2.3
@@ -59,8 +76,9 @@ Demo validated with:
 -  git
 -  jq
 
-.. note:: If you prefer other non-Docker demos, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
 
+Start Demo
+----------
 
 #. Clone the `confluentinc/cp-demo GitHub repository <https://github.com/confluentinc/cp-demo>`__:
 
@@ -80,7 +98,9 @@ Demo validated with:
 
 #. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
-#. After you run through the guided tutorial below, apply the concepts you learn here to build your own event streaming pipeline in |ccloud|, a fully managed, cloud-native event streaming platform powered by |ak|. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
+#. After you run through the guided tutorial below, apply the concepts you learn here to build your own event streaming pipeline in |ccloud|, a fully managed, cloud-native event streaming platform powered by |ak|.
+
+.. note:: When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
 
 
 ===============
