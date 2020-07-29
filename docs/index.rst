@@ -79,13 +79,20 @@ If you prefer non-Docker demos, please go to `confluentinc/examples GitHub repos
 Start Demo
 ----------
 
+#. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8GB (default is 2GB).
+
 #. Clone the `confluentinc/cp-demo GitHub repository <https://github.com/confluentinc/cp-demo>`__:
 
    .. sourcecode:: bash
 
        git clone https://github.com/confluentinc/cp-demo
 
-#. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8GB (default is 2GB).
+#. Navigate to the ``cp-demo`` directory and switch to the |cp| release branch:
+
+   .. codewithvars:: bash
+
+      cd cp-demo
+      git checkout |release_post_branch|
 
 #. From the ``cp-demo`` directory, start the entire demo by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This will take approximately 7 minutes to complete.
 
@@ -93,7 +100,7 @@ Start Demo
 
         ./scripts/start.sh
 
-#. Use Google Chrome to view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
+#. Using a web browser, view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
 
 #. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
