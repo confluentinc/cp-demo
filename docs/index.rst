@@ -46,17 +46,6 @@ Data pattern is as follows:
 | Elasticsearch sink connector        | ``WIKIPEDIABOT`` (from ksqlDB) | Elasticsearch/Kibana                  |
 +-------------------------------------+--------------------------------+---------------------------------------+
 
-About Docker
-------------
-
-This is a Docker environment and has all services running on one host.
-It is meant exclusively to easily demo the |CP|, but do not deploy all |cp| services on a single host in production.
-
-Also, in production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production traffic.
-Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
-
-If you prefer non-Docker demos, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
-
 
 ========
 Run Demo
@@ -76,6 +65,16 @@ This demo has been validated with:
 -  git
 -  jq
 
+Docker
+------
+
+This is a Docker environment and has all services running on one host.
+It is meant exclusively to easily demo the |CP|, but do not deploy all |cp| services on a single host in production.
+
+Also, in production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production traffic.
+Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
+
+If you prefer non-Docker demos, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
 
 Start Demo
 ----------
