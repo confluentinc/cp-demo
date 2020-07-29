@@ -57,7 +57,6 @@ Demo validated with:
 -  Java version 1.8.0_92
 -  MacOS 10.15.3 (note for `Ubuntu environments <https://github.com/confluentinc/cp-demo/issues/53>`__)
 -  OpenSSL 1.1.1d
--  Python 3.7.6
 -  git
 -  jq
 
