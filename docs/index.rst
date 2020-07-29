@@ -12,6 +12,10 @@ Overview
 ========
 
 The use case is an |ak| event streaming application for real-time edits to real Wikipedia pages.
+
+.. figure:: images/cp-demo-overview.jpg
+    :alt: image
+
 Wikimedia Foundation has IRC channels that publish edits happening to real wiki pages (e.g. ``#en.wikipedia``, ``#en.wiktionary``) in real time.
 Using `Kafka Connect <http://docs.confluent.io/current/connect/index.html>`__, a Kafka source connector `kafka-connect-irc <https://github.com/cjmatta/kafka-connect-irc>`__ streams raw messages from these IRC channels, and a custom Kafka Connect transform `kafka-connect-transform-wikiedit <https://github.com/cjmatta/kafka-connect-transform-wikiedit>`__ transforms these messages and then the messages are written to a Kafka cluster.
 This demo uses `ksqlDB <https://www.confluent.io/product/ksql/>`__ and a `Kafka Streams <http://docs.confluent.io/current/streams/index.html>`__ application for data processing.
@@ -19,11 +23,6 @@ Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.
 |crep-full| is also copying messages from a topic to another topic in the same cluster.
 All data is using |sr-long| and Avro.
 `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ is managing and monitoring the deployment.
-
-
-.. figure:: images/cp-demo-overview.jpg
-    :alt: image
-
 
 .. note:: This is a Docker environment and has all services running on one host. Do not use this demo in production. It is meant exclusively to easily demo the |CP|. In production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production traffic. Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
 
