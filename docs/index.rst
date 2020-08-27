@@ -794,7 +794,7 @@ Confluent REST Proxy
 
 The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
 It may run in standalone mode or in embedded most hosted on the broker.
-While in embedded mode only the .. _V3 APIs: http://staging-docs.confluent.io.s3-website-us-west-2.amazonaws.com/current/kafka-rest/api.html#crest-api-v3 are supported this time.
+While in embedded mode only the :ref:`rest-proxy-v3` are supported this time.
 Additionally each API's URL must include the prefix ``/kafka``
 
 #. Use the |crest|, which is listening for HTTPS on port 8086, to try to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
