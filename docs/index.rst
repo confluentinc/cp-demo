@@ -941,7 +941,7 @@ Additionally each API's URL must include the prefix ``/kafka``
           --resource Topic:usersq \
           --kafka-cluster-id $KAFKA_CLUSTER_ID"
 
-#. Create the topic ``dev_users``.
+#. Create the topic ``dev_users`` with the embedded |crest|.
 
    .. sourcecode:: bash
 
