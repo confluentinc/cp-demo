@@ -927,7 +927,7 @@ Additionally each API's URL must include the prefix ``/kafka``
 
        docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
 
-#. Create a role binding for the client providing it total ownership of topic ``dev_users``.
+#. Now you will use the |crest| that is embedded on the |ak| brokers.  Create a role binding for the client to be granted ``ResourceOwner`` role for the topic ``dev_users``.
 
    .. sourcecode:: bash
 
