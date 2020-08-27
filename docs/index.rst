@@ -797,7 +797,7 @@ This demo showcases |crest| in two modes: (1) running as a standalone service an
 While in embedded mode only the :ref:`rest-proxy-v3` are supported this time.
 Additionally each API's URL must include the prefix ``/kafka``
 
-#. Use the |crest|, which is listening for HTTPS on port 8086, to try to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
+#. Use the standalone |crest|, which is listening for HTTPS on port 8086, to try to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
 
    .. sourcecode:: bash
 
