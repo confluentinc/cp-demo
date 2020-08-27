@@ -793,7 +793,7 @@ Confluent REST Proxy
 --------------------
 
 The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
-It may run in standalone mode or in embedded most hosted on the broker.
+This demo showcases |crest| in two modes: (1) running as a standalone service and (2) embedded on the |ak| brokers.
 While in embedded mode only the :ref:`rest-proxy-v3` are supported this time.
 Additionally each API's URL must include the prefix ``/kafka``
 
