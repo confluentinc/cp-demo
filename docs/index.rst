@@ -794,8 +794,7 @@ Confluent REST Proxy
 
 The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
 This demo showcases |crest| in two modes: (1) running as a standalone service and (2) embedded on the |ak| brokers.
-While in embedded mode only the :ref:`rest-proxy-v3` are supported this time.
-Additionally each API's URL must include the prefix ``/kafka``
+While in embedded mode |crest| listens for requests on port 8092 providing only the :ref:`rest-proxy-v3` are supported this time.
 
 #. Use the standalone |crest|, which is listening for HTTPS on port 8086, to try to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
 
@@ -814,7 +813,7 @@ Additionally each API's URL must include the prefix ``/kafka``
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id"")
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id")
 
       # Then create the role binding for the topic ``users``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -870,7 +869,7 @@ Additionally each API's URL must include the prefix ``/kafka``
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id"")
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id")
 
       # Then create the role binding for the group ``my_avro_consumer``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -898,7 +897,7 @@ Additionally each API's URL must include the prefix ``/kafka``
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id"")
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id")
 
       # Then create the role binding for the group my_avro_consumer
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -932,7 +931,7 @@ Additionally each API's URL must include the prefix ``/kafka``
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id"")
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id")
 
       # Then create the role binding for the topic ``dev_users``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -946,7 +945,7 @@ Additionally each API's URL must include the prefix ``/kafka``
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id"")
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id")
 
       docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appS "http://localhost:8082/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}"
 
@@ -955,7 +954,7 @@ Additionally each API's URL must include the prefix ``/kafka``
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id"")
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id")
 
       docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appS http://localhost:8082/v3/clusters/${KAFKA_CLUSTER_ID}/topics
 
