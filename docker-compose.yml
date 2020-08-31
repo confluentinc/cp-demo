@@ -363,9 +363,6 @@ services:
       KAFKA_LDAP_USER_NAME_ATTRIBUTE: uid
       KAFKA_LDAP_USER_OBJECT_CLASS: inetOrgPerson
 
-      # ConfluentTelemetryReporter: Disable
-      KAFKA_CONFLUENT_TELEMETRY_REPORTER_ENABLE: 'false'
-
       # EmbeddedKafkaRest: Kafka Client Configuration
       KAFKA_KAFKA_REST_BOOTSTRAP_SERVERS: SASL_SSL://kafka1:10091,SASL_SSL://kafka2:10092
       KAFKA_KAFKA_REST_CLIENT_SECURITY_PROTOCOL: SASL_SSL
