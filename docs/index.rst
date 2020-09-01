@@ -794,7 +794,7 @@ Confluent REST Proxy
 
 The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
 This demo showcases |crest| in two modes: (1) running as a standalone service and (2) embedded on the |ak| brokers.
-While in embedded mode |crest| listens for requests on http://kafka1:8091 and http://kafka2:8092 providing only the :ref:`rest-proxy-v3` are supported this time.
+While in embedded mode |crest| listens for requests on http://kafka1:8091/kafka and http://kafka2:8092/kafka providing only the :ref:`rest-proxy-v3` are supported this time.
 
 #. Use the standalone |crest|, which is listening for HTTPS on port 8086, to try to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
 
@@ -813,7 +813,7 @@ While in embedded mode |crest| listens for requests on http://kafka1:8091 and ht
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id")
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/kafka/v3/clusters | jq ".data[0].cluster_id")
 
       # Then create the role binding for the topic ``users``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -869,7 +869,7 @@ While in embedded mode |crest| listens for requests on http://kafka1:8091 and ht
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id")
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/kafka/v3/clusters | jq ".data[0].cluster_id")
 
       # Then create the role binding for the group ``my_avro_consumer``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -897,7 +897,7 @@ While in embedded mode |crest| listens for requests on http://kafka1:8091 and ht
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id")
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/kafka/v3/clusters | jq ".data[0].cluster_id")
 
       # Then create the role binding for the group my_avro_consumer
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -931,7 +931,7 @@ While in embedded mode |crest| listens for requests on http://kafka1:8091 and ht
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id")
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/kafka/v3/clusters | jq ".data[0].cluster_id")
 
       # Then create the role binding for the topic ``dev_users``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -945,18 +945,18 @@ While in embedded mode |crest| listens for requests on http://kafka1:8091 and ht
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id")
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/kafka/v3/clusters | jq ".data[0].cluster_id")
 
-      docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appS "https://kafka1:8091/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}"
+      docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appS "https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}"
 
 #. List topics with embedded |crest| to find the newly created ``dev_users``.
 
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id")
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/kafka/v3/clusters | jq ".data[0].cluster_id")
 
-      docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appS http://kafka1:8091/v3/clusters/${KAFKA_CLUSTER_ID}/topics
+      docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appS http://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics
 
 Failed Broker
 -------------
