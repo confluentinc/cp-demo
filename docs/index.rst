@@ -940,23 +940,23 @@ While in embedded mode |crest| listens for requests on http://kafka1:8091 and ht
           --resource Topic:usersq \
           --kafka-cluster-id $KAFKA_CLUSTER_ID"
 
-#. Create the topic ``dev_users`` with the embedded |crest|.
+#. Create the topic ``dev_users`` with embedded |crest|.
 
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
       KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id")
 
-      docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appS "http://localhost:8082/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}"
+      docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appS "https://kafka1:8091/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}"
 
-#. List topics to find the newly created ``dev_users``.
+#. List topics with embedded |crest| to find the newly created ``dev_users``.
 
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
       KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id")
 
-      docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appS http://localhost:8082/v3/clusters/${KAFKA_CLUSTER_ID}/topics
+      docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appS http://kafka1:8091/v3/clusters/${KAFKA_CLUSTER_ID}/topics
 
 Failed Broker
 -------------
