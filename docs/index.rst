@@ -517,14 +517,14 @@ End clients (non-CP clients):
 
    .. sourcecode:: bash
 
-         docker-compose logs kafka1 | grep SUPER_USERS
+         docker-compose logs kafka1 | grep "super.users ="
 
    Your output should resemble the following. Notice this authorizes each service name which authenticates as itself,
    as well as the unauthenticated ``PLAINTEXT`` which authenticates as ``ANONYMOUS`` (for demo purposes only):
 
    .. sourcecode:: bash
 
-         KAFKA_SUPER_USERS=User:admin;User:mds;User:superUser;User:ANONYMOUS
+         kafka1            | 	super.users = User:admin;User:mds;User:superUser;User:ANONYMOUS
 
 #. Verify that LDAP user ``appSA`` (which is not a super user) can consume messages from topic ``wikipedia.parsed``.  Notice that it is configured to authenticate to brokers with mTLS and authenticate to Schema Registry with LDAP.
 
