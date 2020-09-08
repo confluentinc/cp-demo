@@ -926,7 +926,7 @@ While in embedded mode |crest| listens for requests on http://kafka1:8091/kafka 
 
        docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
 
-#. Now you will use the |crest| that is embedded on the |ak| brokers.  Create a role binding for the client to be granted ``ResourceOwner`` role for the topic ``dev_users``.
+#. For the next few steps, use the |crest| that is embedded on the |ak| brokers. Only :ref:`rest-proxy-v3` is supported this time.  Create a role binding for the client to be granted ``ResourceOwner`` role for the topic ``dev_users``.
 
    .. sourcecode:: bash
 
