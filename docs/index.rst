@@ -793,7 +793,7 @@ Confluent REST Proxy
 --------------------
 
 The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
-This demo showcases |crest| in two modes: (1) running as a standalone service and (2) embedded on the |ak| brokers.
+This demo showcases |crest| in two modes: (1) standalone service listening for HTTPS requests on port 8086,  and (2) embedded service on the |ak| brokers listening for HTTP requests on port 8091 on ``kafka1`` and on port 8092 on ``kafka2`` (the port is shared with the MDS listener)
 While in embedded mode |crest| listens for requests on http://kafka1:8091/kafka and http://kafka2:8092/kafka providing only the :ref:`rest-proxy-v3` are supported this time.
 
 #. Use the standalone |crest|, which is listening for HTTPS on port 8086, to try to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
