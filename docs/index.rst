@@ -813,7 +813,7 @@ While in embedded mode |crest| listens for requests on http://kafka1:8091/kafka 
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/kafka/v3/clusters | jq ".data[0].cluster_id")
+      KAFKA_CLUSTER_ID=$(curl -s http://kafka1:8091/v1/metadata/id | jq -r ".id")
 
       # Then create the role binding for the topic ``users``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -869,7 +869,7 @@ While in embedded mode |crest| listens for requests on http://kafka1:8091/kafka 
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/kafka/v3/clusters | jq ".data[0].cluster_id")
+      KAFKA_CLUSTER_ID=$(curl -s http://kafka1:8091/v1/metadata/id | jq -r ".id")
 
       # Then create the role binding for the group ``my_avro_consumer``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -897,7 +897,7 @@ While in embedded mode |crest| listens for requests on http://kafka1:8091/kafka 
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/kafka/v3/clusters | jq ".data[0].cluster_id")
+      KAFKA_CLUSTER_ID=$(curl -s http://kafka1:8091/v1/metadata/id | jq -r ".id")
 
       # Then create the role binding for the group my_avro_consumer
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -931,7 +931,7 @@ While in embedded mode |crest| listens for requests on http://kafka1:8091/kafka 
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/kafka/v3/clusters | jq ".data[0].cluster_id")
+      KAFKA_CLUSTER_ID=$(curl -s http://kafka1:8091/v1/metadata/id | jq -r ".id")
 
       # Then create the role binding for the topic ``dev_users``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -945,7 +945,7 @@ While in embedded mode |crest| listens for requests on http://kafka1:8091/kafka 
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/kafka/v3/clusters | jq ".data[0].cluster_id")
+      KAFKA_CLUSTER_ID=$(curl -s http://kafka1:8091/v1/metadata/id | jq -r ".id")
 
       docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appS "https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}"
 
@@ -954,7 +954,7 @@ While in embedded mode |crest| listens for requests on http://kafka1:8091/kafka 
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/kafka/v3/clusters | jq ".data[0].cluster_id")
+      KAFKA_CLUSTER_ID=$(curl -s http://kafka1:8091/v1/metadata/id | jq -r ".id")
 
       docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appS http://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics
 
