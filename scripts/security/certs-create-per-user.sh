@@ -8,7 +8,7 @@ i=$1
 keytool -genkey -noprompt \
 			 -alias $i \
 			 -dname "CN=$i,OU=TEST,O=CONFLUENT,L=PaloAlto,S=Ca,C=US" \
-                         -ext "SAN=dns:$i,dns:localhost" \
+                         -ext "SAN=dns:$i,dns:localhost,dns:kafka1,dns:kafka2" \
 			 -keystore kafka.$i.keystore.jks \
 			 -keyalg RSA \
 			 -storepass confluent \
@@ -32,6 +32,8 @@ subjectAltName = @alt_names
 [alt_names]
 DNS.1 = $i
 DNS.2 = localhost
+DNS.3 = kafka1
+DNS.4 = kafka2
 EOF
 )
 #openssl x509 -noout -text -in $i-ca1-signed.crt
