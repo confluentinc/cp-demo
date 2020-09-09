@@ -578,7 +578,7 @@ End clients (non-CP clients):
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id | jq -r ".id")
+      KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
 
       # Then create the role binding for the topic ``wikipedia.parsed``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -697,7 +697,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id | jq -r ".id")
+      KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
 
       # Then create the role binding for the subject ``users-value``, i.e., the topic-value (versus the topic-key)
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -815,7 +815,7 @@ This demo showcases |crest| in two modes:
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id | jq -r ".id")
+      KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
 
       # Then create the role binding for the topic ``users``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -871,7 +871,7 @@ This demo showcases |crest| in two modes:
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id | jq -r ".id")
+      KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
 
       # Then create the role binding for the group ``my_avro_consumer``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -899,7 +899,7 @@ This demo showcases |crest| in two modes:
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id | jq -r ".id")
+      KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
 
       # Then create the role binding for the group my_avro_consumer
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -933,7 +933,7 @@ This demo showcases |crest| in two modes:
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id | jq -r ".id")
+      KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
 
       # Then create the role binding for the topic ``dev_users``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -947,7 +947,7 @@ This demo showcases |crest| in two modes:
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id | jq -r ".id")
+      KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
 
       docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA "https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}" | jq
 
@@ -956,7 +956,7 @@ This demo showcases |crest| in two modes:
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id | jq -r ".id")
+      KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
 
       docker-compose exec restproxy curl -X GET -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics | jq '.data[].topic_name'
 
