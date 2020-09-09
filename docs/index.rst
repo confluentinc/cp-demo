@@ -793,8 +793,9 @@ Confluent REST Proxy
 --------------------
 
 The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
+This demo showcases |crest| in two modes: (1) standalone service listening for HTTPS requests on port 8086,  and (2) embedded service on the |ak| brokers listening for HTTP requests on port 8091 on ``kafka1`` and on port 8092 on ``kafka2`` (the port is shared with the MDS listener)
 
-#. Use the |crest|, which is listening for HTTPS on port 8086, to try to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
+#. Use the standalone |crest| to try to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
 
    .. sourcecode:: bash
 
@@ -924,6 +925,37 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
 
        docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
 
+#. For the next few steps, use the |crest| that is embedded on the |ak| brokers. Only :ref:`rest-proxy-v3` is supported this time.  Create a role binding for the client to be granted ``ResourceOwner`` role for the topic ``dev_users``.
+
+   .. sourcecode:: bash
+
+      # First get the KAFKA_CLUSTER_ID
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
+
+      # Then create the role binding for the topic ``dev_users``
+      docker-compose exec tools bash -c "confluent iam rolebinding create \
+          --principal User:appSA \
+          --role ResourceOwner \
+          --resource Topic:dev_users \
+          --kafka-cluster-id $KAFKA_CLUSTER_ID"
+
+#. Create the topic ``dev_users`` with embedded |crest|.
+
+   .. sourcecode:: bash
+
+      # First get the KAFKA_CLUSTER_ID
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
+
+      docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA "http://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}" | jq
+
+#. List topics with embedded |crest| to find the newly created ``dev_users``.
+
+   .. sourcecode:: bash
+
+      # First get the KAFKA_CLUSTER_ID
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
+
+      docker-compose exec restproxy curl -X GET -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA http://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics | jq '.data[].topic_name'
 
 Failed Broker
 -------------
