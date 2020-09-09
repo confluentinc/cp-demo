@@ -936,7 +936,7 @@ This demo showcases |crest| in two modes: (1) standalone service listening for H
       docker-compose exec tools bash -c "confluent iam rolebinding create \
           --principal User:appSA \
           --role ResourceOwner \
-          --resource Topic:usersq \
+          --resource Topic:dev_users \
           --kafka-cluster-id $KAFKA_CLUSTER_ID"
 
 #. Create the topic ``dev_users`` with embedded |crest|.
@@ -946,7 +946,7 @@ This demo showcases |crest| in two modes: (1) standalone service listening for H
       # First get the KAFKA_CLUSTER_ID
       KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
 
-      docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appS "https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}"
+      docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA "http://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}"
 
 #. List topics with embedded |crest| to find the newly created ``dev_users``.
 
@@ -955,7 +955,7 @@ This demo showcases |crest| in two modes: (1) standalone service listening for H
       # First get the KAFKA_CLUSTER_ID
       KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
 
-      docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appS http://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics
+      docker-compose exec restproxy curl -X GET -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA http://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics
 
 Failed Broker
 -------------
