@@ -205,6 +205,26 @@ services:
       KAFKA_LDAP_USER_NAME_ATTRIBUTE: uid
       KAFKA_LDAP_USER_OBJECT_CLASS: inetOrgPerson
 
+      # EmbeddedKafkaRest: Kafka Client Configuration
+      KAFKA_KAFKA_REST_BOOTSTRAP_SERVERS: SASL_SSL://kafka1:10091,SASL_SSL://kafka2:10092
+      KAFKA_KAFKA_REST_CLIENT_SECURITY_PROTOCOL: SASL_SSL
+      KAFKA_KAFKA_REST_CLIENT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka1.truststore.jks
+      KAFKA_KAFKA_REST_CLIENT_SSL_TRUSTSTORE_PASSWORD: confluent
+      KAFKA_KAFKA_REST_CLIENT_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka1.keystore.jks
+      KAFKA_KAFKA_REST_CLIENT_SSL_KEYSTORE_PASSWORD: confluent
+      KAFKA_KAFKA_REST_CLIENT_SSL_KEY_PASSWORD: confluent
+      # EmbeddedKafkaRest: HTTP Auth Configuration
+      KAFKA_KAFKA_REST_KAFKA_REST_RESOURCE_EXTENSION_CLASS: io.confluent.kafkarest.security.KafkaRestSecurityResourceExtension
+      KAFKA_KAFKA_REST_REST_SERVLET_INITIALIZOR_CLASSES: io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler
+      KAFKA_KAFKA_REST_PUBLIC_KEY_PATH: /tmp/conf/public.pem
+      # EmbeddedKafkaRest: MDS (HTTP) Client configuration
+      KAFKA_KAFKA_REST_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
+      KAFKA_KAFKA_REST_CLIENT_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
+      KAFKA_KAFKA_REST_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
+      KAFKA_KAFKA_REST_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
+      KAFKA_KAFKA_REST_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'restAdmin:restAdmin'
+      # EmbeddedKafkaRest: Confluent License (Kafka) Client override
+
   kafka2:
     image: ${REPOSITORY}/cp-server:${CONFLUENT_DOCKER_TAG}
     hostname: kafka2
@@ -343,6 +363,25 @@ services:
       KAFKA_LDAP_USER_NAME_ATTRIBUTE: uid
       KAFKA_LDAP_USER_OBJECT_CLASS: inetOrgPerson
 
+      # EmbeddedKafkaRest: Kafka Client Configuration
+      KAFKA_KAFKA_REST_BOOTSTRAP_SERVERS: SASL_SSL://kafka1:10091,SASL_SSL://kafka2:10092
+      KAFKA_KAFKA_REST_CLIENT_SECURITY_PROTOCOL: SASL_SSL
+      KAFKA_KAFKA_REST_CLIENT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka2.truststore.jks
+      KAFKA_KAFKA_REST_CLIENT_SSL_TRUSTSTORE_PASSWORD: confluent
+      KAFKA_KAFKA_REST_CLIENT_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka2.keystore.jks
+      KAFKA_KAFKA_REST_CLIENT_SSL_KEYSTORE_PASSWORD: confluent
+      KAFKA_KAFKA_REST_CLIENT_SSL_KEY_PASSWORD: confluent
+      # EmbeddedKafkaRest: HTTP Auth Configuration
+      KAFKA_KAFKA_REST_KAFKA_REST_RESOURCE_EXTENSION_CLASS: io.confluent.kafkarest.security.KafkaRestSecurityResourceExtension
+      KAFKA_KAFKA_REST_REST_SERVLET_INITIALIZOR_CLASSES: io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler
+      KAFKA_KAFKA_REST_PUBLIC_KEY_PATH: /tmp/conf/public.pem
+      # EmbeddedKafkaRest: MDS (HTTP) Client configuration
+      KAFKA_KAFKA_REST_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
+      KAFKA_KAFKA_REST_CLIENT_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
+      KAFKA_KAFKA_REST_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
+      KAFKA_KAFKA_REST_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
+      KAFKA_KAFKA_REST_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'restAdmin:restAdmin'
+        
   connect:
     image: localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}
     container_name: connect
