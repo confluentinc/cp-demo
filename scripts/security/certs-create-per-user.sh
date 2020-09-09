@@ -8,7 +8,7 @@ i=$1
 keytool -genkey -noprompt \
 			 -alias $i \
 			 -dname "CN=$i,OU=TEST,O=CONFLUENT,L=PaloAlto,S=Ca,C=US" \
-                         -ext "SAN=dns:$i,dns:localhost,dns:kafka1,dns:kafka2" \
+                         -ext "SAN=dns:$i,dns:localhost" \
 			 -keystore kafka.$i.keystore.jks \
 			 -keyalg RSA \
 			 -storepass confluent \
@@ -18,6 +18,12 @@ keytool -genkey -noprompt \
 # Create the certificate signing request (CSR)
 keytool -keystore kafka.$i.keystore.jks -alias $i -certreq -file $i.csr -storepass confluent -keypass confluent -ext "SAN=dns:$i,dns:localhost"
 #openssl req -in $i.csr -text -noout
+
+# Enables 'confluent login --ca-cert-path /etc/kafka/secrets/snakeoil-ca-1.crt --url https://kafka1:8091'
+DNS_ALT_NAMES=$(printf '%s\n' "DNS.1 = $i" "DNS.2 = localhost")
+if [[ "$i" == "mds" ]]; then
+  DNS_ALT_NAMES=$(printf '%s\n' "$DNS_ALT_NAMES" "DNS.3 = kafka1" "DNS.4 = kafka2")
+fi
 
 # Sign the host certificate with the certificate authority (CA)
 openssl x509 -req -CA ${CA_PATH}/snakeoil-ca-1.crt -CAkey ${CA_PATH}/snakeoil-ca-1.key -in $i.csr -out $i-ca1-signed.crt -days 9999 -CAcreateserial -passin pass:confluent -extensions v3_req -extfile <(cat <<EOF
@@ -30,10 +36,7 @@ CN = $i
 [v3_req]
 subjectAltName = @alt_names
 [alt_names]
-DNS.1 = $i
-DNS.2 = localhost
-DNS.3 = kafka1
-DNS.4 = kafka2
+$DNS_ALT_NAMES
 EOF
 )
 #openssl x509 -noout -text -in $i-ca1-signed.crt
