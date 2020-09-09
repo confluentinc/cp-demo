@@ -955,7 +955,7 @@ This demo showcases |crest| in two modes: (1) standalone service listening for H
       # First get the KAFKA_CLUSTER_ID
       KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
 
-      docker-compose exec restproxy curl -X GET -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA http://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics
+      docker-compose exec restproxy curl -X GET -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA http://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics | jq '.data[].topic_name'
 
 Failed Broker
 -------------
