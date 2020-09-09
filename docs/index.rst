@@ -796,7 +796,7 @@ The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/ind
 This demo showcases |crest| in two modes:
 
 - standalone service listening for HTTPS requests on port 8086
-- embedded service on the |ak| brokers listening for HTTP requests on port 8091 on ``kafka1`` and on port 8092 on ``kafka2`` (ports are shared with the MDS listener)
+- embedded service on the |ak| brokers listening for HTTPS requests on port 8091 on ``kafka1`` and on port 8092 on ``kafka2`` (ports are shared with the MDS listener)
 
 #. Use the standalone |crest| to try to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
 
