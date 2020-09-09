@@ -29,6 +29,8 @@ ${DIR}/../helper/refresh_mds_login.sh
 
 ################################## RUN ########################################
 
+echo -e "\nExercising the standalone REST Proxy...\n"
+
 topic="users"
 subject="$topic-value"
 group="my_avro_consumer"
@@ -76,9 +78,29 @@ docker-compose exec tools bash -c "confluent iam rolebinding create \
 docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u $CLIENT_NAME:$CLIENT_NAME https://restproxy:8086/consumers/$group/instances/my_consumer_instance/records
 output=$(docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u $CLIENT_NAME:$CLIENT_NAME https://restproxy:8086/consumers/$group/instances/my_consumer_instance/records)
 if [[ $output =~ "Bunny Smith" ]]; then
-  printf "\nPASS: Output $output matches expected output"
+  printf "\nPASS: Output matches expected output:\n$output"
 else
-  printf "\nFAIL: Output $output does not match expected output"
+  printf "\nFAIL: Output does not match expected output:\n$output"
 fi
 
 docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u $CLIENT_NAME:$CLIENT_NAME https://restproxy:8086/consumers/$group/instances/my_consumer_instance
+
+
+#################
+
+echo -e "\n\n\nExercising the embedded REST Proxy...\n"
+
+docker-compose exec tools bash -c "confluent iam rolebinding create \
+    --principal User:appSA \
+    --role ResourceOwner \
+    --resource Topic:dev_users \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID"
+
+docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA "http://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}" | jq
+
+output=$(docker-compose exec restproxy curl -X GET -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA http://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics | jq '.data[].topic_name')
+if [[ $output =~ "dev_users" ]]; then
+  printf "\nPASS: Output includes dev_users and matches expected output:\n$output"
+else
+  printf "\nFAIL: Output does not include dev_users and matches expected output:\n$output"
+fi
