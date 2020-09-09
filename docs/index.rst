@@ -578,7 +578,7 @@ End clients (non-CP clients):
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-     KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id"")
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
 
       # Then create the role binding for the topic ``wikipedia.parsed``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -697,7 +697,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
    .. sourcecode:: bash
 
       # First get the KAFKA_CLUSTER_ID
-     KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v3/clusters | jq ".data[0].cluster_id"")
+      KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
 
       # Then create the role binding for the subject ``users-value``, i.e., the topic-value (versus the topic-key)
       docker-compose exec tools bash -c "confluent iam rolebinding create \
