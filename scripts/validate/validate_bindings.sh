@@ -5,7 +5,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ../helper/functions.sh
 
 ################################## GET KAFKA CLUSTER ID ########################
-KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
+KAFKA_CLUSTER_ID=$(curl -s -k https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
 echo "KAFKA_CLUSTER_ID: $KAFKA_CLUSTER_ID"
 
 ################################## SETUP VARIABLES #############################
