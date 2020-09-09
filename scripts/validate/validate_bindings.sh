@@ -5,11 +5,11 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ../helper/functions.sh
 
 ################################## GET KAFKA CLUSTER ID ########################
-KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
+KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id | jq -r ".id")
 echo "KAFKA_CLUSTER_ID: $KAFKA_CLUSTER_ID"
 
 ################################## SETUP VARIABLES #############################
-MDS_URL=http://kafka1:8091
+MDS_URL=https://kafka1:8091
 CONNECT=connect-cluster
 SR=schema-registry
 KSQLDB=ksql-cluster

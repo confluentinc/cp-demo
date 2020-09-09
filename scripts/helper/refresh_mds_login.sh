@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ################################## SETUP VARIABLES #############################
-MDS_URL=http://kafka1:8091
+MDS_URL=https://kafka1:8091
 
 SUPER_USER=superUser
 SUPER_USER_PASSWORD=superUser

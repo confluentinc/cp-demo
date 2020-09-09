@@ -52,7 +52,7 @@ preflight_checks()
 
 get_kafka_cluster_id_from_container()
 {
-  KAFKA_CLUSTER_ID=$(curl -s http://kafka1:8091/v1/metadata/id | jq -r ".id")
+  KAFKA_CLUSTER_ID=$(curl -s https://kafka1:8091/v1/metadata/id | jq -r ".id")
   if [ -z "$KAFKA_CLUSTER_ID" ]; then
     echo "Failed to retrieve Kafka cluster id"
     exit 1
