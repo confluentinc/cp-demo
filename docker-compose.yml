@@ -50,6 +50,7 @@ services:
       - kafka2
     volumes:
       - ./scripts/helper:/tmp/helper
+      - ./scripts/security:/etc/kafka/secrets
     entrypoint: /bin/bash
     tty: true
 
