@@ -429,7 +429,7 @@ You can see each component's security configuration in the demo's :devx-cp-demo:
     * If the ``PLAINTEXT`` security protocol is used, these ``ANONYMOUS`` usernames should not be configured as super users
     * Consider not even opening the ``PLAINTEXT`` port if ``SSL`` or ``SASL_SSL`` are configured
 
-There is an OpenLDAP server running in the demo, and each Kafka broker in the demo is configured with MDS and can talk to LDAP so that it can authenticate clients and |cp| services and clients.
+There is an OpenLDAP server running in the demo, and each Kafka broker in the demo is configured with |mds-long| and can talk to LDAP so that it can authenticate clients and |cp| services and clients.
 
 Zookeeper has two listener ports:
 
@@ -573,7 +573,7 @@ End clients (non-CP clients):
       ERROR [Consumer clientId=consumer-wikipedia.test-1, groupId=wikipedia.test] Topic authorization failed for topics [wikipedia.parsed]
       org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]
 
-#. Add the role bindings that permit ``badapp`` client to consume from topic ``wikipedia.parsed`` and its related subject in |sr|.
+#. Create role bindings to permit ``badapp`` client to consume from topic ``wikipedia.parsed`` and its related subject in |sr|.
 
    Get the |ak| cluster ID:
 
@@ -799,10 +799,10 @@ Confluent REST Proxy
 --------------------
 
 The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
-This demo showcases |crest| in two modes:
+This demo showcases |crest-long| in two modes:
 
-- standalone service listening for HTTPS requests on port 8086
-- embedded service on the |ak| brokers listening for HTTPS requests on port 8091 on ``kafka1`` and on port 8092 on ``kafka2`` (ports are shared with the MDS listener)
+- Standalone service, listening for HTTPS requests on port 8086
+- Embedded service on the |ak| brokers, listening for HTTPS requests on port 8091 on ``kafka1`` and on port 8092 on ``kafka2`` (these |crest| ports are shared with the broker's |mds-long| listener)
 
 #. Use the standalone |crest| to try to produce a message to the topic ``users``, referencing schema id ``11``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
 
