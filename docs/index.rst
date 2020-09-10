@@ -581,7 +581,7 @@ End clients (non-CP clients):
 
    Create the role bindings:
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
       # Create the role binding for the topic ``wikipedia.parsed``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -703,7 +703,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    Create the role binding:
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
       # Create the role binding for the subject ``users-value``, i.e., the topic-value (versus the topic-key)
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -795,8 +795,8 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 #. Next step: Learn more about |sr| with the :ref:`Schema Registry Tutorial <schema_registry_tutorial>`.
 
 
-Confluent REST Proxy
---------------------
+|crest-long|
+------------
 
 The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
 This demo showcases |crest-long| in two modes:
@@ -806,13 +806,13 @@ This demo showcases |crest-long| in two modes:
 
 #. Use the standalone |crest| to try to produce a message to the topic ``users``, referencing schema id ``11``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
      docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 11, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' -u appSA:appSA https://restproxy:8086/topics/users
 
    Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
       {"offsets":[{"partition":null,"offset":null,"error_code":40301,"error":"Not authorized to access topics: [users]"}],"key_schema_id":null,"value_schema_id":11}
 
@@ -824,7 +824,7 @@ This demo showcases |crest-long| in two modes:
 
    Create the role binding:
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
       # Create the role binding for the topic ``users``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -835,43 +835,43 @@ This demo showcases |crest-long| in two modes:
 
 #. Again try to produce a message to the topic ``users``. It should pass this time.
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
      docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 11, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' -u appSA:appSA https://restproxy:8086/topics/users
 
    Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
      {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":11}
 
 #. Create consumer instance ``my_avro_consumer``.
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
        docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"name": "my_consumer_instance", "format": "avro", "auto.offset.reset": "earliest"}' -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer
 
    Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
       {"instance_id":"my_consumer_instance","base_uri":"https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance"}
 
 #. Subscribe ``my_avro_consumer`` to the ``users`` topic.
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
        docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"topics":["users"]}' -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/subscription
 
 #. Try to consume messages for ``my_avro_consumer`` subscriptions. It should fail due to an authorization error.
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
        docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
   
    Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
         {"error_code":40301,"message":"Not authorized to access group: my_avro_consumer"} 
 
@@ -883,7 +883,7 @@ This demo showcases |crest-long| in two modes:
 
    Create the role binding:
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
       # Create the role binding for the group ``my_avro_consumer``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -894,7 +894,7 @@ This demo showcases |crest-long| in two modes:
 
 #. Again try to consume messages for ``my_avro_consumer`` subscriptions. It should fail due to a different authorization error.
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
        # Note: Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
        docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
@@ -902,7 +902,7 @@ This demo showcases |crest-long| in two modes:
 
    Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
       {"error_code":40301,"message":"Not authorized to access topics: [users]"}
 
@@ -914,7 +914,7 @@ This demo showcases |crest-long| in two modes:
 
    Create the role binding:
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
       # Create the role binding for the group my_avro_consumer
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -925,7 +925,7 @@ This demo showcases |crest-long| in two modes:
 
 #. Again try to consume messages for ``my_avro_consumer`` subscriptions. It should pass this time.
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
        # Note: Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
        docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
@@ -933,13 +933,13 @@ This demo showcases |crest-long| in two modes:
 
     Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
       [{"topic":"users","key":null,"value":{"userid":1,"username":"Bunny Smith"},"partition":1,"offset":0}]
 
 #. Delete the consumer instance ``my_avro_consumer``.
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
        docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
 
@@ -951,7 +951,7 @@ This demo showcases |crest-long| in two modes:
 
    Create the role binding:
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
       # Create the role binding for the topic ``dev_users``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
@@ -968,7 +968,7 @@ This demo showcases |crest-long| in two modes:
 
    Use ``curl`` to create the topic:
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
       docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA "https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}" --cert /etc/kafka/secrets/mds.certificate.pem --key /etc/kafka/secrets/mds.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt | jq
 
@@ -980,7 +980,7 @@ This demo showcases |crest-long| in two modes:
 
    Use ``curl`` to list the topics:
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
       docker-compose exec restproxy curl -X GET -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics --cert /etc/kafka/secrets/mds.certificate.pem --key /etc/kafka/secrets/mds.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt | jq '.data[].topic_name'
 
@@ -992,7 +992,7 @@ the two Kafka brokers.
 
 #. Stop the Docker container running Kafka broker 2.
 
-   .. sourcecode:: bash
+   .. code-block:: bash
 
           docker-compose stop kafka2
 
@@ -1015,7 +1015,7 @@ the two Kafka brokers.
 
 #. Restart the Docker container running Kafka broker 2.
 
-   .. sourcecode:: bash
+   .. code-block:: bash
 
           docker-compose start kafka2
 
@@ -1143,13 +1143,13 @@ Here are some suggestions on how to troubleshoot the demo.
 
 #. Verify the status of the Docker containers show ``Up`` state, except for the ``kafka-client`` container which is expected to have ``Exit 0`` state.
 
-   .. sourcecode:: bash
+   .. code-block:: bash
 
         docker-compose ps
 
    Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
                  Name                          Command                  State                                           Ports                                     
       ------------------------------------------------------------------------------------------------------------------------------------------------------------
