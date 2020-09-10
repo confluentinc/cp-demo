@@ -651,7 +651,13 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. sourcecode:: bash
 
-       docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://schemaregistry:8085/subjects | jq .
+       docker-compose exec schemaregistry curl -X GET \
+          --cert /etc/kafka/secrets/schemaregistry.certificate.pem \
+          --key /etc/kafka/secrets/schemaregistry.key \
+          --tlsv1.2 \
+          --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+          -u superUser:superUser \
+          https://schemaregistry:8085/subjects | jq .
 
    Your output should resemble:
 
@@ -673,7 +679,15 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. sourcecode:: bash
 
-       docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' -u noexist:noexist https://schemaregistry:8085/subjects/users-value/versions
+       docker-compose exec schemaregistry curl -X POST \
+          -H "Content-Type: application/vnd.schemaregistry.v1+json" \
+          --cert /etc/kafka/secrets/schemaregistry.certificate.pem \
+          --key /etc/kafka/secrets/schemaregistry.key \
+          --tlsv1.2 \
+          --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+          --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' \
+          -u noexist:noexist \
+          https://schemaregistry:8085/subjects/users-value/versions
 
    Your output should resemble:
 
@@ -685,7 +699,15 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. sourcecode:: bash
 
-       docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' -u appSA:appSA https://schemaregistry:8085/subjects/users-value/versions
+       docker-compose exec schemaregistry curl -X POST \
+          -H "Content-Type: application/vnd.schemaregistry.v1+json" \
+          --cert /etc/kafka/secrets/schemaregistry.certificate.pem \
+          --key /etc/kafka/secrets/schemaregistry.key \
+          --tlsv1.2 \
+          --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+          --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' \
+          -u appSA:appSA \
+          https://schemaregistry:8085/subjects/users-value/versions
 
    Your output should resemble:
 
@@ -715,7 +737,15 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. sourcecode:: bash
 
-       docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' -u appSA:appSA https://schemaregistry:8085/subjects/users-value/versions
+       docker-compose exec schemaregistry curl -X POST \
+          -H "Content-Type: application/vnd.schemaregistry.v1+json" \
+          --cert /etc/kafka/secrets/schemaregistry.certificate.pem \
+          --key /etc/kafka/secrets/schemaregistry.key \
+          --tlsv1.2 \
+          --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+          --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' \
+          -u appSA:appSA \
+          https://schemaregistry:8085/subjects/users-value/versions
 
    Your output should resemble:
 
@@ -732,7 +762,13 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. sourcecode:: bash
 
-       docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://schemaregistry:8085/subjects/users-value/versions/1 | jq .
+       docker-compose exec schemaregistry curl -X GET \
+          --cert /etc/kafka/secrets/schemaregistry.certificate.pem \
+          --key /etc/kafka/secrets/schemaregistry.key \
+          --tlsv1.2 \
+          --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+          -u appSA:appSA \
+          https://schemaregistry:8085/subjects/users-value/versions/1 | jq .
 
    Your output should resemble:
 
@@ -806,7 +842,16 @@ This demo showcases |crest-long| in two modes:
 
    .. code-block:: text
 
-     docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 11, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' -u appSA:appSA https://restproxy:8086/topics/users
+     docker-compose exec restproxy curl -X POST \
+        -H "Content-Type: application/vnd.kafka.avro.v2+json" \
+        -H "Accept: application/vnd.kafka.v2+json" \
+        --cert /etc/kafka/secrets/restproxy.certificate.pem \
+        --key /etc/kafka/secrets/restproxy.key \
+        --tlsv1.2 \
+        --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+        --data '{"value_schema_id": 11, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' \
+        -u appSA:appSA \
+        https://restproxy:8086/topics/users
 
    Your output should resemble:
 
@@ -835,7 +880,16 @@ This demo showcases |crest-long| in two modes:
 
    .. code-block:: text
 
-     docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 11, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' -u appSA:appSA https://restproxy:8086/topics/users
+     docker-compose exec restproxy curl -X POST \
+        -H "Content-Type: application/vnd.kafka.avro.v2+json" \
+        -H "Accept: application/vnd.kafka.v2+json" \
+        --cert /etc/kafka/secrets/restproxy.certificate.pem \
+        --key /etc/kafka/secrets/restproxy.key \
+        --tlsv1.2 \
+        --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+        --data '{"value_schema_id": 11, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' \
+        -u appSA:appSA \
+        https://restproxy:8086/topics/users
 
    Your output should resemble:
 
@@ -847,7 +901,15 @@ This demo showcases |crest-long| in two modes:
 
    .. code-block:: text
 
-       docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"name": "my_consumer_instance", "format": "avro", "auto.offset.reset": "earliest"}' -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer
+      docker-compose exec restproxy curl -X POST \
+         -H "Content-Type: application/vnd.kafka.v2+json" \
+         --cert /etc/kafka/secrets/restproxy.certificate.pem \
+         --key /etc/kafka/secrets/restproxy.key \
+         --tlsv1.2 \
+         --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+         --data '{"name": "my_consumer_instance", "format": "avro", "auto.offset.reset": "earliest"}' \
+         -u appSA:appSA \
+         https://restproxy:8086/consumers/my_avro_consumer
 
    Your output should resemble:
 
@@ -859,13 +921,28 @@ This demo showcases |crest-long| in two modes:
 
    .. code-block:: text
 
-       docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"topics":["users"]}' -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/subscription
+      docker-compose exec restproxy curl -X POST \
+         -H "Content-Type: application/vnd.kafka.v2+json" \
+         --cert /etc/kafka/secrets/restproxy.certificate.pem \
+         --key /etc/kafka/secrets/restproxy.key \
+         --tlsv1.2 \
+         --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+         --data '{"topics":["users"]}' \
+         -u appSA:appSA \
+         https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/subscription
 
 #. Try to consume messages for ``my_avro_consumer`` subscriptions. It should fail due to an authorization error.
 
    .. code-block:: text
 
-       docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
+      docker-compose exec restproxy curl -X GET \
+         -H "Accept: application/vnd.kafka.avro.v2+json" \
+         --cert /etc/kafka/secrets/restproxy.certificate.pem \
+         --key /etc/kafka/secrets/restproxy.key \
+         --tlsv1.2 \
+         --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+         -u appSA:appSA \
+         https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
   
    Your output should resemble:
 
@@ -894,9 +971,24 @@ This demo showcases |crest-long| in two modes:
 
    .. code-block:: text
 
-       # Note: Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
-       docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
-       docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
+      # Note: Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
+      docker-compose exec restproxy curl -X GET \
+         -H "Accept: application/vnd.kafka.avro.v2+json" \
+         --cert /etc/kafka/secrets/restproxy.certificate.pem \
+         --key /etc/kafka/secrets/restproxy.key \
+         --tlsv1.2 \
+         --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+         -u appSA:appSA \
+         https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
+
+      docker-compose exec restproxy curl -X GET \
+         -H "Accept: application/vnd.kafka.avro.v2+json" \
+         --cert /etc/kafka/secrets/restproxy.certificate.pem \
+         --key /etc/kafka/secrets/restproxy.key \
+         --tlsv1.2 \
+         --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+         -u appSA:appSA \
+         https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
 
    Your output should resemble:
 
@@ -926,8 +1018,23 @@ This demo showcases |crest-long| in two modes:
    .. code-block:: text
 
        # Note: Issue this command twice due to https://github.com/confluentinc/kafka-rest/issues/432
-       docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
-       docker-compose exec restproxy curl -X GET -H "Accept: application/vnd.kafka.avro.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
+       docker-compose exec restproxy curl -X GET \
+          -H "Accept: application/vnd.kafka.avro.v2+json" \
+          --cert /etc/kafka/secrets/restproxy.certificate.pem \
+          --key /etc/kafka/secrets/restproxy.key \
+          --tlsv1.2 \
+          --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+          -u appSA:appSA \
+          https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
+
+       docker-compose exec restproxy curl -X GET \
+          -H "Accept: application/vnd.kafka.avro.v2+json" \
+          --cert /etc/kafka/secrets/restproxy.certificate.pem \
+          --key /etc/kafka/secrets/restproxy.key \
+          --tlsv1.2 \
+          --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+          -u appSA:appSA \
+          https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
 
     Your output should resemble:
 
@@ -939,7 +1046,14 @@ This demo showcases |crest-long| in two modes:
 
    .. code-block:: text
 
-       docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u appSA:appSA https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
+      docker-compose exec restproxy curl -X DELETE \
+         -H "Content-Type: application/vnd.kafka.v2+json" \
+         --cert /etc/kafka/secrets/restproxy.certificate.pem \
+         --key /etc/kafka/secrets/restproxy.key \
+         --tlsv1.2 \
+         --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+         -u appSA:appSA \
+         https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
 
 #. For the next few steps, use the |crest| that is embedded on the |ak| brokers. Only :ref:`rest-proxy-v3` is supported this time.  Create a role binding for the client to be granted ``ResourceOwner`` role for the topic ``dev_users``.
 
@@ -968,7 +1082,16 @@ This demo showcases |crest-long| in two modes:
 
    .. code-block:: text
 
-      docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA "https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}" --cert /etc/kafka/secrets/mds.certificate.pem --key /etc/kafka/secrets/mds.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt | jq
+      docker-compose exec restproxy curl -X POST \
+         -H "Content-Type: application/json" \
+         -H "accept: application/json" \
+         -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}" \
+         --cert /etc/kafka/secrets/mds.certificate.pem \
+         --key /etc/kafka/secrets/mds.key \
+         --tlsv1.2 \
+         --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+         -u appSA:appSA \
+         "https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" | jq
 
 #. List topics with embedded |crest| to find the newly created ``dev_users``.
 
@@ -980,7 +1103,15 @@ This demo showcases |crest-long| in two modes:
 
    .. code-block:: text
 
-      docker-compose exec restproxy curl -X GET -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics --cert /etc/kafka/secrets/mds.certificate.pem --key /etc/kafka/secrets/mds.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt | jq '.data[].topic_name'
+      docker-compose exec restproxy curl -X GET \
+         -H "Content-Type: application/json" \
+         -H "accept: application/json" \
+         --cert /etc/kafka/secrets/mds.certificate.pem \
+         --key /etc/kafka/secrets/mds.key \
+         --tlsv1.2 \
+         --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+         -u appSA:appSA \
+         https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics | jq '.data[].topic_name'
 
 Failed Broker
 -------------
