@@ -691,13 +691,13 @@ services:
       PUBLIC_KEY_PATH: /tmp/conf/public.pem
       
       # Used by Control Center to connect to MDS to verify tokens and authenticate clients
-      CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: controlcenterAdmin:controlcenterAdmin
       CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: https://kafka1:8091,https://kafka2:8092
       CONFLUENT_METADATA_SERVER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.controlcenter.truststore.jks
       CONFLUENT_METADATA_SERVER_SSL_TRUSTSTORE_PASSWORD: confluent
       CONFLUENT_METADATA_SERVER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.controlcenter.keystore.jks
       CONFLUENT_METADATA_SERVER_SSL_KEYSTORE_PASSWORD: confluent
       CONFLUENT_METADATA_SERVER_SSL_KEY_PASSWORD: confluent
+      CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: controlcenterAdmin:controlcenterAdmin
       
       CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SSL
       CONTROL_CENTER_STREAMS_SASL_MECHANISM: OAUTHBEARER
