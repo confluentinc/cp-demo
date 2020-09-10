@@ -103,9 +103,7 @@ Start Demo
 
 #. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
-#. After you run through the guided tutorial below, apply the concepts you learn here to build your own event streaming pipeline in |ccloud|, a fully managed, cloud-native event streaming platform powered by |ak|.
-
-.. note:: When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
+#. After you run through the guided tutorial below, apply the concepts you learn here to build your own event streaming pipeline in |ccloud|, a fully managed, cloud-native event streaming platform powered by |ak|. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
 
 
 ===============
@@ -344,14 +342,14 @@ Consumers
    now share consumption of the partitions in the topic
    ``wikipedia.parsed``.
 
-    .. figure:: images/consumer_start_two.png
+   .. figure:: images/consumer_start_two.png
       :alt: image
 
 #. From the **Brokers -> Consumption** view, click on a point in the Request latency
    line graph to view a breakdown of latencies through the entire `request lifecycle <https://docs.confluent.io/current/control-center/brokers.html#consumption-metrics-panel>`__.
 
-    .. figure:: images/slow_consumer_produce_latency_breakdown.png
-       :alt: image
+   .. figure:: images/slow_consumer_produce_latency_breakdown.png
+      :alt: image
 
 
 Replicator
