@@ -185,7 +185,7 @@ This demo has three connectors:
 
 - IRC source connector
 - Elasticsearch sink connector
-- Confluent Replicator
+- |crep-full|
 
 They are running on a |kconnect| worker that is configured with |cp| security features.
 The |kconnect| worker's embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
@@ -352,33 +352,33 @@ Consumers
       :alt: image
 
 
-Replicator
-----------
+|crep-full|
+-----------
 
-Confluent Replicator copies data from a source Kafka cluster to a
+|crep-full| copies data from a source Kafka cluster to a
 destination Kafka cluster. The source and destination clusters are
-typically different clusters, but in this demo, Replicator is doing
+typically different clusters, but in this demo, |crep| is doing
 intra-cluster replication, *i.e.*, the source and destination Kafka
 clusters are the same. As with the rest of the components in the
-solution, Confluent Replicator is also configured with security.
+solution, |crep-full| is also configured with security.
 
-#. View Replicator status and throughput in a dedicated view in |c3|.
+#. View |crep| status and throughput in a dedicated view in |c3|.
 
    .. figure:: images/replicator_c3_view.png
       :alt: image
 
-#. **Consumers**: monitor throughput and latency of Confluent Replicator.
-   Replicator is a |kconnect-long| source connector and has a corresponding consumer group ``connect-replicator``.
+#. **Consumers**: monitor throughput and latency of |crep-full|.
+   |crep| is a |kconnect-long| source connector and has a corresponding consumer group ``connect-replicator``.
 
    .. figure:: images/replicator_consumer_group_list.png
       :alt: image
 
-#. View Replicator Consumer Lag.
+#. View |crep| Consumer Lag.
 
    .. figure:: images/replicator_consumer_lag.png
       :alt: image
 
-#. View Replicator Consumption metrics.
+#. View |crep| Consumption metrics.
 
    .. figure:: images/replicator_consumption.png
       :alt: image
@@ -395,7 +395,7 @@ solution, Confluent Replicator is also configured with security.
 
    .. figure:: images/replicator_stopped.png
 
-#. Restart the Replicator connector.
+#. Restart the |crep| connector.
 
 #. Observe that the ``connect-replicator`` consumer group has resumed consumption. Notice several things:
 
@@ -410,7 +410,7 @@ Security
 
 All the |cp| components and clients in this demo are enabled with many `security features <https://docs.confluent.io/current/security.html>`__.
 
--  :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization. It is configured with the Confluent Server Authorizer and talks to LDAP to authenticate clients.
+-  :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization. It is configured with the |csa| and talks to LDAP to authenticate clients.
 -  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__ for encryption and mTLS. The demo :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password. 
 -  :ref:`Role-Based Access Control (RBAC) <rbac-overview>` for authorization. If a resource has no associated ACLs, then users are not allowed to access the resource, except super users.
 -  |zk| is configured for `SSL <https://docs.confluent.io/current/security/zk-security.html#mtls>`__ AND `SASL/DIGEST-MD5 <https://docs.confluent.io/current/security/zk-security.html#sasl-with-digest-md5>`__ (Note: no |crest| and |sr| TLS support with `trial licenses <https://docs.confluent.io/5.5.0/release-notes/index.html#schema-registry>`__).
@@ -429,10 +429,10 @@ You can see each component's security configuration in the demo's :devx-cp-demo:
 
 There is an OpenLDAP server running in the demo, and each Kafka broker in the demo is configured with |mds-long| and can talk to LDAP so that it can authenticate clients and |cp| services and clients.
 
-Zookeeper has two listener ports:
+|zk| has two listener ports:
 
-+---------------+----------------+--------------------------------------------------------------------+--------+--------+
-| Name          | Protocol       | In this demo, used for ...                                         | zookeeper       |
++---------------+----------------+--------------------------------------------------------------------+-----------------+
+| Name          | Protocol       | In this demo, used for ...                                         | ZooKeeper       |
 +===============+================+====================================================================+=================+
 | N/A           | SASL/DIGEST-MD5| Validating trial license for |crest| and |sr|. (no TLS support)    | 2181            |
 +---------------+----------------+--------------------------------------------------------------------+-----------------+
@@ -460,7 +460,7 @@ Each broker has five listener ports:
 End clients (non-CP clients):
 
 - Authenticate using mTLS via the broker SSL listener.
-- If they are also using |sr|, authenticate to Schema Registry via LDAP.
+- If they are also using |sr|, authenticate to |sr| via LDAP.
 - If they are also using Confluent Monitoring interceptors, authenticate using mTLS via the broker SSL listener.
 - Should never use the TOKEN listener which is meant only for internal communication between Confluent components.
 - See :devx-cp-demo:`client configuration|env_files/streams-demo.env/` used in the demo by the ``streams-demo`` container running the Kafka Streams application ``wikipedia-activity-monitor``.
@@ -524,7 +524,7 @@ End clients (non-CP clients):
 
          kafka1            | 	super.users = User:admin;User:mds;User:superUser;User:ANONYMOUS
 
-#. Verify that LDAP user ``appSA`` (which is not a super user) can consume messages from topic ``wikipedia.parsed``.  Notice that it is configured to authenticate to brokers with mTLS and authenticate to Schema Registry with LDAP.
+#. Verify that LDAP user ``appSA`` (which is not a super user) can consume messages from topic ``wikipedia.parsed``.  Notice that it is configured to authenticate to brokers with mTLS and authenticate to |sr| with LDAP.
 
    .. sourcecode:: bash
 
@@ -1017,8 +1017,8 @@ the two Kafka brokers.
 
           docker-compose start kafka2
 
-#. After about a minute, observe the Broker summary in Confluent
-   Control Center. The broker count has recovered to 2, and the topic
+#. After about a minute, observe the Broker summary in |c3|.
+   The broker count has recovered to 2, and the topic
    partitions are back to reporting no under replicated partitions.
 
    .. figure:: images/broker_down_steady.png
@@ -1035,7 +1035,7 @@ the two Kafka brokers.
 Alerting
 --------
 
-There are many types of Control Center
+There are many types of |c3-short|
 `alerts <https://docs.confluent.io/current/control-center/docs/alerts.html>`__
 and many ways to configure them. Use the Alerts management page to
 define triggers and actions, or click on individual resources
