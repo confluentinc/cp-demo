@@ -713,7 +713,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
           --kafka-cluster-id $KAFKA_CLUSTER_ID \
           --schema-registry-cluster-id schema-registry"
 
-#. Again try to register the schema. It should pass this time.  Note the schema id that it returns, e.g. below schema id is ``7``.
+#. Again try to register the schema. It should pass this time.  Note the schema id that it returns, e.g. below schema id is ``11``.
 
    .. sourcecode:: bash
 
@@ -723,7 +723,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. sourcecode:: bash
 
-     {"id":7}
+     {"id":11}
 
 #. View the new schema for the subject ``users-value``. From |c3|, click **Topics**. Scroll down to and click on the topic `users` and select "SCHEMA".
 
@@ -743,7 +743,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
      {
        "subject": "users-value",
        "version": 1,
-       "id": 7,
+       "id": 11,
        "schema": "{\"type\":\"record\",\"name\":\"user\",\"fields\":[{\"name\":\"username\",\"type\":\"string\"},{\"name\":\"userid\",\"type\":\"long\"}]}"
      }
 
@@ -804,17 +804,17 @@ This demo showcases |crest| in two modes:
 - standalone service listening for HTTPS requests on port 8086
 - embedded service on the |ak| brokers listening for HTTPS requests on port 8091 on ``kafka1`` and on port 8092 on ``kafka2`` (ports are shared with the MDS listener)
 
-#. Use the standalone |crest| to try to produce a message to the topic ``users``, referencing schema id ``7``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
+#. Use the standalone |crest| to try to produce a message to the topic ``users``, referencing schema id ``11``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
 
    .. sourcecode:: bash
 
-     docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 7, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' -u appSA:appSA https://restproxy:8086/topics/users
+     docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 11, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' -u appSA:appSA https://restproxy:8086/topics/users
 
    Your output should resemble:
 
    .. sourcecode:: bash
 
-      {"offsets":[{"partition":null,"offset":null,"error_code":40301,"error":"Not authorized to access topics: [users]"}],"key_schema_id":null,"value_schema_id":7}
+      {"offsets":[{"partition":null,"offset":null,"error_code":40301,"error":"Not authorized to access topics: [users]"}],"key_schema_id":null,"value_schema_id":11}
 
 #. Create a role binding for the client permitting it produce to the topic ``users``.
 
@@ -837,13 +837,13 @@ This demo showcases |crest| in two modes:
 
    .. sourcecode:: bash
 
-     docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 7, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' -u appSA:appSA https://restproxy:8086/topics/users
+     docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" -H "Accept: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"value_schema_id": 11, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' -u appSA:appSA https://restproxy:8086/topics/users
 
    Your output should resemble:
 
    .. sourcecode:: bash
 
-     {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":7}
+     {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":11}
 
 #. Create consumer instance ``my_avro_consumer``.
 
@@ -970,7 +970,7 @@ This demo showcases |crest| in two modes:
 
    .. sourcecode:: bash
 
-      docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA "https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}" | jq
+      docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA "https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}" --cert /etc/kafka/secrets/mds.certificate.pem --key /etc/kafka/secrets/mds.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt | jq
 
 #. List topics with embedded |crest| to find the newly created ``dev_users``.
 
@@ -982,7 +982,7 @@ This demo showcases |crest| in two modes:
 
    .. sourcecode:: bash
 
-      docker-compose exec restproxy curl -X GET -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics | jq '.data[].topic_name'
+      docker-compose exec restproxy curl -X GET -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics --cert /etc/kafka/secrets/mds.certificate.pem --key /etc/kafka/secrets/mds.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt | jq '.data[].topic_name'
 
 Failed Broker
 -------------
