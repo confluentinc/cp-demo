@@ -180,8 +180,8 @@ Topics
    .. figure:: images/create_topic.png
          :alt: image
 
-Connect
--------
+|kconnect-long|
+---------------
 
 This demo has three connectors:
 
@@ -190,9 +190,9 @@ This demo has three connectors:
 - Confluent Replicator
 
 They are running on a |kconnect| worker that is configured with |cp| security features.
-The connect worker's embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
+The |kconnect| worker's embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
 
-#. |c3| uses the Kafka Connect API to manage multiple `connect clusters <https://docs.confluent.io/current/control-center/docs/connect.html>`__.  Click on "Connect".
+#. |c3| uses the |kconnect-long| API to manage multiple `connect clusters <https://docs.confluent.io/current/control-center/docs/connect.html>`__.  Click on "Connect".
 
 #. Select ``connect1``, the name of the cluster of |kconnect| workers.
 
@@ -370,7 +370,7 @@ solution, Confluent Replicator is also configured with security.
       :alt: image
 
 #. **Consumers**: monitor throughput and latency of Confluent Replicator.
-   Replicator is a Kafka Connect source connector and has a corresponding consumer group ``connect-replicator``.
+   Replicator is a |kconnect-long| source connector and has a corresponding consumer group ``connect-replicator``.
 
    .. figure:: images/replicator_consumer_group_list.png
       :alt: image
