@@ -573,28 +573,31 @@ End clients (non-CP clients):
       ERROR [Consumer clientId=consumer-wikipedia.test-1, groupId=wikipedia.test] Topic authorization failed for topics [wikipedia.parsed]
       org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [wikipedia.parsed]
 
-#. Add a role binding that permits ``badapp`` client to consume from topic ``wikipedia.parsed`` and its related subject in |sr|.
+#. Add the role bindings that permit ``badapp`` client to consume from topic ``wikipedia.parsed`` and its related subject in |sr|.
+
+   Get the |ak| cluster ID:
+
+   .. literalinclude:: includes/get_kafka_cluster_id_from_host.sh
+
+   Create the role bindings:
 
    .. sourcecode:: bash
 
-      # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s -k https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
-
-      # Then create the role binding for the topic ``wikipedia.parsed``
+      # Create the role binding for the topic ``wikipedia.parsed``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
           --principal User:badapp \
           --role ResourceOwner \
           --resource Topic:wikipedia.parsed \
           --kafka-cluster-id $KAFKA_CLUSTER_ID"
 
-      # Then create the role binding for the group ``wikipedia.test``
+      # Create the role binding for the group ``wikipedia.test``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
           --principal User:badapp \
           --role ResourceOwner \
           --resource Group:wikipedia.test \
           --kafka-cluster-id $KAFKA_CLUSTER_ID"
 
-      # Then create the role binding for the subject ``wikipedia.parsed-value``, i.e., the topic-value (versus the topic-key)
+      # Create the role binding for the subject ``wikipedia.parsed-value``, i.e., the topic-value (versus the topic-key)
       docker-compose exec tools bash -c "confluent iam rolebinding create \
           --principal User:badapp \
           --role ResourceOwner \
@@ -694,12 +697,15 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
 #. Create a role binding for the ``appSA`` client permitting it access to |sr|.
 
+   Get the |ak| cluster ID:
+
+   .. literalinclude:: includes/get_kafka_cluster_id_from_host.sh
+
+   Create the role binding:
+
    .. sourcecode:: bash
 
-      # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s -k https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
-
-      # Then create the role binding for the subject ``users-value``, i.e., the topic-value (versus the topic-key)
+      # Create the role binding for the subject ``users-value``, i.e., the topic-value (versus the topic-key)
       docker-compose exec tools bash -c "confluent iam rolebinding create \
           --principal User:appSA \
           --role ResourceOwner \
@@ -812,12 +818,15 @@ This demo showcases |crest| in two modes:
 
 #. Create a role binding for the client permitting it produce to the topic ``users``.
 
+   Get the |ak| cluster ID:
+
+   .. literalinclude:: includes/get_kafka_cluster_id_from_host.sh
+
+   Create the role binding:
+
    .. sourcecode:: bash
 
-      # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s -k https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
-
-      # Then create the role binding for the topic ``users``
+      # Create the role binding for the topic ``users``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
           --principal User:appSA \
           --role DeveloperWrite \
@@ -868,12 +877,15 @@ This demo showcases |crest| in two modes:
 
 #. Create a role binding for the client permitting it access to the consumer group ``my_avro_consumer``.
 
+   Get the |ak| cluster ID:
+
+   .. literalinclude:: includes/get_kafka_cluster_id_from_host.sh
+
+   Create the role binding:
+
    .. sourcecode:: bash
 
-      # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s -k https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
-
-      # Then create the role binding for the group ``my_avro_consumer``
+      # Create the role binding for the group ``my_avro_consumer``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
           --principal User:appSA \
           --role ResourceOwner \
@@ -896,12 +908,15 @@ This demo showcases |crest| in two modes:
 
 #. Create a role binding for the client permitting it access to the topic ``users``.
 
+   Get the |ak| cluster ID:
+
+   .. literalinclude:: includes/get_kafka_cluster_id_from_host.sh
+
+   Create the role binding:
+
    .. sourcecode:: bash
 
-      # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s -k https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
-
-      # Then create the role binding for the group my_avro_consumer
+      # Create the role binding for the group my_avro_consumer
       docker-compose exec tools bash -c "confluent iam rolebinding create \
           --principal User:appSA \
           --role DeveloperRead \
@@ -930,12 +945,15 @@ This demo showcases |crest| in two modes:
 
 #. For the next few steps, use the |crest| that is embedded on the |ak| brokers. Only :ref:`rest-proxy-v3` is supported this time.  Create a role binding for the client to be granted ``ResourceOwner`` role for the topic ``dev_users``.
 
+   Get the |ak| cluster ID:
+
+   .. literalinclude:: includes/get_kafka_cluster_id_from_host.sh
+
+   Create the role binding:
+
    .. sourcecode:: bash
 
-      # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s -k https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
-
-      # Then create the role binding for the topic ``dev_users``
+      # Create the role binding for the topic ``dev_users``
       docker-compose exec tools bash -c "confluent iam rolebinding create \
           --principal User:appSA \
           --role ResourceOwner \
@@ -944,19 +962,25 @@ This demo showcases |crest| in two modes:
 
 #. Create the topic ``dev_users`` with embedded |crest|.
 
-   .. sourcecode:: bash
+   Get the |ak| cluster ID:
 
-      # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s -k https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
+   .. literalinclude:: includes/get_kafka_cluster_id_from_host.sh
+
+   Use ``curl`` to create the topic:
+
+   .. sourcecode:: bash
 
       docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA "https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}" | jq
 
 #. List topics with embedded |crest| to find the newly created ``dev_users``.
 
-   .. sourcecode:: bash
+   Get the |ak| cluster ID:
 
-      # First get the KAFKA_CLUSTER_ID
-      KAFKA_CLUSTER_ID=$(curl -s -k https://localhost:8091/v1/metadata/id --cert scripts/security/mds.certificate.pem --key scripts/security/mds.key --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
+   .. literalinclude:: includes/get_kafka_cluster_id_from_host.sh
+
+   Use ``curl`` to list the topics:
+
+   .. sourcecode:: bash
 
       docker-compose exec restproxy curl -X GET -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics | jq '.data[].topic_name'
 
