@@ -93,7 +93,7 @@ Start Demo
       cd cp-demo
       git checkout |release_post_branch|
 
-#. From the ``cp-demo`` directory, start the entire demo by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This will take approximately 7 minutes to complete.
+#. From the ``cp-demo`` directory, start the entire demo by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This takes approximately 7 minutes to complete.
 
    .. sourcecode:: bash
 
@@ -265,7 +265,7 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
    .. figure:: images/ksql_properties.png
       :alt: image
 
-#. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how ksqlDB windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but since we want to send downstream just the counts greater than one, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
+#. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how ksqlDB windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but to send just the counts greater than one downstream, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
 - View messages in the topic ``EN_WIKIPEDIA_GT_1`` (jump to offset 0/partition 0), and notice the nulls:
 
@@ -384,7 +384,7 @@ solution, |crep-full| is also configured with security.
       :alt: image
 
 #. **Connect**: pause the |crep| connector in **Settings**
-   by pressing the pause icon in the top right and wait for 10 seconds until it takes effect.  This will stop
+   by pressing the pause icon in the top right and wait for 10 seconds until it takes effect.  This stops
    consumption for the related consumer group.
 
    .. figure:: images/pause_connector_replicator.png
@@ -478,22 +478,28 @@ End clients (non-CP clients):
    .. sourcecode:: bash
 
            # CLEAR/PLAINTEXT port
-           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:12091
+           docker-compose exec kafka1 kafka-consumer-groups \
+              --list \
+              --bootstrap-server kafka1:12091
 
 #. End clients: Communicate with brokers via the SSL port, and SSL parameters configured via the ``--command-config`` argument for command line tools or ``--consumer.config`` for kafka-console-consumer.
 
    .. sourcecode:: bash
 
            # SSL/SSL port
-           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:11091 \
-               --command-config /etc/kafka/secrets/client_without_interceptors_ssl.config
+           docker-compose exec kafka1 kafka-consumer-groups \
+              --list \
+              --bootstrap-server kafka1:11091 \
+              --command-config /etc/kafka/secrets/client_without_interceptors_ssl.config
 
-#. If a client tries to communicate with brokers via the SSL port but does not specify the SSL parameters, it will fail
+#. If a client tries to communicate with brokers via the SSL port but does not specify the SSL parameters, it fails
 
    .. sourcecode:: bash
 
            # SSL/SSL port
-           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:11091
+           docker-compose exec kafka1 kafka-consumer-groups \
+              --list \
+              --bootstrap-server kafka1:11091
 
    Your output should resemble:
 
@@ -508,8 +514,10 @@ End clients (non-CP clients):
    .. sourcecode:: bash
 
            # INTERNAL/SASL_PLAIN port
-           docker-compose exec kafka1 kafka-consumer-groups --list --bootstrap-server kafka1:9091 \
-               --command-config /etc/kafka/secrets/client_sasl_plain.config
+           docker-compose exec kafka1 kafka-consumer-groups \
+              --list \
+              --bootstrap-server kafka1:9091 \
+              --command-config /etc/kafka/secrets/client_sasl_plain.config
 
 #. Verify which users are configured to be super users.
 
@@ -528,7 +536,8 @@ End clients (non-CP clients):
 
    .. sourcecode:: bash
 
-         docker-compose exec connect kafka-avro-console-consumer --bootstrap-server kafka1:11091,kafka2:11092 \
+         docker-compose exec connect kafka-avro-console-consumer \
+           --bootstrap-server kafka1:11091,kafka2:11092 \
            --consumer-property security.protocol=SSL \
            --consumer-property ssl.truststore.location=/etc/kafka/secrets/kafka.appSA.truststore.jks \
            --consumer-property ssl.truststore.password=confluent \
@@ -548,7 +557,8 @@ End clients (non-CP clients):
 
    .. sourcecode:: bash
 
-         docker-compose exec connect kafka-avro-console-consumer --bootstrap-server kafka1:11091,kafka2:11092 \
+         docker-compose exec connect kafka-avro-console-consumer \
+           --bootstrap-server kafka1:11091,kafka2:11092 \
            --consumer-property security.protocol=SSL \
            --consumer-property ssl.truststore.location=/etc/kafka/secrets/kafka.badapp.truststore.jks \
            --consumer-property ssl.truststore.password=confluent \
@@ -607,7 +617,8 @@ End clients (non-CP clients):
 
    .. sourcecode:: bash
 
-         docker-compose exec connect kafka-avro-console-consumer --bootstrap-server kafka1:11091,kafka2:11092 \
+         docker-compose exec connect kafka-avro-console-consumer \
+           --bootstrap-server kafka1:11091,kafka2:11092 \
            --consumer-property security.protocol=SSL \
            --consumer-property ssl.truststore.location=/etc/kafka/secrets/kafka.badapp.truststore.jks \
            --consumer-property ssl.truststore.password=confluent \
@@ -667,13 +678,12 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
          "wikipedia.parsed.replica-value",
          "EN_WIKIPEDIA_GT_1_COUNTS-value",
          "WIKIPEDIABOT-value",
-         "_confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-Aggregate-aggregate-changelog-value",
          "EN_WIKIPEDIA_GT_1-value",
-         "wikipedia.parsed.count-by-channel-value",
-         "_confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_4-Aggregate-groupby-repartition-value",
+         "_confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_7-Aggregate-Aggregate-Materialize-changelog-value",
          "WIKIPEDIANOBOT-value",
+         "_confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_7-Aggregate-GroupBy-repartition-value",
          "wikipedia.parsed-value"
-      ]
+       ]
 
 #. Instead of using the superUser credentials, now use client credentials `noexist:noexist` (user does not exist in LDAP) to try to register a new Avro schema (a record with two fields ``username`` and ``userid``) into |sr| for the value of a new topic ``users``. It should fail due to an authorization error.
 
@@ -785,21 +795,27 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. sourcecode:: bash
 
-      docker-compose exec kafka1 kafka-topics --describe --topic users --bootstrap-server kafka1:9091 --command-config /etc/kafka/secrets/client_sasl_plain.config
+      docker-compose exec kafka1 kafka-topics \
+         --describe \
+         --topic users \
+         --bootstrap-server kafka1:9091 \
+         --command-config /etc/kafka/secrets/client_sasl_plain.config
 
    Your output should resemble:
 
    .. sourcecode:: bash
 
       Topic: users	PartitionCount: 2	ReplicationFactor: 2	Configs: confluent.value.schema.validation=true
-	      Topic: users	Partition: 0	Leader: 1	Replicas: 1,2	Isr: 1,2	Offline: 	LiveObservers: 
-	      Topic: users	Partition: 1	Leader: 2	Replicas: 2,1	Isr: 2,1	Offline: 	LiveObservers: 
+	      Topic: users	Partition: 0	Leader: 1	Replicas: 1,2	Isr: 1,2	Offline: 
+	      Topic: users	Partition: 1	Leader: 2	Replicas: 2,1	Isr: 2,1	Offline: 
 
-#. Produce a non-Avro message to this topic using ``kafka-console-producer``, and it will result in a failure.
+#. Produce a non-Avro message to this topic using ``kafka-console-producer``, and it results in a failure.
 
    .. sourcecode:: bash
 
-      docker-compose exec connect kafka-console-producer --topic users --broker-list kafka1:11091 \
+      docker-compose exec connect kafka-console-producer \
+           --topic users \
+           --broker-list kafka1:11091 \
            --producer-property security.protocol=SSL \
            --producer-property ssl.truststore.location=/etc/kafka/secrets/kafka.appSA.truststore.jks \
            --producer-property ssl.truststore.password=confluent \
@@ -818,13 +834,21 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. sourcecode:: bash
 
-      docker-compose exec kafka1 kafka-topics --describe --topic wikipedia.parsed --bootstrap-server kafka1:9091 --command-config /etc/kafka/secrets/client_sasl_plain.config
+      docker-compose exec kafka1 kafka-topics \
+         --describe \
+         --topic wikipedia.parsed \
+         --bootstrap-server kafka1:9091 \
+         --command-config /etc/kafka/secrets/client_sasl_plain.config
 
 #. Describe the topic ``wikipedia.parsed.replica``, which is the topic that |crep| has replicated from ``wikipedia.parsed``. Notice that it also has enabled |sv|, because |crep| default is ``topic.config.sync=true`` (see |crep| :ref:`documentation <rep-destination-topics>`).
 
    .. sourcecode:: bash
 
-      docker-compose exec kafka1 kafka-topics --describe --topic wikipedia.parsed.replica --bootstrap-server kafka1:9091 --command-config /etc/kafka/secrets/client_sasl_plain.config
+      docker-compose exec kafka1 kafka-topics \
+         --describe \
+         --topic wikipedia.parsed.replica \
+         --bootstrap-server kafka1:9091 \
+         --command-config /etc/kafka/secrets/client_sasl_plain.config
 
 #. Next step: Learn more about |sr| with the :ref:`Schema Registry Tutorial <schema_registry_tutorial>`.
 
@@ -1206,7 +1230,7 @@ to setup alerts from there.
    connector.
 
 #. In the Connect view, pause the Elasticsearch sink connector in Settings by
-   pressing the pause icon in the top right. This will stop consumption
+   pressing the pause icon in the top right. This stops consumption
    for the related consumer group.
 
    .. figure:: images/pause_connector.png
@@ -1263,6 +1287,7 @@ Here are some examples of monitoring stacks that integrate with |cp|:
       :alt: image
       :width: 500px
 
+#. Next step: for a practical guide to optimizing your |ak| deployment for various service goals including throughput, latency, durability and availability, and useful metrics to monitor for performance and cluster health for on-prem |ak| clusters, see the `Optimizing Your Apache Kafka Deployment <https://www.confluent.io/white-paper/optimizing-your-apache-kafka-deployment/>`__ whitepaper.
 
 ===============
 Troubleshooting
