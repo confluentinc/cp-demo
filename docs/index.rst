@@ -649,7 +649,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
 #. View the |sr| subjects for topics that have registered schemas for their keys and/or values. Notice the ``curl`` arguments include (a) TLS information required to interact with |sr| which is listening for HTTPS on port 8085, and (b) authentication credentials required for RBAC (using `superUser:superUser` to see all of them).
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
        docker-compose exec schemaregistry curl -X GET \
           --cert /etc/kafka/secrets/schemaregistry.certificate.pem \
@@ -677,7 +677,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
 #. Instead of using the superUser credentials, now use client credentials `noexist:noexist` (user does not exist in LDAP) to try to register a new Avro schema (a record with two fields ``username`` and ``userid``) into |sr| for the value of a new topic ``users``. It should fail due to an authorization error.
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
        docker-compose exec schemaregistry curl -X POST \
           -H "Content-Type: application/vnd.schemaregistry.v1+json" \
@@ -697,7 +697,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
 #. Instead of using credentials for a user that does not exist, now use the client credentials `appSA:appSA` (the user `appSA` exists in LDAP) to try to register a new Avro schema (a record with two fields ``username`` and ``userid``) into |sr| for the value of a new topic ``users``. It should fail due to an authorization error, with a different message than above.
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
        docker-compose exec schemaregistry curl -X POST \
           -H "Content-Type: application/vnd.schemaregistry.v1+json" \
@@ -735,7 +735,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
 #. Again try to register the schema. It should pass this time.  Note the schema id that it returns, e.g. below schema id is ``11``.
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
        docker-compose exec schemaregistry curl -X POST \
           -H "Content-Type: application/vnd.schemaregistry.v1+json" \
@@ -760,7 +760,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
    
    You may alternatively request the schema via the command line:
 
-   .. sourcecode:: bash
+   .. code-block:: text
 
        docker-compose exec schemaregistry curl -X GET \
           --cert /etc/kafka/secrets/schemaregistry.certificate.pem \
