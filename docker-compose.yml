@@ -414,6 +414,7 @@ services:
       - 8083:8083
     environment:
       CUB_CLASSPATH: '/usr/share/java/confluent-security/connect/*:/usr/share/java/kafka/*:/usr/share/java/cp-base-new/*'
+
       CONNECT_BOOTSTRAP_SERVERS: kafka1:10091,kafka2:10092
       CONNECT_REST_PORT: 8083
       CONNECT_LISTENERS: https://0.0.0.0:8083
@@ -614,20 +615,10 @@ services:
       - 9021:9021
       - 9022:9022
     environment:
-      # CUB CLASSPATH
       CUB_CLASSPATH: '/usr/share/java/confluent-control-center/*:/usr/share/java/rest-utils/*:/usr/share/java/confluent-common/*:/usr/share/java/confluent-security/kafka-rest/*:/usr/share/java/kafka-rest/:/usr/share/java/cp-base-new/*'
 
       # general settings
       CONTROL_CENTER_BOOTSTRAP_SERVERS: SASL_SSL://kafka1:10091,SASL_SSL://kafka2:10092
-      #CONTROL_CENTER_STREAMS_PRODUCER_SECURITY_PROTOCOL: SASL_SSL
-      #CONTROL_CENTER_STREAMS_PRODUCER_SASL_MECHANISM: OAUTHBEARER
-      #CONTROL_CENTER_STREAMS_PRODUCER_SASL_LOGIN_CALLBACK_HANDLER_CLASS: io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler
-      #CONTROL_CENTER_STREAMS_PRODUCER_SASL_JAAS_CONFIG: |
-      #        org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-      #        username="controlcenterAdmin" \
-      #        password="controlcenterAdmin" \
-      #        metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
-      #CONTROL_CENTER_STREAMS_PRODUCER_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
       CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SSL
       CONTROL_CENTER_STREAMS_SASL_MECHANISM: OAUTHBEARER
       CONTROL_CENTER_STREAMS_SASL_LOGIN_CALLBACK_HANDLER_CLASS: io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler
@@ -637,15 +628,6 @@ services:
               password="controlcenterAdmin" \
               metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
       CONTROL_CENTER_STREAMS_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
-      CONTROL_CENTER_STREAMS_REST_CLIENT_SECURITY_PROTOCOL: SASL_SSL
-      CONTROL_CENTER_STREAMS_REST_CLIENT_SASL_MECHANISM: OAUTHBEARER
-      CONTROL_CENTER_STREAMS_REST_CLIENT_SASL_LOGIN_CALLBACK_HANDLER_CLASS: io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler
-      CONTROL_CENTER_STREAMS_REST_CLIENT_SASL_JAAS_CONFIG: |
-              org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-              username="restAdmin" \
-              password="restAdmin" \
-              metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
-      CONTROL_CENTER_STREAMS_REST_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
 
       CONTROL_CENTER_REPLICATION_FACTOR: 2
       CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
@@ -727,9 +709,11 @@ services:
       - 8085:8085
     environment:
       CUB_CLASSPATH: '/usr/share/java/confluent-security/schema-registry/*:/usr/share/java/schema-registry/*:/usr/share/java/cp-base-new/*'
+
+      SCHEMA_REGISTRY_HOST_NAME: schemaregistry
+
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka1:10091,kafka2:10092
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:2181
-      SCHEMA_REGISTRY_HOST_NAME: schemaregistry
       SCHEMA_REGISTRY_LISTENERS: https://0.0.0.0:8085
       SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: SASL_SSL
 
@@ -843,6 +827,7 @@ services:
       - 8088:8088
     environment:
       CUB_CLASSPATH: '/usr/share/java/confluent-security/ksql/*:/usr/share/java/ksqldb-server/*:/usr/share/java/cp-base-new/*'
+
       KSQL_LOG4J_ROOT_LOGLEVEL: INFO
 
       KSQL_KSQL_SERVICE_ID: "ksql-cluster"
