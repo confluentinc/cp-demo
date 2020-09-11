@@ -52,7 +52,8 @@ preflight_checks()
 
 get_kafka_cluster_id_from_container()
 {
-  KAFKA_CLUSTER_ID=$(curl -s http://kafka1:8091/v1/metadata/id | jq -r ".id")
+  KAFKA_CLUSTER_ID=$(curl -s https://kafka1:8091/v1/metadata/id --cert /etc/kafka/secrets/mds.certificate.pem --key /etc/kafka/secrets/mds.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt | jq -r ".id")
+
   if [ -z "$KAFKA_CLUSTER_ID" ]; then
     echo "Failed to retrieve Kafka cluster id"
     exit 1
@@ -112,7 +113,7 @@ mds_login()
   OUTPUT=$(
   expect <<END
     log_user 1
-    spawn confluent login --url $MDS_URL
+    spawn confluent login --ca-cert-path /etc/kafka/secrets/snakeoil-ca-1.crt --url $MDS_URL
     expect "Username: "
     send "${SUPER_USER}\r";
     expect "Password: "
