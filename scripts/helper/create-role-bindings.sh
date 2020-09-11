@@ -9,7 +9,7 @@ KAFKA_CLUSTER_ID=$(get_kafka_cluster_id_from_container)
 #echo "KAFKA_CLUSTER_ID: $KAFKA_CLUSTER_ID"
 
 ################################## SETUP VARIABLES #############################
-MDS_URL=http://kafka1:8091
+MDS_URL=https://kafka1:8091
 CONNECT=connect-cluster
 SR=schema-registry
 KSQLDB=ksql-cluster

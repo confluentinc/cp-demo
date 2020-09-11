@@ -50,6 +50,7 @@ services:
       - kafka2
     volumes:
       - ./scripts/helper:/tmp/helper
+      - ./scripts/security:/etc/kafka/secrets
     entrypoint: /bin/bash
     tty: true
 
@@ -172,8 +173,13 @@ services:
       # MDS
       KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 2
       KAFKA_CONFLUENT_METADATA_SERVER_AUTHENTICATION_METHOD: BEARER
-      KAFKA_CONFLUENT_METADATA_SERVER_LISTENERS: http://0.0.0.0:8091
-      KAFKA_CONFLUENT_METADATA_SERVER_ADVERTISED_LISTENERS: http://kafka1:8091
+      KAFKA_CONFLUENT_METADATA_SERVER_LISTENERS: https://0.0.0.0:8091
+      KAFKA_CONFLUENT_METADATA_SERVER_ADVERTISED_LISTENERS: https://kafka1:8091
+      KAFKA_CONFLUENT_METADATA_SERVER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.mds.truststore.jks
+      KAFKA_CONFLUENT_METADATA_SERVER_SSL_TRUSTSTORE_PASSWORD: confluent
+      KAFKA_CONFLUENT_METADATA_SERVER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.mds.keystore.jks
+      KAFKA_CONFLUENT_METADATA_SERVER_SSL_KEYSTORE_PASSWORD: confluent
+      KAFKA_CONFLUENT_METADATA_SERVER_SSL_KEY_PASSWORD: confluent
 
       # Configure RBAC token server (authentication)
       KAFKA_CONFLUENT_METADATA_SERVER_TOKEN_AUTH_ENABLE: 'true'
@@ -217,13 +223,14 @@ services:
       KAFKA_KAFKA_REST_KAFKA_REST_RESOURCE_EXTENSION_CLASS: io.confluent.kafkarest.security.KafkaRestSecurityResourceExtension
       KAFKA_KAFKA_REST_REST_SERVLET_INITIALIZOR_CLASSES: io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler
       KAFKA_KAFKA_REST_PUBLIC_KEY_PATH: /tmp/conf/public.pem
-      # EmbeddedKafkaRest: MDS (HTTP) Client configuration
-      KAFKA_KAFKA_REST_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
-      KAFKA_KAFKA_REST_CLIENT_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
-      KAFKA_KAFKA_REST_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
+      # EmbeddedKafkaRest: MDS Client configuration
+      KAFKA_KAFKA_REST_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: https://kafka1:8091,https://kafka2:8092
+      KAFKA_KAFKA_REST_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka1.truststore.jks
+      KAFKA_KAFKA_REST_SSL_TRUSTSTORE_PASSWORD: confluent
       KAFKA_KAFKA_REST_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
       KAFKA_KAFKA_REST_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'restAdmin:restAdmin'
-      # EmbeddedKafkaRest: Confluent License (Kafka) Client override
+      KAFKA_KAFKA_REST_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
+      KAFKA_KAFKA_REST_CLIENT_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
 
   kafka2:
     image: ${REPOSITORY}/cp-server:${CONFLUENT_DOCKER_TAG}
@@ -330,8 +337,13 @@ services:
       # MDS
       KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 2
       KAFKA_CONFLUENT_METADATA_SERVER_AUTHENTICATION_METHOD: BEARER
-      KAFKA_CONFLUENT_METADATA_SERVER_LISTENERS: http://0.0.0.0:8092
-      KAFKA_CONFLUENT_METADATA_SERVER_ADVERTISED_LISTENERS: http://kafka2:8092
+      KAFKA_CONFLUENT_METADATA_SERVER_LISTENERS: https://0.0.0.0:8092
+      KAFKA_CONFLUENT_METADATA_SERVER_ADVERTISED_LISTENERS: https://kafka2:8092
+      KAFKA_CONFLUENT_METADATA_SERVER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.mds.truststore.jks
+      KAFKA_CONFLUENT_METADATA_SERVER_SSL_TRUSTSTORE_PASSWORD: confluent
+      KAFKA_CONFLUENT_METADATA_SERVER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.mds.keystore.jks
+      KAFKA_CONFLUENT_METADATA_SERVER_SSL_KEYSTORE_PASSWORD: confluent
+      KAFKA_CONFLUENT_METADATA_SERVER_SSL_KEY_PASSWORD: confluent
 
       # Configure RBAC token server (authentication)
       KAFKA_CONFLUENT_METADATA_SERVER_TOKEN_AUTH_ENABLE: 'true'
@@ -375,12 +387,14 @@ services:
       KAFKA_KAFKA_REST_KAFKA_REST_RESOURCE_EXTENSION_CLASS: io.confluent.kafkarest.security.KafkaRestSecurityResourceExtension
       KAFKA_KAFKA_REST_REST_SERVLET_INITIALIZOR_CLASSES: io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler
       KAFKA_KAFKA_REST_PUBLIC_KEY_PATH: /tmp/conf/public.pem
-      # EmbeddedKafkaRest: MDS (HTTP) Client configuration
-      KAFKA_KAFKA_REST_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
-      KAFKA_KAFKA_REST_CLIENT_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
-      KAFKA_KAFKA_REST_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
+      # EmbeddedKafkaRest: MDS Client configuration
+      KAFKA_KAFKA_REST_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: https://kafka1:8091,https://kafka2:8092
+      KAFKA_KAFKA_REST_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka2.truststore.jks
+      KAFKA_KAFKA_REST_SSL_TRUSTSTORE_PASSWORD: confluent
       KAFKA_KAFKA_REST_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
       KAFKA_KAFKA_REST_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'restAdmin:restAdmin'
+      KAFKA_KAFKA_REST_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
+      KAFKA_KAFKA_REST_CLIENT_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
         
   connect:
     image: localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}
@@ -402,7 +416,8 @@ services:
     ports:
       - 8083:8083
     environment:
-      CUB_CLASSPATH: '/usr/share/java/cp-base-new/*:/usr/share/java/confluent-security/connect/*:/usr/share/java/kafka/*'
+      CUB_CLASSPATH: '/usr/share/java/confluent-security/connect/*:/usr/share/java/kafka/*:/usr/share/java/cp-base-new/*'
+
       CONNECT_BOOTSTRAP_SERVERS: kafka1:10091,kafka2:10092
       CONNECT_REST_PORT: 8083
       CONNECT_LISTENERS: https://0.0.0.0:8083
@@ -476,7 +491,7 @@ services:
               org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
               username="connectAdmin" \
               password="connectAdmin" \
-              metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
+              metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
 
       # Allow overriding configs on the connector level
       CONNECT_CONNECTOR_CLIENT_CONFIG_OVERRIDE_POLICY: 'All'
@@ -490,7 +505,7 @@ services:
               org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
               username="connectAdmin" \
               password="connectAdmin" \
-              metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
+              metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
 
       # Consumer
       CONNECT_CONSUMER_SASL_MECHANISM: 'OAUTHBEARER'
@@ -501,7 +516,7 @@ services:
               org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
               username="connectAdmin" \
               password="connectAdmin" \
-              metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
+              metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
 
       # Default admin config
       CONNECT_ADMIN_SECURITY_PROTOCOL: SASL_SSL
@@ -521,7 +536,7 @@ services:
       CONNECT_PUBLIC_KEY_PATH: /tmp/conf/public.pem
 
       # Used by Connect's REST layer to connect to MDS to verify tokens and authenticate clients
-      CONNECT_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
+      CONNECT_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: https://kafka1:8091,https://kafka2:8092
       CONNECT_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'connectAdmin:connectAdmin'
       CONNECT_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: 'BASIC'
 
@@ -543,7 +558,7 @@ services:
               org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
               username="connectAdmin" \
               password="connectAdmin" \
-              metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
+              metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
 
       # KAFKA_OPTS required for ReplicatorMonitoringExtension
       KAFKA_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.connect.truststore.jks
@@ -603,11 +618,19 @@ services:
       - 9021:9021
       - 9022:9022
     environment:
-      # CUB CLASSPATH
-      CUB_CLASSPATH: '/usr/share/java/cp-base-new/*:/usr/share/java/confluent-control-center/*:/usr/share/java/rest-utils/*:/usr/share/java/confluent-common/*'
+      CUB_CLASSPATH: '/usr/share/java/confluent-control-center/*:/usr/share/java/rest-utils/*:/usr/share/java/confluent-common/*:/usr/share/java/confluent-security/kafka-rest/*:/usr/share/java/kafka-rest/:/usr/share/java/cp-base-new/*'
 
       # general settings
-      CONTROL_CENTER_BOOTSTRAP_SERVERS: kafka1:10091,kafka2:10092
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: SASL_SSL://kafka1:10091,SASL_SSL://kafka2:10092
+      CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SSL
+      CONTROL_CENTER_STREAMS_SASL_MECHANISM: OAUTHBEARER
+      CONTROL_CENTER_STREAMS_SASL_LOGIN_CALLBACK_HANDLER_CLASS: io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler
+      CONTROL_CENTER_STREAMS_SASL_JAAS_CONFIG: |
+              org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
+              username="controlcenterAdmin" \
+              password="controlcenterAdmin" \
+              metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
+      CONTROL_CENTER_STREAMS_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
 
       CONTROL_CENTER_REPLICATION_FACTOR: 2
       CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
@@ -650,14 +673,16 @@ services:
       CONTROL_CENTER_SCHEMA_REGISTRY_SR1_URL: https://schemaregistry:8085
       CONTROL_CENTER_SCHEMA_REGISTRY_SR1_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
       CONTROL_CENTER_SCHEMA_REGISTRY_SR1_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: confluent
+      CONTROL_CENTER_SCHEMA_REGISTRY_SR1_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.controlcenter.truststore.jks
+      CONTROL_CENTER_SCHEMA_REGISTRY_SR1_SSL_TRUSTSTORE_PASSWORD: confluent
 
       # RBAC
       CONTROL_CENTER_REST_AUTHENTICATION_METHOD: BEARER
       PUBLIC_KEY_PATH: /tmp/conf/public.pem
       
       # Used by Control Center to connect to MDS to verify tokens and authenticate clients
+      CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: https://kafka1:8091,https://kafka2:8092
       CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: controlcenterAdmin:controlcenterAdmin
-      CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
       
       CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SSL
       CONTROL_CENTER_STREAMS_SASL_MECHANISM: OAUTHBEARER
@@ -666,7 +691,7 @@ services:
               org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
               username="controlcenterAdmin" \
               password="controlcenterAdmin" \
-              metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
+              metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
 
   schemaregistry:
     image: ${REPOSITORY}/cp-schema-registry:${CONFLUENT_DOCKER_TAG}
@@ -683,10 +708,12 @@ services:
     ports:
       - 8085:8085
     environment:
-      CUB_CLASSPATH: '/usr/share/java/cp-base-new/*:/usr/share/java/confluent-security/schema-registry/*:/usr/share/java/schema-registry/*'
+      CUB_CLASSPATH: '/usr/share/java/confluent-security/schema-registry/*:/usr/share/java/schema-registry/*:/usr/share/java/cp-base-new/*'
+
+      SCHEMA_REGISTRY_HOST_NAME: schemaregistry
+
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka1:10091,kafka2:10092
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:2181
-      SCHEMA_REGISTRY_HOST_NAME: schemaregistry
       SCHEMA_REGISTRY_LISTENERS: https://0.0.0.0:8085
       SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: SASL_SSL
 
@@ -696,7 +723,7 @@ services:
               org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
               username="schemaregistryUser" \
               password="schemaregistryUser" \
-              metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
+              metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
       SCHEMA_REGISTRY_KAFKASTORE_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.schemaregistry.truststore.jks
       SCHEMA_REGISTRY_KAFKASTORE_SSL_TRUSTSTORE_PASSWORD: confluent
       SCHEMA_REGISTRY_KAFKASTORE_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.schemaregistry.keystore.jks
@@ -704,9 +731,12 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_SSL_KEY_PASSWORD: confluent
       SCHEMA_REGISTRY_KAFKASTORE_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
 
+      SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.schemaregistry.truststore.jks
+      SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: confluent
       SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.schemaregistry.keystore.jks
       SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: confluent
       SCHEMA_REGISTRY_SSL_KEY_PASSWORD: confluent
+      SCHEMA_REGISTRY_SSL_CLIENT_AUTH: 'false'
 
       SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "https"
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
@@ -722,7 +752,7 @@ services:
       SCHEMA_REGISTRY_PUBLIC_KEY_PATH: /tmp/conf/public.pem
 
       # Used by Schema Registry to connect to MDS to authenticate and authorize clients
-      SCHEMA_REGISTRY_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
+      SCHEMA_REGISTRY_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: https://kafka1:8091,https://kafka2:8092
       SCHEMA_REGISTRY_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
       SCHEMA_REGISTRY_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: schemaregistryUser:schemaregistryUser
 
@@ -800,6 +830,7 @@ services:
       - 8088:8088
     environment:
       CUB_CLASSPATH: '/usr/share/java/confluent-security/ksql/*:/usr/share/java/ksqldb-server/*:/usr/share/java/cp-base-new/*'
+
       KSQL_LOG4J_ROOT_LOGLEVEL: INFO
 
       KSQL_KSQL_SERVICE_ID: "ksql-cluster"
@@ -831,7 +862,7 @@ services:
       KSQL_PUBLIC_KEY_PATH: /tmp/conf/public.pem
 
       # Used by ksqlDB's REST layer to connect to MDS to verify tokens and authenticate clients
-      KSQL_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
+      KSQL_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: https://kafka1:8091,https://kafka2:8092
       KSQL_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
       KSQL_CONFLUENT_METADATA_BASIC_AUTH_CREDENTIALS_PROVIDER: USER_INFO
       KSQL_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: ksqlDBAdmin:ksqlDBAdmin
@@ -857,7 +888,7 @@ services:
               org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
               username="ksqlDBAdmin" \
               password="ksqlDBAdmin" \
-              metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
+              metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
 
       KSQL_KSQL_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
       KSQL_KSQL_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: ksqlDBAdmin:ksqlDBAdmin
@@ -877,7 +908,7 @@ services:
               org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
               username="ksqlDBAdmin" \
               password="ksqlDBAdmin" \
-              metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
+              metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
 
   ksqldb-cli:
     image: ${REPOSITORY}/cp-ksqldb-cli:${CONFLUENT_DOCKER_TAG}
@@ -933,9 +964,8 @@ services:
       KAFKA_REST_CLIENT_SSL_KEYSTORE_PASSWORD: confluent
       KAFKA_REST_CLIENT_SSL_KEY_PASSWORD: confluent
 
-
       # Credentials and classpath for cub kafka-ready
-      CUB_CLASSPATH: '/usr/share/java/cp-base-new/*:/usr/share/java/confluent-security/kafka-rest/*:/usr/share/java/kafka-rest/*'
+      CUB_CLASSPATH: '/usr/share/java/confluent-security/kafka-rest/*:/usr/share/java/kafka-rest/*:/usr/share/java/cp-base-new/*'
       
       # Enable OAuth for REST Proxy's embedded Kafka client that accesses and manages consumer groups and topics
       KAFKA_REST_CLIENT_SECURITY_PROTOCOL: SASL_SSL
@@ -945,7 +975,7 @@ services:
               org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
               username="restAdmin" \
               password="restAdmin" \
-              metadataServerUrls="http://kafka1:8091,http://kafka2:8092";
+              metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
       KAFKA_REST_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
 
       # Enable bearer token authentication which allows the identity of the REST Proxy end user to be propagated to Kafka for authorization
@@ -956,7 +986,7 @@ services:
       # Used by REST Proxy to connect to MDS to verify tokens and authenticate clients
       KAFKA_REST_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
       KAFKA_REST_CLIENT_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
-      KAFKA_REST_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: http://kafka1:8091,http://kafka2:8092
+      KAFKA_REST_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: https://kafka1:8091,https://kafka2:8092
       KAFKA_REST_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
       KAFKA_REST_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'restAdmin:restAdmin'
 

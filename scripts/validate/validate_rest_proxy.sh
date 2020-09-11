@@ -3,7 +3,7 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 ################################## GET KAFKA CLUSTER ID ########################
-KAFKA_CLUSTER_ID=$(curl -s http://localhost:8091/v1/metadata/id | jq -r ".id")
+KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
 if [ -z "$KAFKA_CLUSTER_ID" ]; then
     echo "Failed to retrieve Kafka cluster id"
     exit 1
@@ -29,7 +29,7 @@ ${DIR}/../helper/refresh_mds_login.sh
 
 ################################## RUN ########################################
 
-echo -e "\nExercising the standalone REST Proxy...\n"
+echo -e "\nValidating the standalone REST Proxy...\n"
 
 topic="users"
 subject="$topic-value"
@@ -88,7 +88,7 @@ docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.k
 
 #################
 
-echo -e "\n\n\nExercising the embedded REST Proxy...\n"
+echo -e "\n\n\nValidating the embedded REST Proxy...\n"
 
 docker-compose exec tools bash -c "confluent iam rolebinding create \
     --principal User:appSA \
@@ -96,9 +96,10 @@ docker-compose exec tools bash -c "confluent iam rolebinding create \
     --resource Topic:dev_users \
     --kafka-cluster-id $KAFKA_CLUSTER_ID"
 
-docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA "http://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}" | jq
+docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA "https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}" --cert /etc/kafka/secrets/mds.certificate.pem --key /etc/kafka/secrets/mds.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt | jq
 
-output=$(docker-compose exec restproxy curl -X GET -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA http://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics | jq '.data[].topic_name')
+output=$(docker-compose exec restproxy curl -X GET -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics --cert /etc/kafka/secrets/mds.certificate.pem --key /etc/kafka/secrets/mds.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt
+| jq '.data[].topic_name')
 if [[ $output =~ "dev_users" ]]; then
   printf "\nPASS: Output includes dev_users and matches expected output:\n$output"
 else
