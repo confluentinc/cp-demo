@@ -7,7 +7,7 @@ source ${DIR}/../env_files/config.env
 # Do preflight checks
 preflight_checks || exit
 
-# Stop existing demo Docker containers
+# Stop existing Docker containers
 ${DIR}/stop.sh
 
 # Generate keys and certificates used for SSL
