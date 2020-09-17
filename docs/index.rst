@@ -3,8 +3,8 @@
 Confluent Platform Demo (cp-demo)
 =================================
 
-This demo builds a full |cp| deployment with an |ak-tm| event streaming application using `ksqlDB <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing, and all the components have security enabled end-to-end.
-Follow the accompanying guided tutorial that steps through the demo so that you can learn how it all works together.
+This example builds a full |cp| deployment with an |ak-tm| event streaming application using `ksqlDB <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing, and all the components have security enabled end-to-end.
+Follow the accompanying guided tutorial that steps through the example so that you can learn how it all works together.
 
 
 ========
@@ -21,7 +21,7 @@ The use case is an |ak-tm| event streaming application that processes real-time 
 
 Wikimedia Foundation has IRC channels that publish edits happening to real wiki pages (e.g. ``#en.wikipedia``, ``#en.wiktionary``) in real time.
 Using `Kafka Connect <http://docs.confluent.io/current/connect/index.html>`__, a Kafka source connector `kafka-connect-irc <https://github.com/cjmatta/kafka-connect-irc>`__ streams raw messages from these IRC channels, and a custom Kafka Connect transform `kafka-connect-transform-wikiedit <https://github.com/cjmatta/kafka-connect-transform-wikiedit>`__ transforms these messages and then the messages are written to a Kafka cluster.
-This demo uses `ksqlDB <https://www.confluent.io/product/ksql/>`__ and a `Kafka Streams <http://docs.confluent.io/current/streams/index.html>`__ application for data processing.
+This example uses `ksqlDB <https://www.confluent.io/product/ksql/>`__ and a `Kafka Streams <http://docs.confluent.io/current/streams/index.html>`__ application for data processing.
 Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.io/current/connect/connect-elasticsearch/docs/elasticsearch_connector.html>`__ streams the data out of Kafka, and the data is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 |crep-full| is also copying messages from a topic to another topic in the same cluster.
 All data is using |sr-long| and Avro.
@@ -47,14 +47,14 @@ Data pattern is as follows:
 +-------------------------------------+--------------------------------+---------------------------------------+
 
 
-========
-Run Demo
-========
+===========
+Run Example
+===========
 
 Prerequisites
 -------------
 
-This demo has been validated with:
+This example has been validated with:
 
 -  Docker version 17.06.1-ce
 -  Docker Compose version 1.14.0 with Docker Compose file format 2.3
@@ -68,15 +68,15 @@ Docker
 ------
 
 This is a Docker environment and has all services running on one host.
-It is meant exclusively to easily demo the |CP|, but do not deploy all |cp| services on a single host in production.
+It is meant exclusively to easily demo |CP|, but in production, do not deploy all |cp| services on a single host.
 
 Also, in production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production data.
 Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
 
-If you prefer non-Docker demos, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
+If you prefer non-Docker examples, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
 
-Start Demo
-----------
+Start Example
+-------------
 
 #. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8GB (default is 2GB).
 
@@ -93,7 +93,7 @@ Start Demo
       cd cp-demo
       git checkout |release_post_branch|
 
-#. From the ``cp-demo`` directory, start the entire demo by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This takes approximately 7 minutes to complete.
+#. From the ``cp-demo`` directory, start the entire example by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This takes approximately 7 minutes to complete.
 
    .. sourcecode:: bash
 
@@ -181,7 +181,7 @@ Topics
 |kconnect-long|
 ---------------
 
-This demo has three connectors:
+This example runs three connectors:
 
 - IRC source connector
 - Elasticsearch sink connector
@@ -196,11 +196,11 @@ The |kconnect| worker's embedded producer is configured to be idempotent, exactl
 
    .. figure:: images/connect_default.png
 
-#. Verify the connectors running in this demo:
+#. Verify the connectors running in this example:
 
-   - source connector ``wikipedia-irc`` view the demo's IRC source connector :devx-cp-demo:`configuration file|scripts/connectors/submit_wikipedia_irc_config.sh`.
-   - source connector ``replicate-topic``: view the demo's |crep| connector :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_config.sh`.
-   - sink connector ``elasticsearch-ksqldb`` consuming from the Kafka topic ``WIKIPEDIABOT``: view the demo's Elasticsearch sink connector :devx-cp-demo:`configuration file|scripts/connectors/submit_elastic_sink_config.sh`.
+   - source connector ``wikipedia-irc`` view the example's IRC source connector :devx-cp-demo:`configuration file|scripts/connectors/submit_wikipedia_irc_config.sh`.
+   - source connector ``replicate-topic``: view the example's |crep| connector :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_config.sh`.
+   - sink connector ``elasticsearch-ksqldb`` consuming from the Kafka topic ``WIKIPEDIABOT``: view the example's Elasticsearch sink connector :devx-cp-demo:`configuration file|scripts/connectors/submit_elastic_sink_config.sh`.
 
    .. figure:: images/connector_list.png
 
@@ -214,7 +214,7 @@ The |kconnect| worker's embedded producer is configured to be idempotent, exactl
 ksqlDB
 ------
 
-In this demo, ksqlDB is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the :devx-cp-demo:`ksqlDB command file|scripts/ksqlDB/statements.sql` .
+In this example, ksqlDB is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the :devx-cp-demo:`ksqlDB command file|scripts/ksqlDB/statements.sql` .
 Its embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
 
 #. In the navigation bar, click **ksqlDB**.
@@ -224,7 +224,7 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
    .. figure:: images/ksql_link.png
       :alt: image
 
-#. View the ksqlDB Flow to see the streams and tables created in the demo, and how they relate to one another.
+#. View the ksqlDB Flow to see the streams and tables created in the example, and how they relate to one another.
 
    .. figure:: images/ksqldb_flow.png
       :alt: image
@@ -265,7 +265,7 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
    .. figure:: images/ksql_properties.png
       :alt: image
 
-#. This demo creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how ksqlDB windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but to send just the counts greater than one downstream, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
+#. This example creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how ksqlDB windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but to send just the counts greater than one downstream, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
 - View messages in the topic ``EN_WIKIPEDIA_GT_1`` (jump to offset 0/partition 0), and notice the nulls:
 
@@ -277,7 +277,7 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
   .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1_COUNTS.png
      :alt: image
 
-11. The `ksqlDB processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their ksqlDB queries. In this demo, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the ksqlDB editor run the following "bad" query for 20 seconds:
+11. The `ksqlDB processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their ksqlDB queries. In this example, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the ksqlDB editor run the following "bad" query for 20 seconds:
 
 .. sourcecode:: bash
 
@@ -311,7 +311,7 @@ Consumers
    .. figure:: images/activity-monitor-consumer.png
       :alt: image
 
-#. Consumption metrics are available on a `per-consumer basis <https://docs.confluent.io/current/control-center/consumers.html#view-consumption-details-for-a-consumer-group>`__. These consumption charts are only populated if `Confluent Monitoring Interceptors <https://docs.confluent.io/current/control-center/installation/clients.html>`__ are configured, as they are in this demo. You can view ``% messages consumed`` and ``end-to-end latency``.  View consumption metrics for the persistent ksqlDB "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer group list.
+#. Consumption metrics are available on a `per-consumer basis <https://docs.confluent.io/current/control-center/consumers.html#view-consumption-details-for-a-consumer-group>`__. These consumption charts are only populated if `Confluent Monitoring Interceptors <https://docs.confluent.io/current/control-center/installation/clients.html>`__ are configured, as they are in this example. You can view ``% messages consumed`` and ``end-to-end latency``.  View consumption metrics for the persistent ksqlDB "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer group list.
 
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumption.png
       :alt: image
@@ -357,7 +357,7 @@ Consumers
 
 |crep-full| copies data from a source Kafka cluster to a
 destination Kafka cluster. The source and destination clusters are
-typically different clusters, but in this demo, |crep| is doing
+typically different clusters, but in this example, |crep| is doing
 intra-cluster replication, *i.e.*, the source and destination Kafka
 clusters are the same. As with the rest of the components in the
 solution, |crep-full| is also configured with security.
@@ -408,31 +408,31 @@ solution, |crep-full| is also configured with security.
 Security
 --------
 
-All the |cp| components and clients in this demo are enabled with many `security features <https://docs.confluent.io/current/security.html>`__.
+All the |cp| components and clients in this example are enabled with many `security features <https://docs.confluent.io/current/security.html>`__.
 
 -  :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization. It is configured with the |csa| and talks to LDAP to authenticate clients.
--  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__ for encryption and mTLS. The demo :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password. 
+-  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__ for encryption and mTLS. The example :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password. 
 -  :ref:`Role-Based Access Control (RBAC) <rbac-overview>` for authorization. If a resource has no associated ACLs, then users are not allowed to access the resource, except super users.
 -  |zk| is configured for `SSL <https://docs.confluent.io/current/security/zk-security.html#mtls>`__ AND `SASL/DIGEST-MD5 <https://docs.confluent.io/current/security/zk-security.html#sasl-with-digest-md5>`__ (Note: no |crest| and |sr| TLS support with `trial licenses <https://docs.confluent.io/5.5.0/release-notes/index.html#schema-registry>`__).
 -  `HTTPS for Control Center <https://docs.confluent.io/current/control-center/docs/installation/configuration.html#https-settings>`__.
 -  `HTTPS for Schema Registry <https://docs.confluent.io/current/schema-registry/docs/security.html>`__.
 -  `HTTPS for Connect <https://docs.confluent.io/current/connect/security.html#configuring-the-kconnect-rest-api-for-http-or-https>`__.
 
-You can see each component's security configuration in the demo's :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
+You can see each component's security configuration in the example's :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
 
 .. note::
-    This demo showcases a secure |CP| for educational purposes and is not meant to be complete best practices. There are certain differences between what is shown in the demo and what you should do in production:
+    This example showcases a secure |CP| for educational purposes and is not meant to be complete best practices. There are certain differences between what is shown in the example and what you should do in production:
 
     * Authorize users only for operations that they need, instead of making all of them super users
     * If the ``PLAINTEXT`` security protocol is used, these ``ANONYMOUS`` usernames should not be configured as super users
     * Consider not even opening the ``PLAINTEXT`` port if ``SSL`` or ``SASL_SSL`` are configured
 
-There is an OpenLDAP server running in the demo, and each Kafka broker in the demo is configured with |mds-long| and can talk to LDAP so that it can authenticate clients and |cp| services and clients.
+There is an OpenLDAP server running in the example, and each Kafka broker in the demo is configured with |mds-long| and can talk to LDAP so that it can authenticate clients and |cp| services and clients.
 
 |zk| has two listener ports:
 
 +---------------+----------------+--------------------------------------------------------------------+-----------------+
-| Name          | Protocol       | In this demo, used for ...                                         | ZooKeeper       |
+| Name          | Protocol       | In this example, used for ...                                      | ZooKeeper       |
 +===============+================+====================================================================+=================+
 | N/A           | SASL/DIGEST-MD5| Validating trial license for |crest| and |sr|. (no TLS support)    | 2181            |
 +---------------+----------------+--------------------------------------------------------------------+-----------------+
@@ -444,7 +444,7 @@ There is an OpenLDAP server running in the demo, and each Kafka broker in the de
 Each broker has five listener ports:
 
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
-| Name          | Protocol       | In this demo, used for ...                                         | kafka1 | kafka2 |
+| Name          | Protocol       | In this example, used for ...                                      | kafka1 | kafka2 |
 +===============+================+====================================================================+========+========+
 | N/A           | MDS            | Authorization via RBAC                                             | 8091   | 8092   |
 +---------------+----------------+--------------------------------------------------------------------+--------+--------+
@@ -463,7 +463,7 @@ End clients (non-CP clients):
 - If they are also using |sr|, authenticate to |sr| via LDAP.
 - If they are also using Confluent Monitoring interceptors, authenticate using mTLS via the broker SSL listener.
 - Should never use the TOKEN listener which is meant only for internal communication between Confluent components.
-- See :devx-cp-demo:`client configuration|env_files/streams-demo.env/` used in the demo by the ``streams-demo`` container running the Kafka Streams application ``wikipedia-activity-monitor``.
+- See :devx-cp-demo:`client configuration|env_files/streams-demo.env/` used in the example by the ``streams-demo`` container running the Kafka Streams application ``wikipedia-activity-monitor``.
 
 #. Verify the ports on which the Kafka brokers are listening with the
    following command, and they should match the table shown below:
@@ -473,7 +473,7 @@ End clients (non-CP clients):
           docker-compose logs kafka1 | grep "Registered broker 1"
           docker-compose logs kafka2 | grep "Registered broker 2"
 
-#. For demo only: Communicate with brokers via the PLAINTEXT port, client security configurations are not required
+#. For example only: Communicate with brokers via the PLAINTEXT port, client security configurations are not required
 
    .. sourcecode:: bash
 
@@ -649,7 +649,7 @@ End clients (non-CP clients):
 Data Governance with |sr|
 -------------------------
 
-All the applications and connectors used in this demo are configured to automatically read and write Avro-formatted data, leveraging the `Confluent Schema Registry <https://docs.confluent.io/current/schema-registry/docs/index.html>`__ .
+All the applications and connectors used in this example are configured to automatically read and write Avro-formatted data, leveraging the `Confluent Schema Registry <https://docs.confluent.io/current/schema-registry/docs/index.html>`__ .
 
 The security in place between |sr| and the end clients, e.g. ``appSA``, is as follows:
 
@@ -1200,7 +1200,7 @@ to setup alerts from there.
    :alt: image
 
 
-#. This demo already has pre-configured triggers and actions. View the
+#. This example already has pre-configured triggers and actions. View the
    Alerts ``Triggers`` screen, and click ``Edit`` against each trigger
    to see configuration details.
 
@@ -1293,7 +1293,7 @@ Here are some examples of monitoring stacks that integrate with |cp|:
 Troubleshooting
 ===============
 
-Here are some suggestions on how to troubleshoot the demo.
+Here are some suggestions on how to troubleshoot the example.
 
 #. Verify the status of the Docker containers show ``Up`` state, except for the ``kafka-client`` container which is expected to have ``Exit 0`` state.
 
@@ -1377,7 +1377,7 @@ Teardown
 
          ./scripts/app/stop_consumer_app_group_graceful.sh
 
-#. Stop the Docker demo, destroy all components and clear all Docker
+#. Stop the Docker environment, destroy all components and clear all Docker
    volumes.
 
    .. sourcecode:: bash
