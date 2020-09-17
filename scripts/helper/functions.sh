@@ -42,7 +42,7 @@ preflight_checks()
   # Verify Docker memory is increased to at least 8GB
   DOCKER_MEMORY=$(docker system info | grep Memory | grep -o "[0-9\.]\+")
   if (( $(echo "$DOCKER_MEMORY 7.0" | awk '{print ($1 < $2)}') )); then
-    echo -e "\nWARNING: Did you remember to increase the memory available to Docker to at least 8GB (default is 2GB)? Demo may otherwise not work properly.\n"
+    echo -e "\nWARNING: Did you remember to increase the memory available to Docker to at least 8GB (default is 2GB)? Otherwise, the example may not work properly.\n"
     sleep 3
   fi
 
