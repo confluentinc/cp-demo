@@ -57,14 +57,14 @@ docker-compose exec kafka1 kafka-configs \
    --add-config min.insync.replicas=1
 
 # Create Kafka topic users, using appSA principal
-docker-compose exec kafka1 kafka-topics \
+docker-compose exec kafka1 bash -c 'export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
    --bootstrap-server kafka1:11091 \
    --command-config /etc/kafka/secrets/appSA.config \
-   --topic users
+   --topic users \
    --create \
    --replication-factor 2 \
    --partitions 2 \
-   --config confluent.value.schema.validation=true
+   --config confluent.value.schema.validation=true'
 
 echo
 echo "Building custom Docker image with Connect version ${CONFLUENT_DOCKER_TAG} and connector version ${CONNECTOR_VERSION}"
@@ -116,28 +116,28 @@ docker-compose exec connect timeout 3 nc -zv irc.wikimedia.org 6667 || {
 }
 
 # Create Kafka topics with prefix wikipedia, using connectorSA principal
-docker-compose exec kafka1 kafka-topics \
+docker-compose exec kafka1 bash -c 'export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
    --bootstrap-server kafka1:11091 \
    --command-config /etc/kafka/secrets/connectorSA_without_interceptors_ssl.config \
    --topic wikipedia.parsed \
    --create \
    --replication-factor 2 \
    --partitions 2 \
-   --config confluent.value.schema.validation=true
-docker-compose exec kafka1 kafka-topics \
+   --config confluent.value.schema.validation=true'
+docker-compose exec kafka1 bash -c 'export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
    --bootstrap-server kafka1:11091 \
    --command-config /etc/kafka/secrets/connectorSA_without_interceptors_ssl.config \
    --topic wikipedia.parsed.count-by-channel \
    --create \
    --replication-factor 2 \
-   --partitions 2
-docker-compose exec kafka1 kafka-topics \
+   --partitions 2'
+docker-compose exec kafka1 bash -c 'export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
    --bootstrap-server kafka1:11091 \
    --command-config /etc/kafka/secrets/connectorSA_without_interceptors_ssl.config \
    --topic wikipedia.failed \
    --create \
    --replication-factor 2 \
-   --partitions 2
+   --partitions 2'
 
 echo -e "\nStart streaming from the IRC source connector:"
 ${DIR}/connectors/submit_wikipedia_irc_config.sh
@@ -165,13 +165,13 @@ echo
 # Create Kafka topics with prefix WIKIPEDIA or EN_WIKIPEDIA, using ksqlDBUser principal
 for t in WIKIPEDIABOT WIKIPEDIANOBOT EN_WIKIPEDIA_GT_1 EN_WIKIPEDIA_GT_1_COUNTS
 do
-  docker-compose exec kafka1 kafka-topics \
+  docker-compose exec kafka1 bash -c 'export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
      --bootstrap-server kafka1:11091 \
      --command-config /etc/kafka/secrets/ksqlDBUser_without_interceptors_ssl.config \
-     --topic $t \
+     --topic '"$t"' \
      --create \
      --replication-factor 2 \
-     --partitions 2
+     --partitions 2'
 done
 
 # Verify ksqlDB server has started
