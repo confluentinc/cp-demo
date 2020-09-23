@@ -405,7 +405,6 @@ services:
       context: .
       dockerfile: Dockerfile-confluenthub
     depends_on:
-      - zookeeper
       - kafka1
       - kafka2
       - schemaregistry
@@ -606,7 +605,6 @@ services:
     hostname: control-center
     container_name: control-center
     depends_on:
-      - zookeeper
       - kafka1
       - kafka2
       - schemaregistry
@@ -699,7 +697,6 @@ services:
     cpus: 0.4
     restart: always
     depends_on:
-      - zookeeper
       - kafka1
       - kafka2
     volumes:
@@ -765,7 +762,6 @@ services:
       # healthcheck is currently incompatible with RBAC
       disable: true
     depends_on:
-      - zookeeper
       - kafka1
       - kafka2
       - connect
@@ -874,7 +870,6 @@ services:
     restart: always
     cpus: 0.4
     depends_on:
-      - zookeeper
       - kafka1
       - kafka2
       - schemaregistry
@@ -940,7 +935,6 @@ services:
     restart: always
     cpus: 0.4
     depends_on:
-      - zookeeper
       - kafka1
       - kafka2
       - schemaregistry
