@@ -120,6 +120,10 @@ ${DIR}/dashboard/configure_kibana_dashboard.sh
 echo
 echo
 
+# Verify ksqlDB server has started
+MAX_WAIT=30
+echo "Waiting up to $MAX_WAIT seconds for ksqlDB server to start"
+retry $MAX_WAIT host_check_ksqlDBserver_up || exit 1
 echo -e "\n\nRun ksqlDB queries:"
 ${DIR}/ksqlDB/run_ksqlDB.sh
 
