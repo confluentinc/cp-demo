@@ -80,6 +80,15 @@ host_check_mds_up()
   return 0
 }
 
+host_check_ksqlDBserver_up()
+{
+  KSQLDB_CLUSTER_ID=$(curl -s -u ksqlDBUser:ksqlDBUser http://localhost:8088/info | jq -r ".KsqlServerInfo.ksqlServiceId")
+  if [ "$KSQLDB_CLUSTER_ID" == "ksql-cluster" ]; then
+    return 0
+  fi
+  return 1
+}
+
 host_check_connect_up()
 {
   FOUND=$(docker-compose logs connect | grep "Herder started")
