@@ -856,8 +856,6 @@ services:
 
       # Enable bearer token authentication which allows the identity of the ksqlDB end user to be propagated to Kafka for authorization
       KSQL_KSQL_AUTHENTICATION_PLUGIN_CLASS: io.confluent.ksql.security.VertxBearerOrBasicAuthenticationPlugin
-      KSQL_OAUTH_JWT_PUBLIC_KEY_PATH: /tmp/conf/public.pem
-      KSQL_CONFLUENT_METADATA_PUBLIC_KEY_PATH: /tmp/conf/public.pem
       KSQL_PUBLIC_KEY_PATH: /tmp/conf/public.pem
 
       # Used by ksqlDB's REST layer to connect to MDS to verify tokens and authenticate clients
