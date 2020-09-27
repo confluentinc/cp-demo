@@ -835,7 +835,6 @@ services:
       KSQL_KSQL_SERVICE_ID: "ksql-cluster"
       KSQL_KSQL_STREAMS_REPLICATION_FACTOR: 2
       KSQL_KSQL_INTERNAL_TOPIC_REPLICAS: 2
-      KSQL_KSQL_SINK_REPLICAS: 2
 
       # For Demo purposes: improve resource utilization and avoid timeouts
       KSQL_KSQL_STREAMS_NUM_STREAM_THREADS: 1
