@@ -103,7 +103,7 @@ Start Example
 
 #. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
-#. You can view the full platform configuration in the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file and the |kstreams| application configuration in the :devx-cp-demo:`streams-demo.env|env_files/streams-demo.env` file.
+#. You can view the full platform configuration in the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file and the |kstreams| application configuration in the following :devx-cp-demo:`client configuration|env_files/streams-demo.env` file.
 
 #. After you run through the guided tutorial below, apply the concepts you learn here to build your own event streaming pipeline in |ccloud|, a fully managed, cloud-native event streaming platform powered by |ak|. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
 
@@ -308,7 +308,7 @@ Consumers
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumer_lag.png
       :alt: image
 
-#. View consumer lag for the |kstreams| application under the consumer group id ``wikipedia-activity-monitor``. This application is run by the `cnfldemos/cp-demo-kstreams <https://hub.docker.com/r/cnfldemos/cp-demo-kstreams>`__ Docker container (application `source code <https://github.com/confluentinc/demos-common/blob/master/src/main/java/io/confluent/demos/common/wiki/WikipediaActivityMonitor.java>`__). This |kstreams| application is configured to connect to the |ak| cluster with this :devx-cp-demo:`configuration|env_files/streams-demo.env` file.
+#. View consumer lag for the |kstreams| application under the consumer group id ``wikipedia-activity-monitor``. This application is run by the `cnfldemos/cp-demo-kstreams <https://hub.docker.com/r/cnfldemos/cp-demo-kstreams>`__ Docker container (application `source code <https://github.com/confluentinc/demos-common/blob/master/src/main/java/io/confluent/demos/common/wiki/WikipediaActivityMonitor.java>`__). The |kstreams| application is configured to connect to the |ak| cluster with the following :devx-cp-demo:`client configuration|env_files/streams-demo.env` file.
 
    .. figure:: images/activity-monitor-consumer.png
       :alt: image
