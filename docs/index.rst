@@ -20,9 +20,9 @@ The use case is an |ak-tm| event streaming application that processes real-time 
     :alt: image
 
 Wikimedia Foundation has IRC channels that publish edits happening to real wiki pages (e.g. ``#en.wikipedia``, ``#en.wiktionary``) in real time.
-Using `Kafka Connect <http://docs.confluent.io/current/connect/index.html>`__, a Kafka source connector `kafka-connect-irc <https://github.com/cjmatta/kafka-connect-irc>`__ streams raw messages from these IRC channels, and a custom Kafka Connect transform `kafka-connect-transform-wikiedit <https://github.com/cjmatta/kafka-connect-transform-wikiedit>`__ transforms these messages and then the messages are written to a Kafka cluster.
-This example uses `ksqlDB <https://www.confluent.io/product/ksql/>`__ and a `Kafka Streams <http://docs.confluent.io/current/streams/index.html>`__ application for data processing.
-Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.io/current/connect/connect-elasticsearch/docs/elasticsearch_connector.html>`__ streams the data out of Kafka, and the data is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
+Using :ref:`Kafka Connect <kafka_connect>`, a Kafka source connector `kafka-connect-irc <https://github.com/cjmatta/kafka-connect-irc>`__ streams raw messages from these IRC channels, and a custom Kafka Connect transform `kafka-connect-transform-wikiedit <https://github.com/cjmatta/kafka-connect-transform-wikiedit>`__ transforms these messages and then the messages are written to a Kafka cluster.
+This example uses `ksqlDB <https://www.confluent.io/product/ksql/>`__ and a :ref:`Kafka Streams <kafka_streams>` application for data processing.
+Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.io/kafka-connect-elasticsearch/index.html>`__ streams the data out of Kafka, and the data is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 |crep-full| is also copying messages from a topic to another topic in the same cluster.
 All data is using |sr-long| and Avro.
 `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ is managing and monitoring the deployment.
@@ -173,7 +173,7 @@ Topics
    .. figure:: images/count-topic-view.png
       :alt: image
 
-#. Return to the ``All topics`` view and click the **+ Add a topic** button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| `topic management <https://docs.confluent.io/current/control-center/docs/topics.html>`__.
+#. Return to the ``All topics`` view and click the **+ Add a topic** button on the top right to create a new topic in your Kafka cluster. You can also view and edit settings of Kafka topics in the cluster. Read more on |c3| :ref:`topic management <controlcenter_userguide_topics>`.
 
    .. figure:: images/create_topic.png
          :alt: image
@@ -190,7 +190,7 @@ This example runs three connectors:
 They are running on a |kconnect| worker that is configured with |cp| security features.
 The |kconnect| worker's embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
 
-#. |c3| uses the |kconnect-long| API to manage multiple `connect clusters <https://docs.confluent.io/current/control-center/docs/connect.html>`__.  Click on "Connect".
+#. |c3| uses the |kconnect-long| API to manage multiple :ref:`connect clusters <kafka_connect>`.  Click on "Connect".
 
 #. Select ``connect1``, the name of the cluster of |kconnect| workers.
 
@@ -346,7 +346,7 @@ Consumers
       :alt: image
 
 #. From the **Brokers -> Consumption** view, click on a point in the Request latency
-   line graph to view a breakdown of latencies through the entire `request lifecycle <https://docs.confluent.io/current/control-center/brokers.html#consumption-metrics-panel>`__.
+   line graph to view a breakdown of latencies through the entire :ref:`request lifecycle <c3_brokers_consumption_metrics>`.
 
    .. figure:: images/slow_consumer_produce_latency_breakdown.png
       :alt: image
@@ -408,15 +408,15 @@ solution, |crep-full| is also configured with security.
 Security
 --------
 
-All the |cp| components and clients in this example are enabled with many `security features <https://docs.confluent.io/current/security.html>`__.
+All the |cp| components and clients in this example are enabled with many :ref:`security features <security>`.
 
 -  :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization. It is configured with the |csa| and talks to LDAP to authenticate clients.
--  `SSL <https://docs.confluent.io/current/kafka/authentication_ssl.html>`__ for encryption and mTLS. The example :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password. 
+-  :ref:`SSL <kafka_ssl_authentication>` for encryption and mTLS. The example :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password. 
 -  :ref:`Role-Based Access Control (RBAC) <rbac-overview>` for authorization. If a resource has no associated ACLs, then users are not allowed to access the resource, except super users.
--  |zk| is configured for `SSL <https://docs.confluent.io/current/security/zk-security.html#mtls>`__ AND `SASL/DIGEST-MD5 <https://docs.confluent.io/current/security/zk-security.html#sasl-with-digest-md5>`__ (Note: no |crest| and |sr| TLS support with `trial licenses <https://docs.confluent.io/5.5.0/release-notes/index.html#schema-registry>`__).
--  `HTTPS for Control Center <https://docs.confluent.io/current/control-center/docs/installation/configuration.html#https-settings>`__.
--  `HTTPS for Schema Registry <https://docs.confluent.io/current/schema-registry/docs/security.html>`__.
--  `HTTPS for Connect <https://docs.confluent.io/current/connect/security.html#configuring-the-kconnect-rest-api-for-http-or-https>`__.
+-  |zk| is configured for :ref`SSL <zk-mtls>` AND `SASL/DIGEST-MD5 <zk-auth-sasl>` (Note: no |crest| and |sr| TLS support with `trial licenses <https://docs.confluent.io/5.5.0/release-notes/index.html#schema-registry>`__).
+-  :ref:`HTTPS for Control Center <https_settings>`.
+-  :ref:`HTTPS for Schema Registry <schemaregistry_security>`.
+-  :ref:`HTTPS for Connect <connect_security>`.
 
 You can see each component's security configuration in the example's :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
 
@@ -641,7 +641,7 @@ End clients (non-CP clients):
           cd scripts/validate
           ./validate_bindings.sh
 
-#. Because |zk| is configured for `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, any commands that communicate with |zk| need properties set for |zk| authentication. This authentication configuration is provided by the ``KAFKA_OPTS`` setting on the brokers. For example, notice that the `throttle script <scripts/app/throttle_consumer.sh>`__ runs on the Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
+#. Because |zk| is configured for :ref:`SASL/DIGEST-MD5 <kafka_sasl_auth_plain>`, any commands that communicate with |zk| need properties set for |zk| authentication. This authentication configuration is provided by the ``KAFKA_OPTS`` setting on the brokers. For example, notice that the `throttle script <scripts/app/throttle_consumer.sh>`__ runs on the Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
 
 #. Next step: Learn more about security with the :ref:`Security Tutorial <security_tutorial>`.
 
@@ -649,7 +649,7 @@ End clients (non-CP clients):
 Data Governance with |sr|
 -------------------------
 
-All the applications and connectors used in this example are configured to automatically read and write Avro-formatted data, leveraging the `Confluent Schema Registry <https://docs.confluent.io/current/schema-registry/docs/index.html>`__ .
+All the applications and connectors used in this example are configured to automatically read and write Avro-formatted data, leveraging the :ref:`Confluent Schema Registry <schemaregistry_intro>`.
 
 The security in place between |sr| and the end clients, e.g. ``appSA``, is as follows:
 
@@ -840,7 +840,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
          --bootstrap-server kafka1:9091 \
          --command-config /etc/kafka/secrets/client_sasl_plain.config
 
-#. Describe the topic ``wikipedia.parsed.replica``, which is the topic that |crep| has replicated from ``wikipedia.parsed``. Notice that it also has enabled |sv|, because |crep| default is ``topic.config.sync=true`` (see |crep| :ref:`documentation <rep-destination-topics>`).
+#. Describe the topic ``wikipedia.parsed.replica``, which is the topic that |crep| has replicated from ``wikipedia.parsed``. Notice that it also has enabled |sv|, because |crep| default is ``topic.config.sync=true`` (see |crep| `Destination Topics <https://docs.confluent.io/kafka-connect-replicator/current/configuration_options.html#destination-topics>`__).
 
    .. sourcecode:: bash
 
@@ -856,7 +856,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 |crest-long|
 ------------
 
-The `Confluent REST Proxy <https://docs.confluent.io/current/kafka-rest/docs/index.html>`__  is running for optional client access.
+The :ref:`Confluent REST Proxy <kafkarest_intro>`  is running for optional client access.
 This demo showcases |crest-long| in two modes:
 
 - Standalone service, listening for HTTPS requests on port 8086
@@ -1191,7 +1191,7 @@ Alerting
 --------
 
 There are many types of |c3-short|
-`alerts <https://docs.confluent.io/current/control-center/docs/alerts.html>`__
+:ref:`alerts <controlcenter_userguide_alerts>`
 and many ways to configure them. Use the Alerts management page to
 define triggers and actions, or click on individual resources
 to setup alerts from there.
@@ -1341,7 +1341,7 @@ Here are some suggestions on how to troubleshoot the example.
 
 #. If a command that communicates with |zk| appears to be failing with the error ``org.apache.zookeeper.KeeperException$NoAuthException``,
    change the container you are running the command from to be either ``kafka1`` or ``kafka2``.  This is because |zk| is configured for
-   `SASL/DIGEST-MD5 <https://docs.confluent.io/current/kafka/authentication_sasl_plain.html#zookeeper>`__, and
+   :ref:`SASL/DIGEST-MD5 <sasl_plain_zk>`, and
    any commands that communicate with |zk| need properties set for |zk| authentication.
 
 #. Run any of the :devx-cp-demo:`validation scripts|scripts/validate/` to check that things are working.
