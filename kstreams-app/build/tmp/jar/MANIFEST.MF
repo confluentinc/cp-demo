@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Class-Path: avro-1.9.1.jar jackson-databind-2.9.9.3.jar jackson-core-2.9
+ .9.jar commons-compress-1.19.jar slf4j-api-1.7.25.jar jackson-annotatio
+ ns-2.9.0.jar
+Main-Class: io.confluent.demos.common.wiki.WikipediaActivityMonitor
+
