@@ -18,9 +18,12 @@ version = '0.0.8'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
+def props = new Properties()
+file("../env_files/config.env").withInputStream { props.load(it) }
+
 ext {
   kafkaVersion = '2.6.0'
-  cpVersion = '6.0.0'
+  cpVersion = props.getProperty("CONFLUENT") ?: '6.0.0'
 }
 
 repositories {
