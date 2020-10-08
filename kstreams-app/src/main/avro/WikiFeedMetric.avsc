@@ -1,0 +1,17 @@
+{
+  "type": "record",
+  "name": "WikiFeedMetric",
+  "namespace": "io.confluent.demos.common.wiki",
+  "fields": [
+    {
+      "name": "channel",
+      "type": "string",
+      "doc": "Associated channel"
+    },
+    {
+      "name": "editCount",
+      "type": "long",
+      "doc": "The count of edits for the channel"
+    }
+  ]
+}
