@@ -1,0 +1,83 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.commercehub.gradle.plugin:gradle-avro-plugin:0.15.1"
+        classpath "com.github.jengelman.gradle.plugins:shadow:4.0.2"
+    }
+}
+
+plugins {
+    id 'java'
+    id "com.google.cloud.tools.jib" version "1.5.0"
+}
+
+group = 'io.confluent'
+version = '0.0.8'
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+
+def props = new Properties()
+file("../env_files/config.env").withInputStream { props.load(it) }
+
+ext {
+  kafkaVersion = '2.6.0'
+  cpVersion = props.getProperty("CONFLUENT") ?: '6.0.0'
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        url = 'https://packages.confluent.io/maven/'
+    }
+}
+
+apply plugin: "com.commercehub.gradle.plugin.avro"
+apply plugin: "com.github.johnrengelman.shadow"
+
+dependencies {
+    compile "org.apache.avro:avro:1.9.1"
+    implementation "org.slf4j:slf4j-simple:1.7.26"
+    implementation "org.apache.kafka:kafka-streams:${kafkaVersion}"
+    implementation "io.confluent:kafka-streams-avro-serde:${cpVersion}"
+    implementation "io.confluent:monitoring-interceptors:${cpVersion}"
+
+    testCompile "io.confluent:kafka-avro-serializer:${cpVersion}"
+    testCompile "org.apache.kafka:kafka-streams-test-utils:${kafkaVersion}"
+    testCompile "junit:junit:4.12"
+    testCompile "org.assertj:assertj-core:3.3.0"
+}
+
+test {
+    testLogging {
+        outputs.upToDateWhen { false }
+        showStandardStreams = true
+        exceptionFormat = "full"
+    }
+}
+
+// TODO: How do we handle multiple projects inside this package?
+jar {
+    manifest {
+       attributes(
+            "Class-Path": configurations.compile.collect { it.getName() }.join(" "),
+            "Main-Class": "io.confluent.demos.common.wiki.WikipediaActivityMonitor"
+       )
+    }
+}
+
+jib {
+  from.image = "confluentinc/cp-kafka:${cpVersion}"
+  to.image = "cnfldemos/cp-demo-kstreams:${version}"
+  container {
+    entrypoint = '/app/start.sh'
+    useCurrentTimestamp=true
+  }
+  extraDirectories {
+    permissions = [
+      '/app/start.sh': '755'
+    ]
+  }
+}

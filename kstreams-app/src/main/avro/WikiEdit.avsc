@@ -1,0 +1,67 @@
+{
+  "type": "record",
+  "name": "WikiEdit",
+  "namespace": "io.confluent.demos.common.wiki",
+  "fields": [
+    {
+      "name": "createdat",
+      "type": "long",
+      "logicalType": "timestamp-millis",
+      "doc": "The timestamp of the edit"
+    },
+    {
+      "name": "wikipage",
+      "type": "string",
+      "doc": "The page that was edited"
+    },
+    {
+      "name": "channel",
+      "type": "string",
+      "doc": "The source channel the edit came through"
+    },
+    {
+      "name": "username",
+      "type": "string",
+      "doc": "Username of editor"
+    },
+    {
+      "name": "commitmessage",
+      "type": "string",
+      "doc": "Commit message for edit."
+    },
+    {
+      "name": "bytechange",
+      "type": "int",
+      "doc": "number of bytes added or removed with this edit."
+    },
+    {
+      "name": "diffurl",
+      "type": "string",
+      "doc": "The URL showing the edit diff."
+    },
+    {
+      "name": "isnew",
+      "type": "boolean",
+      "doc": "Is this a new page?",
+      "default": false
+    },
+    {
+      "name": "isminor",
+      "type": "boolean",
+      "doc": "Is this edit minor?",
+      "default": false
+    },
+    {
+      "name": "isbot",
+      "type": "boolean",
+      "doc": "Is this an edit by a bot?",
+      "default": false
+    },
+    {
+      "name": "isunpatrolled",
+      "type": "boolean",
+      "doc": "Is this edit unpatrolled?",
+      "default": false
+    }
+  ]
+}
