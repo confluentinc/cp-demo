@@ -18,7 +18,7 @@ DATA=$( cat << EOF
                 "BOT": {
                     "type": "boolean"
                 },
-                "USERNAME": {
+                "USER": {
                     "type": "keyword"
                 },
                 "COMMENT": {

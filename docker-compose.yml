@@ -571,8 +571,6 @@ services:
     container_name: elasticsearch
     cpus: 0.50
     #restart: always
-    depends_on:
-      - connect
     ports:
       - 9200:9200
       - 9300:9300
