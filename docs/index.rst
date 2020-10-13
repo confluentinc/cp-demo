@@ -94,7 +94,7 @@ Start Example
       cd cp-demo
       git checkout |release_post_branch|
 
-#. From the ``cp-demo`` directory, start the entire example by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This takes approximately 7 minutes to complete.
+#. From the ``cp-demo`` directory, start the entire example by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This takes approximately 10 minutes to complete.
 
    .. sourcecode:: bash
 
@@ -103,6 +103,8 @@ Start Example
 #. Using a web browser, view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
 
 #. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
+
+   .. figure:: images/kibana-dashboard.png
 
 #. You can view the full platform configuration in the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file and the |kstreams| application configuration in the following :devx-cp-demo:`client configuration|env_files/streams-demo.env` file.
 
