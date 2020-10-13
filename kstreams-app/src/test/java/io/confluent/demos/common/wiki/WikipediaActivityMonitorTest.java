@@ -124,36 +124,24 @@ public class WikipediaActivityMonitorTest {
         cloneRecord(testRecord)
                 .map(c -> with(
                             with(c, WikipediaActivityMonitor.BOT, true),
-                            WikipediaActivityMonitor.DOMAIN, "#en.wikipedia"))
+                            WikipediaActivityMonitor.DOMAIN, "commons.wikimedia.org"))
                 .ifPresent(inputValues::add);
         cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.DOMAIN, "#fr.wikipedia"))
+                .map(c -> with(c, WikipediaActivityMonitor.DOMAIN, "commons.wikimedia.org"))
                 .ifPresent(inputValues::add);
         cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.DOMAIN, "#en.wikipedia"))
+                .map(c -> with(c, WikipediaActivityMonitor.DOMAIN, "en.wikipedia.org"))
                 .ifPresent(inputValues::add);
         cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.DOMAIN, "#fr.wikipedia"))
+                .map(c -> with(c, WikipediaActivityMonitor.DOMAIN, "en.wikipedia.org"))
                 .ifPresent(inputValues::add);
         cloneRecord(testRecord)
                 .map(c -> with(
                         with(c, WikipediaActivityMonitor.BOT, true),
-                        WikipediaActivityMonitor.DOMAIN, "#en.wikipedia"))
+                        WikipediaActivityMonitor.DOMAIN, "en.wikipedia.org"))
                 .ifPresent(inputValues::add);
         cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.DOMAIN, "#en.wikipedia"))
-                .ifPresent(inputValues::add);
-        cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.DOMAIN, "#fr.wikipedia"))
-                .ifPresent(inputValues::add);
-        cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.DOMAIN, "#fr.wikipedia"))
-                .ifPresent(inputValues::add);
-        cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.DOMAIN, "#en.wikipedia"))
-                .ifPresent(inputValues::add);
-        cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.DOMAIN, "#uk.wikipedia"))
+                .map(c -> with(c, WikipediaActivityMonitor.DOMAIN, "commons.wikimedia.org"))
                 .ifPresent(inputValues::add);
 
         inputTopic.pipeKeyValueList(inputValues
@@ -173,14 +161,12 @@ public class WikipediaActivityMonitorTest {
 
         assertThat(counts).extracting("domain", "editCount")
                 .containsExactly(
-                        tuple("#fr.wikipedia", 1L),
-                        tuple("#en.wikipedia", 1L),
-                        tuple("#fr.wikipedia", 2L),
-                        tuple("#en.wikipedia", 2L),
-                        tuple("#fr.wikipedia", 3L),
-                        tuple("#fr.wikipedia", 4L),
-                        tuple("#en.wikipedia", 3L),
-                        tuple("#uk.wikipedia", 1L));
+                        tuple("commons.wikimedia.org", 1L),
+                        tuple("commons.wikimedia.org", 2L),
+                        tuple("en.wikipedia.org", 1L),
+                        tuple("en.wikipedia.org", 2L),
+                        tuple("en.wikipedia.org", 3L),
+                        tuple("commons.wikimedia.org", 3L));
 
         try {
             testDriver.close();
