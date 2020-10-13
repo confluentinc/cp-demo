@@ -11,7 +11,7 @@ DATA=$( cat << EOF
     "transforms": "extractData, parseJSON",
     "transforms.extractData.type": "org.apache.kafka.connect.transforms.ExtractField\$Value",
     "transforms.extractData.field": "data",
-    "transforms.parseJSON.type": "com.github.jcustenborder.kafka.connect.json.FromJson$Value",
+    "transforms.parseJSON.type": "com.github.jcustenborder.kafka.connect.json.FromJson\$Value",
     "transforms.parseJSON.json.exclude.locations": "properties/log_params,#/properties/$schema,#/$schema",
     "transforms.parseJSON.json.schema.location": "Url",
     "transforms.parseJSON.json.schema.url": "file:/etc/kafka/media-wiki-RecentChange-event.schema.json",
