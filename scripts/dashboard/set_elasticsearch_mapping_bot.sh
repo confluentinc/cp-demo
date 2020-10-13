@@ -9,7 +9,7 @@ DATA=$( cat << EOF
     "mappings": {
         "wikichange": {
             "properties": {
-                "META.DT": {
+                "TIMESTAMP": {
                     "type": "date"
                 },
                 "URI": {
