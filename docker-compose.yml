@@ -407,7 +407,7 @@ services:
     volumes:
       - ./scripts/security:/etc/kafka/secrets
       - ./scripts/security/keypair:/tmp/conf
-      - ./scripts/media-wiki-RecentChange-event.schema:/etc/kafka/media-wiki-RecentChange-event.schema
+      - ./scripts/media-wiki-RecentChange-event.schema.json:/etc/kafka/media-wiki-RecentChange-event.schema.json
     ports:
       - 8083:8083
     environment:
