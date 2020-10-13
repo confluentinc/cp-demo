@@ -39,7 +39,7 @@ Data pattern is as follows:
 +-------------------------------------+--------------------------------+---------------------------------------+
 | ksqlDB                              | ``wikipedia.parsed``           | ksqlDB streams and tables             |
 +-------------------------------------+--------------------------------+---------------------------------------+
-| Kafka Streams application           | ``wikipedia.parsed``           | ``wikipedia.parsed.count-by-channel`` |
+| Kafka Streams application           | ``wikipedia.parsed``           | ``wikipedia.parsed.count-by-domain``  |
 +-------------------------------------+--------------------------------+---------------------------------------+
 | Confluent Replicator                | ``wikipedia.parsed``           | ``wikipedia.parsed.replica``          |
 +-------------------------------------+--------------------------------+---------------------------------------+
@@ -173,7 +173,7 @@ Topics
    .. figure:: images/topic_settings.png
       :alt: image
 
-#. Return to "All Topics", click on ``wikipedia.parsed.count-by-channel`` to view the output topic from the |kstreams| application.
+#. Return to "All Topics", click on ``wikipedia.parsed.count-by-domain`` to view the output topic from the |kstreams| application.
 
    .. figure:: images/count-topic-view.png
       :alt: image
