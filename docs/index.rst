@@ -19,8 +19,8 @@ The use case is an |ak-tm| event streaming application that processes real-time 
 .. figure:: images/cp-demo-overview.jpg
     :alt: image
 
-Wikimedia EventStreams publishes edits happening to real wiki pages (e.g. `#en.wikipedia`, `#en.wiktionary`) in real time.
-Using :ref:`Kafka Connect <kafka_connect>`, a Kafka source connector `kafka-connect-sse <https://www.confluent.io/hub/cjmatta/kafka-connect-sse>`__ streams raw messages for the server sent events (SSE), and a custom |kconnect| transform `kafka-connect-json-schema <https://www.confluent.io/hub/jcustenborder/kafka-connect-json-schema>`__ transforms these messages and then the messages are written to a Kafka cluster.
+`EventStreams <https://wikitech.wikimedia.org/wiki/Event_Platform/EventStreams>`__ publishes a continuous stream of real-time edits happening to real wiki pages.
+Using :ref:`Kafka Connect <kafka_connect>`, a Kafka source connector `kafka-connect-sse <https://www.confluent.io/hub/cjmatta/kafka-connect-sse>`__ streams the server-sent events (SSE) from https://stream.wikimedia.org/v2/stream/recentchange, and a custom |kconnect| transform `kafka-connect-json-schema <https://www.confluent.io/hub/jcustenborder/kafka-connect-json-schema>`__ extracts the JSON from these messages and then are written to a |ak| cluster.
 This example uses `ksqlDB <https://www.confluent.io/product/ksql/>`__ and a :ref:`Kafka Streams <kafka_streams>` application for data processing.
 Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.io/kafka-connect-elasticsearch/index.html>`__ streams the data out of Kafka, and the data is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 |crep-full| is also copying messages from a topic to another topic in the same cluster.
