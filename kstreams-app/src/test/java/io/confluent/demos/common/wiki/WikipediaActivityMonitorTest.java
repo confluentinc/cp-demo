@@ -60,9 +60,10 @@ public class WikipediaActivityMonitorTest {
         return from;
     }
     private static Optional<GenericRecord> cloneRecord(final GenericRecord from) {
+        GenericRecord metadata = (GenericRecord)from.get(WikipediaActivityMonitor.META);
         return buildTestRecord(
-                (Long)from.get(WikipediaActivityMonitor.METADT),
-                (String)from.get(WikipediaActivityMonitor.METAURI),
+                (Long)metadata.get(KsqlDataSourceSchema_META.getDT()),
+                (String)metadata.get(KsqlDataSourceSchema_META.getURI()),
                 (String)from.get(WikipediaActivityMonitor.DOMAIN),
                 (String)from.get(WikipediaActivityMonitor.USER),
                 (String)from.get(WikipediaActivityMonitor.COMMENT),
@@ -82,9 +83,12 @@ public class WikipediaActivityMonitorTest {
             final boolean bot,
             final boolean patrolled
     ) {
+      final GenericRecord metadata = new GenericData.Record(KsqlDataSourceSchema_META.SCHEMA$);
+      metadata.put("DT", timestamp);
+      metadata.put("URI", uri);
+
       final GenericRecord record = new GenericData.Record(WikiEdit.SCHEMA$);
-      record.put(WikipediaActivityMonitor.METADT, timestamp);
-      record.put(WikipediaActivityMonitor.METAURI, uri);
+      record.put(WikipediaActivityMonitor.META, metadata);
       record.put(WikipediaActivityMonitor.DOMAIN, domain);
       record.put(WikipediaActivityMonitor.USER, user);
       record.put(WikipediaActivityMonitor.COMMENT, comment);

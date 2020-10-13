@@ -48,8 +48,7 @@ import java.util.Properties;
  * @see <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/streams/Topology.html">Topology</a>
  */
 class WikipediaActivityMonitor {
-  public static final String METADT = "METADT";
-  public static final String METAURI = "URI";
+  public static final String META = "meta";
   public static final String DOMAIN = "domain";
   public static final String USER = "user";
   public static final String COMMENT = "comment";
