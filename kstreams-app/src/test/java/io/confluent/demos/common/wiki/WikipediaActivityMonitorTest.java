@@ -121,33 +121,40 @@ public class WikipediaActivityMonitorTest {
             outputTopic = testDriver.createOutputTopic(WikipediaActivityMonitor.OUTPUT_TOPIC, new StringDeserializer(), metricSerde.deserializer());
 
         final List<GenericRecord> inputValues = new ArrayList<>();
+
+        final GenericRecord metadata1 = new GenericData.Record(KsqlDataSourceSchema_META.SCHEMA$);
+        metadata1.put("DOMAIN", "commons.wikimedia.org");
+        final GenericRecord metadata2 = new GenericData.Record(KsqlDataSourceSchema_META.SCHEMA$);
+        metadata2.put("DOMAIN", "en.wikipedia.org");
+
         cloneRecord(testRecord)
                 .map(c -> with(
                             with(c, WikipediaActivityMonitor.BOT, true),
-                            WikipediaActivityMonitor.DOMAIN, "commons.wikimedia.org"))
+                            WikipediaActivityMonitor.META, metadata1))
                 .ifPresent(inputValues::add);
         cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.DOMAIN, "commons.wikimedia.org"))
+                .map(c -> with(c, WikipediaActivityMonitor.META, metadata1))
                 .ifPresent(inputValues::add);
         cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.DOMAIN, "en.wikipedia.org"))
+                .map(c -> with(c, WikipediaActivityMonitor.META, metadata2))
                 .ifPresent(inputValues::add);
         cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.DOMAIN, "en.wikipedia.org"))
+                .map(c -> with(c, WikipediaActivityMonitor.META, metadata2))
                 .ifPresent(inputValues::add);
         cloneRecord(testRecord)
                 .map(c -> with(
                         with(c, WikipediaActivityMonitor.BOT, true),
-                        WikipediaActivityMonitor.DOMAIN, "en.wikipedia.org"))
+                            WikipediaActivityMonitor.META, metadata2))
                 .ifPresent(inputValues::add);
         cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.DOMAIN, "commons.wikimedia.org"))
+                .map(c -> with(c, WikipediaActivityMonitor.META, metadata1))
                 .ifPresent(inputValues::add);
 
+                                //(String) v.get(WikipediaActivityMonitor.META).getDOMAIN(),
         inputTopic.pipeKeyValueList(inputValues
                         .stream()
                         .map(v -> new KeyValue<>(
-                                (String) v.get(WikipediaActivityMonitor.DOMAIN),
+                                (String) v.get(WikipediaActivityMonitor.META),
                                 (Object) v))
                         .collect(Collectors.toList()));
 
