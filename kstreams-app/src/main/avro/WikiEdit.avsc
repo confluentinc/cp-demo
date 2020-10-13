@@ -4,64 +4,283 @@
   "namespace": "io.confluent.demos.common.wiki",
   "fields": [
     {
-      "name": "createdat",
-      "type": "long",
-      "logicalType": "timestamp-millis",
-      "doc": "The timestamp of the edit"
+      "default": null,
+      "name": "BOT",
+      "type": [
+        "null",
+        "boolean"
+      ]
     },
     {
-      "name": "wikipage",
-      "type": "string",
-      "doc": "The page that was edited"
+      "default": null,
+      "name": "COMMENT",
+      "type": [
+        "null",
+        "string"
+      ]
     },
     {
-      "name": "channel",
-      "type": "string",
-      "doc": "The source channel the edit came through"
+      "default": null,
+      "name": "ID",
+      "type": [
+        "null",
+        "long"
+      ]
     },
     {
-      "name": "username",
-      "type": "string",
-      "doc": "Username of editor"
+      "default": null,
+      "name": "LENGTH",
+      "type": [
+        "null",
+        {
+          "fields": [
+            {
+              "default": null,
+              "name": "NEW",
+              "type": [
+                "null",
+                "long"
+              ]
+            },
+            {
+              "default": null,
+              "name": "OLD",
+              "type": [
+                "null",
+                "long"
+              ]
+            }
+          ],
+          "name": "KsqlDataSourceSchema_LENGTH",
+          "type": "record"
+        }
+      ]
     },
     {
-      "name": "commitmessage",
-      "type": "string",
-      "doc": "Commit message for edit."
+      "default": null,
+      "name": "LOG_ACTION",
+      "type": [
+        "null",
+        "string"
+      ]
     },
     {
-      "name": "bytechange",
-      "type": "int",
-      "doc": "number of bytes added or removed with this edit."
+      "default": null,
+      "name": "LOG_ACTION_COMMENT",
+      "type": [
+        "null",
+        "string"
+      ]
     },
     {
-      "name": "diffurl",
-      "type": "string",
-      "doc": "The URL showing the edit diff."
+      "default": null,
+      "name": "LOG_ID",
+      "type": [
+        "null",
+        "long"
+      ]
     },
     {
-      "name": "isnew",
-      "type": "boolean",
-      "doc": "Is this a new page?",
-      "default": false
+      "default": null,
+      "name": "LOG_TYPE",
+      "type": [
+        "null",
+        "string"
+      ]
     },
     {
-      "name": "isminor",
-      "type": "boolean",
-      "doc": "Is this edit minor?",
-      "default": false
+      "default": null,
+      "name": "META",
+      "type": [
+        "null",
+        {
+          "fields": [
+            {
+              "default": null,
+              "name": "DOMAIN",
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            {
+              "default": null,
+              "name": "DT",
+              "type": [
+                "null",
+                "long"
+              ]
+            },
+            {
+              "default": null,
+              "name": "ID",
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            {
+              "default": null,
+              "name": "REQUEST_ID",
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            {
+              "default": null,
+              "name": "STREAM",
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            {
+              "default": null,
+              "name": "URI",
+              "type": [
+                "null",
+                "string"
+              ]
+            }
+          ],
+          "name": "KsqlDataSourceSchema_META",
+          "type": "record"
+        }
+      ]
     },
     {
-      "name": "isbot",
-      "type": "boolean",
-      "doc": "Is this an edit by a bot?",
-      "default": false
+      "default": null,
+      "name": "MINOR",
+      "type": [
+        "null",
+        "boolean"
+      ]
     },
     {
-      "name": "isunpatrolled",
-      "type": "boolean",
-      "doc": "Is this edit unpatrolled?",
-      "default": false
+      "default": null,
+      "name": "NAMESPACE",
+      "type": [
+        "null",
+        "long"
+      ]
+    },
+    {
+      "default": null,
+      "name": "PARSEDCOMMENT",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "PATROLLED",
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    {
+      "default": null,
+      "name": "REVISION",
+      "type": [
+        "null",
+        {
+          "fields": [
+            {
+              "default": null,
+              "name": "NEW",
+              "type": [
+                "null",
+                "long"
+              ]
+            },
+            {
+              "default": null,
+              "name": "OLD",
+              "type": [
+                "null",
+                "long"
+              ]
+            }
+          ],
+          "name": "KsqlDataSourceSchema_REVISION",
+          "type": "record"
+        }
+      ]
+    },
+    {
+      "default": null,
+      "name": "SERVER_NAME",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "SERVER_SCRIPT_PATH",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "SERVER_URL",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "TIMESTAMP",
+      "type": [
+        "null",
+        "long"
+      ]
+    },
+    {
+      "default": null,
+      "name": "TITLE",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "TYPE",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "USER",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "WIKI",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "default": null,
+      "name": "BYTECHANGE",
+      "type": [
+        "null",
+        "long"
+      ]
     }
   ]
 }

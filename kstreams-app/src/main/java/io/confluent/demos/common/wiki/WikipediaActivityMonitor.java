@@ -39,8 +39,8 @@ import java.util.Properties;
 
 /**
  * A class that builds a Kafka Streams Topology which will process Wikipedia edits from the
- * `wikipedia.parsed` topic and output edit counts grouped by channel
- * to the `wikipedia.parsed.counts-by-channel` topic. The Kafka Streams application can be
+ * `wikipedia.parsed` topic and output edit counts grouped by domain
+ * to the `wikipedia.parsed.counts-by-domain` topic. The Kafka Streams application can be
  * ran from the `main` provided here which requires a single command line argument,
  * the location to the properties file containing configuration key / value pairs.  The
  * Topology expects Avro inputs of type WikiFeed and produces output of type WikiFeedMetric
@@ -48,20 +48,18 @@ import java.util.Properties;
  * @see <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/streams/Topology.html">Topology</a>
  */
 class WikipediaActivityMonitor {
-  public static final String CREATEDAT = "createdat";
-  public static final String WIKIPAGE = "wikipage";
-  public static final String CHANNEL = "channel";
-  public static final String USERNAME = "username";
-  public static final String COMMITMESSAGE = "commitmessage";
+  public static final String METADT = "METADT";
+  public static final String METAURI = "URI";
+  public static final String DOMAIN = "domain";
+  public static final String USER = "user";
+  public static final String COMMENT = "comment";
   public static final String BYTECHANGE = "bytechange";
-  public static final String DIFFURL = "diffurl";
-  public static final String ISNEW = "isnew";
-  public static final String ISMINOR = "isminor";
-  public static final String ISBOT = "isbot";
-  public static final String ISUNPATROLLED = "isunpatrolled";
+  public static final String MINOR = "minor";
+  public static final String BOT = "bot";
+  public static final String PATROLLED = "patrolled";
 
   public static final String INPUT_TOPIC  = "wikipedia.parsed";
-  public static final String OUTPUT_TOPIC = "wikipedia.parsed.count-by-channel";
+  public static final String OUTPUT_TOPIC = "wikipedia.parsed.count-by-domain";
 
   private static Properties loadEnvProperties(final String fileName) throws IOException {
     final Properties envProps = new Properties();
@@ -115,7 +113,7 @@ class WikipediaActivityMonitor {
 
     final Logger logger = LoggerFactory.getLogger(WikipediaActivityMonitor.class);
     builder.<String, GenericRecord>stream(INPUT_TOPIC)
-       .filter((key, value) -> !(boolean)value.get(ISBOT))
+       .filter((key, value) -> !(boolean)value.get(BOT))
        .groupByKey()
        .count()
        .mapValues(WikiFeedMetric::new)
