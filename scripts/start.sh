@@ -143,7 +143,7 @@ ${DIR}/connectors/submit_wikipedia_sse_config.sh
 # Verify wikipedia.parsed topic is populated and schema is registered
 MAX_WAIT=120
 echo
-echo "Waiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
+echo -e "\nWaiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
 retry $MAX_WAIT host_check_schema_registered || exit 1
 
 echo -e "\nProvide data mapping to Elasticsearch:"
