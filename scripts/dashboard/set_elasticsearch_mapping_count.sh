@@ -15,7 +15,7 @@ DATA=$( cat << EOF
                 "ROWKEY": {
                     "type": "text"
                 },
-                "URI": {
+                "META.URI": {
                     "type": "keyword"
                 },
                 "USER": {
