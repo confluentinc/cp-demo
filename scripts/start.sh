@@ -81,6 +81,13 @@ else
     exit 1;
   }
 fi
+
+# Get JSON schema file for Wikimedia SSE updates
+wget -O ${DIR}/media-wiki-RecentChange-event.schema.json https://raw.githubusercontent.com/wikimedia/mediawiki-event-schemas/master/jsonschema/mediawiki/recentchange/1.0.0.json
+if [[ $? != 0 ]]; then
+  echo "ERROR: Could not get https://raw.githubusercontent.com/wikimedia/mediawiki-event-schemas/master/jsonschema/mediawiki/recentchange/1.0.0.json . Please troubleshoot and try again."
+  exit 1;
+fi
 docker-compose up -d schemaregistry connect control-center
 
 # Verify Confluent Control Center has started
@@ -110,11 +117,6 @@ echo "Waiting up to $MAX_WAIT seconds for Connect to start"
 retry $MAX_WAIT host_check_connect_up || exit 1
 sleep 2 # give connect an exta moment to fully mature
 
-docker-compose exec connect timeout 3 nc -zv irc.wikimedia.org 6667 || {
-  echo -e "\nERROR: irc.wikimedia.org 6667 is unreachable. Please ensure connectivity before proceeding or try setting 'irc.server.port' to 8001 in scripts/connectors/submit_wikipedia_irc_config.sh\n"
-  exit 1
-}
-
 # Create Kafka topics with prefix wikipedia, using connectorSA principal
 docker-compose exec kafka1 bash -c 'export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
    --bootstrap-server kafka1:11091 \
@@ -139,8 +141,8 @@ docker-compose exec kafka1 bash -c 'export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=
    --replication-factor 2 \
    --partitions 2'
 
-echo -e "\nStart streaming from the IRC source connector:"
-${DIR}/connectors/submit_wikipedia_irc_config.sh
+echo -e "\nStart streaming from the Wikipeida SSE source connector:"
+${DIR}/connectors/submit_wikipedia_sse_config.sh
 
 # Verify wikipedia.parsed topic is populated and schema is registered
 MAX_WAIT=120
