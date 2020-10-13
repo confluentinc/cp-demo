@@ -9,34 +9,19 @@ DATA=$( cat << EOF
     "mappings": {
         "wikichange": {
             "properties": {
-                "CREATEDAT": {
+                "META.DT": {
                     "type": "date"
                 },
-                "WIKIPAGE": {
+                "URI": {
                     "type": "keyword"
                 },
-                "ISNEW": {
+                "BOT": {
                     "type": "boolean"
-                },
-                "ISMINOR": {
-                    "type": "boolean"
-                },
-                "ISUNPATROLLED": {
-                    "type": "boolean"
-                },
-                "ISBOT": {
-                    "type": "boolean"
-                },
-                "DIFFURL": {
-                    "type": "text"
                 },
                 "USERNAME": {
                     "type": "keyword"
                 },
-                "BYTECHANGE": {
-                    "type": "integer"
-                },
-                "COMMITMESSAGE": {
+                "COMMENT": {
                     "type": "text"
                 }
             }
