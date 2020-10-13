@@ -18,7 +18,7 @@ DATA=$( cat << EOF
                 "URI": {
                     "type": "keyword"
                 },
-                "USERNAME": {
+                "USER": {
                     "type": "keyword"
                 },
                 "COUNT": {

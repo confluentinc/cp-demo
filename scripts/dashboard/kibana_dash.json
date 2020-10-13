@@ -122,12 +122,12 @@
       }
     },
     {
-      "id": "Wikipage-by-Average-Bytechange",
+      "id": "URI-by-Average-Bytechange",
       "type": "visualization",
       "version": 1,
       "attributes": {
-        "title": "Wikipage by Average Bytechange",
-        "visState": "{\"title\":\"Wikipage by Average Bytechange\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"avg\",\"schema\":\"metric\",\"params\":{\"field\":\"BYTECHANGE\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"URI\",\"size\":25,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
+        "title": "URI by Average Bytechange",
+        "visState": "{\"title\":\"URI by Average Bytechange\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"avg\",\"schema\":\"metric\",\"params\":{\"field\":\"BYTECHANGE\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"URI\",\"size\":25,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
         "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
         "description": "",
         "version": 1,
@@ -154,7 +154,7 @@
         "title": "Wikipedia",
         "hits": 0,
         "description": "",
-        "panelsJSON": "[{\"col\":1,\"id\":\"Edit-Rate\",\"panelIndex\":3,\"row\":1,\"size_x\":12,\"size_y\":2,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Top-Edited-Pages\",\"panelIndex\":1,\"row\":3,\"size_x\":6,\"size_y\":5,\"type\":\"visualization\"},{\"col\":7,\"id\":\"Top-Editors\",\"panelIndex\":2,\"row\":3,\"size_x\":6,\"size_y\":5,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Average-byte-change\",\"panelIndex\":4,\"row\":8,\"size_x\":6,\"size_y\":4,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Percentage-of-edits-that-are-bots\",\"panelIndex\":6,\"row\":12,\"size_x\":3,\"size_y\":2,\"type\":\"visualization\"},{\"col\":4,\"id\":\"Percentage-of-edits-that-are-minor\",\"panelIndex\":7,\"row\":12,\"size_x\":3,\"size_y\":2,\"type\":\"visualization\"},{\"col\":7,\"id\":\"Percentage-of-edits-that-are-new\",\"panelIndex\":8,\"row\":12,\"size_x\":3,\"size_y\":2,\"type\":\"visualization\"},{\"col\":10,\"id\":\"Percentage-of-edits-that-are-unpatrolled\",\"panelIndex\":9,\"row\":12,\"size_x\":3,\"size_y\":2,\"type\":\"visualization\"},{\"id\":\"Wikipage-by-Average-Bytechange\",\"type\":\"visualization\",\"panelIndex\":10,\"size_x\":6,\"size_y\":4,\"col\":7,\"row\":8}]",
+        "panelsJSON": "[{\"col\":1,\"id\":\"Edit-Rate\",\"panelIndex\":3,\"row\":1,\"size_x\":12,\"size_y\":2,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Top-Edited-Pages\",\"panelIndex\":1,\"row\":3,\"size_x\":6,\"size_y\":5,\"type\":\"visualization\"},{\"col\":7,\"id\":\"Top-Editors\",\"panelIndex\":2,\"row\":3,\"size_x\":6,\"size_y\":5,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Average-byte-change\",\"panelIndex\":4,\"row\":8,\"size_x\":6,\"size_y\":4,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Percentage-of-edits-that-are-bots\",\"panelIndex\":6,\"row\":12,\"size_x\":3,\"size_y\":2,\"type\":\"visualization\"},{\"col\":4,\"id\":\"Percentage-of-edits-that-are-minor\",\"panelIndex\":7,\"row\":12,\"size_x\":3,\"size_y\":2,\"type\":\"visualization\"},{\"col\":7,\"id\":\"Percentage-of-edits-that-are-new\",\"panelIndex\":8,\"row\":12,\"size_x\":3,\"size_y\":2,\"type\":\"visualization\"},{\"col\":10,\"id\":\"Percentage-of-edits-that-are-unpatrolled\",\"panelIndex\":9,\"row\":12,\"size_x\":3,\"size_y\":2,\"type\":\"visualization\"},{\"id\":\"URI-by-Average-Bytechange\",\"type\":\"visualization\",\"panelIndex\":10,\"size_x\":6,\"size_y\":4,\"col\":7,\"row\":8}]",
         "optionsJSON": "{\"darkTheme\":false}",
         "uiStateJSON": "{\"P-1\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-2\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-10\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}}",
         "version": 1,
