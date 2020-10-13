@@ -64,7 +64,7 @@ public class WikipediaActivityMonitorTest {
         return buildTestRecord(
                 (Long)metadata.getDT(),
                 (String)metadata.getURI(),
-                (String)from.get(WikipediaActivityMonitor.DOMAIN),
+                (String)metadata.getDOMAIN(),
                 (String)from.get(WikipediaActivityMonitor.USER),
                 (String)from.get(WikipediaActivityMonitor.COMMENT),
                 (int)from.get(WikipediaActivityMonitor.BYTECHANGE),
@@ -86,10 +86,10 @@ public class WikipediaActivityMonitorTest {
       final GenericRecord metadata = new GenericData.Record(KsqlDataSourceSchema_META.SCHEMA$);
       metadata.put("DT", timestamp);
       metadata.put("URI", uri);
+      metadata.put("DOMAIN", domain);
 
       final GenericRecord record = new GenericData.Record(WikiEdit.SCHEMA$);
       record.put(WikipediaActivityMonitor.META, metadata);
-      record.put(WikipediaActivityMonitor.DOMAIN, domain);
       record.put(WikipediaActivityMonitor.USER, user);
       record.put(WikipediaActivityMonitor.COMMENT, comment);
       record.put(WikipediaActivityMonitor.BYTECHANGE, byteChange);
