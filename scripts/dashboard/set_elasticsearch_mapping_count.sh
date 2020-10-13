@@ -15,7 +15,7 @@ DATA=$( cat << EOF
                 "ROWKEY": {
                     "type": "text"
                 },
-                "WIKIPAGE": {
+                "URI": {
                     "type": "keyword"
                 },
                 "USERNAME": {
