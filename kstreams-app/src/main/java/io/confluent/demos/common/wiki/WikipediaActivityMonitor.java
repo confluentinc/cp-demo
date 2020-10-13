@@ -48,14 +48,14 @@ import java.util.Properties;
  * @see <a href="https://kafka.apache.org/11/javadoc/org/apache/kafka/streams/Topology.html">Topology</a>
  */
 class WikipediaActivityMonitor {
-  public static final String META = "meta";
-  public static final String DOMAIN = "domain";
-  public static final String USER = "user";
-  public static final String COMMENT = "comment";
-  public static final String BYTECHANGE = "bytechange";
-  public static final String MINOR = "minor";
-  public static final String BOT = "bot";
-  public static final String PATROLLED = "patrolled";
+  public static final String META = "META";
+  public static final String DOMAIN = "DOMAIN";
+  public static final String USER = "USER";
+  public static final String COMMENT = "COMMENT";
+  public static final String BYTECHANGE = "BYTECHANGE";
+  public static final String MINOR = "MINOR";
+  public static final String BOT = "BOT";
+  public static final String PATROLLED = "PATROLLED";
 
   public static final String INPUT_TOPIC  = "wikipedia.parsed";
   public static final String OUTPUT_TOPIC = "wikipedia.parsed.count-by-domain";
