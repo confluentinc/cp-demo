@@ -1,0 +1,196 @@
+{
+  "title": "mediawiki/recentchange",
+  "description": "Represents a MW RecentChange event. https://www.mediawiki.org/wiki/Manual:RCFeed\n",
+  "$id": "/mediawiki/recentchange/1.0.0",
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "$schema",
+    "meta"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "A URI identifying the JSONSchema for this event. This should match an schema's $id in a schema repository. E.g. /schema_name/1.0.0\n"
+    },
+    "meta": {
+      "type": "object",
+      "required": [
+        "id",
+        "dt",
+        "stream"
+      ],
+      "properties": {
+        "uri": {
+          "type": "string",
+          "format": "uri-reference",
+          "maxLength": 8192,
+          "description": "Unique URI identifying the event or entity"
+        },
+        "request_id": {
+          "type": "string",
+          "description": "Unique ID of the request that caused the event"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$",
+          "maxLength": 36,
+          "description": "Unique ID of this event"
+        },
+        "dt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 128,
+          "description": "Event datetime, in ISO-8601 format"
+        },
+        "domain": {
+          "type": "string",
+          "description": "Domain the event or entity pertains to",
+          "minLength": 1
+        },
+        "stream": {
+          "type": "string",
+          "description": "Name of the stream/queue/dataset that this event belongs in",
+          "minLength": 1
+        }
+      }
+    },
+    "id": {
+      "description": "ID of the recentchange event (rcid).",
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "type": {
+      "description": "Type of recentchange event (rc_type). One of \"edit\", \"new\", \"log\", \"categorize\", or \"external\". (See Manual:Recentchanges table#rc_type)\n",
+      "type": "string"
+    },
+    "title": {
+      "description": "Full page name, from Title::getPrefixedText.",
+      "type": "string"
+    },
+    "namespace": {
+      "description": "ID of relevant namespace of affected page (rc_namespace, page_namespace). This is -1 (\"Special\") for log events.\n",
+      "type": "integer"
+    },
+    "comment": {
+      "description": "(rc_comment)",
+      "type": "string"
+    },
+    "parsedcomment": {
+      "description": "The rc_comment parsed into simple HTML. Optional",
+      "type": "string"
+    },
+    "timestamp": {
+      "description": "Unix timestamp (derived from rc_timestamp).",
+      "type": "integer"
+    },
+    "user": {
+      "description": "(rc_user_text)",
+      "type": "string"
+    },
+    "bot": {
+      "description": "(rc_bot)",
+      "type": "boolean"
+    },
+    "server_url": {
+      "description": "$wgCanonicalServer",
+      "type": "string"
+    },
+    "server_name": {
+      "description": "$wgServerName",
+      "type": "string"
+    },
+    "server_script_path": {
+      "description": "$wgScriptPath",
+      "type": "string"
+    },
+    "wiki": {
+      "description": "wfWikiID ($wgDBprefix, $wgDBname)",
+      "type": "string"
+    },
+    "minor": {
+      "description": "(rc_minor).",
+      "type": "boolean"
+    },
+    "patrolled": {
+      "description": "(rc_patrolled). This property only exists if patrolling is supported for this event (based on $wgUseRCPatrol, $wgUseNPPatrol).\n",
+      "type": "boolean"
+    },
+    "length": {
+      "description": "Length of old and new change",
+      "type": "object",
+      "properties": {
+        "old": {
+          "description": "(rc_old_len)",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "new": {
+          "description": "(rc_new_len)",
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "revision": {
+      "description": "Old and new revision IDs",
+      "type": "object",
+      "properties": {
+        "new": {
+          "description": "(rc_last_oldid)",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "old": {
+          "description": "(rc_this_oldid)",
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "log_id": {
+      "description": "(rc_log_id)",
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "log_type": {
+      "description": "(rc_log_type)",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "log_action": {
+      "description": "(rc_log_action)",
+      "type": "string"
+    },
+    "log_params": {
+      "description": "Property only exists if event has rc_params.",
+      "type": [
+        "array",
+        "object",
+        "string"
+      ],
+      "additionalProperties": true
+    },
+    "log_action_comment": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}
