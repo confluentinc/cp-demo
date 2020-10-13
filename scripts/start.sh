@@ -84,8 +84,9 @@ docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTO
   exit 1
 }
 # Copy the updated kafka.connect.truststore.jks back to the host
-docker create --name build localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}
-docker cp build:/tmp/kafka.connect.truststore.jks ${DIR}/security/kafka.connect.truststore.jks
+docker create --name cp-demo-tmp-connect localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}
+docker cp cp-demo-tmp-connect:/tmp/kafka.connect.truststore.jks ${DIR}/security/kafka.connect.truststore.jks
+docker rm cp-demo-tmp-connect
 
 # Bring up more containers
 docker-compose up -d schemaregistry connect control-center
