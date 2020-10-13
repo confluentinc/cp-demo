@@ -11,7 +11,7 @@ This example and accompanying tutorial show users how to deploy an Apache KafkaÂ
 ## Overview
 
 The use case is a Kafka event streaming application for real-time edits to real Wikipedia pages.
-Wikimedia EventStreams publishes edits happening to real wiki pages (e.g. `#en.wikipedia`, `#en.wiktionary`) in real time.
+Wikimedia's EventStreams publishes a continuous stream of real-time edits happening to real wiki pages.
 Using Kafka Connect, a Kafka source connector `kafka-connect-sse` streams raw messages for the server sent events (SSE), and a custom Kafka Connect transform `kafka-connect-json-schema` transforms these messages and then the messages are written to a Kafka cluster.
 This example uses ksqlDB and a Kafka Streams application for data processing.
 Then a Kafka sink connector `kafka-connect-elasticsearch`streams the data out of Kafka, and the data is materialized into Elasticsearch for analysis by Kibana.
