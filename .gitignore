@@ -16,3 +16,4 @@
 **/keypair/
 ui/expanded
 *.zip
+*.log
