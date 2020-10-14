@@ -49,6 +49,9 @@ import java.util.Properties;
  */
 class WikipediaActivityMonitor {
   public static final String META = "META";
+  public static final String META_DT = "DT";
+  public static final String META_URI = "URI";
+  public static final String META_DOMAIN = "DOMAIN";
   public static final String USER = "USER";
   public static final String COMMENT = "COMMENT";
   public static final String BYTECHANGE = "BYTECHANGE";

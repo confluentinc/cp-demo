@@ -41,9 +41,14 @@ public class WikipediaActivityMonitorTest {
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + SCHEMA_REGISTRY_SCOPE;
 
     public WikipediaActivityMonitorTest() {
-        testRecord = buildTestRecord(1602598008000L, "Apache Kafka",
-                "commons.wikimedia.org", "jdoe", "fun new content", 500,
-                true, false, false)
+        testRecord = buildTestRecord(
+                buildMeta(1602598008000L, "Apache Kafka", "commons.wikimedia.org"),
+                "jdoe",
+                "fun new content",
+                500L,
+                true,
+                false,
+                false)
                 .orElseThrow(() -> new RuntimeException("schema could not be loaded"));
         registerSchema(schemaRegistryClient, WikiEdit.SCHEMA$, WikipediaActivityMonitor.INPUT_TOPIC);
     }
@@ -59,35 +64,38 @@ public class WikipediaActivityMonitorTest {
         from.put(name, value);
         return from;
     }
+    private static GenericRecord buildMeta(final Long timestamp, final String uri, final String domain) {
+        final GenericRecord rv = new GenericData.Record(KsqlDataSourceSchema_META.SCHEMA$);
+        rv.put(WikipediaActivityMonitor.META_DT, timestamp);
+        rv.put(WikipediaActivityMonitor.META_URI, uri);
+        rv.put(WikipediaActivityMonitor.META_DOMAIN, domain);
+        return rv;
+    }
+    private static GenericRecord cloneMeta(GenericRecord from) {
+        return buildMeta(
+                (Long)from.get(WikipediaActivityMonitor.META_DT),
+                (String)from.get(WikipediaActivityMonitor.META_URI),
+                (String)from.get(WikipediaActivityMonitor.META_DOMAIN));
+    }
     private static Optional<GenericRecord> cloneRecord(final GenericRecord from) {
-        KsqlDataSourceSchema_META metadata = (KsqlDataSourceSchema_META)from.get(WikipediaActivityMonitor.META);
         return buildTestRecord(
-                (Long)metadata.getDT(),
-                (String)metadata.getURI(),
-                (String)metadata.getDOMAIN(),
+                cloneMeta((GenericRecord)from.get(WikipediaActivityMonitor.META)),
                 (String)from.get(WikipediaActivityMonitor.USER),
                 (String)from.get(WikipediaActivityMonitor.COMMENT),
-                (int)from.get(WikipediaActivityMonitor.BYTECHANGE),
+                (Long)from.get(WikipediaActivityMonitor.BYTECHANGE),
                 (boolean)from.get(WikipediaActivityMonitor.MINOR),
                 (boolean)from.get(WikipediaActivityMonitor.BOT),
                 (boolean)from.get(WikipediaActivityMonitor.PATROLLED));
     }
     private static Optional<GenericRecord> buildTestRecord(
-            final Long timestamp,
-            final String uri,
-            final String domain,
+            final GenericRecord metadata,
             final String user,
             final String comment,
-            final int byteChange,
+            final Long byteChange,
             final boolean minor,
             final boolean bot,
             final boolean patrolled
     ) {
-      final GenericRecord metadata = new GenericData.Record(KsqlDataSourceSchema_META.SCHEMA$);
-      metadata.put("DT", timestamp);
-      metadata.put("URI", uri);
-      metadata.put("DOMAIN", domain);
-
       final GenericRecord record = new GenericData.Record(WikiEdit.SCHEMA$);
       record.put(WikipediaActivityMonitor.META, metadata);
       record.put(WikipediaActivityMonitor.USER, user);
@@ -150,11 +158,11 @@ public class WikipediaActivityMonitorTest {
                 .map(c -> with(c, WikipediaActivityMonitor.META, metadata1))
                 .ifPresent(inputValues::add);
 
-                                //(String) v.get(WikipediaActivityMonitor.META).getDOMAIN(),
         inputTopic.pipeKeyValueList(inputValues
                         .stream()
                         .map(v -> new KeyValue<>(
-                                (String) v.get(WikipediaActivityMonitor.META),
+                                (String)((GenericRecord)v.get(WikipediaActivityMonitor.META))
+                                        .get(WikipediaActivityMonitor.META_DOMAIN),
                                 (Object) v))
                         .collect(Collectors.toList()));
 
@@ -168,12 +176,10 @@ public class WikipediaActivityMonitorTest {
 
         assertThat(counts).extracting("domain", "editCount")
                 .containsExactly(
-                        tuple("commons.wikimedia.org", 1L),
-                        tuple("commons.wikimedia.org", 2L),
-                        tuple("en.wikipedia.org", 1L),
-                        tuple("en.wikipedia.org", 2L),
-                        tuple("en.wikipedia.org", 3L),
-                        tuple("commons.wikimedia.org", 3L));
+                        tuple(metadata1.get(WikipediaActivityMonitor.META_DOMAIN).toString(), 1L),
+                        tuple(metadata2.get(WikipediaActivityMonitor.META_DOMAIN).toString(), 1L),
+                        tuple(metadata2.get(WikipediaActivityMonitor.META_DOMAIN).toString(), 2L),
+                        tuple(metadata1.get(WikipediaActivityMonitor.META_DOMAIN).toString(), 2L));
 
         try {
             testDriver.close();
