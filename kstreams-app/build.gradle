@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.commercehub.gradle.plugin:gradle-avro-plugin:0.15.1"
+        classpath "com.commercehub.gradle.plugin:gradle-avro-plugin:0.18.0"
         classpath "com.github.jengelman.gradle.plugins:shadow:4.0.2"
     }
 }
@@ -14,7 +14,7 @@ plugins {
 }
 
 group = 'io.confluent'
-version = '0.0.8'
+version = '0.0.9'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
@@ -48,6 +48,7 @@ dependencies {
     testCompile "org.apache.kafka:kafka-streams-test-utils:${kafkaVersion}"
     testCompile "junit:junit:4.12"
     testCompile "org.assertj:assertj-core:3.3.0"
+    testCompile "tech.allegro.schema.json2avro:converter:0.2.9"
 }
 
 test {

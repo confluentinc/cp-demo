@@ -1,14 +1,21 @@
 package io.confluent.demos.common.wiki;
 
+import io.confluent.kafka.formatter.AvroMessageReader;
 import io.confluent.kafka.schemaregistry.avro.AvroSchema;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
+import org.apache.avro.AvroRuntimeException;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.io.DatumReader;
+import org.apache.avro.io.DecoderFactory;
+import org.apache.avro.util.Utf8;
+import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.*;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -16,7 +23,11 @@ import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;
 import org.junit.Test;
+import tech.allegro.schema.json2avro.converter.JsonAvroConverter;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.stream.Collectors;
 import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,7 +56,6 @@ public class WikipediaActivityMonitorTest {
                 buildMeta(1602598008000L, "Apache Kafka", "commons.wikimedia.org"),
                 "jdoe",
                 "fun new content",
-                500L,
                 true,
                 false,
                 false)
@@ -65,7 +75,7 @@ public class WikipediaActivityMonitorTest {
         return from;
     }
     private static GenericRecord buildMeta(final Long timestamp, final String uri, final String domain) {
-        final GenericRecord rv = new GenericData.Record(KsqlDataSourceSchema_META.SCHEMA$);
+        final GenericRecord rv = new GenericData.Record(meta.SCHEMA$);
         rv.put(WikipediaActivityMonitor.META_DT, timestamp);
         rv.put(WikipediaActivityMonitor.META_URI, uri);
         rv.put(WikipediaActivityMonitor.META_DOMAIN, domain);
@@ -82,29 +92,72 @@ public class WikipediaActivityMonitorTest {
                 cloneMeta((GenericRecord)from.get(WikipediaActivityMonitor.META)),
                 (String)from.get(WikipediaActivityMonitor.USER),
                 (String)from.get(WikipediaActivityMonitor.COMMENT),
-                (Long)from.get(WikipediaActivityMonitor.BYTECHANGE),
                 (boolean)from.get(WikipediaActivityMonitor.MINOR),
                 (boolean)from.get(WikipediaActivityMonitor.BOT),
                 (boolean)from.get(WikipediaActivityMonitor.PATROLLED));
+    }
+    private static GenericRecord buildTestRecordFromJSON(Schema schema, String json) {
+        JsonAvroConverter converter = new JsonAvroConverter();
+        GenericRecord rv = converter.convertToGenericDataRecord(json.getBytes(), schema);
+        return rv;
     }
     private static Optional<GenericRecord> buildTestRecord(
             final GenericRecord metadata,
             final String user,
             final String comment,
-            final Long byteChange,
             final boolean minor,
             final boolean bot,
             final boolean patrolled
     ) {
       final GenericRecord record = new GenericData.Record(WikiEdit.SCHEMA$);
-      record.put(WikipediaActivityMonitor.META, metadata);
+      record.put( WikipediaActivityMonitor.META, metadata);
       record.put(WikipediaActivityMonitor.USER, user);
       record.put(WikipediaActivityMonitor.COMMENT, comment);
-      record.put(WikipediaActivityMonitor.BYTECHANGE, byteChange);
       record.put(WikipediaActivityMonitor.MINOR, minor);
       record.put(WikipediaActivityMonitor.BOT, bot);
       record.put(WikipediaActivityMonitor.PATROLLED, patrolled);
       return Optional.of(record);
+    }
+
+    @Test
+    public void canProcessCapturedRecords() throws IOException, URISyntaxException {
+        ClassLoader cl = getClass().getClassLoader();
+        File file = new File(cl.getResource("TestMetricMessages.json").getFile());
+        List<String> lines = java.nio.file.Files.readAllLines(file.toPath());
+        List<GenericRecord> inputValues = lines.stream()
+                .map(json -> buildTestRecordFromJSON(WikiEdit.SCHEMA$, json))
+                .collect(Collectors.toList());
+
+        final Properties tempProps = new Properties();
+        tempProps.putIfAbsent(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                MOCK_SCHEMA_REGISTRY_URL);
+        final Properties finalProps = WikipediaActivityMonitor.overlayDefaultProperties(tempProps);
+
+        final SpecificAvroSerde<WikiFeedMetric> metricSerde = new SpecificAvroSerde<>();
+        metricSerde.configure(WikipediaActivityMonitor.propertiesToMap(finalProps), false);
+
+        final StreamsBuilder builder = new StreamsBuilder();
+        WikipediaActivityMonitor
+                .createMonitorStream(builder, metricSerde);
+        final TopologyTestDriver testDriver = new TopologyTestDriver(builder.build(), finalProps);
+
+        final TestInputTopic<String, Object>
+                inputTopic = testDriver.createInputTopic(WikipediaActivityMonitor.INPUT_TOPIC, new StringSerializer(), new KafkaAvroSerializer(schemaRegistryClient));
+        final TestOutputTopic<String, WikiFeedMetric>
+                outputTopic = testDriver.createOutputTopic(WikipediaActivityMonitor.OUTPUT_TOPIC, new StringDeserializer(), metricSerde.deserializer());
+
+        inputTopic.pipeKeyValueList(inputValues
+                .stream()
+                .map(v -> new KeyValue<>(
+                        (String)((GenericRecord)v.get(WikipediaActivityMonitor.META))
+                                .get(WikipediaActivityMonitor.META_DOMAIN),
+                        (Object) v))
+                .collect(Collectors.toList()));
+
+        List<WikiFeedMetric> result = outputTopic.readKeyValuesToList()
+                .stream().map(kv -> kv.value).collect(Collectors.toList());
+
+        assertThat(inputValues.size() == result.size());
     }
 
     @Test
@@ -130,9 +183,9 @@ public class WikipediaActivityMonitorTest {
 
         final List<GenericRecord> inputValues = new ArrayList<>();
 
-        final GenericRecord metadata1 = new GenericData.Record(KsqlDataSourceSchema_META.SCHEMA$);
+        final GenericRecord metadata1 = new GenericData.Record(meta.SCHEMA$);
         metadata1.put("DOMAIN", "commons.wikimedia.org");
-        final GenericRecord metadata2 = new GenericData.Record(KsqlDataSourceSchema_META.SCHEMA$);
+        final GenericRecord metadata2 = new GenericData.Record(meta.SCHEMA$);
         metadata2.put("DOMAIN", "en.wikipedia.org");
 
         cloneRecord(testRecord)
