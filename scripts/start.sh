@@ -28,6 +28,7 @@ mkdir -p ${DIR}/security/keypair
 openssl genrsa -out ${DIR}/security/keypair/keypair.pem 2048
 openssl rsa -in ${DIR}/security/keypair/keypair.pem -outform PEM -pubout -out ${DIR}/security/keypair/public.pem
 
+# Do not make keys world-readable in production
 # Enable Docker appuser to read files if created by a different UID
 chmod 644 ${DIR}/security/keypair/keypair.pem
 chmod 644 ${DIR}/security/*.key
