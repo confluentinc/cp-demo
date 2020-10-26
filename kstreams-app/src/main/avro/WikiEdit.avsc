@@ -5,7 +5,7 @@
   "fields": [
     {
       "default": null,
-      "name": "BOT",
+      "name": "bot",
       "type": [
         "null",
         "boolean"
@@ -13,7 +13,7 @@
     },
     {
       "default": null,
-      "name": "COMMENT",
+      "name": "comment",
       "type": [
         "null",
         "string"
@@ -21,39 +21,10 @@
     },
     {
       "default": null,
-      "name": "ID",
+      "name": "id",
       "type": [
         "null",
         "long"
-      ]
-    },
-    {
-      "default": null,
-      "name": "LENGTH",
-      "type": [
-        "null",
-        {
-          "fields": [
-            {
-              "default": null,
-              "name": "NEW",
-              "type": [
-                "null",
-                "long"
-              ]
-            },
-            {
-              "default": null,
-              "name": "OLD",
-              "type": [
-                "null",
-                "long"
-              ]
-            }
-          ],
-          "name": "KsqlDataSourceSchema_LENGTH",
-          "type": "record"
-        }
       ]
     },
     {
@@ -90,14 +61,14 @@
     },
     {
       "default": null,
-      "name": "META",
+      "name": "meta",
       "type": [
         "null",
         {
           "fields": [
             {
               "default": null,
-              "name": "DOMAIN",
+              "name": "domain",
               "type": [
                 "null",
                 "string"
@@ -105,7 +76,7 @@
             },
             {
               "default": null,
-              "name": "DT",
+              "name": "dt",
               "type": [
                 "null",
                 "long"
@@ -137,7 +108,7 @@
             },
             {
               "default": null,
-              "name": "URI",
+              "name": "uri",
               "type": [
                 "null",
                 "string"
@@ -151,7 +122,7 @@
     },
     {
       "default": null,
-      "name": "MINOR",
+      "name": "minor",
       "type": [
         "null",
         "boolean"
@@ -175,7 +146,7 @@
     },
     {
       "default": null,
-      "name": "PATROLLED",
+      "name": "patrolled",
       "type": [
         "null",
         "boolean"
@@ -260,7 +231,7 @@
     },
     {
       "default": null,
-      "name": "USER",
+      "name": "user",
       "type": [
         "null",
         "string"
@@ -272,14 +243,6 @@
       "type": [
         "null",
         "string"
-      ]
-    },
-    {
-      "default": null,
-      "name": "BYTECHANGE",
-      "type": [
-        "null",
-        "long"
       ]
     }
   ]

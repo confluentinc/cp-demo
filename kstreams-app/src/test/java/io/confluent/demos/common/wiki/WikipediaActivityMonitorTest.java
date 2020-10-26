@@ -45,7 +45,6 @@ public class WikipediaActivityMonitorTest {
                 buildMeta(1602598008000L, "Apache Kafka", "commons.wikimedia.org"),
                 "jdoe",
                 "fun new content",
-                500L,
                 true,
                 false,
                 false)
@@ -82,7 +81,6 @@ public class WikipediaActivityMonitorTest {
                 cloneMeta((GenericRecord)from.get(WikipediaActivityMonitor.META)),
                 (String)from.get(WikipediaActivityMonitor.USER),
                 (String)from.get(WikipediaActivityMonitor.COMMENT),
-                (Long)from.get(WikipediaActivityMonitor.BYTECHANGE),
                 (boolean)from.get(WikipediaActivityMonitor.MINOR),
                 (boolean)from.get(WikipediaActivityMonitor.BOT),
                 (boolean)from.get(WikipediaActivityMonitor.PATROLLED));
@@ -91,7 +89,6 @@ public class WikipediaActivityMonitorTest {
             final GenericRecord metadata,
             final String user,
             final String comment,
-            final Long byteChange,
             final boolean minor,
             final boolean bot,
             final boolean patrolled
@@ -100,7 +97,6 @@ public class WikipediaActivityMonitorTest {
       record.put(WikipediaActivityMonitor.META, metadata);
       record.put(WikipediaActivityMonitor.USER, user);
       record.put(WikipediaActivityMonitor.COMMENT, comment);
-      record.put(WikipediaActivityMonitor.BYTECHANGE, byteChange);
       record.put(WikipediaActivityMonitor.MINOR, minor);
       record.put(WikipediaActivityMonitor.BOT, bot);
       record.put(WikipediaActivityMonitor.PATROLLED, patrolled);
@@ -131,9 +127,9 @@ public class WikipediaActivityMonitorTest {
         final List<GenericRecord> inputValues = new ArrayList<>();
 
         final GenericRecord metadata1 = new GenericData.Record(KsqlDataSourceSchema_META.SCHEMA$);
-        metadata1.put("DOMAIN", "commons.wikimedia.org");
+        metadata1.put("domain", "commons.wikimedia.org");
         final GenericRecord metadata2 = new GenericData.Record(KsqlDataSourceSchema_META.SCHEMA$);
-        metadata2.put("DOMAIN", "en.wikipedia.org");
+        metadata2.put("domain", "en.wikipedia.org");
 
         cloneRecord(testRecord)
                 .map(c -> with(
