@@ -157,8 +157,7 @@ public class WikipediaActivityMonitorTest {
         inputTopic.pipeKeyValueList(inputValues
                         .stream()
                         .map(v -> new KeyValue<>(
-                                (String)((GenericRecord)v.get(WikipediaActivityMonitor.META))
-                                        .get(WikipediaActivityMonitor.META_DOMAIN),
+                                (String) null,
                                 (Object) v))
                         .collect(Collectors.toList()));
 
