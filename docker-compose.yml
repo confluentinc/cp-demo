@@ -405,9 +405,9 @@ services:
       - kafka2
       - schemaregistry
     volumes:
-      - ./connect-plugins:/connect-plugins
       - ./scripts/security:/etc/kafka/secrets
       - ./scripts/security/keypair:/tmp/conf
+      - ./scripts/media-wiki-RecentChange-event.schema:/etc/kafka/media-wiki-RecentChange-event.schema
     ports:
       - 8083:8083
     environment:
@@ -435,7 +435,7 @@ services:
       CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
 
       CONNECT_REST_ADVERTISED_HOST_NAME: connect
-      CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins,/usr/share/confluent-hub-components"
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
       CLASSPATH: "/usr/share/confluent-hub-components/confluentinc-kafka-connect-replicator/lib/replicator-rest-extension-${CONNECTOR_VERSION}.jar:/usr/share/java/monitoring-interceptors/*"

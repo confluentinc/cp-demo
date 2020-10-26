@@ -19,7 +19,13 @@ FROM confluentinc/cp-server-connect-base:$CP_VERSION
 
 ARG CONNECTOR_VERSION
 
-ENV CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins,/usr/share/confluent-hub-components"
+ENV CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
+
+# Install SSE connector
+RUN confluent-hub install --no-prompt cjmatta/kafka-connect-sse:latest
+
+# Install FromJson transformation
+RUN confluent-hub install --no-prompt jcustenborder/kafka-connect-json-schema:latest
 
 # Install Confluent Replicator connector
 COPY confluentinc-kafka-connect-replicator-${CONNECTOR_VERSION}.zip /tmp/confluentinc-kafka-connect-replicator-${CONNECTOR_VERSION}.zip

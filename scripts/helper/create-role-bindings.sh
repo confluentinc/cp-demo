@@ -118,12 +118,12 @@ do
 done
 
 ################################### Connectors ###################################
-echo "Creating role bindings for wikipedia-irc connector"
+echo "Creating role bindings for wikipedia-sse connector"
 
 confluent iam rolebinding create \
     --principal $CONNECTOR_SUBMITTER \
     --role ResourceOwner \
-    --resource Connector:wikipedia-irc \
+    --resource Connector:wikipedia-sse \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT
 

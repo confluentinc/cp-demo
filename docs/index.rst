@@ -19,8 +19,8 @@ The use case is an |ak-tm| event streaming application that processes real-time 
 .. figure:: images/cp-demo-overview.jpg
     :alt: image
 
-Wikimedia Foundation has IRC channels that publish edits happening to real wiki pages (e.g. ``#en.wikipedia``, ``#en.wiktionary``) in real time.
-Using :ref:`Kafka Connect <kafka_connect>`, a Kafka source connector `kafka-connect-irc <https://github.com/cjmatta/kafka-connect-irc>`__ streams raw messages from these IRC channels, and a custom Kafka Connect transform `kafka-connect-transform-wikiedit <https://github.com/cjmatta/kafka-connect-transform-wikiedit>`__ transforms these messages and then the messages are written to a Kafka cluster.
+Wikimedia EventStreams publishes edits happening to real wiki pages (e.g. `#en.wikipedia`, `#en.wiktionary`) in real time.
+Using :ref:`Kafka Connect <kafka_connect>`, a Kafka source connector `kafka-connect-sse <https://www.confluent.io/hub/cjmatta/kafka-connect-sse>`__ streams raw messages for the server sent events (SSE), and a custom |kconnect| transform `kafka-connect-json-schema <https://www.confluent.io/hub/jcustenborder/kafka-connect-json-schema>`__ transforms these messages and then the messages are written to a Kafka cluster.
 This example uses `ksqlDB <https://www.confluent.io/product/ksql/>`__ and a :ref:`Kafka Streams <kafka_streams>` application for data processing.
 Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.io/kafka-connect-elasticsearch/index.html>`__ streams the data out of Kafka, and the data is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 |crep-full| is also copying messages from a topic to another topic in the same cluster.
@@ -35,7 +35,7 @@ Data pattern is as follows:
 +-------------------------------------+--------------------------------+---------------------------------------+
 | Components                          | Consumes From                  | Produces To                           |
 +=====================================+================================+=======================================+
-| IRC source connector                | Wikipedia                      | ``wikipedia.parsed``                  |
+| SSE source connector                | Wikipedia                      | ``wikipedia.parsed``                  |
 +-------------------------------------+--------------------------------+---------------------------------------+
 | ksqlDB                              | ``wikipedia.parsed``           | ksqlDB streams and tables             |
 +-------------------------------------+--------------------------------+---------------------------------------+
@@ -63,6 +63,8 @@ This example has been validated with:
 -  OpenSSL 1.1.1d
 -  git
 -  jq
+-  wget
+
 
 Docker
 ------
@@ -185,7 +187,7 @@ Topics
 
 This example runs three connectors:
 
-- IRC source connector
+- SSE source connector
 - Elasticsearch sink connector
 - |crep-full|
 
@@ -200,7 +202,7 @@ The |kconnect| worker's embedded producer is configured to be idempotent, exactl
 
 #. Verify the connectors running in this example:
 
-   - source connector ``wikipedia-irc`` view the example's IRC source connector :devx-cp-demo:`configuration file|scripts/connectors/submit_wikipedia_irc_config.sh`.
+   - source connector ``wikipedia-sse`` view the example's SSE source connector :devx-cp-demo:`configuration file|scripts/connectors/submit_wikipedia_sse_config.sh`.
    - source connector ``replicate-topic``: view the example's |crep| connector :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_config.sh`.
    - sink connector ``elasticsearch-ksqldb`` consuming from the Kafka topic ``WIKIPEDIABOT``: view the example's Elasticsearch sink connector :devx-cp-demo:`configuration file|scripts/connectors/submit_elastic_sink_config.sh`.
 
@@ -832,7 +834,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
       ERROR Error when sending message to topic users with key: null, value: 5 bytes with error: (org.apache.kafka.clients.producer.internals.ErrorLoggingCallback)
       org.apache.kafka.common.InvalidRecordException: This record has failed the validation on broker and hence be rejected.
 
-#. Describe the topic ``wikipedia.parsed``, which is the topic that the `kafka-connect-irc` source connector is writing to. Notice that it also has enabled |sv|.
+#. Describe the topic ``wikipedia.parsed``, which is the topic that the `kafka-connect-sse` source connector is writing to. Notice that it also has enabled |sv|.
 
    .. sourcecode:: bash
 
