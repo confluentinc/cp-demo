@@ -115,7 +115,7 @@ class WikipediaActivityMonitor {
     final Logger logger = LoggerFactory.getLogger(WikipediaActivityMonitor.class);
     builder.<String, GenericRecord>stream(INPUT_TOPIC)
        .peek((key, value) -> System.out.println("(pre-map) key=" + key + ", value=" + value))
-       .map((key, value) -> new KeyValue<>((String)value.get(META_DOMAIN), value))
+       .map((key, value) -> new KeyValue<>((String)value.get(DOMAIN), value))
        .peek((key, value) -> System.out.println("(post-map) key=" + key + ", value=" + value))
        .filter((key, value) -> !(boolean)value.get(BOT))
        .groupByKey()
