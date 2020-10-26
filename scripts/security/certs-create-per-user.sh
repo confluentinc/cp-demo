@@ -51,6 +51,7 @@ keytool -noprompt -keystore kafka.$i.keystore.jks -alias $i -import -file $i-ca1
 
 # Create truststore and import the CA cert
 keytool -noprompt -keystore kafka.$i.truststore.jks -alias CARoot -import -file ${CA_PATH}/snakeoil-ca-1.crt -storepass confluent -keypass confluent
+keytool -noprompt -keystore kafka.$i.truststore.jks -alias ca-bundle -import -file ${CA_PATH}/docker-ca-bundle.crt -storepass confluent -keypass confluent
 
 # Save creds
 echo "confluent" > ${i}_sslkey_creds
