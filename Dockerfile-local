@@ -21,6 +21,12 @@ ARG CONNECTOR_VERSION
 
 ENV CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
 
+# Add JDK default cacerts to kafka.connect.truststore.jks to allow outgoing HTTPS
+COPY scripts/security/kafka.connect.truststore.jks /tmp/kafka.connect.truststore.jks
+USER root
+RUN keytool -importkeystore -srckeystore /usr/lib/jvm/zulu11-ca/lib/security/cacerts -srcstorepass changeit -destkeystore /tmp/kafka.connect.truststore.jks -deststorepass confluent -keypass confluent
+USER appuser
+
 # Install SSE connector
 RUN confluent-hub install --no-prompt cjmatta/kafka-connect-sse:latest
 

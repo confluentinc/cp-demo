@@ -74,25 +74,20 @@ docker-compose exec kafka1 bash -c 'export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=
 echo
 echo "Building custom Docker image with Connect version ${CONFLUENT_DOCKER_TAG} and connector version ${CONNECTOR_VERSION}"
 if [[ "${CONNECTOR_VERSION}" =~ "SNAPSHOT" ]]; then
-  echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f Dockerfile-local ."
-  docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f Dockerfile-local . || {
-    echo "ERROR: Docker image build failed. Please troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
-    exit 1;
-  }
+  DOCKERFILE="${DIR}/../Dockerfile-local"
 else
-  echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f ${DIR}/../Dockerfile-confluenthub ."
-  docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f ${DIR}/../Dockerfile-confluenthub . || {
-    echo "ERROR: Docker image build failed. Please troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
-    exit 1;
-  }
+  DOCKERFILE=$"{DIR}/../Dockerfile-confluenthub"
 fi
+echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE ."
+docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE . || {
+  echo "ERROR: Docker image build failed. Please troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
+  exit 1
+}
+# Copy the updated kafka.connect.truststore.jks back to the host
+docker create --name build localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}
+docker cp build:/tmp/kafka.connect.truststore.jks ${DIR}/security/kafka.connect.truststore.jks
 
-# Get JSON schema file for Wikimedia SSE updates
-wget -O ${DIR}/media-wiki-RecentChange-event.schema.json https://raw.githubusercontent.com/wikimedia/mediawiki-event-schemas/master/jsonschema/mediawiki/recentchange/1.0.0.json
-if [[ $? != 0 ]]; then
-  echo "ERROR: Could not get https://raw.githubusercontent.com/wikimedia/mediawiki-event-schemas/master/jsonschema/mediawiki/recentchange/1.0.0.json . Please troubleshoot and try again."
-  exit 1;
-fi
+# Bring up more containers
 docker-compose up -d schemaregistry connect control-center
 
 # Verify Confluent Control Center has started
@@ -100,27 +95,21 @@ MAX_WAIT=300
 echo "Waiting up to $MAX_WAIT seconds for Confluent Control Center to start"
 retry $MAX_WAIT host_check_control_center_up || exit 1
 
-echo
-docker-compose up -d ksqldb-server ksqldb-cli restproxy kibana elasticsearch
-echo "..."
-
-# Verify Docker containers started
-if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
-  echo -e "\nERROR: At least one Docker container did not start properly, see 'docker-compose ps'. Did you remember to increase the memory available to Docker to at least 8GB (default is 2GB)?\n"
-  exit 1
-fi
-
-# Verify Docker has the latest cp-kafka-connect image
-if [[ $(docker-compose logs connect) =~ "server returned information about unknown correlation ID" ]]; then
-  echo -e "\nERROR: Please update the cp-kafka-connect image with 'docker-compose pull'\n"
-  exit 1
-fi
-
 # Verify Kafka Connect Worker has started
 MAX_WAIT=240
 echo "Waiting up to $MAX_WAIT seconds for Connect to start"
 retry $MAX_WAIT host_check_connect_up || exit 1
 sleep 2 # give connect an exta moment to fully mature
+
+NUM_CERTS=$(docker-compose exec connect keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
+if [[ "$NUM_CERTS" -eq "1" ]]; then
+  echo -e "\nERROR: Connect image did not build properly.  Expected ~147 trusted certificates but got $NUM_CERTS. Please troubleshoot and try again."
+  exit 1
+fi
+
+echo
+docker-compose up -d ksqldb-server ksqldb-cli restproxy kibana elasticsearch
+echo "..."
 
 # Create Kafka topics with prefix wikipedia, using connectorSA principal
 docker-compose exec kafka1 bash -c 'export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
@@ -145,6 +134,12 @@ docker-compose exec kafka1 bash -c 'export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=
    --create \
    --replication-factor 2 \
    --partitions 2'
+
+# Verify Docker containers started
+if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
+  echo -e "\nERROR: At least one Docker container did not start properly, see 'docker-compose ps'. Did you remember to increase the memory available to Docker to at least 8GB (default is 2GB)?\n"
+  exit 1
+fi
 
 echo -e "\nStart streaming from the Wikipeida SSE source connector:"
 ${DIR}/connectors/submit_wikipedia_sse_config.sh

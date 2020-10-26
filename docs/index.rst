@@ -63,7 +63,6 @@ This example has been validated with:
 -  OpenSSL 1.1.1d
 -  git
 -  jq
--  wget
 
 
 Docker
@@ -193,6 +192,8 @@ This example runs three connectors:
 
 They are running on a |kconnect| worker that is configured with |cp| security features.
 The |kconnect| worker's embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
+
+#. The |kconnect-long| Docker container is running a custom image built from ``cp-server-connect-base``, with additional connectors and transformations specific to this example. The custom image is built as part of the start script, as defined by :devx-cp-demo:`this Dockerfile|Dockerfile-confluenthub`.
 
 #. |c3| uses the |kconnect-long| API to manage multiple :ref:`connect clusters <kafka_connect>`.  Click on "Connect".
 

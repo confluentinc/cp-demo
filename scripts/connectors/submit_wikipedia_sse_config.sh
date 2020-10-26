@@ -14,7 +14,7 @@ DATA=$( cat << EOF
     "transforms.parseJSON.type": "com.github.jcustenborder.kafka.connect.json.FromJson\$Value",
     "transforms.parseJSON.json.exclude.locations": "#/properties/log_params,#/properties/\$schema,#/\$schema",
     "transforms.parseJSON.json.schema.location": "Url",
-    "transforms.parseJSON.json.schema.url": "file:/etc/kafka/media-wiki-RecentChange-event.schema.json",
+    "transforms.parseJSON.json.schema.url": "https://raw.githubusercontent.com/wikimedia/mediawiki-event-schemas/master/jsonschema/mediawiki/recentchange/1.0.0.json",
     "transforms.parseJSON.json.schema.validation.enabled": "false",
     "producer.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor",
     "value.converter": "io.confluent.connect.avro.AvroConverter",
