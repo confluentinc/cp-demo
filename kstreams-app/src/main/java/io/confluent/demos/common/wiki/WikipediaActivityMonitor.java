@@ -26,6 +26,7 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Produced;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,6 +114,7 @@ class WikipediaActivityMonitor {
 
     final Logger logger = LoggerFactory.getLogger(WikipediaActivityMonitor.class);
     builder.<String, GenericRecord>stream(INPUT_TOPIC)
+       .map((key, value) -> new KeyValue<>((String)value.get(META_DOMAIN), value))
        .filter((key, value) -> !(boolean)value.get(BOT))
        .groupByKey()
        .count()
