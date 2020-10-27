@@ -68,8 +68,8 @@ build_connect_image || exit 1
 docker-compose up -d schemaregistry connect control-center
 
 echo
-echo -e "Create topics in cluster"
-${DIR}/helper/create_topics.sh
+echo -e "Create topics in Kafka cluster:"
+docker-compose exec kafka1 bash -c "/tmp/helper/create-topics.sh" || exit 1
 
 # Verify Confluent Control Center has started
 MAX_WAIT=300
@@ -125,9 +125,7 @@ echo
 MAX_WAIT=120
 echo
 echo -e "\nWaiting up to $MAX_WAIT seconds for Kibana to be ready"
-curl -s -XGET http://localhost:5601/api/status | jq -r ".status.overall.state"
 retry $MAX_WAIT host_check_kibana_ready || exit 1
-curl -s -XGET http://localhost:5601/api/status | jq -r ".status.overall.state"
 echo -e "\nConfigure Kibana dashboard:"
 ${DIR}/dashboard/configure_kibana_dashboard.sh
 echo
