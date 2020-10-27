@@ -76,6 +76,10 @@ MAX_WAIT=300
 echo "Waiting up to $MAX_WAIT seconds for Confluent Control Center to start"
 retry $MAX_WAIT host_check_control_center_up || exit 1
 
+echo -e "\n\nConfluent Control Center modifications:"
+${DIR}/helper/control-center-modifications.sh
+echo
+
 # Verify Kafka Connect Worker has started
 MAX_WAIT=240
 echo "Waiting up to $MAX_WAIT seconds for Connect to start"
@@ -107,6 +111,31 @@ echo
 echo -e "\nWaiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
 retry $MAX_WAIT host_check_schema_registered || exit 1
 
+# Verify ksqlDB server has started
+MAX_WAIT=120
+echo -e "\nWaiting up to $MAX_WAIT seconds for ksqlDB server to start"
+retry $MAX_WAIT host_check_ksqlDBserver_up || exit 1
+echo -e "\nRun ksqlDB queries (takes about 1 minute):"
+${DIR}/ksqlDB/run_ksqlDB.sh
+
+echo -e "\nStart consumers for additional topics: WIKIPEDIANOBOT, EN_WIKIPEDIA_GT_1_COUNTS"
+${DIR}/consumers/listen_WIKIPEDIANOBOT.sh
+${DIR}/consumers/listen_EN_WIKIPEDIA_GT_1_COUNTS.sh
+
+# Register the same schema for the replicated topic wikipedia.parsed.replica as was created for the original topic wikipedia.parsed
+# In this case the replicated topic will register with the same schema ID as the original topic
+echo -e "\nRegister subject wikipedia.parsed.replica-value in Schema Registry"
+SCHEMA=$(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed-value/versions/latest | jq .schema)
+docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -H "Content-Type: application/vnd.schemaregistry.v1+json" --data "{\"schema\": $SCHEMA}" -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed.replica-value/versions
+
+echo
+echo "Start the Kafka Streams application wikipedia-activity-monitor"
+docker-compose up -d streams-demo
+echo "..."
+
+echo -e "\nStart Confluent Replicator:"
+${DIR}/connectors/submit_replicator_config.sh
+
 # Verify Elasticsearch is ready
 MAX_WAIT=120
 echo
@@ -129,34 +158,6 @@ retry $MAX_WAIT host_check_kibana_ready || exit 1
 echo -e "\nConfigure Kibana dashboard:"
 ${DIR}/dashboard/configure_kibana_dashboard.sh
 echo
-
-# Verify ksqlDB server has started
-MAX_WAIT=30
-echo -e "\nWaiting up to $MAX_WAIT seconds for ksqlDB server to start"
-retry $MAX_WAIT host_check_ksqlDBserver_up || exit 1
-echo -e "\n\nRun ksqlDB queries:"
-${DIR}/ksqlDB/run_ksqlDB.sh
-
-echo -e "\nStart consumers for additional topics: WIKIPEDIANOBOT, EN_WIKIPEDIA_GT_1_COUNTS"
-${DIR}/consumers/listen_WIKIPEDIANOBOT.sh
-${DIR}/consumers/listen_EN_WIKIPEDIA_GT_1_COUNTS.sh
-
-# Register the same schema for the replicated topic wikipedia.parsed.replica as was created for the original topic wikipedia.parsed
-# In this case the replicated topic will register with the same schema ID as the original topic
-echo -e "\nRegister subject wikipedia.parsed.replica-value in Schema Registry"
-SCHEMA=$(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed-value/versions/latest | jq .schema)
-docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -H "Content-Type: application/vnd.schemaregistry.v1+json" --data "{\"schema\": $SCHEMA}" -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed.replica-value/versions
-
-echo
-echo "Start the Kafka Streams application wikipedia-activity-monitor"
-docker-compose up -d streams-demo
-echo "..."
-
-echo -e "\nStart Confluent Replicator:"
-${DIR}/connectors/submit_replicator_config.sh
-
-echo -e "\n\nConfluent Control Center modifications:"
-${DIR}/helper/control-center-modifications.sh
 
 echo
 echo -e "\nAvailable LDAP users:"
