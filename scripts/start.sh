@@ -61,16 +61,6 @@ docker-compose exec kafka1 kafka-configs \
    --alter \
    --add-config min.insync.replicas=1
 
-# Create Kafka topic users, using appSA principal
-docker-compose exec kafka1 bash -c 'export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
-   --bootstrap-server kafka1:11091 \
-   --command-config /etc/kafka/secrets/appSA.config \
-   --topic users \
-   --create \
-   --replication-factor 2 \
-   --partitions 2 \
-   --config confluent.value.schema.validation=true'
-
 echo
 echo "Building custom Docker image with Connect version ${CONFLUENT_DOCKER_TAG} and connector version ${CONNECTOR_VERSION}"
 if [[ "${CONNECTOR_VERSION}" =~ "SNAPSHOT" ]]; then
@@ -90,6 +80,10 @@ docker rm cp-demo-tmp-connect
 
 # Bring up more containers
 docker-compose up -d schemaregistry connect control-center
+
+echo
+echo -e "Create topics in cluster"
+${DIR}/helper/create_topics.sh
 
 # Verify Confluent Control Center has started
 MAX_WAIT=300
@@ -112,30 +106,6 @@ echo
 docker-compose up -d ksqldb-server ksqldb-cli restproxy kibana elasticsearch
 echo "..."
 
-# Create Kafka topics with prefix wikipedia, using connectorSA principal
-docker-compose exec kafka1 bash -c 'export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
-   --bootstrap-server kafka1:11091 \
-   --command-config /etc/kafka/secrets/connectorSA_without_interceptors_ssl.config \
-   --topic wikipedia.parsed \
-   --create \
-   --replication-factor 2 \
-   --partitions 2 \
-   --config confluent.value.schema.validation=true'
-docker-compose exec kafka1 bash -c 'export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
-   --bootstrap-server kafka1:11091 \
-   --command-config /etc/kafka/secrets/connectorSA_without_interceptors_ssl.config \
-   --topic wikipedia.parsed.count-by-domain \
-   --create \
-   --replication-factor 2 \
-   --partitions 2'
-docker-compose exec kafka1 bash -c 'export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
-   --bootstrap-server kafka1:11091 \
-   --command-config /etc/kafka/secrets/connectorSA_without_interceptors_ssl.config \
-   --topic wikipedia.failed \
-   --create \
-   --replication-factor 2 \
-   --partitions 2'
-
 # Verify Docker containers started
 if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
   echo -e "\nERROR: At least one Docker container did not start properly, see 'docker-compose ps'. Did you remember to increase the memory available to Docker to at least 8GB (default is 2GB)?\n"
@@ -152,7 +122,7 @@ echo -e "\nWaiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (f
 retry $MAX_WAIT host_check_schema_registered || exit 1
 
 # Verify Elasticsearch is ready
-MAX_WAIT=60
+MAX_WAIT=120
 echo
 echo -e "\nWaiting up to $MAX_WAIT seconds for Elasticsearch to be ready"
 retry $MAX_WAIT host_check_elasticsearch_ready || exit 1
@@ -168,18 +138,6 @@ echo
 echo -e "\nConfigure Kibana dashboard:"
 ${DIR}/dashboard/configure_kibana_dashboard.sh
 echo
-
-# Create Kafka topics with prefix WIKIPEDIA or EN_WIKIPEDIA, using ksqlDBUser principal
-for t in WIKIPEDIABOT WIKIPEDIANOBOT EN_WIKIPEDIA_GT_1 EN_WIKIPEDIA_GT_1_COUNTS
-do
-  docker-compose exec kafka1 bash -c 'export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
-     --bootstrap-server kafka1:11091 \
-     --command-config /etc/kafka/secrets/ksqlDBUser_without_interceptors_ssl.config \
-     --topic '"$t"' \
-     --create \
-     --replication-factor 2 \
-     --partitions 2'
-done
 
 # Verify ksqlDB server has started
 MAX_WAIT=30
