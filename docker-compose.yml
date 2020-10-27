@@ -578,6 +578,7 @@ services:
       xpack.security.enabled: 'false'
       discovery.type: "single-node"
       ES_JAVA_OPTS: "-Xms750m -Xmx750m"
+      cluster.name: "elasticsearch-cp-demo"
 
   kibana:
     image: docker.elastic.co/kibana/kibana:5.5.2

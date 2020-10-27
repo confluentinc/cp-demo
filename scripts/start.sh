@@ -151,6 +151,11 @@ echo
 echo -e "\nWaiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
 retry $MAX_WAIT host_check_schema_registered || exit 1
 
+# Verify Elasticsearch is ready
+MAX_WAIT=60
+echo
+echo -e "\nWaiting up to $MAX_WAIT seconds for Elasticsearch to be ready"
+retry $MAX_WAIT host_check_elasticsearch_ready || exit 1
 echo -e "\nProvide data mapping to Elasticsearch:"
 ${DIR}/dashboard/set_elasticsearch_mapping_bot.sh
 ${DIR}/dashboard/set_elasticsearch_mapping_count.sh
@@ -162,7 +167,6 @@ echo
 
 echo -e "\nConfigure Kibana dashboard:"
 ${DIR}/dashboard/configure_kibana_dashboard.sh
-echo
 echo
 
 # Create Kafka topics with prefix WIKIPEDIA or EN_WIKIPEDIA, using ksqlDBUser principal

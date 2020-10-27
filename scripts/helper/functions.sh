@@ -107,6 +107,15 @@ host_check_schema_registered()
   return 0
 }
 
+host_check_elasticsearch_ready()
+{
+  ES_NAME=$(curl -s -XGET http://localhost:9200/_cluster/health | jq -r ".cluster_name")
+  if [ "$ES_NAME" == "elasticsearch-cp-demo" ]; then
+    return 0
+  fi
+  return 1
+}
+
 mds_login()
 {
   MDS_URL=$1
