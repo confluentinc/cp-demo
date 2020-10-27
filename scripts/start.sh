@@ -61,22 +61,8 @@ docker-compose exec kafka1 kafka-configs \
    --alter \
    --add-config min.insync.replicas=1
 
-echo
-echo "Building custom Docker image with Connect version ${CONFLUENT_DOCKER_TAG} and connector version ${CONNECTOR_VERSION}"
-if [[ "${CONNECTOR_VERSION}" =~ "SNAPSHOT" ]]; then
-  DOCKERFILE="${DIR}/../Dockerfile-local"
-else
-  DOCKERFILE=$"{DIR}/../Dockerfile-confluenthub"
-fi
-echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE ."
-docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE . || {
-  echo "ERROR: Docker image build failed. Please troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
-  exit 1
-}
-# Copy the updated kafka.connect.truststore.jks back to the host
-docker create --name cp-demo-tmp-connect localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}
-docker cp cp-demo-tmp-connect:/tmp/kafka.connect.truststore.jks ${DIR}/security/kafka.connect.truststore.jks
-docker rm cp-demo-tmp-connect
+# Build custom Kafka Connect image with required jars
+build_connect_image || exit 1
 
 # Bring up more containers
 docker-compose up -d schemaregistry connect control-center
@@ -135,13 +121,20 @@ echo -e "\nStart streaming to Elasticsearch sink connector:"
 ${DIR}/connectors/submit_elastic_sink_config.sh
 echo
 
+# Verify Kibana is ready
+MAX_WAIT=120
+echo
+echo -e "\nWaiting up to $MAX_WAIT seconds for Kibana to be ready"
+curl -s -XGET http://localhost:5601/api/status | jq -r ".status.overall.state"
+retry $MAX_WAIT host_check_kibana_ready || exit 1
+curl -s -XGET http://localhost:5601/api/status | jq -r ".status.overall.state"
 echo -e "\nConfigure Kibana dashboard:"
 ${DIR}/dashboard/configure_kibana_dashboard.sh
 echo
 
 # Verify ksqlDB server has started
 MAX_WAIT=30
-echo "Waiting up to $MAX_WAIT seconds for ksqlDB server to start"
+echo -e "\nWaiting up to $MAX_WAIT seconds for ksqlDB server to start"
 retry $MAX_WAIT host_check_ksqlDBserver_up || exit 1
 echo -e "\n\nRun ksqlDB queries:"
 ${DIR}/ksqlDB/run_ksqlDB.sh
