@@ -36,6 +36,7 @@ prompt = no
 [req_distinguished_name]
 CN = $i
 [v3_req]
+extendedKeyUsage = serverAuth, clientAuth
 subjectAltName = @alt_names
 [alt_names]
 $DNS_ALT_NAMES
