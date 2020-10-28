@@ -82,7 +82,7 @@ echo
 
 # Verify Kafka Connect Worker has started
 MAX_WAIT=240
-echo "Waiting up to $MAX_WAIT seconds for Connect to start"
+echo -e "\nWaiting up to $MAX_WAIT seconds for Connect to start"
 retry $MAX_WAIT host_check_connect_up || exit 1
 sleep 2 # give connect an exta moment to fully mature
 
