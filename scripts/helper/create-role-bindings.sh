@@ -337,6 +337,21 @@ confluent iam rolebinding create \
 
 confluent iam rolebinding create \
     --principal $KSQLDB_USER \
+    --role ResourceOwner \
+    --resource Topic:_confluent-ksql-${KSQLDB} \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID
+
+confluent iam rolebinding create \
+    --principal $KSQLDB_USER \
+    --role ResourceOwner \
+    --resource Subject:_confluent-ksql-${KSQLDB} \
+    --prefix \
+    --kafka-cluster-id $KAFKA_CLUSTER_ID \
+    --schema-registry-cluster-id $SR
+
+confluent iam rolebinding create \
+    --principal $KSQLDB_USER \
     --role DeveloperRead \
     --resource Topic:${KSQLDB}ksql_processing_log \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
