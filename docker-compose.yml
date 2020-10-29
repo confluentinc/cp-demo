@@ -748,6 +748,7 @@ services:
       - ./scripts/security:/etc/kafka/secrets
     ports:
       - 8088:8088
+      - 8089:8089
     environment:
       CUB_CLASSPATH: '/usr/share/java/confluent-security/ksql/*:/usr/share/java/ksqldb-server/*:/usr/share/java/cp-base-new/*'
 
@@ -769,7 +770,7 @@ services:
 
       KSQL_BOOTSTRAP_SERVERS: kafka1:10091,kafka2:10092
       KSQL_HOST_NAME: ksqldb-server
-      KSQL_LISTENERS: http://0.0.0.0:8088
+      KSQL_LISTENERS: "http://0.0.0.0:8088,https://0.0.0.0:8089"
       KSQL_CACHE_MAX_BYTES_BUFFERING: 0
       
       KSQL_KSQL_SECURITY_EXTENSION_CLASS: io.confluent.ksql.security.KsqlConfluentSecurityExtension
