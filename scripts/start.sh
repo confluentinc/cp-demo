@@ -62,7 +62,8 @@ docker-compose exec kafka1 kafka-configs \
    --add-config min.insync.replicas=1
 
 # Build custom Kafka Connect image with required jars
-build_connect_image || exit 1
+time build_connect_image || exit 1
+exit
 
 # Bring up more containers
 docker-compose up -d schemaregistry connect control-center
