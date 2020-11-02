@@ -15,10 +15,10 @@ DATA=$( cat << EOF
                 "ROWKEY": {
                     "type": "text"
                 },
-                "WIKIPAGE": {
+                "META.URI": {
                     "type": "keyword"
                 },
-                "USERNAME": {
+                "USER": {
                     "type": "keyword"
                 },
                 "COUNT": {

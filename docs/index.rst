@@ -19,13 +19,13 @@ The use case is an |ak-tm| event streaming application that processes real-time 
 .. figure:: images/cp-demo-overview.jpg
     :alt: image
 
-Wikimedia Foundation has IRC channels that publish edits happening to real wiki pages (e.g. ``#en.wikipedia``, ``#en.wiktionary``) in real time.
-Using :ref:`Kafka Connect <kafka_connect>`, a Kafka source connector `kafka-connect-irc <https://github.com/cjmatta/kafka-connect-irc>`__ streams raw messages from these IRC channels, and a custom Kafka Connect transform `kafka-connect-transform-wikiedit <https://github.com/cjmatta/kafka-connect-transform-wikiedit>`__ transforms these messages and then the messages are written to a Kafka cluster.
+The full event streaming platform based on |cp| is described as follows.
+Wikimedia's `EventStreams <https://wikitech.wikimedia.org/wiki/Event_Platform/EventStreams>`__ publishes a continuous stream of real-time edits happening to real wiki pages.
+A Kafka source connector `kafka-connect-sse <https://www.confluent.io/hub/cjmatta/kafka-connect-sse>`__ streams the server-sent events (SSE) from https://stream.wikimedia.org/v2/stream/recentchange, and a custom |kconnect| transform `kafka-connect-json-schema <https://www.confluent.io/hub/jcustenborder/kafka-connect-json-schema>`__ extracts the JSON from these messages and then are written to a |ak| cluster.
 This example uses `ksqlDB <https://www.confluent.io/product/ksql/>`__ and a :ref:`Kafka Streams <kafka_streams>` application for data processing.
 Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.io/kafka-connect-elasticsearch/index.html>`__ streams the data out of Kafka, and the data is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 |crep-full| is also copying messages from a topic to another topic in the same cluster.
-All data is using |sr-long| and Avro.
-`Confluent Control Center <https://www.confluent.io/product/control-center/>`__ is managing and monitoring the deployment.
+All data is using |sr-long| and Avro, and `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ is managing and monitoring the deployment.
 
 Data Pattern
 ------------
@@ -35,11 +35,11 @@ Data pattern is as follows:
 +-------------------------------------+--------------------------------+---------------------------------------+
 | Components                          | Consumes From                  | Produces To                           |
 +=====================================+================================+=======================================+
-| IRC source connector                | Wikipedia                      | ``wikipedia.parsed``                  |
+| SSE source connector                | Wikipedia                      | ``wikipedia.parsed``                  |
 +-------------------------------------+--------------------------------+---------------------------------------+
 | ksqlDB                              | ``wikipedia.parsed``           | ksqlDB streams and tables             |
 +-------------------------------------+--------------------------------+---------------------------------------+
-| Kafka Streams application           | ``wikipedia.parsed``           | ``wikipedia.parsed.count-by-channel`` |
+| Kafka Streams application           | ``wikipedia.parsed``           | ``wikipedia.parsed.count-by-domain``  |
 +-------------------------------------+--------------------------------+---------------------------------------+
 | Confluent Replicator                | ``wikipedia.parsed``           | ``wikipedia.parsed.replica``          |
 +-------------------------------------+--------------------------------+---------------------------------------+
@@ -63,6 +63,7 @@ This example has been validated with:
 -  OpenSSL 1.1.1d
 -  git
 -  jq
+
 
 Docker
 ------
@@ -93,7 +94,7 @@ Start Example
       cd cp-demo
       git checkout |release_post_branch|
 
-#. From the ``cp-demo`` directory, start the entire example by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This takes approximately 7 minutes to complete.
+#. From the ``cp-demo`` directory, start the entire example by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This takes approximately 10 minutes to complete.
 
    .. sourcecode:: bash
 
@@ -102,6 +103,8 @@ Start Example
 #. Using a web browser, view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
 
 #. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
+
+   .. figure:: images/kibana-dashboard.png
 
 #. You can view the full platform configuration in the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file and the |kstreams| application configuration in the following :devx-cp-demo:`client configuration|env_files/streams-demo.env` file.
 
@@ -170,7 +173,7 @@ Topics
    .. figure:: images/topic_settings.png
       :alt: image
 
-#. Return to "All Topics", click on ``wikipedia.parsed.count-by-channel`` to view the output topic from the |kstreams| application.
+#. Return to "All Topics", click on ``wikipedia.parsed.count-by-domain`` to view the output topic from the |kstreams| application.
 
    .. figure:: images/count-topic-view.png
       :alt: image
@@ -185,12 +188,14 @@ Topics
 
 This example runs three connectors:
 
-- IRC source connector
+- SSE source connector
 - Elasticsearch sink connector
 - |crep-full|
 
 They are running on a |kconnect| worker that is configured with |cp| security features.
 The |kconnect| worker's embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
+
+#. The |kconnect-long| Docker container is running a custom image built from ``cp-server-connect-base``, with additional connectors and transformations specific to this example. The custom image is built as part of the start script, as defined by :devx-cp-demo:`this Dockerfile|Dockerfile-confluenthub`.
 
 #. |c3| uses the |kconnect-long| API to manage multiple :ref:`connect clusters <kafka_connect>`.  Click on "Connect".
 
@@ -200,7 +205,7 @@ The |kconnect| worker's embedded producer is configured to be idempotent, exactl
 
 #. Verify the connectors running in this example:
 
-   - source connector ``wikipedia-irc`` view the example's IRC source connector :devx-cp-demo:`configuration file|scripts/connectors/submit_wikipedia_irc_config.sh`.
+   - source connector ``wikipedia-sse``: view the example's SSE source connector :devx-cp-demo:`configuration file|scripts/connectors/submit_wikipedia_sse_config.sh`.
    - source connector ``replicate-topic``: view the example's |crep| connector :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_config.sh`.
    - sink connector ``elasticsearch-ksqldb`` consuming from the Kafka topic ``WIKIPEDIABOT``: view the example's Elasticsearch sink connector :devx-cp-demo:`configuration file|scripts/connectors/submit_elastic_sink_config.sh`.
 
@@ -267,7 +272,7 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
    .. figure:: images/ksql_properties.png
       :alt: image
 
-#. This example creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how ksqlDB windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but to send just the counts greater than one downstream, there is a separate Kafka topic for ````EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
+#. This example creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how ksqlDB windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but to send just the counts greater than one downstream, there is a separate Kafka topic for ``EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
 - View messages in the topic ``EN_WIKIPEDIA_GT_1`` (jump to offset 0/partition 0), and notice the nulls:
 
@@ -832,7 +837,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
       ERROR Error when sending message to topic users with key: null, value: 5 bytes with error: (org.apache.kafka.clients.producer.internals.ErrorLoggingCallback)
       org.apache.kafka.common.InvalidRecordException: This record has failed the validation on broker and hence be rejected.
 
-#. Describe the topic ``wikipedia.parsed``, which is the topic that the `kafka-connect-irc` source connector is writing to. Notice that it also has enabled |sv|.
+#. Describe the topic ``wikipedia.parsed``, which is the topic that the `kafka-connect-sse` source connector is writing to. Notice that it also has enabled |sv|.
 
    .. sourcecode:: bash
 

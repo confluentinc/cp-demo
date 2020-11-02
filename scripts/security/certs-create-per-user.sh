@@ -45,7 +45,7 @@ EOF
 #openssl x509 -noout -text -in $i-ca1-signed.crt
 
 # Sign and import the CA cert into the keystore
-keytool -noprompt -keystore kafka.$i.keystore.jks -alias CARoot -import -file ${CA_PATH}/snakeoil-ca-1.crt -storepass confluent -keypass confluent
+keytool -noprompt -keystore kafka.$i.keystore.jks -alias snakeoil-caroot -import -file ${CA_PATH}/snakeoil-ca-1.crt -storepass confluent -keypass confluent
 #keytool -list -v -keystore kafka.$i.keystore.jks -storepass confluent
 
 # Sign and import the host certificate into the keystore
@@ -53,7 +53,7 @@ keytool -noprompt -keystore kafka.$i.keystore.jks -alias $i -import -file $i-ca1
 #keytool -list -v -keystore kafka.$i.keystore.jks -storepass confluent
 
 # Create truststore and import the CA cert
-keytool -noprompt -keystore kafka.$i.truststore.jks -alias CARoot -import -file ${CA_PATH}/snakeoil-ca-1.crt -storepass confluent -keypass confluent
+keytool -noprompt -keystore kafka.$i.truststore.jks -alias snakeoil-caroot -import -file ${CA_PATH}/snakeoil-ca-1.crt -storepass confluent -keypass confluent
 
 # Save creds
 echo "confluent" > ${i}_sslkey_creds
