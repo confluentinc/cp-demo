@@ -9,4 +9,4 @@ docker exec connect kafka-avro-console-consumer \
   --property schema.registry.url=https://schemaregistry:8085 \
   --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.client.truststore.jks \
   --property schema.registry.ssl.truststore.password=confluent \
-  --topic wikipedia.parsed.count-by-channel --group=test $ARGS
+  --topic wikipedia.parsed.count-by-domain --group=test $ARGS

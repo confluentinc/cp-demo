@@ -395,7 +395,7 @@ services:
   connect:
     image: localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}
     container_name: connect
-    cpus: 0.6
+    cpus: 0.9
     restart: always
     build:
       context: .
@@ -405,7 +405,6 @@ services:
       - kafka2
       - schemaregistry
     volumes:
-      - ./connect-plugins:/connect-plugins
       - ./scripts/security:/etc/kafka/secrets
       - ./scripts/security/keypair:/tmp/conf
     ports:
@@ -435,7 +434,7 @@ services:
       CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
 
       CONNECT_REST_ADVERTISED_HOST_NAME: connect
-      CONNECT_PLUGIN_PATH: "/usr/share/java,/connect-plugins,/usr/share/confluent-hub-components"
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
       CLASSPATH: "/usr/share/confluent-hub-components/confluentinc-kafka-connect-replicator/lib/replicator-rest-extension-${CONNECTOR_VERSION}.jar:/usr/share/java/monitoring-interceptors/*"
@@ -572,8 +571,6 @@ services:
     container_name: elasticsearch
     cpus: 0.50
     #restart: always
-    depends_on:
-      - connect
     ports:
       - 9200:9200
       - 9300:9300
@@ -581,6 +578,7 @@ services:
       xpack.security.enabled: 'false'
       discovery.type: "single-node"
       ES_JAVA_OPTS: "-Xms750m -Xmx750m"
+      cluster.name: "elasticsearch-cp-demo"
 
   kibana:
     image: docker.elastic.co/kibana/kibana:5.5.2
@@ -921,7 +919,7 @@ services:
 
 
   streams-demo:
-    image: cnfldemos/cp-demo-kstreams:0.0.8
+    image: cnfldemos/cp-demo-kstreams:0.0.9
     restart: always
     cpus: 0.4
     depends_on:

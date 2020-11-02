@@ -28,7 +28,7 @@ fi
 # Sign the host certificate with the certificate authority (CA)
 # Set a random serial number (avoid problems from using '-CAcreateserial' when parallelizing certificate generation)
 CERT_SERIAL=$(awk -v seed="$RANDOM" 'BEGIN { srand(seed); printf("0x%.4x%.4x%.4x%.4x\n", rand()*65535 + 1, rand()*65535 + 1, rand()*65535 + 1, rand()*65535 + 1) }')
-openssl x509 -req -CA ${CA_PATH}/snakeoil-ca-1.crt -CAkey ${CA_PATH}/snakeoil-ca-1.key -in $i.csr -out $i-ca1-signed.crt -days 9999 -set_serial ${CERT_SERIAL} -passin pass:confluent -extensions v3_req -extfile <(cat <<EOF
+openssl x509 -req -CA ${CA_PATH}/snakeoil-ca-1.crt -CAkey ${CA_PATH}/snakeoil-ca-1.key -in $i.csr -out $i-ca1-signed.crt -sha256 -days 365 -set_serial ${CERT_SERIAL} -passin pass:confluent -extensions v3_req -extfile <(cat <<EOF
 [req]
 distinguished_name = req_distinguished_name
 x509_extensions = v3_req
@@ -36,6 +36,7 @@ prompt = no
 [req_distinguished_name]
 CN = $i
 [v3_req]
+extendedKeyUsage = serverAuth, clientAuth
 subjectAltName = @alt_names
 [alt_names]
 $DNS_ALT_NAMES
@@ -44,7 +45,7 @@ EOF
 #openssl x509 -noout -text -in $i-ca1-signed.crt
 
 # Sign and import the CA cert into the keystore
-keytool -noprompt -keystore kafka.$i.keystore.jks -alias CARoot -import -file ${CA_PATH}/snakeoil-ca-1.crt -storepass confluent -keypass confluent
+keytool -noprompt -keystore kafka.$i.keystore.jks -alias snakeoil-caroot -import -file ${CA_PATH}/snakeoil-ca-1.crt -storepass confluent -keypass confluent
 #keytool -list -v -keystore kafka.$i.keystore.jks -storepass confluent
 
 # Sign and import the host certificate into the keystore
@@ -52,7 +53,7 @@ keytool -noprompt -keystore kafka.$i.keystore.jks -alias $i -import -file $i-ca1
 #keytool -list -v -keystore kafka.$i.keystore.jks -storepass confluent
 
 # Create truststore and import the CA cert
-keytool -noprompt -keystore kafka.$i.truststore.jks -alias CARoot -import -file ${CA_PATH}/snakeoil-ca-1.crt -storepass confluent -keypass confluent
+keytool -noprompt -keystore kafka.$i.truststore.jks -alias snakeoil-caroot -import -file ${CA_PATH}/snakeoil-ca-1.crt -storepass confluent -keypass confluent
 
 # Save creds
 echo "confluent" > ${i}_sslkey_creds
