@@ -41,9 +41,13 @@ public class WikipediaActivityMonitorTest {
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + SCHEMA_REGISTRY_SCOPE;
 
     public WikipediaActivityMonitorTest() {
-        testRecord = buildTestRecord(1564664987360L, "Apache Kafka",
-                "#en.wikipedia", "jdoe", "fun new content", 500,
-                "http://diff", false, true, false, false)
+        testRecord = buildTestRecord(
+                buildMeta(1602598008000L, "Apache Kafka", "commons.wikimedia.org"),
+                "jdoe",
+                "fun new content",
+                true,
+                false,
+                false)
                 .orElseThrow(() -> new RuntimeException("schema could not be loaded"));
         registerSchema(schemaRegistryClient, WikiEdit.SCHEMA$, WikipediaActivityMonitor.INPUT_TOPIC);
     }
@@ -59,45 +63,43 @@ public class WikipediaActivityMonitorTest {
         from.put(name, value);
         return from;
     }
+    private static GenericRecord buildMeta(final Long timestamp, final String uri, final String domain) {
+        final GenericRecord rv = new GenericData.Record(KsqlDataSourceSchema_META.SCHEMA$);
+        rv.put(WikipediaActivityMonitor.META_DT, timestamp);
+        rv.put(WikipediaActivityMonitor.META_URI, uri);
+        rv.put(WikipediaActivityMonitor.META_DOMAIN, domain);
+        return rv;
+    }
+    private static GenericRecord cloneMeta(GenericRecord from) {
+        return buildMeta(
+                (Long)from.get(WikipediaActivityMonitor.META_DT),
+                (String)from.get(WikipediaActivityMonitor.META_URI),
+                (String)from.get(WikipediaActivityMonitor.META_DOMAIN));
+    }
     private static Optional<GenericRecord> cloneRecord(final GenericRecord from) {
         return buildTestRecord(
-                (Long)from.get(WikipediaActivityMonitor.CREATEDAT),
-                (String)from.get(WikipediaActivityMonitor.WIKIPAGE),
-                (String)from.get(WikipediaActivityMonitor.CHANNEL),
-                (String)from.get(WikipediaActivityMonitor.USERNAME),
-                (String)from.get(WikipediaActivityMonitor.COMMITMESSAGE),
-                (int)from.get(WikipediaActivityMonitor.BYTECHANGE),
-                (String)from.get(WikipediaActivityMonitor.DIFFURL),
-                (boolean)from.get(WikipediaActivityMonitor.ISNEW),
-                (boolean)from.get(WikipediaActivityMonitor.ISMINOR),
-                (boolean)from.get(WikipediaActivityMonitor.ISBOT),
-                (boolean)from.get(WikipediaActivityMonitor.ISUNPATROLLED));
+                cloneMeta((GenericRecord)from.get(WikipediaActivityMonitor.META)),
+                (String)from.get(WikipediaActivityMonitor.USER),
+                (String)from.get(WikipediaActivityMonitor.COMMENT),
+                (boolean)from.get(WikipediaActivityMonitor.MINOR),
+                (boolean)from.get(WikipediaActivityMonitor.BOT),
+                (boolean)from.get(WikipediaActivityMonitor.PATROLLED));
     }
     private static Optional<GenericRecord> buildTestRecord(
-            final Long createdAt,
-            final String wikipage,
-            final String channel,
-            final String username,
-            final String commitMessage,
-            final int byteChange,
-            final String diffUrl,
-            final boolean isNew,
-            final boolean isMinor,
-            final boolean isBot,
-            final boolean isUnpatrolled
+            final GenericRecord metadata,
+            final String user,
+            final String comment,
+            final boolean minor,
+            final boolean bot,
+            final boolean patrolled
     ) {
       final GenericRecord record = new GenericData.Record(WikiEdit.SCHEMA$);
-      record.put(WikipediaActivityMonitor.CREATEDAT, createdAt);
-      record.put(WikipediaActivityMonitor.WIKIPAGE, wikipage);
-      record.put(WikipediaActivityMonitor.CHANNEL, channel);
-      record.put(WikipediaActivityMonitor.USERNAME, username);
-      record.put(WikipediaActivityMonitor.COMMITMESSAGE, commitMessage);
-      record.put(WikipediaActivityMonitor.BYTECHANGE, byteChange);
-      record.put(WikipediaActivityMonitor.DIFFURL, diffUrl);
-      record.put(WikipediaActivityMonitor.ISNEW, isNew);
-      record.put(WikipediaActivityMonitor.ISMINOR, isMinor);
-      record.put(WikipediaActivityMonitor.ISBOT, isBot);
-      record.put(WikipediaActivityMonitor.ISUNPATROLLED, isUnpatrolled);
+      record.put(WikipediaActivityMonitor.META, metadata);
+      record.put(WikipediaActivityMonitor.USER, user);
+      record.put(WikipediaActivityMonitor.COMMENT, comment);
+      record.put(WikipediaActivityMonitor.MINOR, minor);
+      record.put(WikipediaActivityMonitor.BOT, bot);
+      record.put(WikipediaActivityMonitor.PATROLLED, patrolled);
       return Optional.of(record);
     }
 
@@ -123,45 +125,39 @@ public class WikipediaActivityMonitorTest {
             outputTopic = testDriver.createOutputTopic(WikipediaActivityMonitor.OUTPUT_TOPIC, new StringDeserializer(), metricSerde.deserializer());
 
         final List<GenericRecord> inputValues = new ArrayList<>();
+
+        final GenericRecord metadata1 = new GenericData.Record(KsqlDataSourceSchema_META.SCHEMA$);
+        metadata1.put("domain", "commons.wikimedia.org");
+        final GenericRecord metadata2 = new GenericData.Record(KsqlDataSourceSchema_META.SCHEMA$);
+        metadata2.put("domain", "en.wikipedia.org");
+
         cloneRecord(testRecord)
                 .map(c -> with(
-                            with(c, WikipediaActivityMonitor.ISBOT, true),
-                            WikipediaActivityMonitor.CHANNEL, "#en.wikipedia"))
+                            with(c, WikipediaActivityMonitor.BOT, true),
+                            WikipediaActivityMonitor.META, metadata1))
                 .ifPresent(inputValues::add);
         cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#fr.wikipedia"))
+                .map(c -> with(c, WikipediaActivityMonitor.META, metadata1))
                 .ifPresent(inputValues::add);
         cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#en.wikipedia"))
+                .map(c -> with(c, WikipediaActivityMonitor.META, metadata2))
                 .ifPresent(inputValues::add);
         cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#fr.wikipedia"))
+                .map(c -> with(c, WikipediaActivityMonitor.META, metadata2))
                 .ifPresent(inputValues::add);
         cloneRecord(testRecord)
                 .map(c -> with(
-                        with(c, WikipediaActivityMonitor.ISBOT, true),
-                        WikipediaActivityMonitor.CHANNEL, "#en.wikipedia"))
+                        with(c, WikipediaActivityMonitor.BOT, true),
+                            WikipediaActivityMonitor.META, metadata2))
                 .ifPresent(inputValues::add);
         cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#en.wikipedia"))
-                .ifPresent(inputValues::add);
-        cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#fr.wikipedia"))
-                .ifPresent(inputValues::add);
-        cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#fr.wikipedia"))
-                .ifPresent(inputValues::add);
-        cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#en.wikipedia"))
-                .ifPresent(inputValues::add);
-        cloneRecord(testRecord)
-                .map(c -> with(c, WikipediaActivityMonitor.CHANNEL, "#uk.wikipedia"))
+                .map(c -> with(c, WikipediaActivityMonitor.META, metadata1))
                 .ifPresent(inputValues::add);
 
         inputTopic.pipeKeyValueList(inputValues
                         .stream()
                         .map(v -> new KeyValue<>(
-                                (String) v.get(WikipediaActivityMonitor.CHANNEL),
+                                (String) null,
                                 (Object) v))
                         .collect(Collectors.toList()));
 
@@ -171,18 +167,14 @@ public class WikipediaActivityMonitorTest {
         assertThat((long)counts.size())
             .isEqualTo(inputValues
                     .stream()
-                    .filter(gr -> !(boolean) gr.get(WikipediaActivityMonitor.ISBOT)).count());
+                    .filter(gr -> !(boolean) gr.get(WikipediaActivityMonitor.BOT)).count());
 
-        assertThat(counts).extracting("channel", "editCount")
+        assertThat(counts).extracting("domain", "editCount")
                 .containsExactly(
-                        tuple("#fr.wikipedia", 1L),
-                        tuple("#en.wikipedia", 1L),
-                        tuple("#fr.wikipedia", 2L),
-                        tuple("#en.wikipedia", 2L),
-                        tuple("#fr.wikipedia", 3L),
-                        tuple("#fr.wikipedia", 4L),
-                        tuple("#en.wikipedia", 3L),
-                        tuple("#uk.wikipedia", 1L));
+                        tuple(metadata1.get(WikipediaActivityMonitor.META_DOMAIN).toString(), 1L),
+                        tuple(metadata2.get(WikipediaActivityMonitor.META_DOMAIN).toString(), 1L),
+                        tuple(metadata2.get(WikipediaActivityMonitor.META_DOMAIN).toString(), 2L),
+                        tuple(metadata1.get(WikipediaActivityMonitor.META_DOMAIN).toString(), 2L));
 
         try {
             testDriver.close();

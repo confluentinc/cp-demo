@@ -61,31 +61,36 @@ docker-compose exec kafka1 kafka-configs \
    --alter \
    --add-config min.insync.replicas=1
 
-echo
-echo "Building custom Docker image with Connect version ${CONFLUENT_DOCKER_TAG} and connector version ${CONNECTOR_VERSION}"
-if [[ "${CONNECTOR_VERSION}" =~ "SNAPSHOT" ]]; then
-  echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f Dockerfile-local ."
-  docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f Dockerfile-local . || {
-    echo "ERROR: Docker image build failed. Please troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
-    exit 1;
-  }
-else
-  echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f ${DIR}/../Dockerfile-confluenthub ."
-  docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f ${DIR}/../Dockerfile-confluenthub . || {
-    echo "ERROR: Docker image build failed. Please troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
-    exit 1;
-  }
-fi
+# Build custom Kafka Connect image with required jars
+build_connect_image || exit 1
+
+# Bring up more containers
 docker-compose up -d schemaregistry connect control-center
 
 echo
-echo -e "Create topics in cluster"
-${DIR}/helper/create_topics.sh
+echo -e "Create topics in Kafka cluster:"
+docker-compose exec kafka1 bash -c "/tmp/helper/create-topics.sh" || exit 1
 
 # Verify Confluent Control Center has started
 MAX_WAIT=300
 echo "Waiting up to $MAX_WAIT seconds for Confluent Control Center to start"
 retry $MAX_WAIT host_check_control_center_up || exit 1
+
+echo -e "\n\nConfluent Control Center modifications:"
+${DIR}/helper/control-center-modifications.sh
+echo
+
+# Verify Kafka Connect Worker has started
+MAX_WAIT=240
+echo -e "\nWaiting up to $MAX_WAIT seconds for Connect to start"
+retry $MAX_WAIT host_check_connect_up || exit 1
+sleep 2 # give connect an exta moment to fully mature
+
+NUM_CERTS=$(docker-compose exec connect keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
+if [[ "$NUM_CERTS" -eq "1" ]]; then
+  echo -e "\nERROR: Connect image did not build properly.  Expected ~147 trusted certificates but got $NUM_CERTS. Please troubleshoot and try again."
+  exit 1
+fi
 
 echo
 docker-compose up -d ksqldb-server ksqldb-cli restproxy kibana elasticsearch
@@ -97,51 +102,20 @@ if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
   exit 1
 fi
 
-# Verify Docker has the latest cp-kafka-connect image
-if [[ $(docker-compose logs connect) =~ "server returned information about unknown correlation ID" ]]; then
-  echo -e "\nERROR: Please update the cp-kafka-connect image with 'docker-compose pull'\n"
-  exit 1
-fi
-
-# Verify Kafka Connect Worker has started
-MAX_WAIT=240
-echo "Waiting up to $MAX_WAIT seconds for Connect to start"
-retry $MAX_WAIT host_check_connect_up || exit 1
-sleep 2 # give connect an exta moment to fully mature
-
-docker-compose exec connect timeout 3 nc -zv irc.wikimedia.org 6667 || {
-  echo -e "\nERROR: irc.wikimedia.org 6667 is unreachable. Please ensure connectivity before proceeding or try setting 'irc.server.port' to 8001 in scripts/connectors/submit_wikipedia_irc_config.sh\n"
-  exit 1
-}
-
-echo -e "\nStart streaming from the IRC source connector:"
-${DIR}/connectors/submit_wikipedia_irc_config.sh
+echo -e "\nStart streaming from the Wikipeida SSE source connector:"
+${DIR}/connectors/submit_wikipedia_sse_config.sh
 
 # Verify wikipedia.parsed topic is populated and schema is registered
 MAX_WAIT=120
 echo
-echo "Waiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
+echo -e "\nWaiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
 retry $MAX_WAIT host_check_schema_registered || exit 1
 
-echo -e "\nProvide data mapping to Elasticsearch:"
-${DIR}/dashboard/set_elasticsearch_mapping_bot.sh
-${DIR}/dashboard/set_elasticsearch_mapping_count.sh
-echo
-
-echo -e "\nStart streaming to Elasticsearch sink connector:"
-${DIR}/connectors/submit_elastic_sink_config.sh
-echo
-
-echo -e "\nConfigure Kibana dashboard:"
-${DIR}/dashboard/configure_kibana_dashboard.sh
-echo
-echo
-
 # Verify ksqlDB server has started
-MAX_WAIT=30
-echo "Waiting up to $MAX_WAIT seconds for ksqlDB server to start"
+MAX_WAIT=120
+echo -e "\nWaiting up to $MAX_WAIT seconds for ksqlDB server to start"
 retry $MAX_WAIT host_check_ksqlDBserver_up || exit 1
-echo -e "\n\nRun ksqlDB queries:"
+echo -e "\nRun ksqlDB queries (takes about 1 minute):"
 ${DIR}/ksqlDB/run_ksqlDB.sh
 
 echo -e "\nStart consumers for additional topics: WIKIPEDIANOBOT, EN_WIKIPEDIA_GT_1_COUNTS"
@@ -162,8 +136,28 @@ echo "..."
 echo -e "\nStart Confluent Replicator:"
 ${DIR}/connectors/submit_replicator_config.sh
 
-echo -e "\n\nConfluent Control Center modifications:"
-${DIR}/helper/control-center-modifications.sh
+# Verify Elasticsearch is ready
+MAX_WAIT=120
+echo
+echo -e "\nWaiting up to $MAX_WAIT seconds for Elasticsearch to be ready"
+retry $MAX_WAIT host_check_elasticsearch_ready || exit 1
+echo -e "\nProvide data mapping to Elasticsearch:"
+${DIR}/dashboard/set_elasticsearch_mapping_bot.sh
+${DIR}/dashboard/set_elasticsearch_mapping_count.sh
+echo
+
+echo -e "\nStart streaming to Elasticsearch sink connector:"
+${DIR}/connectors/submit_elastic_sink_config.sh
+echo
+
+# Verify Kibana is ready
+MAX_WAIT=120
+echo
+echo -e "\nWaiting up to $MAX_WAIT seconds for Kibana to be ready"
+retry $MAX_WAIT host_check_kibana_ready || exit 1
+echo -e "\nConfigure Kibana dashboard:"
+${DIR}/dashboard/configure_kibana_dashboard.sh
+echo
 
 echo
 echo -e "\nAvailable LDAP users:"
