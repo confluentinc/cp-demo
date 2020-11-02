@@ -94,11 +94,19 @@ Start Example
       cd cp-demo
       git checkout |release_post_branch|
 
-#. From the ``cp-demo`` directory, start the entire example by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This takes approximately 10 minutes to complete.
+#. From the ``cp-demo`` directory, start the entire example by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment.
 
-   .. sourcecode:: bash
+   - The first time you run ``cp-demo``, the startup takes approximately 7 minutes to complete.
+
+     .. sourcecode:: bash
 
         ./scripts/start.sh
+
+   - On subsequent runs, if you do not delete the generated certificates and locally built |connect| image, you can run with ``FAST=true`` and the startup takes approximately 5 minutes to complete.
+
+     .. sourcecode:: bash
+
+        FAST=true ./scripts/start.sh
 
 #. Using a web browser, view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
 
