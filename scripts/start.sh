@@ -22,7 +22,9 @@ else
   export FAST=false
   echo -e "\nFAST=false because minimum requirements for FAST mode not met."
 fi
-echo -e "Set FAST=true on subsequent runs to skip (1) certificate creation and (2) Connect image build\n"
+if [[ "$FAST" != "true" ]]; then
+  echo -e "Set FAST=true on subsequent runs to skip (1) certificate creation and (2) Connect image build\n"
+fi
 
 #-------------------------------------------------------------------------------
 

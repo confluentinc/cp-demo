@@ -102,7 +102,7 @@ Start Example
 
         ./scripts/start.sh
 
-   - On subsequent runs, if you do not delete the generated certificates and locally built |connect| image, you can run with ``FAST=true`` and the startup takes approximately 5 minutes to complete.
+   - On subsequent runs, if you do not delete the generated certificates and the locally built |connect| image, you can set ``FAST=true`` and the startup will run faster.
 
      .. sourcecode:: bash
 
