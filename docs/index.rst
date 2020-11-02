@@ -96,13 +96,13 @@ Start Example
 
 #. From the ``cp-demo`` directory, start the entire example by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment.
 
-   - The first time you run ``cp-demo``, the startup takes approximately 7 minutes to complete.
+   - The first time you run ``cp-demo``, the startup takes a few minutes to complete.
 
      .. sourcecode:: bash
 
         ./scripts/start.sh
 
-   - On subsequent runs, if you do not delete the generated certificates and the locally built |kconnect| image, you can set ``FAST=true`` and the startup will run faster.
+   - On subsequent runs, if you do not delete the generated certificates and the locally built |kconnect| image, you can set ``FAST=true`` and the startup will complete in a shorter amount of time.
 
      .. sourcecode:: bash
 
