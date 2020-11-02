@@ -14,10 +14,10 @@ export REPOSITORY=${REPOSITORY:-confluentinc}
 # and expects user to build and provide a local file confluentinc-kafka-connect-replicator-${CONNECTOR_VERSION}.zip
 export CONNECTOR_VERSION=${CONNECTOR_VERSION:-$CONFLUENT}
 
-# FAST mode: for rerunning cp-demo consecutively, skip (1) certificate creation and (2) Connect image build
+# FAST mode: for rerunning cp-demo consecutively
 # If scripts/security/snakeoil-ca-1.crt exists, honor FAST mode setting
 [ -f "${DIR}/security/snakeoil-ca-1.crt" ] && export FAST=${FAST:-false} || FAST=false
-echo -e "\nFAST=$FAST (set FAST=true for rerunning cp-demo consecutively\n"
+echo -e "\nFAST=$FAST (set FAST=true on subsequent runs to skip (1) certificate creation and (2) Connect image build)\n"
 
 #-------------------------------------------------------------------------------
 
