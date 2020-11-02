@@ -4,6 +4,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ${DIR}/helper/functions.sh
 source ${DIR}/../env_files/config.env
 
+#-------------------------------------------------------------------------------
+
 # REPOSITORY - repository (probably) for Docker images
 # The '/' which separates the REPOSITORY from the image name is not required here
 export REPOSITORY=${REPOSITORY:-confluentinc}
@@ -12,26 +14,22 @@ export REPOSITORY=${REPOSITORY:-confluentinc}
 # and expects user to build and provide a local file confluentinc-kafka-connect-replicator-${CONNECTOR_VERSION}.zip
 export CONNECTOR_VERSION=${CONNECTOR_VERSION:-$CONFLUENT}
 
+# FAST mode: for rerunning cp-demo consecutively, skip (1) certificate creation and (2) Connect image build
+# If scripts/security/snakeoil-ca-1.crt exists, honor FAST mode setting
+[ -f "${DIR}/security/snakeoil-ca-1.crt" ] && export FAST=${FAST:-false} || FAST=false
+echo -e "\nFAST=$FAST (set FAST=true for rerunning cp-demo consecutively\n"
+
+#-------------------------------------------------------------------------------
+
 # Do preflight checks
 preflight_checks || exit
 
 # Stop existing Docker containers
 ${DIR}/stop.sh
 
-# Generate keys and certificates used for SSL
-echo -e "Generate keys and certificates used for SSL (see ${DIR}/security)"
-(cd ${DIR}/security && ./certs-create.sh)
-
-# Generating public and private keys for token signing
-echo "Generating public and private keys for token signing"
-mkdir -p ${DIR}/security/keypair
-openssl genrsa -out ${DIR}/security/keypair/keypair.pem 2048
-openssl rsa -in ${DIR}/security/keypair/keypair.pem -outform PEM -pubout -out ${DIR}/security/keypair/public.pem
-
-# Enable Docker appuser to read files when created by a different UID
-echo -e "Setting insecure permissions on some files in ${DIR}/security for demo purposes\n"
-chmod 644 ${DIR}/security/keypair/keypair.pem
-chmod 644 ${DIR}/security/*.key
+if [[ $FAST != "true" ]] ; then
+  create_certificates
+fi
 
 # Bring up openldap
 docker-compose up -d openldap
@@ -62,7 +60,9 @@ docker-compose exec kafka1 kafka-configs \
    --add-config min.insync.replicas=1
 
 # Build custom Kafka Connect image with required jars
-build_connect_image || exit 1
+if [[ $FAST != "true" ]] ; then
+  build_connect_image || exit 1
+fi
 
 # Bring up more containers
 docker-compose up -d schemaregistry connect control-center

@@ -62,6 +62,26 @@ get_kafka_cluster_id_from_container()
   return 0
 }
 
+create_certificates()
+{
+  local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+  # Generate keys and certificates used for SSL
+  echo -e "Generate keys and certificates used for SSL (see ${DIR}/security)"
+  (cd ${DIR}/../security && ./certs-create.sh)
+
+  # Generating public and private keys for token signing
+  echo "Generating public and private keys for token signing"
+  mkdir -p ${DIR}/../security/keypair
+  openssl genrsa -out ${DIR}/../security/keypair/keypair.pem 2048
+  openssl rsa -in ${DIR}/../security/keypair/keypair.pem -outform PEM -pubout -out ${DIR}/../security/keypair/public.pem
+
+  # Enable Docker appuser to read files when created by a different UID
+  echo -e "Setting insecure permissions on some files in ${DIR}/../security for demo purposes\n"
+  chmod 644 ${DIR}/../security/keypair/keypair.pem
+  chmod 644 ${DIR}/../security/*.key
+}
+
 build_connect_image()
 {
   echo
