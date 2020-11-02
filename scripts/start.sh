@@ -15,9 +15,15 @@ export REPOSITORY=${REPOSITORY:-confluentinc}
 export CONNECTOR_VERSION=${CONNECTOR_VERSION:-$CONFLUENT}
 
 # FAST mode: for rerunning cp-demo consecutively
-# If scripts/security/snakeoil-ca-1.crt exists, honor FAST mode setting
-[ -f "${DIR}/security/snakeoil-ca-1.crt" ] && export FAST=${FAST:-false} || FAST=false
-echo -e "\nFAST=$FAST (set FAST=true on subsequent runs to skip (1) certificate creation and (2) Connect image build)\n"
+# Honor FAST mode if scripts/security/snakeoil-ca-1.crt and localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} exist
+if [[ -f "${DIR}/security/snakeoil-ca-1.crt" ]] && [[ $(docker images --format "{{.Repository}}:{{.Tag}}" localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}) =~ localbuild ]]; then
+  export FAST=${FAST:-false}
+else
+  export FAST=false
+  echo -e "\nFAST=false because minimum requirements for FAST mode not met."
+fi
+echo -e "Set FAST=true on subsequent runs to skip (1) certificate creation and (2) Connect image build\n"
+exit
 
 #-------------------------------------------------------------------------------
 
