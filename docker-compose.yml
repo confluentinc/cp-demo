@@ -672,6 +672,9 @@ services:
       # Used by Control Center to connect to MDS to verify tokens and authenticate clients
       CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: https://kafka1:8091,https://kafka2:8092
       CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: controlcenterAdmin:controlcenterAdmin
+
+      # Used by Control Center to connect to the Admin API for Self Balancing Clusters
+      CONTROL_CENTER_STREAMS_CPREST_URL: "https://kafka1:8091,https://kafka2:8092"
       
       CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SSL
       CONTROL_CENTER_STREAMS_SASL_MECHANISM: OAUTHBEARER
