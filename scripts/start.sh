@@ -14,16 +14,15 @@ export REPOSITORY=${REPOSITORY:-confluentinc}
 # and expects user to build and provide a local file confluentinc-kafka-connect-replicator-${CONNECTOR_VERSION}.zip
 export CONNECTOR_VERSION=${CONNECTOR_VERSION:-$CONFLUENT}
 
-# FAST mode: for rerunning cp-demo consecutively
-# Honor FAST mode if scripts/security/snakeoil-ca-1.crt and localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} exist
-if [[ -f "${DIR}/security/snakeoil-ca-1.crt" ]] && [[ $(docker images --format "{{.Repository}}:{{.Tag}}" localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}) =~ localbuild ]]; then
-  export FAST=${FAST:-false}
+# Do not regenerate certificates and Connect image unless the following conditions are met
+if [[ "$CLEAN" == "true" ]] || \
+ ! [[ -f "${DIR}/security/snakeoil-ca-1.crt" ]] || \
+ ! [[ $(docker images --format "{{.Repository}}:{{.Tag}}" localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}) =~ localbuild ]] ;
+then
+  CLEAN=true
+  clean_demo_env
 else
-  export FAST=false
-  echo -e "\nFAST=false because minimum requirements for FAST mode not met."
-fi
-if [[ "$FAST" != "true" ]]; then
-  echo -e "Set FAST=true on subsequent runs to skip (1) certificate creation and (2) Connect image build\n"
+  CLEAN=false
 fi
 
 #-------------------------------------------------------------------------------
@@ -34,7 +33,7 @@ preflight_checks || exit
 # Stop existing Docker containers
 ${DIR}/stop.sh
 
-if [[ $FAST != "true" ]] ; then
+if [[ "$CLEAN" == "true" ]] ; then
   create_certificates
 fi
 
@@ -50,7 +49,7 @@ fi
 docker-compose up -d zookeeper kafka1 kafka2 tools
 
 # Verify MDS has started
-MAX_WAIT=90
+MAX_WAIT=120
 echo "Waiting up to $MAX_WAIT seconds for MDS to start"
 retry $MAX_WAIT host_check_mds_up || exit 1
 sleep 5
@@ -67,7 +66,7 @@ docker-compose exec kafka1 kafka-configs \
    --add-config min.insync.replicas=1
 
 # Build custom Kafka Connect image with required jars
-if [[ $FAST != "true" ]] ; then
+if [[ "$CLEAN" == "true" ]] ; then
   build_connect_image || exit 1
 fi
 

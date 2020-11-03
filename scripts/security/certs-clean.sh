@@ -6,4 +6,5 @@ set -o nounset \
 #    -o xtrace
 
 # Cleanup files
-rm -f *.crt *.csr *_creds *.jks *.srl *.key *.pem *.der *.p12
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+(cd "${DIR}" && rm -f *.crt *.csr *_creds *.jks *.srl *.key *.pem *.der *.p12)

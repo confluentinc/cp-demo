@@ -102,11 +102,11 @@ Start Example
 
         ./scripts/start.sh
 
-   - On subsequent runs, if you do not delete the generated certificates and the locally built |kconnect| image, you can set ``FAST=true`` and the startup will complete in a shorter amount of time.
+   - On subsequent runs, if you do not delete the generated certificates and the locally built |kconnect| image, they will be reused. To force them to be regenerated, you can set ``CLEAN=true``.
 
      .. sourcecode:: bash
 
-        FAST=true ./scripts/start.sh
+        CLEAN=true ./scripts/start.sh
 
 #. Using a web browser, view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
 
@@ -1341,7 +1341,7 @@ Here are some suggestions on how to troubleshoot the example.
 
 #. If any containers are not in ``Up`` state, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8 GB (default is 2 GB).
 
-#. For those Docker containers that are not in ``Up`` state, view the container's logs with the command ``docker-compose logs [container]`` and look for error messages and exceptions.
+#. If the script errors out before completing, or if there are Docker containers that are not in ``Up`` state, view the container's logs with the command ``docker-compose logs [container]`` and look for error messages and exceptions.
 
    .. sourcecode:: bash
 
