@@ -14,7 +14,7 @@ export REPOSITORY=${REPOSITORY:-confluentinc}
 # and expects user to build and provide a local file confluentinc-kafka-connect-replicator-${CONNECTOR_VERSION}.zip
 export CONNECTOR_VERSION=${CONNECTOR_VERSION:-$CONFLUENT}
 
-# Do not regenerate certificates and Connect image unless the following conditions are met
+# Regenerate certificates and the Connect Docker image if any of the following conditions are true
 if [[ "$CLEAN" == "true" ]] || \
  ! [[ -f "${DIR}/security/snakeoil-ca-1.crt" ]] || \
  ! [[ $(docker images --format "{{.Repository}}:{{.Tag}}" localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}) =~ localbuild ]] ;
