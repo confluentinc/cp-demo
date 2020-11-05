@@ -1,8 +1,8 @@
 #!/bin/bash
 
 set -o nounset \
-    -o errexit \
-    -o verbose
+    -o errexit
+#    -o verbose
 #    -o xtrace
 
 # Cleanup files

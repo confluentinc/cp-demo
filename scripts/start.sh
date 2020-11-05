@@ -19,6 +19,9 @@ if [[ "$CLEAN" == "true" ]] || \
  ! [[ -f "${DIR}/security/snakeoil-ca-1.crt" ]] || \
  ! [[ $(docker images --format "{{.Repository}}:{{.Tag}}" localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}) =~ localbuild ]] ;
 then
+  if [[ -z $CLEAN ]] || [[ "$CLEAN" == "false" ]] ; then
+    echo "INFO: Setting CLEAN=true because minimum conditions (existing certificates and existing Docker image localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}) not met"
+  fi
   CLEAN=true
   clean_demo_env
 else
