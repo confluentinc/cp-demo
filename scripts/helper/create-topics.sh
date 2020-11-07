@@ -1,47 +1,18 @@
 #!/bin/bash
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+cd $DIR
+
 # Create Kafka topic users, using appSA principal
-export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
-   --bootstrap-server kafka1:11091 \
-   --command-config /etc/kafka/secrets/appSA.config \
-   --topic users \
-   --create \
-   --replication-factor 2 \
-   --partitions 2 \
-   --config confluent.value.schema.validation=true
+./create-topic.sh appSA.config users
 
 # Create Kafka topics with prefix wikipedia, using connectorSA principal
-export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
-   --bootstrap-server kafka1:11091 \
-   --command-config /etc/kafka/secrets/connectorSA_without_interceptors_ssl.config \
-   --topic wikipedia.parsed \
-   --create \
-   --replication-factor 2 \
-   --partitions 2 \
-   --config confluent.value.schema.validation=true
-export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
-   --bootstrap-server kafka1:11091 \
-   --command-config /etc/kafka/secrets/connectorSA_without_interceptors_ssl.config \
-   --topic wikipedia.parsed.count-by-domain \
-   --create \
-   --replication-factor 2 \
-   --partitions 2
-export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
-   --bootstrap-server kafka1:11091 \
-   --command-config /etc/kafka/secrets/connectorSA_without_interceptors_ssl.config \
-   --topic wikipedia.failed \
-   --create \
-   --replication-factor 2 \
-   --partitions 2
+./create-topic.sh connectorSA_without_interceptors_ssl.config wikipedia.parsed
+./create-topic.sh connectorSA_without_interceptors_ssl.config wikipedia.parsed.count-by-domain
+./create-topic.sh connectorSA_without_interceptors_ssl.config wikipedia.failed
 
 # Create Kafka topics with prefix WIKIPEDIA or EN_WIKIPEDIA, using ksqlDBUser principal
 for t in WIKIPEDIABOT WIKIPEDIANOBOT EN_WIKIPEDIA_GT_1 EN_WIKIPEDIA_GT_1_COUNTS
 do
-  export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
-     --bootstrap-server kafka1:11091 \
-     --command-config /etc/kafka/secrets/ksqlDBUser_without_interceptors_ssl.config \
-     --topic "$t" \
-     --create \
-     --replication-factor 2 \
-     --partitions 2
+  ./create-topic.sh ksqlDBUser_without_interceptors_ssl.config $t
 done
