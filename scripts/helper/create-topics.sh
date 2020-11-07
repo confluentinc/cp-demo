@@ -3,16 +3,14 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 cd $DIR
 
-# Create Kafka topic users, using appSA principal
-./create-topic.sh appSA.config users
+topics=(appSA.config users \
+        connectorSA_without_interceptors_ssl.config wikipedia.parsed \
+        connectorSA_without_interceptors_ssl.config wikipedia.parsed.count-by-domain \
+        connectorSA_without_interceptors_ssl.config wikipedia.failed \
+        ksqlDBUser_without_interceptors_ssl.config WIKIPEDIABOT \
+        ksqlDBUser_without_interceptors_ssl.config WIKIPEDIANOBOT \
+        ksqlDBUser_without_interceptors_ssl.config EN_WIKIPEDIA_GT_1 \
+        ksqlDBUser_without_interceptors_ssl.config EN_WIKIPEDIA_GT_1_COUNTS \
+       )
 
-# Create Kafka topics with prefix wikipedia, using connectorSA principal
-./create-topic.sh connectorSA_without_interceptors_ssl.config wikipedia.parsed
-./create-topic.sh connectorSA_without_interceptors_ssl.config wikipedia.parsed.count-by-domain
-./create-topic.sh connectorSA_without_interceptors_ssl.config wikipedia.failed
-
-# Create Kafka topics with prefix WIKIPEDIA or EN_WIKIPEDIA, using ksqlDBUser principal
-for t in WIKIPEDIABOT WIKIPEDIANOBOT EN_WIKIPEDIA_GT_1 EN_WIKIPEDIA_GT_1_COUNTS
-do
-  ./create-topic.sh ksqlDBUser_without_interceptors_ssl.config $t
-done
+printf '%s\0' "${topics[@]}" | xargs -0 -n2 -P15 sh -c 'echo "Creating topic $2 with principal $1";./create-topic.sh "$1" "$2";echo "Created topic $2";' sh
