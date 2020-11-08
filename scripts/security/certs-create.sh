@@ -18,5 +18,5 @@ printf '%s\0' "${users[@]}" | xargs -0 -I{} -n1 -P15 sh -c './certs-create-per-u
 echo "Creating certificates completed"
 
 # we no longer generating a cert for ksqlDB Server - it shares a cert with Control Center
-cp kafka.control-center.keystore.jks kafka.ksqlDBserver.keystore.jks
-cp kafka.control-center.truststore.jks kafka.ksqlDBserver.truststore.jks
+cp kafka.control-center.keystore.jks kafka.ksqldb-server.keystore.jks
+cp kafka.control-center.truststore.jks kafka.ksqldb-server.truststore.jks
