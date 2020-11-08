@@ -5,7 +5,7 @@ set -o nounset \
     -o verbose
 
 # See what is in each keystore and truststore
-for i in kafka1 kafka2 client schemaregistry restproxy connect connectorSA controlcenter ksqlDBserver ksqlDBUser appSA badapp clientListen zookeeper mds
+for i in kafka1 kafka2 client schemaregistry restproxy connect connectorSA control-center ksqlDBserver ksqlDBUser appSA badapp clientListen zookeeper mds
 do
         echo "------------------------------- $i keystore -------------------------------"
 	keytool -list -v -keystore kafka.$i.keystore.jks -storepass confluent | grep -e Alias -e Entry
