@@ -94,11 +94,19 @@ Start Example
       cd cp-demo
       git checkout |release_post_branch|
 
-#. From the ``cp-demo`` directory, start the entire example by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment. This takes approximately 10 minutes to complete.
+#. From the ``cp-demo`` directory, start the entire example by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment.
 
-   .. sourcecode:: bash
+   - The first time you run ``cp-demo``, the startup takes a few minutes to complete.
+
+     .. sourcecode:: bash
 
         ./scripts/start.sh
+
+   - On subsequent runs, if you do not delete the generated certificates and the locally built |kconnect| image, they will be reused. To force them to be regenerated, you can set ``CLEAN=true``.
+
+     .. sourcecode:: bash
+
+        CLEAN=true ./scripts/start.sh
 
 #. Using a web browser, view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
 
@@ -1333,7 +1341,7 @@ Here are some suggestions on how to troubleshoot the example.
 
 #. If any containers are not in ``Up`` state, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8 GB (default is 2 GB).
 
-#. For those Docker containers that are not in ``Up`` state, view the container's logs with the command ``docker-compose logs [container]`` and look for error messages and exceptions.
+#. If the script errors out before completing, or if there are Docker containers that are not in ``Up`` state, view the container's logs with the command ``docker-compose logs [container]`` and look for error messages and exceptions.
 
    .. sourcecode:: bash
 
