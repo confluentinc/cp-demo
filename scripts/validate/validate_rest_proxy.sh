@@ -43,10 +43,10 @@ docker-compose exec tools bash -c "confluent iam rolebinding create \
     --schema-registry-cluster-id $SR"
 
 # Register a new Avro schema for topic 'users'
-docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' -u $CLIENT_NAME:$CLIENT_NAME https://schemaregistry:8085/subjects/$subject/versions
+docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' -u $CLIENT_NAME:$CLIENT_NAME https://schemaregistry:8085/subjects/$subject/versions
 
 # Get the Avro schema id
-schemaid=$(docker-compose exec schemaregistry curl -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u $CLIENT_NAME:$CLIENT_NAME https://schemaregistry:8085/subjects/$subject/versions/1 | jq '.id')
+schemaid=$(docker-compose exec schemaregistry curl -X GET --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u $CLIENT_NAME:$CLIENT_NAME https://schemaregistry:8085/subjects/$subject/versions/1 | jq '.id')
 
 # Go through steps at https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html?utm_source=github&utm_medium=demo&utm_campaign=ch.cp-demo_type.community_content.cp-demo#confluent-rest-proxy
 
