@@ -678,8 +678,6 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
    .. code-block:: text
 
        docker-compose exec schemaregistry curl -X GET \
-          --cert /etc/kafka/secrets/schemaregistry.certificate.pem \
-          --key /etc/kafka/secrets/schemaregistry.key \
           --tlsv1.2 \
           --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
           -u superUser:superUser \
@@ -706,8 +704,6 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
        docker-compose exec schemaregistry curl -X POST \
           -H "Content-Type: application/vnd.schemaregistry.v1+json" \
-          --cert /etc/kafka/secrets/schemaregistry.certificate.pem \
-          --key /etc/kafka/secrets/schemaregistry.key \
           --tlsv1.2 \
           --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
           --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' \
@@ -726,8 +722,6 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
        docker-compose exec schemaregistry curl -X POST \
           -H "Content-Type: application/vnd.schemaregistry.v1+json" \
-          --cert /etc/kafka/secrets/schemaregistry.certificate.pem \
-          --key /etc/kafka/secrets/schemaregistry.key \
           --tlsv1.2 \
           --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
           --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' \
@@ -764,8 +758,6 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
        docker-compose exec schemaregistry curl -X POST \
           -H "Content-Type: application/vnd.schemaregistry.v1+json" \
-          --cert /etc/kafka/secrets/schemaregistry.certificate.pem \
-          --key /etc/kafka/secrets/schemaregistry.key \
           --tlsv1.2 \
           --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
           --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' \
@@ -788,8 +780,6 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
    .. code-block:: text
 
        docker-compose exec schemaregistry curl -X GET \
-          --cert /etc/kafka/secrets/schemaregistry.certificate.pem \
-          --key /etc/kafka/secrets/schemaregistry.key \
           --tlsv1.2 \
           --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
           -u appSA:appSA \

@@ -111,7 +111,7 @@ if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
   exit 1
 fi
 
-echo -e "\nStart streaming from the Wikipeida SSE source connector:"
+echo -e "\nStart streaming from the Wikipedia SSE source connector:"
 ${DIR}/connectors/submit_wikipedia_sse_config.sh
 
 # Verify wikipedia.parsed topic is populated and schema is registered
