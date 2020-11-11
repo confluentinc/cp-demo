@@ -651,11 +651,9 @@ services:
       # ksqlDB
       CONTROL_CENTER_KSQL_WIKIPEDIA_URL: http://ksqldb-server:8088
       # Access ksqlDB server from a browser on your localhost
-      CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL: http://localhost:8088
-      # Uncomment following to enable ksqlDB browser access over TLS/HTTPS
-      # Control Center currently only supports http-or-https, and the proto
-      # must match the protocol Control Center is accessed with
-      #CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL: https://localhost:8089
+      # To use Control Center and its ksqlDB interface over https, before launching, run in the launch shell:
+      # export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL=https://localhost:8089
+      CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL: ${CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL:-http://localhost:8088}
 
       # Schema Registry
       CONTROL_CENTER_SCHEMA_REGISTRY_SR1_URL: https://schemaregistry:8085
