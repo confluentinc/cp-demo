@@ -563,7 +563,7 @@ End clients (non-CP clients):
            --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.appSA.truststore.jks \
            --property schema.registry.ssl.truststore.password=confluent \
            --property basic.auth.credentials.source=USER_INFO \
-           --property schema.registry.basic.auth.user.info=appSA:appSA \
+           --property basic.auth.user.info=appSA:appSA \
            --group wikipedia.test \
            --topic wikipedia.parsed \
            --max-messages 5
@@ -584,7 +584,7 @@ End clients (non-CP clients):
            --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.badapp.truststore.jks \
            --property schema.registry.ssl.truststore.password=confluent \
            --property basic.auth.credentials.source=USER_INFO \
-           --property schema.registry.basic.auth.user.info=badapp:badapp \
+           --property basic.auth.user.info=badapp:badapp \
            --group wikipedia.test \
            --topic wikipedia.parsed \
            --max-messages 5
@@ -644,7 +644,7 @@ End clients (non-CP clients):
            --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.badapp.truststore.jks \
            --property schema.registry.ssl.truststore.password=confluent \
            --property basic.auth.credentials.source=USER_INFO \
-           --property schema.registry.basic.auth.user.info=badapp:badapp \
+           --property basic.auth.user.info=badapp:badapp \
            --group wikipedia.test \
            --topic wikipedia.parsed \
            --max-messages 5
@@ -669,7 +669,7 @@ All the applications and connectors used in this example are configured to autom
 The security in place between |sr| and the end clients, e.g. ``appSA``, is as follows:
 
 - Encryption: TLS, e.g. client has ``schema.registry.ssl.truststore.*`` configurations
-- Authentication: bearer token authentication from HTTP basic auth headers, e.g. client has ``schema.registry.basic.auth.user.info`` and ``basic.auth.credentials.source`` configurations
+- Authentication: bearer token authentication from HTTP basic auth headers, e.g. client has ``basic.auth.user.info`` and ``basic.auth.credentials.source`` configurations
 - Authorization: |sr| uses the bearer token with RBAC to authorize the client
 
 
