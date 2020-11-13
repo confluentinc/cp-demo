@@ -22,7 +22,7 @@ docker exec connect kafka-avro-console-consumer \
    --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.appSA.truststore.jks \
    --property schema.registry.ssl.truststore.password=confluent \
    --property basic.auth.credentials.source=USER_INFO \
-   --property schema.registry.basic.auth.user.info=appSA:appSA \
+   --property basic.auth.user.info=appSA:appSA \
    --consumer-property interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor \
    --consumer-property confluent.monitoring.interceptor.security.protocol=SSL \
    --consumer-property confluent.monitoring.interceptor.ssl.truststore.location=/etc/kafka/secrets/kafka.appSA.truststore.jks \
@@ -39,7 +39,7 @@ docker exec connect kafka-avro-console-consumer \
 #   --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.kafka1.truststore.jks \
 #   --property schema.registry.ssl.truststore.password=confluent \
 #   --property basic.auth.credentials.source=USER_INFO \
-#   --property schema.registry.basic.auth.user.info=superUser:superUser \
+#   --property basic.auth.user.info=superUser:superUser \
 #   --consumer-property interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor \
 #   --consumer-property group.id=app \
 #   --topic wikipedia.parsed \

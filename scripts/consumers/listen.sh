@@ -16,7 +16,7 @@ for t in wikipedia.parsed WIKIPEDIABOT WIKIPEDIANOBOT EN_WIKIPEDIA_GT_1_COUNTS; 
     --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.clientListen.truststore.jks \
     --property schema.registry.ssl.truststore.password=confluent \
     --property basic.auth.credentials.source=USER_INFO \
-    --property schema.registry.basic.auth.user.info=clientListen:clientListen \
+    --property basic.auth.user.info=clientListen:clientListen \
     --max-messages 1
 
 done
