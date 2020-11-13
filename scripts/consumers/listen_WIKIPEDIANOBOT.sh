@@ -11,7 +11,7 @@ docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:11091,
   --property schema.registry.ssl.truststore.location=/etc/kafka/secrets/kafka.clientListen.truststore.jks \
   --property schema.registry.ssl.truststore.password=confluent \
   --property basic.auth.credentials.source=USER_INFO \
-  --property schema.registry.basic.auth.user.info=clientListen:clientListen \
+  --property basic.auth.user.info=clientListen:clientListen \
   --consumer-property group.id=listen-consumer \
   --consumer-property /etc/kafka/secrets/clientListen_with_interceptors.config \
   --topic WIKIPEDIANOBOT > /dev/null 2>&1 &

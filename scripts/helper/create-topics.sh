@@ -22,7 +22,7 @@ export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DE
 export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
    --bootstrap-server kafka1:11091 \
    --command-config /etc/kafka/secrets/connectorSA_without_interceptors_ssl.config \
-   --topic wikipedia.parsed.count-by-channel \
+   --topic wikipedia.parsed.count-by-domain \
    --create \
    --replication-factor 2 \
    --partitions 2
