@@ -23,6 +23,6 @@ echo "Creating certificates"
 printf '%s\0' "${users[@]}" | xargs -0 -I{} -n1 -P15 sh -c './certs-create-per-user.sh "$1" > "certs-create-$1.log" 2>&1 && echo "Created certificates for $1"' -- {}
 echo "Creating certificates completed"
 
-# copy control-center certificate for ksqldb-server
-cp kafka.control-center.keystore.jks kafka.ksqldb-server.keystore.jks
-cp kafka.control-center.truststore.jks kafka.ksqldb-server.truststore.jks
+# move control-center certificate to shared filename
+mv kafka.control-center.keystore.jks kafka.control-center-and-ksqldb-server.keystore.jks
+mv kafka.control-center.truststore.jks kafka.control-center-and-ksqldb-server.truststore.jks
