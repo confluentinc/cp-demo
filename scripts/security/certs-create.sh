@@ -18,11 +18,8 @@ openssl req -new -x509 -keyout snakeoil-ca-1.key -out snakeoil-ca-1.crt -days 36
 #
 # This is necessary as browsers never prompt to trust certificates for this kind of wss:// connection, see https://stackoverflow.com/a/23036270/452210 .
 #
-users=(kafka1 kafka2 client schemaregistry restproxy connect connectorSA control-center ksqlDBUser appSA badapp clientListen zookeeper mds)
+users=(kafka1 kafka2 client schemaregistry restproxy connect connectorSA control-center-and-ksqldb-server ksqlDBUser appSA badapp clientListen zookeeper mds)
 echo "Creating certificates"
 printf '%s\0' "${users[@]}" | xargs -0 -I{} -n1 -P15 sh -c './certs-create-per-user.sh "$1" > "certs-create-$1.log" 2>&1 && echo "Created certificates for $1"' -- {}
 echo "Creating certificates completed"
 
-# move control-center certificate to shared filename
-mv kafka.control-center.keystore.jks kafka.control-center-and-ksqldb-server.keystore.jks
-mv kafka.control-center.truststore.jks kafka.control-center-and-ksqldb-server.truststore.jks
