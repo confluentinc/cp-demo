@@ -17,7 +17,7 @@ export CONNECTOR_VERSION=${CONNECTOR_VERSION:-$CONFLUENT}
 # Control Center and ksqlDB server must both be HTTP or both be HTTPS; mixed modes are not supported
 # C3_KSQLDB_HTTPS=false: set Control Center and ksqlDB server to use HTTP (default)
 # C3_KSQLDB_HTTPS=true : set Control Center and ksqlDB server to use HTTPS
-export C3_KSQLDB_HTTPS=${C3_KSQLDB_HTTPS:-false}
+C3_KSQLDB_HTTPS=${C3_KSQLDB_HTTPS:-false}
 if [[ "$C3_KSQLDB_HTTPS" == "false" ]]; then
   export CONTROL_CENTER_KSQL_WIKIPEDIA_URL="http://ksqldb-server:8088"
   export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="http://localhost:8088"
