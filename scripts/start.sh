@@ -21,11 +21,11 @@ C3_KSQLDB_HTTPS=${C3_KSQLDB_HTTPS:-false}
 if [[ "$C3_KSQLDB_HTTPS" == "false" ]]; then
   export CONTROL_CENTER_KSQL_WIKIPEDIA_URL="http://ksqldb-server:8088"
   export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="http://localhost:8088"
-  C3URL=http://localhost:9021
+  C3_URL=http://localhost:9021
 else
   export CONTROL_CENTER_KSQL_WIKIPEDIA_URL="https://ksqldb-server:8089"
   export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="https://localhost:8089"
-  C3URL=https://localhost:9022
+  C3_URL=https://localhost:9022
 fi
 
 # Regenerate certificates and the Connect Docker image if any of the following conditions are true
@@ -203,5 +203,5 @@ curl -u mds:mds -X POST "https://localhost:8091/security/1.0/rbac/principals" --
   --cacert scripts/security/snakeoil-ca-1.crt --tlsv1.2 | jq '.[]'
 
 echo -e "\n\n\n******************************************************************************************************************"
-echo -e "DONE! Connect to Confluent Control Center at $C3URL (login as superUser/superUser for full access)"
+echo -e "DONE! Connect to Confluent Control Center at $C3_URL (login as superUser/superUser for full access)"
 echo -e "******************************************************************************************************************\n"
