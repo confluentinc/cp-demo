@@ -675,15 +675,6 @@ services:
 
       # Used by Control Center to connect to the Admin API for Self Balancing Clusters
       CONTROL_CENTER_STREAMS_CPREST_URL: "https://kafka1:8091,https://kafka2:8092"
-      
-      CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SSL
-      CONTROL_CENTER_STREAMS_SASL_MECHANISM: OAUTHBEARER
-      CONTROL_CENTER_STREAMS_SASL_LOGIN_CALLBACK_HANDLER_CLASS: io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler
-      CONTROL_CENTER_STREAMS_SASL_JAAS_CONFIG: |
-              org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-              username="controlcenterAdmin" \
-              password="controlcenterAdmin" \
-              metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
 
   schemaregistry:
     image: ${REPOSITORY}/cp-schema-registry:${CONFLUENT_DOCKER_TAG}
