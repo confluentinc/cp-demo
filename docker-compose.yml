@@ -72,7 +72,6 @@ services:
     image: ${REPOSITORY}/cp-server:${CONFLUENT_DOCKER_TAG}
     hostname: kafka1
     container_name: kafka1
-    cpus: 0.7
     depends_on:
       - zookeeper
       - openldap
@@ -234,7 +233,6 @@ services:
     image: ${REPOSITORY}/cp-server:${CONFLUENT_DOCKER_TAG}
     hostname: kafka2
     container_name: kafka2
-    cpus: 0.7
     depends_on:
       - zookeeper
       - openldap
@@ -395,7 +393,6 @@ services:
   connect:
     image: localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}
     container_name: connect
-    cpus: 0.9
     restart: always
     build:
       context: .
@@ -569,7 +566,6 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
     container_name: elasticsearch
-    cpus: 0.50
     #restart: always
     ports:
       - 9200:9200
@@ -583,7 +579,6 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:5.5.2
     container_name: kibana
-    cpus: 0.50
     restart: always
     depends_on:
       - elasticsearch
@@ -679,7 +674,6 @@ services:
   schemaregistry:
     image: ${REPOSITORY}/cp-schema-registry:${CONFLUENT_DOCKER_TAG}
     container_name: schemaregistry
-    cpus: 0.4
     restart: always
     depends_on:
       - kafka1
@@ -740,7 +734,6 @@ services:
     image: ${REPOSITORY}/cp-ksqldb-server:${CONFLUENT_DOCKER_TAG}
     hostname: ksqldb-server
     container_name: ksqldb-server
-    cpus: 0.5
     restart: always
     healthcheck:
       # healthcheck is currently incompatible with RBAC
@@ -836,7 +829,6 @@ services:
   ksqldb-cli:
     image: ${REPOSITORY}/cp-ksqldb-cli:${CONFLUENT_DOCKER_TAG}
     container_name: ksqldb-cli
-    cpus: 0.4
     depends_on:
       - kafka1
       - kafka2
@@ -850,7 +842,6 @@ services:
   restproxy:
     image: ${REPOSITORY}/cp-kafka-rest:${CONFLUENT_DOCKER_TAG}
     restart: always
-    cpus: 0.4
     depends_on:
       - kafka1
       - kafka2
@@ -915,7 +906,6 @@ services:
   streams-demo:
     image: cnfldemos/cp-demo-kstreams:0.0.9
     restart: always
-    cpus: 0.4
     depends_on:
       - kafka1
       - kafka2
