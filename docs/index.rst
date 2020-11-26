@@ -79,7 +79,7 @@ If you prefer non-Docker examples, please go to `confluentinc/examples GitHub re
 Start Example
 -------------
 
-#. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8GB (default is 2GB).
+#. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8GB (default is 2GB) and ensure Docker is allocated at least 2 CPU cores.
 
 #. Clone the `confluentinc/cp-demo GitHub repository <https://github.com/confluentinc/cp-demo>`__:
 
@@ -1329,7 +1329,7 @@ Here are some suggestions on how to troubleshoot the example.
       tools                         /bin/bash                        Up
       zookeeper                     /etc/confluent/docker/run        Up (healthy)   0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 
-#. If any containers are not in ``Up`` state, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8 GB (default is 2 GB).
+#. If any containers are not in ``Up`` state, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8 GB (default is 2 GB) and that Docker is allocated at least 2 CPU cores.
 
 #. If the script errors out before completing, or if there are Docker containers that are not in ``Up`` state, view the container's logs with the command ``docker-compose logs [container]`` and look for error messages and exceptions.
 

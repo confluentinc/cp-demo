@@ -42,7 +42,14 @@ preflight_checks()
   # Verify Docker memory is increased to at least 8GB
   DOCKER_MEMORY=$(docker system info | grep Memory | grep -o "[0-9\.]\+")
   if (( $(echo "$DOCKER_MEMORY 7.0" | awk '{print ($1 < $2)}') )); then
-    echo -e "\nWARNING: Did you remember to increase the memory available to Docker to at least 8GB (default is 2GB)? Otherwise, the example may not work properly.\n"
+    echo -e "\nWARNING: Memory available to Docker must be at least 8GB (default is 2GB), otherwise cp-demo may not work properly.\n"
+    sleep 3
+  fi
+
+  # Verify Docker CPU cores is increased to at least 2
+  DOCKER_CORES=$(docker system info | grep CPUs | grep -o "[0-9\.]\+")
+  if (( $(echo "$DOCKER_CORES 2" | awk '{print ($1 < $2)}') )); then
+    echo -e "\nWARNING: Number of CPU cores available to Docker must be at least 2, otherwise cp-demo may not work properly.\n"
     sleep 3
   fi
 
