@@ -33,6 +33,8 @@ services:
       ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.zookeeper.truststore.jks
       ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: confluent
       ZOOKEEPER_SSL_TRUSTSTORE_TYPE: JKS
+      ZOOKEEPER_SSL_ENABLED_PROTOCOLS: "TLSv1.2"
+      ZOOKEEPER_SSL_CIPHER_SUITES: ${ZOOKEEPER_SSL_CIPHER_SUITES}
       ZOOKEEPER_SSL_CLIENT_AUTH: need
       ZOOKEEPER_AUTH_PROVIDER_X509: org.apache.zookeeper.server.auth.X509AuthenticationProvider
       ZOOKEEPER_AUTH_PROVIDER_SASL: org.apache.zookeeper.server.auth.SASLAuthenticationProvider
