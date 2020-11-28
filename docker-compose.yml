@@ -158,6 +158,7 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: kafka1_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka1.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka1_truststore_creds
+      KAFKA_SSL_CIPHER_SUITES: ${KAFKA_SSL_CIPHER_SUITES}
       KAFKA_SSL_CLIENT_AUTH: "required"
 
       KAFKA_LISTENER_NAME_SSL_SSL_PRINCIPAL_MAPPING_RULES: RULE:^CN=([a-zA-Z0-9.]*).*$$/$$1/ , DEFAULT
@@ -320,6 +321,7 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: kafka2_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka2.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka2_truststore_creds
+      KAFKA_SSL_CIPHER_SUITES: ${KAFKA_SSL_CIPHER_SUITES}
       KAFKA_SSL_CLIENT_AUTH: "required"
 
       KAFKA_LISTENER_NAME_SSL_SSL_PRINCIPAL_MAPPING_RULES: RULE:^CN=([a-zA-Z0-9.]*).*$$/$$1/ , DEFAULT
