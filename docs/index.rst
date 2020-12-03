@@ -57,7 +57,7 @@ Prerequisites
 This example has been validated with:
 
 -  Docker version 17.06.1-ce
--  Docker Compose version 1.14.0 with Docker Compose file format 2.3
+-  Docker Compose version 1.16.0 with Docker Compose file format 2.3
 -  Java version 1.8.0_92
 -  MacOS 10.15.3 (note for `Ubuntu environments <https://github.com/confluentinc/cp-demo/issues/53>`__)
 -  OpenSSL 1.1.1d
