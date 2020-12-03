@@ -110,6 +110,10 @@ Start Example
 
 #. Using a web browser, view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
 
+   .. note::
+
+      If the start script does not complete successfully or if |c3| does not load properly, please go through the :ref:`troubleshooting steps <cp-demo-troubleshootin>`.
+
 #. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
    .. figure:: images/kibana-dashboard.png
@@ -1293,6 +1297,8 @@ Here are some examples of monitoring stacks that integrate with |cp|:
       :width: 500px
 
 #. Next step: for a practical guide to optimizing your |ak| deployment for various service goals including throughput, latency, durability and availability, and useful metrics to monitor for performance and cluster health for on-prem |ak| clusters, see the `Optimizing Your Apache Kafka Deployment <https://www.confluent.io/white-paper/optimizing-your-apache-kafka-deployment/>`__ whitepaper.
+
+.. _cp-demo-troubleshooting:
 
 ===============
 Troubleshooting
