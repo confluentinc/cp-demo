@@ -108,6 +108,10 @@ Start Example
 
         CLEAN=true ./scripts/start.sh
 
+   .. note::
+
+      If the start script does not complete successfully or if |c3| does not load properly, please go through the :ref:`troubleshooting steps <cp-demo-troubleshooting>`.
+
 #. Using a web browser, view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
 
 #. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
@@ -280,7 +284,7 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
    .. figure:: images/ksql_properties.png
       :alt: image
 
-#. This example creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS``, and the reason is to demonstrate how ksqlDB windows work. ``EN_WIKIPEDIA_GT_1`` counts occurences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but to send just the counts greater than one downstream, there is a separate Kafka topic for ``EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
+#. This example creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS`` to demonstrate how ksqlDB windows work. ``EN_WIKIPEDIA_GT_1`` counts occurrences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but to send just the counts greater than one downstream, there is a separate Kafka topic for ``EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
 
 - View messages in the topic ``EN_WIKIPEDIA_GT_1`` (jump to offset 0/partition 0), and notice the nulls:
 
@@ -685,7 +689,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: JSON
 
        [
          "wikipedia.parsed.replica-value",
@@ -712,7 +716,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: JSON
 
         {"error_code":401,"message":"Unauthorized"}
 
@@ -730,7 +734,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: JSON
 
       {"error_code":40403,"message":"User is denied operation Write on Subject: users-value"}
 
@@ -766,7 +770,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: JSON
 
      {"id":11}
 
@@ -787,7 +791,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: JSON
 
      {
        "subject": "users-value",
@@ -884,7 +888,7 @@ This demo showcases |crest-long| in two modes:
 
    Your output should resemble:
 
-   .. code-block:: text
+   .. code-block:: JSON
 
       {"offsets":[{"partition":null,"offset":null,"error_code":40301,"error":"Not authorized to access topics: [users]"}],"key_schema_id":null,"value_schema_id":11}
 
@@ -922,7 +926,7 @@ This demo showcases |crest-long| in two modes:
 
    Your output should resemble:
 
-   .. code-block:: text
+   .. code-block:: JSON
 
      {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":11}
 
@@ -1021,7 +1025,7 @@ This demo showcases |crest-long| in two modes:
 
    Your output should resemble:
 
-   .. code-block:: text
+   .. code-block:: JSON
 
       {"error_code":40301,"message":"Not authorized to access topics: [users]"}
 
@@ -1067,7 +1071,7 @@ This demo showcases |crest-long| in two modes:
 
     Your output should resemble:
 
-   .. code-block:: text
+   .. code-block:: JSON
 
       [{"topic":"users","key":null,"value":{"userid":1,"username":"Bunny Smith"},"partition":1,"offset":0}]
 
@@ -1253,7 +1257,7 @@ Monitoring
 ==========
 
 This tutorial has demonstrated how |c3| helps users manage their |cp| deployment and how it provides monitoring capabilities for the cluster and applications.
-For most |cp| users the |c3| monitoring and integrations are sufficent for production usage; however, some users wish to integrate with other monitoring solutions like Prometheus, Grafana, Datadog, and Splunk.
+For most |cp| users the |c3| monitoring and integrations are sufficient for production usage; however, some users wish to integrate with other monitoring solutions like Prometheus, Grafana, Datadog, and Splunk.
 The following JMX-based monitoring stacks help users setup a 'single pane of glass' monitoring solution for all their organization's services and applications, including Kafka.
 
 Here are some examples of monitoring stacks that integrate with |cp|:
@@ -1294,13 +1298,17 @@ Here are some examples of monitoring stacks that integrate with |cp|:
 
 #. Next step: for a practical guide to optimizing your |ak| deployment for various service goals including throughput, latency, durability and availability, and useful metrics to monitor for performance and cluster health for on-prem |ak| clusters, see the `Optimizing Your Apache Kafka Deployment <https://www.confluent.io/white-paper/optimizing-your-apache-kafka-deployment/>`__ whitepaper.
 
+.. _cp-demo-troubleshooting:
+
 ===============
 Troubleshooting
 ===============
 
-Here are some suggestions on how to troubleshoot the example.
+If the start script does not complete successfully, please go through the following troubleshooting steps.
 
-#. Verify the status of the Docker containers show ``Up`` state.
+#. Verify in the advanced Docker preferences settings that the memory available to Docker is at least 8 GB (default is 2 GB) and that Docker is allocated at least 2 CPU cores.
+
+#. Verify that the status of all the Docker containers show ``Up`` state.
 
    .. code-block:: bash
 
@@ -1329,7 +1337,7 @@ Here are some suggestions on how to troubleshoot the example.
       tools                         /bin/bash                        Up
       zookeeper                     /etc/confluent/docker/run        Up (healthy)   0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 
-#. If any containers are not in ``Up`` state, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8 GB (default is 2 GB) and that Docker is allocated at least 2 CPU cores.
+#. Verify there are no other |cp| services running on the local host and that there are no other services running with conflicting ports (see ports used above).
 
 #. If the script errors out before completing, or if there are Docker containers that are not in ``Up`` state, view the container's logs with the command ``docker-compose logs [container]`` and look for error messages and exceptions.
 
@@ -1337,25 +1345,36 @@ Here are some suggestions on how to troubleshoot the example.
 
         docker-compose logs
 
-#. To view sample messages for each topic, including
-   ``wikipedia.parsed``:
+#. If there are any errors that indicate issues with TLS communication, verify that the TLS certificates were properly generated and that there are no errors in the following files:
+
+   .. code-block:: bash
+
+      ls scripts/security/*.log
+
+#. If there are any errors that indicate issues with TLS communication, force TLS certificates to be regenerated by starting the script with ``CLEAN=true``:
 
    .. sourcecode:: bash
 
-          ./scripts/consumers/listen.sh
+      CLEAN=true ./scripts/start.sh
+
+#. Verify there are messages in the |ak|  topics, including ``wikipedia.parsed``:
+
+   .. sourcecode:: bash
+
+      ./scripts/consumers/listen.sh
 
 #. If a command that communicates with |zk| appears to be failing with the error ``org.apache.zookeeper.KeeperException$NoAuthException``,
    change the container you are running the command from to be either ``kafka1`` or ``kafka2``.  This is because |zk| is configured for
    :ref:`SASL/DIGEST-MD5 <sasl_plain_zk>`, and
    any commands that communicate with |zk| need properties set for |zk| authentication.
 
-#. Run any of the :devx-cp-demo:`validation scripts|scripts/validate/` to check that things are working.
+#. Run the scripts in :devx-cp-demo:`validation scripts|scripts/validate/` to verify that they pass.
 
    .. sourcecode:: bash
 
           cd scripts/validate/
 
-#. If you are running ``cp-demo`` for a long time and issuing Confluent CLI commands on the ``tools`` container that return:
+#. If you are running ``cp-demo`` for a long time and issuing Confluent CLI commands on the ``tools`` container that error out with:
 
    .. sourcecode:: bash
 
@@ -1367,6 +1386,7 @@ Here are some suggestions on how to troubleshoot the example.
    .. sourcecode:: bash
 
           ./scripts/helper/refresh_mds_login.sh 
+
       
 ========
 Teardown
