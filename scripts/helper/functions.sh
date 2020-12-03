@@ -104,21 +104,23 @@ build_connect_image()
 {
   echo
   echo "Building custom Docker image with Connect version ${CONFLUENT_DOCKER_TAG} and connector version ${CONNECTOR_VERSION}"
+
+  local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
   
   if [[ "${CONNECTOR_VERSION}" =~ "SNAPSHOT" ]]; then
-    DOCKERFILE="${DIR}/../Dockerfile-local"
+    DOCKERFILE="${DIR}/../../Dockerfile-local"
   else
-    DOCKERFILE=$"{DIR}/../Dockerfile-confluenthub"
+    DOCKERFILE="${DIR}/../../Dockerfile-confluenthub"
   fi
-  echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE ."
-  docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE . || {
+  echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE ${DIR}/../../."
+  docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE ${DIR}/../../. || {
     echo "ERROR: Docker image build failed. Please troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
     exit 1
   }
   
   # Copy the updated kafka.connect.truststore.jks back to the host
   docker create --name cp-demo-tmp-connect localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}
-  docker cp cp-demo-tmp-connect:/tmp/kafka.connect.truststore.jks ${DIR}/security/kafka.connect.truststore.jks
+  docker cp cp-demo-tmp-connect:/tmp/kafka.connect.truststore.jks ${DIR}/../security/kafka.connect.truststore.jks
   docker rm cp-demo-tmp-connect
 }
 
