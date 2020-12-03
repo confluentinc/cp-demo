@@ -888,7 +888,7 @@ This demo showcases |crest-long| in two modes:
 
    Your output should resemble:
 
-   .. code-block:: text
+   .. code-block:: JSON
 
       {"offsets":[{"partition":null,"offset":null,"error_code":40301,"error":"Not authorized to access topics: [users]"}],"key_schema_id":null,"value_schema_id":11}
 
@@ -926,7 +926,7 @@ This demo showcases |crest-long| in two modes:
 
    Your output should resemble:
 
-   .. code-block:: text
+   .. code-block:: JSON
 
      {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":11}
 
@@ -1025,7 +1025,7 @@ This demo showcases |crest-long| in two modes:
 
    Your output should resemble:
 
-   .. code-block:: text
+   .. code-block:: JSON
 
       {"error_code":40301,"message":"Not authorized to access topics: [users]"}
 
@@ -1071,7 +1071,7 @@ This demo showcases |crest-long| in two modes:
 
     Your output should resemble:
 
-   .. code-block:: text
+   .. code-block:: JSON
 
       [{"topic":"users","key":null,"value":{"userid":1,"username":"Bunny Smith"},"partition":1,"offset":0}]
 
