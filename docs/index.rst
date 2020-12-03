@@ -112,7 +112,7 @@ Start Example
 
    .. note::
 
-      If the start script does not complete successfully or if |c3| does not load properly, please go through the :ref:`troubleshooting steps <cp-demo-troubleshootin>`.
+      If the start script does not complete successfully or if |c3| does not load properly, please go through the :ref:`troubleshooting steps <cp-demo-troubleshooting>`.
 
 #. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
