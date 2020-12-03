@@ -108,11 +108,11 @@ Start Example
 
         CLEAN=true ./scripts/start.sh
 
-#. Using a web browser, view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
-
    .. note::
 
       If the start script does not complete successfully or if |c3| does not load properly, please go through the :ref:`troubleshooting steps <cp-demo-troubleshooting>`.
+
+#. Using a web browser, view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
 
 #. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
@@ -689,7 +689,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: JSON
 
        [
          "wikipedia.parsed.replica-value",
@@ -716,7 +716,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: JSON
 
         {"error_code":401,"message":"Unauthorized"}
 
@@ -734,7 +734,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: JSON
 
       {"error_code":40403,"message":"User is denied operation Write on Subject: users-value"}
 
@@ -770,7 +770,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: JSON
 
      {"id":11}
 
@@ -791,7 +791,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    Your output should resemble:
 
-   .. sourcecode:: bash
+   .. code-block:: JSON
 
      {
        "subject": "users-value",
