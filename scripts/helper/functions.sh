@@ -35,7 +35,7 @@ verify_installed()
 preflight_checks()
 {
   # Verify appropriate tools are installed on host
-  for cmd in jq docker-compose keytool docker openssl xargs awk; do
+  for cmd in curl jq docker-compose keytool docker openssl xargs awk; do
     verify_installed $cmd || exit 1
   done
 
