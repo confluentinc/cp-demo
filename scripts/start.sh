@@ -77,7 +77,7 @@ docker-compose up -d schemaregistry connect control-center
 
 echo
 echo -e "Create topics in Kafka cluster:"
-docker-compose exec kafka1 bash -c "/tmp/helper/create-topics.sh" || exit 1
+${DIR}/helper/create-topics.sh || exit 1
 
 # Verify Confluent Control Center has started
 MAX_WAIT=300
