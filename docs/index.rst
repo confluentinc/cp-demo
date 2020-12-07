@@ -102,13 +102,23 @@ Start Example
 
         ./scripts/start.sh
 
+   - ``cp-demo`` supports access to the |c3| GUI via either plain ``http://`` or secure ``https://``, the latter employing a self-signed CA and certificates generated during deployment. However, due to |c3| integrations to other components include ksqlDB server, only one mode at a time is fully supported. To elect to run ``cp-demo`` in ``https`` mode, set ``C3_KSQLDB_HTTPS=true`` when starting ``cp-demo``:
+
+   .. sourcecode:: bash
+
+        C3_KSQLDB_HTTPS=true ./scripts/start.sh
+
    - On subsequent runs, if you do not delete the generated certificates and the locally built |kconnect| image, they will be reused. To force them to be regenerated, you can set ``CLEAN=true``.
 
      .. sourcecode:: bash
 
         CLEAN=true ./scripts/start.sh
 
-#. Using a web browser, view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
+#. Using a web browser, view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions. If you elected to use ``https://`` access above via ``C3_KSQLDB_HTTPS=true``, access |c3| GUI via https://localhost:9022 .
+
+   When accessing via https://localhost:9022, your browser will detect a self-signed, untrusted certificate and certificate-authority and issue a privacy warning. To proceed, you will need to accept this certificate using your browser's process for this, which will then last for the duration of that browser session.  On Chrome, this is done by selecting Advanced, then selecting "Proceed to localhost (unsafe)".
+
+   .. figure:: images/c3-chrome-cert-warning.png
 
 #. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
 
