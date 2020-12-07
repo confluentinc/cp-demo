@@ -183,13 +183,13 @@ Log into |c3|
 
       https://localhost:9022
 
-#. In the case of ``C3_KSQLDB_HTTPS=true``, the browser will detect a self-signed, untrusted certificate and certificate authority, and issue a privacy warning as shown below. To proceed, accept this certificate using your browser's process for this, which will then last for the duration of that browser session.
+   The browser will detect a self-signed, untrusted certificate and certificate authority, and issue a privacy warning as shown below. To proceed, accept this certificate using your browser's process for this, which will then last for the duration of that browser session.
 
-   - Chrome: click on ``Advanced`` and then when the window expands, click on ``Proceed to localhost (unsafe)``.
+   - Chrome: click on ``Advanced`` and when the window expands, click on ``Proceed to localhost (unsafe)``.
 
      .. figure:: images/c3-chrome-cert-warning.png
 
-   - Safari: open a new private browsing window (``Shift + ⌘ + N``), click on ``Show Details`` and then when the window expands, click on ``visit this website``.
+   - Safari: open a new private browsing window (``Shift + ⌘ + N``), click on ``Show Details`` and when the window expands, click on ``visit this website``.
 
      .. figure:: images/c3-safari-cert-warning.png
 
