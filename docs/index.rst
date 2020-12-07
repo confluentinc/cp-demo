@@ -122,8 +122,8 @@ You can run it with optional settings:
 
       C3_KSQLDB_HTTPS=true ./scripts/start.sh
 
-Initial Checks
---------------
+Pre-flight Checks
+-----------------
 
 #. Verify the status of the Docker containers show ``Up`` state.
 
