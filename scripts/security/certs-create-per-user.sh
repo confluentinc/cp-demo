@@ -24,6 +24,10 @@ DNS_ALT_NAMES=$(printf '%s\n' "DNS.1 = $i" "DNS.2 = localhost")
 if [[ "$i" == "mds" ]]; then
   DNS_ALT_NAMES=$(printf '%s\n' "$DNS_ALT_NAMES" "DNS.3 = kafka1" "DNS.4 = kafka2")
 fi
+# control-center and ksqldb-server share a certificate
+if [[ "$i" == "control-center-and-ksqldb-server" ]]; then
+  DNS_ALT_NAMES=$(printf '%s\n' "$DNS_ALT_NAMES" "DNS.3 = control-center" "DNS.4 = ksqldb-server")
+fi
 
 # Sign the host certificate with the certificate authority (CA)
 # Set a random serial number (avoid problems from using '-CAcreateserial' when parallelizing certificate generation)
