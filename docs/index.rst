@@ -48,8 +48,19 @@ Data pattern is as follows:
 
 
 ===========
-Run Example
+Run cp-demo
 ===========
+
+``cp-demo`` is a Docker environment and has all services running on one host.
+It is meant exclusively to easily demo |CP|, but in production, do not deploy all |cp| services on a single host.
+
+Also, in production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production data.
+Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
+
+If you prefer non-Docker examples, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
+
+After you run through the guided tutorial below, apply the concepts you learn here to build your own event streaming pipeline in |ccloud|, a fully managed, cloud-native event streaming platform powered by |ak|. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
+
 
 Prerequisites
 -------------
@@ -64,20 +75,8 @@ This example has been validated with:
 -  git
 -  jq
 
-
-Docker
-------
-
-This is a Docker environment and has all services running on one host.
-It is meant exclusively to easily demo |CP|, but in production, do not deploy all |cp| services on a single host.
-
-Also, in production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production data.
-Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
-
-If you prefer non-Docker examples, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
-
-Start Example
--------------
+Setup
+-----
 
 #. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8GB (default is 2GB) and ensure Docker is allocated at least 2 CPU cores.
 
@@ -94,44 +93,110 @@ Start Example
       cd cp-demo
       git checkout |release_post_branch|
 
-#. From the ``cp-demo`` directory, start the entire example by running a single command that generates the keys and certificates, brings up the Docker containers, and configures and validates the environment.
 
-   - The first time you run ``cp-demo``, the startup takes a few minutes to complete.
+Start
+-----
 
-     .. sourcecode:: bash
+Within the ``cp-demo`` directory, there is a single :devx-cp-demo:`script|scripts/start.sh` that runs the ``cp-demo`` workflow end-to-end.
+It generates the keys and certificates, brings up the Docker containers, and configures and validates the environment.
+You can run it with optional settings:
 
-        ./scripts/start.sh
+- ``CLEAN``: controls whether certificates and the locally built |kconnect| image are regenerated in between runs
+- ``C3_KSQLDB_HTTPS``: sets |c3| and ksqlDB server to use ``HTTP`` (default) or ``HTTPS`` 
 
-   - ``cp-demo`` supports access to the |c3| GUI via either plain ``http://`` or secure ``https://``, the latter employing a self-signed CA and certificates generated during deployment. However, due to |c3| integrations to other components include ksqlDB server, only one mode at a time is fully supported. To elect to run ``cp-demo`` in ``https`` mode, set ``C3_KSQLDB_HTTPS=true`` when starting ``cp-demo``:
+#. To run ``cp-demo`` the first time with defaults, run the following command. This takes a few minutes to complete.
 
    .. sourcecode:: bash
 
-        C3_KSQLDB_HTTPS=true ./scripts/start.sh
+      ./scripts/start.sh
 
-   - On subsequent runs, if you do not delete the generated certificates and the locally built |kconnect| image, they will be reused. To force them to be regenerated, you can set ``CLEAN=true``.
+#. On subsequent runs, if you have not deleted the generated certificates and the locally built |kconnect| image, they will be reused. To force them to be regenerated, you can set ``CLEAN=true``.
 
-     .. sourcecode:: bash
+   .. sourcecode:: bash
 
-        CLEAN=true ./scripts/start.sh
+      CLEAN=true ./scripts/start.sh
 
-#. Using a web browser, view the |c3| GUI at http://localhost:9021. For this tutorial, log in as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions. If you elected to use ``https://`` access above via ``C3_KSQLDB_HTTPS=true``, access |c3| GUI via https://localhost:9022 .
+#. ``cp-demo`` supports access to the |c3| GUI via either ``http://`` (the default) or secure ``https://``, the latter employing a self-signed CA and certificates generated during deployment. Due to |c3| integrations to other components include ksqlDB server, only one mode at a time is fully supported. To run ``cp-demo`` in ``https`` mode, set ``C3_KSQLDB_HTTPS=true`` when starting ``cp-demo``:
 
-   When accessing via https://localhost:9022, your browser will detect a self-signed, untrusted certificate and certificate-authority and issue a privacy warning. To proceed, you will need to accept this certificate using your browser's process for this, which will then last for the duration of that browser session.  On Chrome, this is done by selecting Advanced, then selecting "Proceed to localhost (unsafe)".
+   .. sourcecode:: bash
 
-   .. figure:: images/c3-chrome-cert-warning.png
+      C3_KSQLDB_HTTPS=true ./scripts/start.sh
 
-#. To see the end of the entire pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia
+Pre-flight Checks
+-----------------
+
+#. Verify the status of the Docker containers show ``Up`` state.
+
+   .. code-block:: bash
+
+        docker-compose ps
+
+   Your output should resemble:
+
+   .. code-block:: text
+
+                 Name                          Command                  State                                           Ports                                     
+      ------------------------------------------------------------------------------------------------------------------------------------------------------------
+      connect                       bash -c sleep 10 && cp /us ...   Up             0.0.0.0:8083->8083/tcp, 9092/tcp
+      control-center                /etc/confluent/docker/run        Up (healthy)   0.0.0.0:9021->9021/tcp, 0.0.0.0:9022->9022/tcp
+      elasticsearch                 /bin/bash bin/es-docker          Up             0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp
+      kafka1                        bash -c if [ ! -f /etc/kaf ...   Up (healthy)   0.0.0.0:10091->10091/tcp, 0.0.0.0:11091->11091/tcp, 0.0.0.0:12091->12091/tcp,
+                                                                                    0.0.0.0:8091->8091/tcp, 0.0.0.0:9091->9091/tcp, 9092/tcp
+      kafka2                        bash -c if [ ! -f /etc/kaf ...   Up (healthy)   0.0.0.0:10092->10092/tcp, 0.0.0.0:11092->11092/tcp, 0.0.0.0:12092->12092/tcp,
+                                                                                    0.0.0.0:8092->8092/tcp, 0.0.0.0:9092->9092/tcp
+      kibana                        /bin/sh -c /usr/local/bin/ ...   Up             0.0.0.0:5601->5601/tcp
+      ksqldb-cli                    /bin/sh                          Up
+      ksqldb-server                 /etc/confluent/docker/run        Up (healthy)   0.0.0.0:8088->8088/tcp
+      openldap                      /container/tool/run --copy ...   Up             0.0.0.0:389->389/tcp, 636/tcp
+      restproxy                     /etc/confluent/docker/run        Up             8082/tcp, 0.0.0.0:8086->8086/tcp
+      schemaregistry                /etc/confluent/docker/run        Up             8081/tcp, 0.0.0.0:8085->8085/tcp
+      streams-demo                  /app/start.sh                    Up             9092/tcp
+      tools                         /bin/bash                        Up
+      zookeeper                     /etc/confluent/docker/run        Up (healthy)   0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
+
+
+#. Jump to the end of the entire ``cp-demo`` pipeline and view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia .  This is a cool view and a good way to validate that the ``cp-demo`` start script completed successfully.
 
    .. figure:: images/kibana-dashboard.png
 
-#. You can view the full platform configuration in the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file and the |kstreams| application configuration in the following :devx-cp-demo:`client configuration|env_files/streams-demo.env` file.
+#. View the full |cp| configuration in the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
 
-#. After you run through the guided tutorial below, apply the concepts you learn here to build your own event streaming pipeline in |ccloud|, a fully managed, cloud-native event streaming platform powered by |ak|. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
+#. View the |kstreams| application configuration in the :devx-cp-demo:`client configuration|env_files/streams-demo.env` file, set with security parameters to the |ak| cluster and |sr|.
 
 
 ===============
 Guided Tutorial
 ===============
+
+Log into |c3| 
+-------------
+
+#. If you ran ``cp-demo`` with default of ``C3_KSQLDB_HTTPS=false``, view the |c3| GUI from a web browser at the following URL:
+
+   .. code-block:: text
+
+      http://localhost:9021
+
+#. If you ran ``cp-demo`` with ``C3_KSQLDB_HTTPS=true``, view the |c3| GUI from a web browser at the following URL:
+
+   .. code-block:: text
+
+      https://localhost:9022
+
+   The browser will detect a self-signed, untrusted certificate and certificate authority, and issue a privacy warning as shown below. To proceed, accept this certificate using your browser's process for this, which will then last for the duration of that browser session.
+
+   - Chrome: click on ``Advanced`` and when the window expands, click on ``Proceed to localhost (unsafe)``.
+
+     .. figure:: images/c3-chrome-cert-warning.png
+
+   - Safari: open a new private browsing window (``Shift + ⌘ + N``), click on ``Show Details`` and when the window expands, click on ``visit this website``.
+
+     .. figure:: images/c3-safari-cert-warning.png
+
+#. At the login screen, log into |c3| as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
+
+   .. figure:: images/c3-login.png
+
 
 Brokers 
 -------
@@ -1315,29 +1380,6 @@ Here are some suggestions on how to troubleshoot the example.
    .. code-block:: bash
 
         docker-compose ps
-
-   Your output should resemble:
-
-   .. code-block:: text
-
-                 Name                          Command                  State                                           Ports                                     
-      ------------------------------------------------------------------------------------------------------------------------------------------------------------
-      connect                       bash -c sleep 10 && cp /us ...   Up             0.0.0.0:8083->8083/tcp, 9092/tcp
-      control-center                /etc/confluent/docker/run        Up (healthy)   0.0.0.0:9021->9021/tcp, 0.0.0.0:9022->9022/tcp
-      elasticsearch                 /bin/bash bin/es-docker          Up             0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp
-      kafka1                        bash -c if [ ! -f /etc/kaf ...   Up (healthy)   0.0.0.0:10091->10091/tcp, 0.0.0.0:11091->11091/tcp, 0.0.0.0:12091->12091/tcp,
-                                                                                    0.0.0.0:8091->8091/tcp, 0.0.0.0:9091->9091/tcp, 9092/tcp
-      kafka2                        bash -c if [ ! -f /etc/kaf ...   Up (healthy)   0.0.0.0:10092->10092/tcp, 0.0.0.0:11092->11092/tcp, 0.0.0.0:12092->12092/tcp,
-                                                                                    0.0.0.0:8092->8092/tcp, 0.0.0.0:9092->9092/tcp
-      kibana                        /bin/sh -c /usr/local/bin/ ...   Up             0.0.0.0:5601->5601/tcp
-      ksqldb-cli                    /bin/sh                          Up
-      ksqldb-server                 /etc/confluent/docker/run        Up (healthy)   0.0.0.0:8088->8088/tcp
-      openldap                      /container/tool/run --copy ...   Up             0.0.0.0:389->389/tcp, 636/tcp
-      restproxy                     /etc/confluent/docker/run        Up             8082/tcp, 0.0.0.0:8086->8086/tcp
-      schemaregistry                /etc/confluent/docker/run        Up             8081/tcp, 0.0.0.0:8085->8085/tcp
-      streams-demo                  /app/start.sh                    Up             9092/tcp
-      tools                         /bin/bash                        Up
-      zookeeper                     /etc/confluent/docker/run        Up (healthy)   0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 
 #. If any containers are not in ``Up`` state, verify in the advanced Docker preferences settings that the memory available to Docker is at least 8 GB (default is 2 GB) and that Docker is allocated at least 2 CPU cores.
 
