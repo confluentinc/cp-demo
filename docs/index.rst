@@ -102,7 +102,7 @@ It generates the keys and certificates, brings up the Docker containers, and con
 You can run it with optional settings:
 
 - ``CLEAN``: controls whether certificates and the locally built |kconnect| image are regenerated in between runs
-- ``C3_KSQLDB_HTTPS``: sets Control Center and ksqlDB server to use ``HTTP`` (default) or ``HTTPS`` 
+- ``C3_KSQLDB_HTTPS``: sets |c3| and ksqlDB server to use ``HTTP`` (default) or ``HTTPS`` 
 
 #. To run ``cp-demo`` the first time with defaults, run the following command. This takes a few minutes to complete.
 
@@ -116,7 +116,7 @@ You can run it with optional settings:
 
       CLEAN=true ./scripts/start.sh
 
-#. ``cp-demo`` supports access to the |c3| GUI via either ``http://`` or secure ``https://``, the latter employing a self-signed CA and certificates generated during deployment. However, due to |c3| integrations to other components include ksqlDB server, only one mode at a time is fully supported. To elect to run ``cp-demo`` in ``https`` mode, set ``C3_KSQLDB_HTTPS=true`` when starting ``cp-demo``:
+#. ``cp-demo`` supports access to the |c3| GUI via either ``http://`` (the default) or secure ``https://``, the latter employing a self-signed CA and certificates generated during deployment. Due to |c3| integrations to other components include ksqlDB server, only one mode at a time is fully supported. To run ``cp-demo`` in ``https`` mode, set ``C3_KSQLDB_HTTPS=true`` when starting ``cp-demo``:
 
    .. sourcecode:: bash
 
@@ -155,13 +155,13 @@ Initial Checks
       zookeeper                     /etc/confluent/docker/run        Up (healthy)   0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 
 
-#. Jump to the end of the entire ``cp-demo`` pipeline, view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia .  This is a cool view but also a good way to validate that the script completed successfully.
+#. Jump to the end of the entire ``cp-demo`` pipeline and view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia .  This is a cool view and a good way to validate that the ``cp-demo`` start script completed successfully.
 
    .. figure:: images/kibana-dashboard.png
 
 #. View the full |cp| configuration in the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
 
-#. View the |kstreams| application configuration in the :devx-cp-demo:`client configuration|env_files/streams-demo.env` file, fully configured with security parameters to the |ak| cluster and |sr|.
+#. View the |kstreams| application configuration in the :devx-cp-demo:`client configuration|env_files/streams-demo.env` file, set with security parameters to the |ak| cluster and |sr|.
 
 
 ===============
@@ -171,11 +171,19 @@ Guided Tutorial
 Log into |c3| 
 -------------
 
-#. For this tutorial, log into |c3| as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
+#. If you ran ``cp-demo`` with default of ``C3_KSQLDB_HTTPS=false``, view the |c3| GUI from a web browser at the following URL:
 
-#. If you ran ``cp-demo`` with default of ``C3_KSQLDB_HTTPS=false``, using a web browser, view the |c3| GUI at http://localhost:9021.
+   .. code-block:: text
 
-#. If you ran ``cp-demo`` with ``C3_KSQLDB_HTTPS=true``, using a web browser, view the |c3| GUI at https://localhost:9022. Your browser will detect a self-signed, untrusted certificate and certificate-authority and issue a privacy warning as shown below. To proceed, you will need to accept this certificate using your browser's process for this, which will then last for the duration of that browser session.
+      http://localhost:9021
+
+#. If you ran ``cp-demo`` with ``C3_KSQLDB_HTTPS=true``, view the |c3| GUI from a web browser at the following URL:
+
+   .. code-block:: text
+
+      https://localhost:9022
+
+#. In the case of ``C3_KSQLDB_HTTPS=true``, the browser will detect a self-signed, untrusted certificate and certificate authority, and issue a privacy warning as shown below. To proceed, accept this certificate using your browser's process for this, which will then last for the duration of that browser session.
 
    - Chrome: click on ``Advanced`` and then when the window expands, click on ``Proceed to localhost (unsafe)``.
 
@@ -184,6 +192,10 @@ Log into |c3|
    - Safari: open a new private browsing window (``Shift + ⌘ + N``), click on ``Show Details`` and then when the window expands, click on ``visit this website``.
 
      .. figure:: images/c3-safari-cert-warning.png
+
+#. At the login screen, log into |c3| as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
+
+   .. figure:: images/c3-login.png
 
 
 Brokers 
