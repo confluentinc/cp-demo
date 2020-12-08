@@ -14,7 +14,7 @@ ${DIR}/stop.sh
 
 # Regenerate certificates and the Connect Docker image if any of the following conditions are true
 if [[ "$CLEAN" == "true" ]] || \
- ! [[ -f "${DIR}/security/snakeoil-ca-1.crt" ]] || \
+ ! [[ -f "${DIR}/security/control-center-and-ksqldb-server-ca1-signed.crt" ]] || \
  ! [[ $(docker images --format "{{.Repository}}:{{.Tag}}" localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}) =~ localbuild ]] ;
 then
   if [[ -z $CLEAN ]] || [[ "$CLEAN" == "false" ]] ; then
