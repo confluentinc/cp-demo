@@ -107,10 +107,12 @@ build_connect_image()
 
   local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
   
-  if [[ "${CONNECTOR_VERSION}" =~ "SNAPSHOT" ]]; then
-    DOCKERFILE="${DIR}/../../Dockerfile-local"
-  else
+  # If post-GA: cp-demo uses Dockerfile-confluenthub
+  # If pre-GA: cp-demo uses Dockerfile-local, user provides confluentinc-kafka-connect-replicator-${CONNECTOR_VERSION}.zip
+  if [[ "$CONFLUENT_RELEASE_TAG_OR_BRANCH" =~ "-post" ]]; then
     DOCKERFILE="${DIR}/../../Dockerfile-confluenthub"
+  else
+    DOCKERFILE="${DIR}/../../Dockerfile-local"
   fi
   echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE ${DIR}/../../."
   docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE ${DIR}/../../. || {
