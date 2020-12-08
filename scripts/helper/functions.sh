@@ -107,7 +107,8 @@ build_connect_image()
 
   local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
   
-  if [[ "${CONNECTOR_VERSION}" =~ "SNAPSHOT" ]]; then
+  # If CONNECTOR_VERSION ~ `x.x.x-0` then this is pre-GA and cp-demo uses Dockerfile-local
+  if [[ "${CONNECTOR_VERSION}" =~ "-0" ]]; then
     DOCKERFILE="${DIR}/../../Dockerfile-local"
   else
     DOCKERFILE="${DIR}/../../Dockerfile-confluenthub"
