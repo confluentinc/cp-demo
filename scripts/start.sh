@@ -26,6 +26,14 @@ else
   CLEAN=false
 fi
 
+echo
+echo "Environment parameters"
+echo "  REPOSITORY=$REPOSITORY"
+echo "  CONNECTOR_VERSION=$CONNECTOR_VERSION"
+echo "  C3_KSQLDB_HTTPS=$C3_KSQLDB_HTTPS"
+echo "  CLEAN=$CLEAN"
+echo
+
 if [[ "$CLEAN" == "true" ]] ; then
   create_certificates
 fi
