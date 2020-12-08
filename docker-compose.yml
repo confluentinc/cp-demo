@@ -33,6 +33,7 @@ services:
       ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.zookeeper.truststore.jks
       ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: confluent
       ZOOKEEPER_SSL_TRUSTSTORE_TYPE: JKS
+      ZOOKEEPER_SSL_CIPHER_SUITES: ${ZOOKEEPER_SSL_CIPHER_SUITES}
       ZOOKEEPER_SSL_CLIENT_AUTH: need
       ZOOKEEPER_AUTH_PROVIDER_X509: org.apache.zookeeper.server.auth.X509AuthenticationProvider
       ZOOKEEPER_AUTH_PROVIDER_SASL: org.apache.zookeeper.server.auth.SASLAuthenticationProvider
@@ -156,6 +157,7 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: kafka1_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka1.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka1_truststore_creds
+      KAFKA_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
       KAFKA_SSL_CLIENT_AUTH: "required"
 
       KAFKA_LISTENER_NAME_SSL_SSL_PRINCIPAL_MAPPING_RULES: RULE:^CN=([a-zA-Z0-9.]*).*$$/$$1/ , DEFAULT
@@ -179,6 +181,7 @@ services:
       KAFKA_CONFLUENT_METADATA_SERVER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.mds.keystore.jks
       KAFKA_CONFLUENT_METADATA_SERVER_SSL_KEYSTORE_PASSWORD: confluent
       KAFKA_CONFLUENT_METADATA_SERVER_SSL_KEY_PASSWORD: confluent
+      KAFKA_CONFLUENT_METADATA_SERVER_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
 
       # Configure RBAC token server (authentication)
       KAFKA_CONFLUENT_METADATA_SERVER_TOKEN_MAX_LIFETIME_MS: 3600000
@@ -317,6 +320,7 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: kafka2_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka2.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka2_truststore_creds
+      KAFKA_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
       KAFKA_SSL_CLIENT_AUTH: "required"
 
       KAFKA_LISTENER_NAME_SSL_SSL_PRINCIPAL_MAPPING_RULES: RULE:^CN=([a-zA-Z0-9.]*).*$$/$$1/ , DEFAULT
@@ -340,6 +344,7 @@ services:
       KAFKA_CONFLUENT_METADATA_SERVER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.mds.keystore.jks
       KAFKA_CONFLUENT_METADATA_SERVER_SSL_KEYSTORE_PASSWORD: confluent
       KAFKA_CONFLUENT_METADATA_SERVER_SSL_KEY_PASSWORD: confluent
+      KAFKA_CONFLUENT_METADATA_SERVER_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
 
       # Configure RBAC token server (authentication)
       KAFKA_CONFLUENT_METADATA_SERVER_TOKEN_MAX_LIFETIME_MS: 3600000
@@ -554,7 +559,7 @@ services:
                   -Djavax.net.ssl.trustStorePassword=confluent
                   -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.connect.keystore.jks
                   -Djavax.net.ssl.keyStorePassword=confluent
-      CONNECT_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+      CONNECT_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
 
       # Reduce Connect memory utilization
       KAFKA_JVM_PERFORMANCE_OPTS: -server -XX:+UseG1GC -XX:GCTimeRatio=1
@@ -615,7 +620,7 @@ services:
               username="controlcenterAdmin" \
               password="controlcenterAdmin" \
               metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
-      CONTROL_CENTER_STREAMS_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+      CONTROL_CENTER_STREAMS_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
 
       CONTROL_CENTER_REPLICATION_FACTOR: 2
       CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
@@ -642,7 +647,7 @@ services:
       CONTROL_CENTER_REST_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.control-center-and-ksqldb-server.keystore.jks
       CONTROL_CENTER_REST_SSL_KEYSTORE_PASSWORD: confluent
       CONTROL_CENTER_REST_SSL_KEY_PASSWORD: confluent
-      CONTROL_CENTER_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+      CONTROL_CENTER_REST_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
       PORT: 9021
 
       # Connect
@@ -716,7 +721,7 @@ services:
       SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "https"
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
       SCHEMA_REGISTRY_KAFKASTORE_TOPIC: _schemas
-      SCHEMA_REGISTRY_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+      SCHEMA_REGISTRY_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
 
       SCHEMA_REGISTRY_DEBUG: 'true'
 
@@ -890,7 +895,7 @@ services:
               username="restAdmin" \
               password="restAdmin" \
               metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
-      KAFKA_REST_SSL_CIPHER_SUITES: "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+      KAFKA_REST_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
 
       # Enable bearer token authentication which allows the identity of the REST Proxy end user to be propagated to Kafka for authorization
       KAFKA_REST_KAFKA_REST_RESOURCE_EXTENSION_CLASS: io.confluent.kafkarest.security.KafkaRestSecurityResourceExtension

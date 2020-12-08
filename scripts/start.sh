@@ -2,31 +2,15 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ${DIR}/helper/functions.sh
-source ${DIR}/../env_files/config.env
+source ${DIR}/env.sh
 
 #-------------------------------------------------------------------------------
 
-# REPOSITORY - repository (probably) for Docker images
-# The '/' which separates the REPOSITORY from the image name is not required here
-export REPOSITORY=${REPOSITORY:-confluentinc}
+# Do preflight checks
+preflight_checks || exit
 
-# If CONNECTOR_VERSION ~ `SNAPSHOT` then cp-demo uses Dockerfile-local
-# and expects user to build and provide a local file confluentinc-kafka-connect-replicator-${CONNECTOR_VERSION}.zip
-export CONNECTOR_VERSION=${CONNECTOR_VERSION:-$CONFLUENT}
-
-# Control Center and ksqlDB server must both be HTTP or both be HTTPS; mixed modes are not supported
-# C3_KSQLDB_HTTPS=false: set Control Center and ksqlDB server to use HTTP (default)
-# C3_KSQLDB_HTTPS=true : set Control Center and ksqlDB server to use HTTPS
-export C3_KSQLDB_HTTPS=${C3_KSQLDB_HTTPS:-false}
-if [[ "$C3_KSQLDB_HTTPS" == "false" ]]; then
-  export CONTROL_CENTER_KSQL_WIKIPEDIA_URL="http://ksqldb-server:8088"
-  export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="http://localhost:8088"
-  C3URL=http://localhost:9021
-else
-  export CONTROL_CENTER_KSQL_WIKIPEDIA_URL="https://ksqldb-server:8089"
-  export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="https://localhost:8089"
-  C3URL=https://localhost:9022
-fi
+# Stop existing Docker containers
+${DIR}/stop.sh
 
 # Regenerate certificates and the Connect Docker image if any of the following conditions are true
 if [[ "$CLEAN" == "true" ]] || \
@@ -49,14 +33,6 @@ echo "  CONNECTOR_VERSION=$CONNECTOR_VERSION"
 echo "  C3_KSQLDB_HTTPS=$C3_KSQLDB_HTTPS"
 echo "  CLEAN=$CLEAN"
 echo
-
-#-------------------------------------------------------------------------------
-
-# Do preflight checks
-preflight_checks || exit
-
-# Stop existing Docker containers
-${DIR}/stop.sh
 
 if [[ "$CLEAN" == "true" ]] ; then
   create_certificates
