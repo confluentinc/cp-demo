@@ -128,7 +128,11 @@ build_viz()
 {
   local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-  docker-compose up -d kibana elasticsearch
+  echo
+  echo
+  echo "VIZ=true: running Elasticsearch, Elasticsearch sink connector, and Kibana"
+
+  docker-compose up -d elasticsearch kibana
 
   # Verify Elasticsearch is ready
   MAX_WAIT=240
