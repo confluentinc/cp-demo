@@ -1140,7 +1140,7 @@ This demo showcases |crest-long| in two modes:
           -u appSA:appSA \
           https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
 
-    Your output should resemble:
+   Your output should resemble:
 
    .. code-block:: JSON
 
@@ -1216,6 +1216,20 @@ This demo showcases |crest-long| in two modes:
          --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
          -u appSA:appSA \
          https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics | jq '.data[].topic_name'
+
+   Your output should resemble below.  Output may vary, depending on other topics you may have created, but at least you should see the topic ``dev_users`` created in the previous step.
+
+   .. code-block:: text
+
+      "_confluent-monitoring"
+      "dev_users"
+      "users"
+      "wikipedia-activity-monitor-KSTREAM-AGGREGATE-STATE-STORE-0000000003-changelog"
+      "wikipedia-activity-monitor-KSTREAM-AGGREGATE-STATE-STORE-0000000003-repartition"
+      "wikipedia.failed"
+      "wikipedia.parsed"
+      "wikipedia.parsed.count-by-domain"
+      "wikipedia.parsed.replica"
 
 Failed Broker
 -------------
