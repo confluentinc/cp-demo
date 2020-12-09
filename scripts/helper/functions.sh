@@ -124,6 +124,38 @@ build_connect_image()
   docker rm cp-demo-tmp-connect
 }
 
+build_viz()
+{
+  local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+  docker-compose up -d kibana elasticsearch
+
+  # Verify Elasticsearch is ready
+  MAX_WAIT=240
+  echo
+  echo -e "\nWaiting up to $MAX_WAIT seconds for Elasticsearch to be ready"
+  retry $MAX_WAIT host_check_elasticsearch_ready || exit 1
+  echo -e "\nProvide data mapping to Elasticsearch:"
+  ${DIR}/../dashboard/set_elasticsearch_mapping_bot.sh
+  ${DIR}/../dashboard/set_elasticsearch_mapping_count.sh
+  echo
+
+  echo -e "\nStart streaming to Elasticsearch sink connector:"
+  ${DIR}/../connectors/submit_elastic_sink_config.sh
+  echo
+
+  # Verify Kibana is ready
+  MAX_WAIT=120
+  echo
+  echo -e "\nWaiting up to $MAX_WAIT seconds for Kibana to be ready"
+  retry $MAX_WAIT host_check_kibana_ready || exit 1
+  echo -e "\nConfigure Kibana dashboard:"
+  ${DIR}/../dashboard/configure_kibana_dashboard.sh
+  echo
+
+  return 0
+}
+
 host_check_control_center_up()
 {
   FOUND=$(docker-compose logs control-center | grep "Started NetworkTrafficServerConnector")
