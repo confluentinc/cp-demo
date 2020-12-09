@@ -1140,7 +1140,7 @@ This demo showcases |crest-long| in two modes:
           -u appSA:appSA \
           https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
 
-    Your output should resemble:
+   Your output should resemble:
 
    .. code-block:: JSON
 
