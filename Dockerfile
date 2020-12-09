@@ -15,7 +15,7 @@
 
 ARG CP_VERSION
 
-FROM confluentinc/cp-server-connect-base:$CP_VERSION
+FROM confluentinc/cp-enterprise-replicator:$CP_VERSION
 
 ARG CONNECTOR_VERSION
 
@@ -26,10 +26,6 @@ RUN confluent-hub install --no-prompt cjmatta/kafka-connect-sse:latest
 
 # Install FromJson transformation
 RUN confluent-hub install --no-prompt jcustenborder/kafka-connect-json-schema:latest
-
-# Install Confluent Replicator connector
-COPY --chown=appuser:appuser confluentinc-kafka-connect-replicator-${CONNECTOR_VERSION}.zip /tmp/confluentinc-kafka-connect-replicator-${CONNECTOR_VERSION}.zip
-RUN confluent-hub install --no-prompt /tmp/confluentinc-kafka-connect-replicator-${CONNECTOR_VERSION}.zip
 
 # Install Elasticsearch connector
 RUN confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:latest
