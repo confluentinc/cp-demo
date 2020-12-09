@@ -104,7 +104,7 @@ You can run it with optional settings:
 
 - ``CLEAN``: controls whether certificates and the locally built |kconnect| image are regenerated in between runs
 - ``C3_KSQLDB_HTTPS``: sets |c3| and ksqlDB server to use ``HTTP`` or ``HTTPS`` (default: ``HTTP``)
-- ``VIZ``: enables with Elasticsearch and Kibana (default: ``false``)
+- ``VIZ``: enables Elasticsearch and Kibana (default: ``false``)
 
 #. To run ``cp-demo`` the first time with defaults, run the following command. This takes a few minutes to complete.
 
@@ -140,7 +140,7 @@ Pre-flight Checks
 
         docker-compose ps
 
-   Your output should resemble (note: ``elasticsearch`` and ``kibana`` will be listed if you started the example with ``VIZ=true``):
+   Your output should resemble (note: ``elasticsearch`` and ``kibana`` will be shown only if you started the example with ``VIZ=true``):
 
    .. code-block:: text
 
@@ -164,7 +164,7 @@ Pre-flight Checks
       zookeeper                     /etc/confluent/docker/run        Up (healthy)   0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 
 
-#. (Optional) If you started the example with ``VIZ=true``, jump to the end of the entire ``cp-demo`` pipeline and view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia .  This is a cool view and a good way to validate that the ``cp-demo`` start script completed successfully.
+#. (Optional) If you started the example with ``VIZ=true``, jump to the end of the entire ``cp-demo`` pipeline and view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia .  This is a cool view and validates that the ``cp-demo`` start script completed successfully.
 
    .. figure:: images/kibana-dashboard.png
 
@@ -281,7 +281,7 @@ Topics
 This example runs 2-3 connectors:
 
 - SSE source connector
-- Elasticsearch sink connector (optional)
+- Elasticsearch sink connector (if you started the example with ``VIZ=true``)
 - |crep-full|
 
 They are running on a |kconnect| worker that is configured with |cp| security features.
@@ -1313,7 +1313,7 @@ to setup alerts from there.
    -  The trigger ``Consumption Difference`` happens when consumption
       difference for the Elasticsearch connector consumer group is
       greater than ``0``, and it causes an action
-      ``Email Administrator``. (This is applicable if you started the example with ``VIZ=true``)
+      ``Email Administrator`` (if you started the example with ``VIZ=true``)
 
    .. figure:: images/alerts_triggers.png
       :alt: image
