@@ -27,8 +27,8 @@ else
   C3URL=https://localhost:9022
 fi
 
-# Elasticsearch and Kibana increase memory requirements for cp-demo, so make them opt-in
-export VIZ=${VIZ:-false}
+# Opt-out: disable Elasticsearch and Kibana to reduce memory requirements for cp-demo
+export VIZ=${VIZ:-true}
 
 # Set consistent and strong cipher suites across all services
 export SSL_CIPHER_SUITES=TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256

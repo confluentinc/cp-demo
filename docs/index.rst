@@ -23,7 +23,7 @@ The full event streaming platform based on |cp| is described as follows.
 Wikimedia's `EventStreams <https://wikitech.wikimedia.org/wiki/Event_Platform/EventStreams>`__ publishes a continuous stream of real-time edits happening to real wiki pages.
 A Kafka source connector `kafka-connect-sse <https://www.confluent.io/hub/cjmatta/kafka-connect-sse>`__ streams the server-sent events (SSE) from https://stream.wikimedia.org/v2/stream/recentchange, and a custom |kconnect| transform `kafka-connect-json-schema <https://www.confluent.io/hub/jcustenborder/kafka-connect-json-schema>`__ extracts the JSON from these messages and then are written to a |ak| cluster.
 This example uses `ksqlDB <https://www.confluent.io/product/ksql/>`__ and a :ref:`Kafka Streams <kafka_streams>` application for data processing.
-Then an optional Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.io/kafka-connect-elasticsearch/index.html>`__ streams the data out of Kafka and is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
+Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.io/kafka-connect-elasticsearch/index.html>`__ streams the data out of Kafka and is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 |crep-full| is also copying messages from a topic to another topic in the same cluster.
 All data is using |sr-long| and Avro, and `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ is managing and monitoring the deployment.
 
@@ -44,7 +44,6 @@ Data pattern is as follows:
 | Confluent Replicator                | ``wikipedia.parsed``           | ``wikipedia.parsed.replica``          |
 +-------------------------------------+--------------------------------+---------------------------------------+
 | Elasticsearch sink connector        | ``WIKIPEDIABOT`` (from ksqlDB) | Elasticsearch/Kibana                  |
-| (optional)                          |                                |                                       |
 +-------------------------------------+--------------------------------+---------------------------------------+
 
 
@@ -104,7 +103,7 @@ You can run it with optional settings:
 
 - ``CLEAN``: controls whether certificates and the locally built |kconnect| image are regenerated in between runs
 - ``C3_KSQLDB_HTTPS``: sets |c3| and ksqlDB server to use ``HTTP`` or ``HTTPS`` (default: ``HTTP``)
-- ``VIZ``: enables Elasticsearch and Kibana (default: ``false``)
+- ``VIZ``: enables Elasticsearch and Kibana (default: ``true``)
 
 #. To run ``cp-demo`` the first time with defaults, run the following command. This takes a few minutes to complete.
 
@@ -124,11 +123,11 @@ You can run it with optional settings:
 
       C3_KSQLDB_HTTPS=true ./scripts/start.sh
 
-#. Elasticsearch and Kibana increase localhost memory requirements for ``cp-demo``, so this is opt-in and by default, ``VIZ=false``.  To run with with Elasticsearch and Kibana, set ``VIZ=true``
+#. Elasticsearch and Kibana increase localhost memory requirements for ``cp-demo``. For users who want to run ``cp-demo`` with a smaller memory footprint, opt-out of these components by setting ``VIZ=false`` when starting ``cp-demo``.
 
    .. sourcecode:: bash
 
-      VIZ=true ./scripts/start.sh
+      VIZ=false ./scripts/start.sh
 
 
 Pre-flight Checks
@@ -140,7 +139,7 @@ Pre-flight Checks
 
         docker-compose ps
 
-   Your output should resemble (note: ``elasticsearch`` and ``kibana`` will be shown only if you started the example with ``VIZ=true``):
+   Your output should resemble:
 
    .. code-block:: text
 
@@ -164,7 +163,7 @@ Pre-flight Checks
       zookeeper                     /etc/confluent/docker/run        Up (healthy)   0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 
 
-#. (Optional) If you started the example with ``VIZ=true``, jump to the end of the entire ``cp-demo`` pipeline and view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia .  This is a cool view and validates that the ``cp-demo`` start script completed successfully.
+#. Jump to the end of the entire ``cp-demo`` pipeline and view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia .  This is a cool view and validates that the ``cp-demo`` start script completed successfully.
 
    .. figure:: images/kibana-dashboard.png
 
@@ -281,7 +280,7 @@ Topics
 This example runs 2-3 connectors:
 
 - SSE source connector
-- Elasticsearch sink connector (if you started the example with ``VIZ=true``)
+- Elasticsearch sink connector
 - |crep-full|
 
 They are running on a |kconnect| worker that is configured with |cp| security features.
@@ -299,7 +298,7 @@ The |kconnect| worker's embedded producer is configured to be idempotent, exactl
 
    - source connector ``wikipedia-sse``: view the example's SSE source connector :devx-cp-demo:`configuration file|scripts/connectors/submit_wikipedia_sse_config.sh`.
    - source connector ``replicate-topic``: view the example's |crep| connector :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_config.sh`.
-   - sink connector ``elasticsearch-ksqldb`` consuming from the Kafka topic ``WIKIPEDIABOT``: if you started the example with ``VIZ=true``, view the example's Elasticsearch sink connector :devx-cp-demo:`configuration file|scripts/connectors/submit_elastic_sink_config.sh`.
+   - sink connector ``elasticsearch-ksqldb`` consuming from the Kafka topic ``WIKIPEDIABOT``: view the example's Elasticsearch sink connector :devx-cp-demo:`configuration file|scripts/connectors/submit_elastic_sink_config.sh`.
 
    .. figure:: images/connector_list.png
 
@@ -1313,7 +1312,7 @@ to setup alerts from there.
    -  The trigger ``Consumption Difference`` happens when consumption
       difference for the Elasticsearch connector consumer group is
       greater than ``0``, and it causes an action
-      ``Email Administrator`` (if you started the example with ``VIZ=true``)
+      ``Email Administrator``
 
    .. figure:: images/alerts_triggers.png
       :alt: image
@@ -1328,8 +1327,7 @@ to setup alerts from there.
       :alt: image
 
 
-#. (Optional) If you started the example with ``VIZ=true``,
-   you can also trigger the ``Consumption Difference`` trigger. In the
+#. You can also trigger the ``Consumption Difference`` trigger. In the
    Kafka Connect -> Sinks screen, edit the running Elasticsearch sink
    connector.
 

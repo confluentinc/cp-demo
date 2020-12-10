@@ -39,9 +39,13 @@ preflight_checks()
     verify_installed $cmd || exit 1
   done
 
-  # Verify Docker memory is increased to at least 8GB
+  # Verify Docker memory is at least 8GB
   if [[ $(docker system info --format '{{.MemTotal}}') -lt 8000000000 ]]; then
-    echo -e "\nWARNING: Memory available to Docker must be at least 8GB (default is 2GB), otherwise cp-demo may not work properly.\n"
+    echo -e "\nWARNING: Memory available to Docker should be at least 8GB (default is 2GB), otherwise cp-demo may not work properly.\n"
+    if [[ "$VIZ" == "true" ]]; then
+      echo -e "ERROR: Cannot proceed with Docker memory less than 8GB when 'VIZ=true' (enables Elasticsearch and Kibana).  Either increase memory available to Docker or restart cp-demo with 'VIZ=false' (see https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#start)\n"
+      exit 1
+    fi
     sleep 3
   fi
 
