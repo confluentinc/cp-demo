@@ -27,7 +27,9 @@ else
   C3URL=https://localhost:9022
 fi
 
-# Opt-out: disable Elasticsearch and Kibana to reduce memory requirements for cp-demo
+# Elasticsearch and Kibana increase memory requirements for cp-demo
+# VIZ=true : run Elasticsearch and Kibana (default)
+# VIZ=false: do not run Elasticsearch and Kibana
 export VIZ=${VIZ:-true}
 
 # Set consistent and strong cipher suites across all services

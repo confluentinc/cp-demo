@@ -277,7 +277,7 @@ Topics
 |kconnect-long|
 ---------------
 
-This example runs 2-3 connectors:
+This example runs three connectors:
 
 - SSE source connector
 - Elasticsearch sink connector
@@ -1312,7 +1312,7 @@ to setup alerts from there.
    -  The trigger ``Consumption Difference`` happens when consumption
       difference for the Elasticsearch connector consumer group is
       greater than ``0``, and it causes an action
-      ``Email Administrator``
+      ``Email Administrator``.
 
    .. figure:: images/alerts_triggers.png
       :alt: image
