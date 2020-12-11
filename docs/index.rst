@@ -1352,6 +1352,10 @@ to setup alerts from there.
 Monitoring
 ==========
 
+JMX
+---
+
+
 This tutorial has demonstrated how |c3| helps users manage their |cp| deployment and how it provides monitoring capabilities for the cluster and applications.
 For most |cp| users the |c3| monitoring and integrations are sufficient for production usage; however, some users wish to integrate with other monitoring solutions like Prometheus, Grafana, Datadog, and Splunk.
 The following JMX-based monitoring stacks help users setup a 'single pane of glass' monitoring solution for all their organization's services and applications, including Kafka.
@@ -1393,6 +1397,100 @@ Here are some examples of monitoring stacks that integrate with |cp|:
       :width: 500px
 
 #. Next step: for a practical guide to optimizing your |ak| deployment for various service goals including throughput, latency, durability and availability, and useful metrics to monitor for performance and cluster health for on-prem |ak| clusters, see the `Optimizing Your Apache Kafka Deployment <https://www.confluent.io/white-paper/optimizing-your-apache-kafka-deployment/>`__ whitepaper.
+
+|ccloud|
+--------
+
+``cp-demo`` represents your on-prem deployment.
+In real world, you may have a combination on-prem and |ccloud| deployment, and ideally you have one metrics view for both.
+With |ccloud| Metrics API, you can.
+
+#. Create an account on Confluent Cloud at https://confluent.cloud.
+
+#. Install `Confluent Cloud CLI <https://docs.confluent.io/ccloud-cli/current/install.html>__ v1.21.0 or later.
+
+#. Log in to |ccloud| with the command ``ccloud login``, and use your |ccloud| username and password. The ``--save`` argument saves your |ccloud| user login credentials or refresh token (in the case of SSO) to the local ``netrc`` file.
+
+   .. code:: shell
+
+      ccloud login --save
+
+#. Create a cloud API key to authenticate with |ccloud|.
+
+   .. code:: shell
+
+      ccloud login
+      ccloud api-key create --resource cloud -o json
+
+#. Verify your output resembles:
+
+   .. code-block:: text
+
+      {
+         "key": "QX7X4VA4DFJTTOIA",
+         "secret": "fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D"
+      }
+
+   The value of the API key, in this case ``QX7X4VA4DFJTTOIA``, and API secret,
+   in this case
+   ``fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D`` may
+   differ in your output.
+
+#. Set parameters to reference these values.
+
+   .. code-block:: text
+
+      API_KEY='QX7X4VA4DFJTTOIA'
+      API_SECRET='fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D'
+
+#. Configure both |ak| brokers in ``cp-demo`` for Telemetry Reporter to send cluster metrics to |ccloud|.
+
+   .. code-block:: text
+
+      docker-compose exec kafka1 kafka-configs \
+        --bootstrap-server kafka1:12091 \
+        --alter \
+        --entity-type brokers \
+        --entity-default \
+        --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key="${API_KEY}",confluent.telemetry.api.secret="${API_SECRET}"
+
+      docker-compose exec kafka2 kafka-configs \
+        --bootstrap-server kafka2:12092 \
+        --alter \
+        --entity-type brokers \
+        --entity-default \
+        --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key="${API_KEY}",confluent.telemetry.api.secret="${API_SECRET}"
+
+#. Wait a few minutes to allow the metrics to propagate.
+
+#. Create a local JSON file with a query.  Copy and paste the following text into a file called ``/tmp/metrics_query.json``.
+
+   .. code-block:: text
+
+      {
+        "aggregations": [
+            {
+                "agg": "SUM",
+                "metric": "io.confluent.kafka.server/received_bytes"
+            }
+        ],
+        "granularity": "PT1M",
+        "group_by": [
+            "metric.label.topic"
+        ],
+        "limit": 5
+      }
+
+#. Send this query to the endpoint.
+
+   .. code-block:: text
+
+      curl -u ${API_KEY}:${API_SECRET} \
+           --header 'content-type: application/json' \
+           --data @/tmp/metrics_query.json \
+           https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query \
+              | jq .
+
 
 .. _cp-demo-troubleshooting:
 
