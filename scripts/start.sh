@@ -30,8 +30,9 @@ echo
 echo "Environment parameters"
 echo "  REPOSITORY=$REPOSITORY"
 echo "  CONNECTOR_VERSION=$CONNECTOR_VERSION"
-echo "  C3_KSQLDB_HTTPS=$C3_KSQLDB_HTTPS"
 echo "  CLEAN=$CLEAN"
+echo "  VIZ=$VIZ"
+echo "  C3_KSQLDB_HTTPS=$C3_KSQLDB_HTTPS"
 echo
 
 if [[ "$CLEAN" == "true" ]] ; then
@@ -100,12 +101,12 @@ if [[ "$NUM_CERTS" -eq "1" ]]; then
 fi
 
 echo
-docker-compose up -d ksqldb-server ksqldb-cli restproxy kibana elasticsearch
+docker-compose up -d ksqldb-server ksqldb-cli restproxy
 echo "..."
 
 # Verify Docker containers started
 if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
-  echo -e "\nERROR: At least one Docker container did not start properly, see 'docker-compose ps'. Did you remember to increase the memory available to Docker to at least 8GB (default is 2GB)?\n"
+  echo -e "\nERROR: At least one Docker container did not start properly, see 'docker-compose ps'. Did you increase the memory available to Docker to at least 8 GB (default is 2 GB)?\n"
   exit 1
 fi
 
@@ -143,28 +144,9 @@ echo "..."
 echo -e "\nStart Confluent Replicator:"
 ${DIR}/connectors/submit_replicator_config.sh
 
-# Verify Elasticsearch is ready
-MAX_WAIT=120
-echo
-echo -e "\nWaiting up to $MAX_WAIT seconds for Elasticsearch to be ready"
-retry $MAX_WAIT host_check_elasticsearch_ready || exit 1
-echo -e "\nProvide data mapping to Elasticsearch:"
-${DIR}/dashboard/set_elasticsearch_mapping_bot.sh
-${DIR}/dashboard/set_elasticsearch_mapping_count.sh
-echo
-
-echo -e "\nStart streaming to Elasticsearch sink connector:"
-${DIR}/connectors/submit_elastic_sink_config.sh
-echo
-
-# Verify Kibana is ready
-MAX_WAIT=120
-echo
-echo -e "\nWaiting up to $MAX_WAIT seconds for Kibana to be ready"
-retry $MAX_WAIT host_check_kibana_ready || exit 1
-echo -e "\nConfigure Kibana dashboard:"
-${DIR}/dashboard/configure_kibana_dashboard.sh
-echo
+if [[ "$VIZ" == "true" ]]; then
+  build_viz || exit 1
+fi
 
 echo
 echo -e "\nAvailable LDAP users:"
