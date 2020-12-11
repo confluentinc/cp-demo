@@ -1398,14 +1398,12 @@ Here are some examples of monitoring stacks that integrate with |cp|:
 
 #. Next step: for a practical guide to optimizing your |ak| deployment for various service goals including throughput, latency, durability and availability, and useful metrics to monitor for performance and cluster health for on-prem |ak| clusters, see the `Optimizing Your Apache Kafka Deployment <https://www.confluent.io/white-paper/optimizing-your-apache-kafka-deployment/>`__ whitepaper.
 
-|ccloud|
---------
+Metrics API
+-----------
 
-``cp-demo`` represents your on-prem deployment.
-In real world, you may have a combination on-prem and |ccloud| deployment, and ideally you have one metrics view for both.
-With |ccloud| Metrics API, you can.
+You can also send all your metrics to the cloud and query them using |ccloud| Metrics API.
 
-#. Create an account on Confluent Cloud at https://confluent.cloud.
+#. Create an account on |ccloud| at https://confluent.cloud. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
 
 #. Install `Confluent Cloud CLI <https://docs.confluent.io/ccloud-cli/current/install.html>__ v1.21.0 or later.
 
@@ -1419,7 +1417,6 @@ With |ccloud| Metrics API, you can.
 
    .. code:: shell
 
-      ccloud login
       ccloud api-key create --resource cloud -o json
 
 #. Verify your output resembles:
@@ -1443,7 +1440,7 @@ With |ccloud| Metrics API, you can.
       API_KEY='QX7X4VA4DFJTTOIA'
       API_SECRET='fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D'
 
-#. Configure both |ak| brokers in ``cp-demo`` for Telemetry Reporter to send cluster metrics to |ccloud|.
+#. Configure both |ak| brokers in ``cp-demo`` for Telemetry Reporter to send cluster metrics to |ccloud|. This requires setting 3 configuration parameters: ``confluent.telemetry.enabled``, ``confluent.telemetry.api.key``, and ``confluent.telemetry.api.secret``.
 
    .. code-block:: text
 
@@ -1463,7 +1460,7 @@ With |ccloud| Metrics API, you can.
 
 #. Wait a few minutes to allow the metrics to propagate.
 
-#. Create a local JSON file with a query.  Copy and paste the following text into a file called ``/tmp/metrics_query.json``.
+#. Create a local JSON file with a query (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__. Copy and paste the following text into a file called ``/tmp/metrics_query.json``.
 
    .. code-block:: text
 
@@ -1481,7 +1478,7 @@ With |ccloud| Metrics API, you can.
         "limit": 5
       }
 
-#. Send this query to the endpoint.
+#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query.
 
    .. code-block:: text
 
