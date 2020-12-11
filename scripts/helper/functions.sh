@@ -39,9 +39,13 @@ preflight_checks()
     verify_installed $cmd || exit 1
   done
 
-  # Verify Docker memory is increased to at least 8GB
+  # Verify Docker memory is at least 8 GB
   if [[ $(docker system info --format '{{.MemTotal}}') -lt 8000000000 ]]; then
-    echo -e "\nWARNING: Memory available to Docker must be at least 8GB (default is 2GB), otherwise cp-demo may not work properly.\n"
+    echo -e "\nWARNING: Memory available to Docker should be at least 8 GB (default is 2 GB), otherwise cp-demo may not work properly.\n"
+    if [[ "$VIZ" == "true" ]]; then
+      echo -e "ERROR: Cannot proceed with Docker memory less than 8 GB when 'VIZ=true' (enables Elasticsearch and Kibana).  Either increase memory available to Docker or restart cp-demo with 'VIZ=false' (see https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#start)\n"
+      exit 1
+    fi
     sleep 3
   fi
 
@@ -122,6 +126,42 @@ build_connect_image()
   docker create --name cp-demo-tmp-connect localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}
   docker cp cp-demo-tmp-connect:/tmp/kafka.connect.truststore.jks ${DIR}/../security/kafka.connect.truststore.jks
   docker rm cp-demo-tmp-connect
+}
+
+build_viz()
+{
+  local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+  echo
+  echo
+  echo "VIZ=true: running Elasticsearch, Elasticsearch sink connector, and Kibana"
+
+  docker-compose up -d elasticsearch kibana
+
+  # Verify Elasticsearch is ready
+  MAX_WAIT=240
+  echo
+  echo -e "\nWaiting up to $MAX_WAIT seconds for Elasticsearch to be ready"
+  retry $MAX_WAIT host_check_elasticsearch_ready || exit 1
+  echo -e "\nProvide data mapping to Elasticsearch:"
+  ${DIR}/../dashboard/set_elasticsearch_mapping_bot.sh
+  ${DIR}/../dashboard/set_elasticsearch_mapping_count.sh
+  echo
+
+  echo -e "\nStart streaming to Elasticsearch sink connector:"
+  ${DIR}/../connectors/submit_elastic_sink_config.sh
+  echo
+
+  # Verify Kibana is ready
+  MAX_WAIT=120
+  echo
+  echo -e "\nWaiting up to $MAX_WAIT seconds for Kibana to be ready"
+  retry $MAX_WAIT host_check_kibana_ready || exit 1
+  echo -e "\nConfigure Kibana dashboard:"
+  ${DIR}/../dashboard/configure_kibana_dashboard.sh
+  echo
+
+  return 0
 }
 
 host_check_control_center_up()

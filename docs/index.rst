@@ -23,7 +23,7 @@ The full event streaming platform based on |cp| is described as follows.
 Wikimedia's `EventStreams <https://wikitech.wikimedia.org/wiki/Event_Platform/EventStreams>`__ publishes a continuous stream of real-time edits happening to real wiki pages.
 A Kafka source connector `kafka-connect-sse <https://www.confluent.io/hub/cjmatta/kafka-connect-sse>`__ streams the server-sent events (SSE) from https://stream.wikimedia.org/v2/stream/recentchange, and a custom |kconnect| transform `kafka-connect-json-schema <https://www.confluent.io/hub/jcustenborder/kafka-connect-json-schema>`__ extracts the JSON from these messages and then are written to a |ak| cluster.
 This example uses `ksqlDB <https://www.confluent.io/product/ksql/>`__ and a :ref:`Kafka Streams <kafka_streams>` application for data processing.
-Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.io/kafka-connect-elasticsearch/index.html>`__ streams the data out of Kafka, and the data is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
+Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.io/kafka-connect-elasticsearch/index.html>`__ streams the data out of Kafka and is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 |crep-full| is also copying messages from a topic to another topic in the same cluster.
 All data is using |sr-long| and Avro, and `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ is managing and monitoring the deployment.
 
@@ -78,7 +78,7 @@ This example has been validated with:
 Setup
 -----
 
-#. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8GB (default is 2GB) and ensure Docker is allocated at least 2 CPU cores.
+#. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8 GB (default is 2 GB) and ensure Docker is allocated at least 2 CPU cores.
 
 #. Clone the `confluentinc/cp-demo GitHub repository <https://github.com/confluentinc/cp-demo>`__:
 
@@ -102,7 +102,8 @@ It generates the keys and certificates, brings up the Docker containers, and con
 You can run it with optional settings:
 
 - ``CLEAN``: controls whether certificates and the locally built |kconnect| image are regenerated in between runs
-- ``C3_KSQLDB_HTTPS``: sets |c3| and ksqlDB server to use ``HTTP`` (default) or ``HTTPS`` 
+- ``C3_KSQLDB_HTTPS``: sets |c3| and ksqlDB server to use ``HTTP`` or ``HTTPS`` (default: ``HTTP``)
+- ``VIZ``: enables Elasticsearch and Kibana (default: ``true``)
 
 #. To run ``cp-demo`` the first time with defaults, run the following command. This takes a few minutes to complete.
 
@@ -122,8 +123,18 @@ You can run it with optional settings:
 
       C3_KSQLDB_HTTPS=true ./scripts/start.sh
 
+#. Elasticsearch and Kibana increase localhost memory requirements for ``cp-demo``. For users who want to run ``cp-demo`` with a smaller memory footprint, opt-out of these components by setting ``VIZ=false`` when starting ``cp-demo``.
+
+   .. sourcecode:: bash
+
+      VIZ=false ./scripts/start.sh
+
+
 Pre-flight Checks
 -----------------
+
+Before going through the tutorial, check that the environment has started correctly.
+If any of these pre-flight checks fails, consult the :ref:`cp-demo-troubleshooting` section.
 
 #. Verify the status of the Docker containers show ``Up`` state.
 
@@ -155,7 +166,7 @@ Pre-flight Checks
       zookeeper                     /etc/confluent/docker/run        Up (healthy)   0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 
 
-#. Jump to the end of the entire ``cp-demo`` pipeline and view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia .  This is a cool view and a good way to validate that the ``cp-demo`` start script completed successfully.
+#. Jump to the end of the entire ``cp-demo`` pipeline and view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia .  This is a cool view and validates that the ``cp-demo`` start script completed successfully.
 
    .. figure:: images/kibana-dashboard.png
 
@@ -171,13 +182,13 @@ Guided Tutorial
 Log into |c3| 
 -------------
 
-#. If you ran ``cp-demo`` with default of ``C3_KSQLDB_HTTPS=false``, view the |c3| GUI from a web browser at the following URL:
+#. If you ran ``cp-demo`` with default of ``C3_KSQLDB_HTTPS=false`` (which is the default), log into the |c3| GUI from a web browser at the following URL:
 
    .. code-block:: text
 
       http://localhost:9021
 
-#. If you ran ``cp-demo`` with ``C3_KSQLDB_HTTPS=true``, view the |c3| GUI from a web browser at the following URL:
+#. If you ran ``cp-demo`` with ``C3_KSQLDB_HTTPS=true``, log into the |c3| GUI from a web browser at the following URL:
 
    .. code-block:: text
 
