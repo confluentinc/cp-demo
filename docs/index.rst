@@ -133,6 +133,9 @@ You can run it with optional settings:
 Pre-flight Checks
 -----------------
 
+Before going through the tutorial, check that the environment has started correctly.
+If any of these pre-flight checks fails, consult the :ref:`cp-demo-troubleshooting` section.
+
 #. Verify the status of the Docker containers show ``Up`` state.
 
    .. code-block:: bash
@@ -179,13 +182,13 @@ Guided Tutorial
 Log into |c3| 
 -------------
 
-#. If you ran ``cp-demo`` with default of ``C3_KSQLDB_HTTPS=false``, view the |c3| GUI from a web browser at the following URL:
+#. If you ran ``cp-demo`` with default of ``C3_KSQLDB_HTTPS=false`` (which is the default), log into the |c3| GUI from a web browser at the following URL:
 
    .. code-block:: text
 
       http://localhost:9021
 
-#. If you ran ``cp-demo`` with ``C3_KSQLDB_HTTPS=true``, view the |c3| GUI from a web browser at the following URL:
+#. If you ran ``cp-demo`` with ``C3_KSQLDB_HTTPS=true``, log into the |c3| GUI from a web browser at the following URL:
 
    .. code-block:: text
 
