@@ -68,7 +68,7 @@ source "delta_configs/env.delta"
 echo -e "\nStart Confluent Replicator to Confluent Cloud:"
 export REPLICATOR_NAME=replicate-topic-to-ccloud
 
-back="destination"
+back="source"
 echo "back: $back"
 
 if [[ "$back" == "destination" ]]; then

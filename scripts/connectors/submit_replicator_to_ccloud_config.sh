@@ -43,6 +43,7 @@ DATA=$( cat << EOF
     "producer.override.security.protocol": "SASL_SSL",
     "producer.override.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${CLOUD_KEY}\" password=\"${CLOUD_SECRET}\";",
     "producer.override.sasl.mechanism": "PLAIN",
+    "producer.override.sasl.login.callback.handler.class": "org.apache.kafka.common.security.authenticator.AbstractLogin\$DefaultLoginCallbackHandler",
     "consumer.override.sasl.jaas.config": "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username=\"connectorSA\" password=\"connectorSA\" metadataServerUrls=\"https://kafka1:8091,https://kafka2:8092\";",
     "tasks.max": "1",
     "provenance.header.enable": "true"
