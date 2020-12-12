@@ -37,10 +37,6 @@ DATA=$( cat << EOF
     "src.kafka.sasl.mechanism": "OAUTHBEARER",
     "src.consumer.group.id": "connect-replicator",
     "offset.timestamps.commit": "false",
-    "producer.override.bootstrap.servers": "${BOOTSTRAP_SERVERS}",
-    "producer.override.security.protocol": "SASL_SSL",
-    "producer.override.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${API_KEY}\" password=\"${API_SECRET}\";",
-    "producer.override.sasl.mechanism": "PLAIN",
     "consumer.override.sasl.jaas.config": "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username=\"connectorSA\" password=\"connectorSA\" metadataServerUrls=\"https://kafka1:8091,https://kafka2:8092\";",
     "tasks.max": "1",
     "provenance.header.enable": "true"
