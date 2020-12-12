@@ -258,7 +258,7 @@ END
 check_connector_status_running() {
   connectorName=$1
 
-  STATE=$(docker-compose exec connect curl -X GET --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://connect:8083/connectors/$connector/status | jq -r .connector.state)
+  STATE=$(docker-compose exec connect curl -X GET --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://connect:8083/connectors/$connectorName/status | jq -r .connector.state)
   if [[ "$STATE" != "RUNNING" ]]; then
     return 1
   fi
