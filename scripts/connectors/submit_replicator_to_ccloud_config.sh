@@ -3,7 +3,7 @@
 HEADER="Content-Type: application/json"
 DATA=$( cat << EOF
 {
-  "name": "replicate-topic-to-ccloud",
+  "name": "${REPLICATOR_NAME}",
   "config": {
     "connector.class": "io.confluent.connect.replicator.ReplicatorSourceConnector",
     "topic.whitelist": "wikipedia.parsed",

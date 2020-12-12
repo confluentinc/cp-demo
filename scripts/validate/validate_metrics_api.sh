@@ -59,10 +59,11 @@ CONNECTOR_SUBMITTER="User:connectorSubmitter"
 KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
 CONNECT=connect-cluster
 ${DIR}/../helper/refresh_mds_login.sh
+export REPLICATOR_NAME=replicate-topic-to-ccloud
 docker-compose exec tools bash -c "confluent iam rolebinding create \
     --principal $CONNECTOR_SUBMITTER \
     --role ResourceOwner \
-    --resource Connector:replicate-topic-to-ccloud \
+    --resource Connector:${REPLICATOR_NAME} \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT"
 ${DIR}/../connectors/submit_replicator_to_ccloud_config.sh
@@ -70,7 +71,7 @@ ${DIR}/../connectors/submit_replicator_to_ccloud_config.sh
 echo
 MAX_WAIT=60
 echo "Waiting up to $MAX_WAIT seconds for Replicator to Confluent Cloud to start"
-retry $MAX_WAIT check_connector_status_running "replicate-topic-to-ccloud" || exit 1
+retry $MAX_WAIT check_connector_status_running ${REPLICATOR_NAME} || exit 1
 echo "Replicator started!"
 
 echo "DIR3: ${DIR}"
