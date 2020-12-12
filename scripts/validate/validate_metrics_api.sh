@@ -5,6 +5,11 @@ source ${DIR}/../helper/functions.sh
 source ${DIR}/../../.env
 source ${DIR}/../env.sh
 
+currentTime=$(date -Is)
+currentTimePlus1Hr=$(date -Is -d '+1 hour')
+currentTimeMinus1Hr=$(date -Is -d '-1 hour')
+echo "times: $currentTime, $currentTimePlus1Hr, $currentTimeMinus1Hr"
+
 echo "DIR1: ${DIR}"
 
 echo
@@ -18,17 +23,18 @@ then
   exit 1
 fi
 
+# Log into Confluent Cloud CLI
 echo
 ccloud login --save || exit 1
 
+# Create credentials for the cloud resource
 CREDENTIALS=$(ccloud api-key create --resource cloud -o json) || exit 1
-
 METRICS_API_KEY=$(echo "$CREDENTIALS" | jq -r .key)
 METRICS_API_SECRET=$(echo "$CREDENTIALS" | jq -r .secret)
-
 #echo "METRICS_API_KEY: $METRICS_API_KEY"
 #echo "METRICS_API_SECRET: $METRICS_API_SECRET"
 
+# Enable Confluent Telemetry Reporter
 echo
 echo "Enabling Confluent Telemetry Reporter to send metrics to Confluent Cloud"
 for brokerNum in 1 2; do
@@ -40,7 +46,7 @@ for brokerNum in 1 2; do
     --add-config "confluent.telemetry.enabled=true,confluent.telemetry.api.key='${METRICS_API_KEY}',confluent.telemetry.api.secret='${METRICS_API_SECRET}'"
 done
 
-# Create ccloud-stack
+# Create a new ccloud-stack
 echo
 echo "Configure a new Confluent Cloud ccloud-stack"
 wget -O ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
@@ -60,7 +66,7 @@ source "delta_configs/env.delta"
 echo -e "\nStart Confluent Replicator to Confluent Cloud:"
 docker-compose up -d replicator-to-ccloud
 # Verify Confluent Replicator's Connect Worker has started
-MAX_WAIT=240
+MAX_WAIT=120
 echo -e "\nWaiting up to $MAX_WAIT seconds for Confluent Replicator's Connect Worker to start"
 retry $MAX_WAIT host_check_connect_up "replicator-to-ccloud" || exit 1
 sleep 2 # give connect an exta moment to fully mature
@@ -84,12 +90,15 @@ ${DIR}/../connectors/submit_replicator_to_ccloud_config_backed_ccloud.sh
 
 # Verify Replicator to Confluent Cloud has started
 echo
-MAX_WAIT=60
+MAX_WAIT=120
 echo "Waiting up to $MAX_WAIT seconds for Replicator to Confluent Cloud to start"
 retry $MAX_WAIT check_connector_status_running ${REPLICATOR_NAME} || exit 1
 echo "Replicator started!"
 
 echo "DIR3: ${DIR}"
+
+echo "Sleeping 30s"
+sleep 30
 
 DATA=$( cat << EOF
 {
@@ -99,6 +108,7 @@ DATA=$( cat << EOF
           "metric": "io.confluent.kafka.server/received_bytes"
       }
   ],
+  "intervals":["${currentTimeMinus1Hr}/${currentTimePlus1Hr}"]
   "granularity": "PT1M",
   "group_by": [
       "metric.label.topic"
@@ -123,6 +133,8 @@ sleep 120
 echo "DIR4: ${DIR}"
 echo "Destroying all resources"
 
+docker-compose rm -s replicator-to-ccloud
+
 for brokerNum in 1 2; do
   docker-compose exec kafka${brokerNum} kafka-configs \
     --bootstrap-server kafka${brokerNum}:1209${brokerNum} \
@@ -136,3 +148,4 @@ ccloud api-key delete $METRICS_API_KEY
 
 ccloud::destroy_ccloud_stack $SERVICE_ACCOUNT_ID
 echo "DIR4: ${DIR}"
+

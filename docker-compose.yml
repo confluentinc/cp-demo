@@ -652,6 +652,7 @@ services:
 
       # Connect
       CONTROL_CENTER_CONNECT_CONNECT1_CLUSTER: https://connect:8083
+      CONTROL_CENTER_CONNECT_CCLOUD_CLUSTER: http://replicator-to-ccloud:8087
 
       # ksqlDB
       # Communication between Control Center and ksqlDB Docker containers
