@@ -141,7 +141,7 @@ echo "Start the Kafka Streams application wikipedia-activity-monitor"
 docker-compose up -d streams-demo
 echo "..."
 
-echo -e "\nStart Confluent Replicator:"
+echo -e "\nStart Confluent Replicator to loopback to on-prem cluster:"
 ${DIR}/connectors/submit_replicator_config.sh
 
 if [[ "$VIZ" == "true" ]]; then
