@@ -1402,6 +1402,7 @@ Metrics API
 -----------
 
 You can also send all your metrics to the cloud and query them using |ccloud| Metrics API.
+To do this section of the tutorial, it requires a |ccloud| account.
 
 #. Create an account on |ccloud| at https://confluent.cloud. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
 
@@ -1429,18 +1430,17 @@ You can also send all your metrics to the cloud and query them using |ccloud| Me
       }
 
    The value of the API key, in this case ``QX7X4VA4DFJTTOIA``, and API secret,
-   in this case
-   ``fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D`` may
-   differ in your output.
+   in this case ``fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D``,
+   will differ in your output.
 
-#. Set parameters to reference these values.
+#. Set parameters to reference these credentials returned in the previous step.
 
    .. code-block:: text
 
-      API_KEY='QX7X4VA4DFJTTOIA'
-      API_SECRET='fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D'
+      METRICS_API_KEY='QX7X4VA4DFJTTOIA'
+      METRICS_API_SECRET='fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D'
 
-#. Configure both |ak| brokers in ``cp-demo`` for Telemetry Reporter to send cluster metrics to |ccloud|. This requires setting 3 configuration parameters: ``confluent.telemetry.enabled``, ``confluent.telemetry.api.key``, and ``confluent.telemetry.api.secret``.
+#. Configure both |ak| brokers in ``cp-demo`` for Telemetry Reporter, which will send cluster metrics to |ccloud|. This requires setting 3 configuration parameters: ``confluent.telemetry.enabled=true``, ``confluent.telemetry.api.key``, and ``confluent.telemetry.api.secret``.
 
    .. code-block:: text
 
@@ -1449,14 +1449,14 @@ You can also send all your metrics to the cloud and query them using |ccloud| Me
         --alter \
         --entity-type brokers \
         --entity-default \
-        --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key="${API_KEY}",confluent.telemetry.api.secret="${API_SECRET}"
+        --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key="${METRICS_API_KEY}",confluent.telemetry.api.secret="${METRICS_API_SECRET}"
 
       docker-compose exec kafka2 kafka-configs \
         --bootstrap-server kafka2:12092 \
         --alter \
         --entity-type brokers \
         --entity-default \
-        --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key="${API_KEY}",confluent.telemetry.api.secret="${API_SECRET}"
+        --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key="${METRICS_API_KEY}",confluent.telemetry.api.secret="${METRICS_API_SECRET}"
 
 #. Wait a few minutes to allow the metrics to propagate.
 
@@ -1482,7 +1482,7 @@ You can also send all your metrics to the cloud and query them using |ccloud| Me
 
    .. code-block:: text
 
-      curl -u ${API_KEY}:${API_SECRET} \
+      curl -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
            --header 'content-type: application/json' \
            --data @/tmp/metrics_query.json \
            https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query \
