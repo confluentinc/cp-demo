@@ -2,8 +2,8 @@
   
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ${DIR}/../helper/functions.sh
-${DIR}/../env.sh
 source ${DIR}/../../.env
+source ${DIR}/../env.sh
 
 echo "DIR1: ${DIR}"
 
