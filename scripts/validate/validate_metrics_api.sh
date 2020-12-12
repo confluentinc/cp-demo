@@ -2,8 +2,21 @@
   
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ${DIR}/../helper/functions.sh
+echo "DIR1: ${DIR}"
 
-ccloud login --save
+echo
+echo "This example uses real Confluent Cloud resources."
+echo "To avoid unexpected charges, carefully evaluate the cost of resources before launching the script and ensure all resources are destroyed after you are done running it."
+echo "(Use Confluent Cloud promo ``C50INTEG`` to receive \$50 free usage)"
+read -p "Do you still want to run this script? [y/n] " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+  exit 1
+fi
+
+echo
+ccloud login --save || exit 1
 
 CREDENTIALS=$(ccloud api-key create --resource cloud -o json) || exit 1
 
@@ -24,36 +37,32 @@ for brokerNum in 1 2; do
     --add-config "confluent.telemetry.enabled=true,confluent.telemetry.api.key='${METRICS_API_KEY}',confluent.telemetry.api.secret='${METRICS_API_SECRET}'"
 done
 
-echo
-echo "This example uses real Confluent Cloud resources."
-echo "To avoid unexpected charges, carefully evaluate the cost of resources before launching the script and ensure all resources are destroyed after you are done running it."
-echo "(Use Confluent Cloud promo ``C50INTEG`` to receive \$50 free usage)"
-read -p "Do you still want to run this script? [y/n] " -n 1 -r
-echo
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
-  exit 1
-fi
-
 # Create ccloud-stack
+echo
+echo "Configure a new Confluent Cloud ccloud-stack for this example"
 wget -O ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
 source ./ccloud_library.sh
 ccloud::create_ccloud_stack
 SERVICE_ACCOUNT_ID=$(ccloud kafka cluster list -o json | jq -r '.[0].name' | awk -F'-' '{print $4;}')
 CONFIG_FILE=stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
 
+echo "DIR2: ${DIR}"
+
 # Create parameters customized for Confluent Cloud instance created above
 wget -O ccloud-generate-cp-configs.sh https://raw.githubusercontent.com/confluentinc/examples/latest/ccloud/ccloud-generate-cp-configs.sh
 ./ccloud-generate-cp-configs.sh $CONFIG_FILE
-source "delta-configs/env.delta"
+source "delta_configs/env.delta"
 
 echo -e "\nStart Confluent Replicator to Confluent Cloud:"
 ${DIR}/../connectors/submit_replicator_to_ccloud_config.sh
+echo
 # Verify Replicator to Confluent Cloud has started
 MAX_WAIT=120
 echo "Waiting up to $MAX_WAIT seconds for Replicator to Confluent Cloud to start"
 retry $MAX_WAIT check_connector_status_running "replicate-topic-to-ccloud" || exit 1
 echo "Replicator started!"
+
+echo "DIR3: ${DIR}"
 
 DATA=$( cat << EOF
 {
@@ -81,6 +90,7 @@ curl -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
 
 #### Disable ####
 
+echo "DIR4: ${DIR}"
 echo "Destroying all resources"
 
 for brokerNum in 1 2; do
@@ -95,3 +105,4 @@ done
 ccloud api-key delete $METRICS_API_KEY
 
 ccloud::destroy_ccloud_stack $SERVICE_ACCOUNT_ID
+echo "DIR4: ${DIR}"
