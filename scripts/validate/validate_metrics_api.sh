@@ -39,7 +39,7 @@ done
 
 # Create ccloud-stack
 echo
-echo "Configure a new Confluent Cloud ccloud-stack for this example"
+echo "Configure a new Confluent Cloud ccloud-stack"
 wget -O ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
 source ./ccloud_library.sh
 ccloud::create_ccloud_stack
@@ -50,16 +50,17 @@ echo "DIR2: ${DIR}"
 
 # Create parameters customized for Confluent Cloud instance created above
 wget -O ccloud-generate-cp-configs.sh https://raw.githubusercontent.com/confluentinc/examples/latest/ccloud/ccloud-generate-cp-configs.sh
+chmod 744 ./ccloud-generate-cp-configs.sh
 ./ccloud-generate-cp-configs.sh $CONFIG_FILE
 source "delta_configs/env.delta"
 
 echo -e "\nStart Confluent Replicator to Confluent Cloud:"
+export REPLICATOR_NAME=replicate-topic-to-ccloud
 # Create role binding
 CONNECTOR_SUBMITTER="User:connectorSubmitter"
 KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
 CONNECT=connect-cluster
 ${DIR}/../helper/refresh_mds_login.sh
-export REPLICATOR_NAME=replicate-topic-to-ccloud
 docker-compose exec tools bash -c "confluent iam rolebinding create \
     --principal $CONNECTOR_SUBMITTER \
     --role ResourceOwner \

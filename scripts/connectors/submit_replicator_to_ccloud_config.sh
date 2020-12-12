@@ -1,6 +1,8 @@
 #!/bin/bash
 
 HEADER="Content-Type: application/json"
+export REPLICATOR_NAME=${REPLICATOR_NAME:-replicate-topic-to-ccloud}
+
 DATA=$( cat << EOF
 {
   "name": "${REPLICATOR_NAME}",
@@ -21,7 +23,7 @@ DATA=$( cat << EOF
     "src.value.converter.basic.auth.user.info": "connectorSA:connectorSA",
     "dest.kafka.bootstrap.servers": "${BOOTSTRAP_SERVERS}",
     "dest.kafka.security.protocol": "SASL_SSL",
-    "dest.kafka.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${API_KEY}\" password=\"${API_SECRET}\";",
+    "dest.kafka.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${CLOUD_KEY}\" password=\"${CLOUD_SECRET}\";",
     "dest.kafka.sasl.mechanism": "PLAIN",
     "dest.topic.replication.factor": 3,
     "confluent.topic.replication.factor": 3,
@@ -37,6 +39,10 @@ DATA=$( cat << EOF
     "src.kafka.sasl.mechanism": "OAUTHBEARER",
     "src.consumer.group.id": "connect-replicator",
     "offset.timestamps.commit": "false",
+    "producer.override.bootstrap.servers": "${BOOTSTRAP_SERVERS}",
+    "producer.override.security.protocol": "SASL_SSL",
+    "producer.override.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${CLOUD_KEY}\" password=\"${CLOUD_SECRET}\";",
+    "producer.override.sasl.mechanism": "PLAIN",
     "consumer.override.sasl.jaas.config": "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username=\"connectorSA\" password=\"connectorSA\" metadataServerUrls=\"https://kafka1:8091,https://kafka2:8092\";",
     "tasks.max": "1",
     "provenance.header.enable": "true"
