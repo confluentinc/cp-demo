@@ -91,7 +91,7 @@ echo
 # Verify Kafka Connect Worker has started
 MAX_WAIT=240
 echo -e "\nWaiting up to $MAX_WAIT seconds for Connect to start"
-retry $MAX_WAIT host_check_connect_up || exit 1
+retry $MAX_WAIT host_check_connect_up "connect" || exit 1
 sleep 2 # give connect an exta moment to fully mature
 
 NUM_CERTS=$(docker-compose exec connect keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)

@@ -2,6 +2,9 @@
   
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ${DIR}/../helper/functions.sh
+${DIR}/../env.sh
+source ${DIR}/../../.env
+
 echo "DIR1: ${DIR}"
 
 echo
@@ -55,6 +58,13 @@ chmod 744 ./ccloud-generate-cp-configs.sh
 source "delta_configs/env.delta"
 
 echo -e "\nStart Confluent Replicator to Confluent Cloud:"
+#docker-compose up -d replicator-to-ccloud
+## Verify Confluent Replicator's Connect Worker has started
+#MAX_WAIT=240
+#echo -e "\nWaiting up to $MAX_WAIT seconds for Confluent Replicator's Connect Worker to start"
+#retry $MAX_WAIT host_check_connect_up "replicator-to-ccloud" || exit 1
+#sleep 2 # give connect an exta moment to fully mature
+
 export REPLICATOR_NAME=replicate-topic-to-ccloud
 # Create role binding
 CONNECTOR_SUBMITTER="User:connectorSubmitter"
@@ -67,7 +77,11 @@ docker-compose exec tools bash -c "confluent iam rolebinding create \
     --resource Connector:${REPLICATOR_NAME} \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT"
+
+# Either or
 ${DIR}/../connectors/submit_replicator_to_ccloud_config.sh
+${DIR}/../connectors/submit_replicator_to_ccloud_config_backed_ccloud.sh
+
 # Verify Replicator to Confluent Cloud has started
 echo
 MAX_WAIT=60
