@@ -31,10 +31,12 @@ ccloud login --save || exit 1
 CREDENTIALS=$(ccloud api-key create --resource cloud -o json) || exit 1
 METRICS_API_KEY=$(echo "$CREDENTIALS" | jq -r .key)
 METRICS_API_SECRET=$(echo "$CREDENTIALS" | jq -r .secret)
-#echo "METRICS_API_KEY: $METRICS_API_KEY"
-#echo "METRICS_API_SECRET: $METRICS_API_SECRET"
+echo "export METRICS_API_KEY=$METRICS_API_KEY"
+echo "export METRICS_API_SECRET=$METRICS_API_SECRET"
 
 # Enable Confluent Telemetry Reporter
+# TODO: docker-compose exec kafka1 kafka-configs --bootstrap-server kafka1:12091 --describe --entity-type brokers is empty
+# TODO: API secret shown in logs
 echo
 echo "Enabling Confluent Telemetry Reporter to send metrics to Confluent Cloud"
 for brokerNum in 1 2; do
@@ -64,14 +66,28 @@ chmod 744 ./ccloud-generate-cp-configs.sh
 source "delta_configs/env.delta"
 
 echo -e "\nStart Confluent Replicator to Confluent Cloud:"
+export REPLICATOR_NAME=replicate-topic-to-ccloud
+
+back="destination"
+echo "back: $back"
+
+if [[ "$back" == "destination" ]]; then
+
+####### Separate connect worker backed to CCloud (destination)
+# TODO: current issue: http://localhost:8087/permissions 404 (C3?)
+# TODO: no metrics available
 docker-compose up -d replicator-to-ccloud
 # Verify Confluent Replicator's Connect Worker has started
 MAX_WAIT=120
 echo -e "\nWaiting up to $MAX_WAIT seconds for Confluent Replicator's Connect Worker to start"
 retry $MAX_WAIT host_check_connect_up "replicator-to-ccloud" || exit 1
 sleep 2 # give connect an exta moment to fully mature
+${DIR}/../connectors/submit_replicator_to_ccloud_config_backed_ccloud.sh
 
-export REPLICATOR_NAME=replicate-topic-to-ccloud
+else
+
+####### Shared connect worker backed to cp-demo (source)
+# TODO: current issue: Unexpected SASL mechanism: PLAIN
 # Create role binding
 CONNECTOR_SUBMITTER="User:connectorSubmitter"
 KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
@@ -83,23 +99,25 @@ docker-compose exec tools bash -c "confluent iam rolebinding create \
     --resource Connector:${REPLICATOR_NAME} \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT"
-
-# Either/or
-#${DIR}/../connectors/submit_replicator_to_ccloud_config.sh
-${DIR}/../connectors/submit_replicator_to_ccloud_config_backed_ccloud.sh
+${DIR}/../connectors/submit_replicator_to_ccloud_config.sh
+fi
 
 # Verify Replicator to Confluent Cloud has started
-echo
-MAX_WAIT=120
-echo "Waiting up to $MAX_WAIT seconds for Replicator to Confluent Cloud to start"
-retry $MAX_WAIT check_connector_status_running ${REPLICATOR_NAME} || exit 1
-echo "Replicator started!"
+#echo
+#MAX_WAIT=120
+#echo "Waiting up to $MAX_WAIT seconds for Replicator to Confluent Cloud to start"
+#retry $MAX_WAIT check_connector_status_running ${REPLICATOR_NAME} || exit 1
+#echo "Replicator started!"
+
+echo "sleeping 120 seconds"
+sleep 120
 
 echo "DIR3: ${DIR}"
 
 echo "Sleeping 30s"
 sleep 30
 
+# TODO: is possible to do last hour instead of fixed interval range?
 DATA=$( cat << EOF
 {
   "aggregations": [
@@ -108,7 +126,7 @@ DATA=$( cat << EOF
           "metric": "io.confluent.kafka.server/received_bytes"
       }
   ],
-  "intervals":["${currentTimeMinus1Hr}/${currentTimePlus1Hr}"]
+  "intervals": ["${currentTimeMinus1Hr}/${currentTimePlus1Hr}"],
   "granularity": "PT1M",
   "group_by": [
       "metric.label.topic"
