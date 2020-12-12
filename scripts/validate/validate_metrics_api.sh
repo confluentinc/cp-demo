@@ -1,6 +1,7 @@
 #!/bin/bash
   
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+source ${DIR}/../helper/functions.sh
 
 ccloud login --save
 
@@ -9,9 +10,11 @@ CREDENTIALS=$(ccloud api-key create --resource cloud -o json) || exit 1
 METRICS_API_KEY=$(echo "$CREDENTIALS" | jq -r .key)
 METRICS_API_SECRET=$(echo "$CREDENTIALS" | jq -r .secret)
 
-echo "METRICS_API_KEY: $METRICS_API_KEY"
-echo "METRICS_API_SECRET: $METRICS_API_SECRET"
+#echo "METRICS_API_KEY: $METRICS_API_KEY"
+#echo "METRICS_API_SECRET: $METRICS_API_SECRET"
 
+echo
+echo "Enabling Confluent Telemetry Reporter to send metrics to Confluent Cloud"
 for brokerNum in 1 2; do
   docker-compose exec kafka${brokerNum} kafka-configs \
     --bootstrap-server kafka${brokerNum}:1209${brokerNum} \
@@ -42,10 +45,15 @@ CONFIG_FILE=stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
 # Create parameters customized for Confluent Cloud instance created above
 wget -O ccloud-generate-cp-configs.sh https://raw.githubusercontent.com/confluentinc/examples/latest/ccloud/ccloud-generate-cp-configs.sh
 ./ccloud-generate-cp-configs.sh $CONFIG_FILE
-source "${DIR}/../helper/delta-configs/env.delta"
+source "delta-configs/env.delta"
 
 echo -e "\nStart Confluent Replicator to Confluent Cloud:"
 ${DIR}/../connectors/submit_replicator_to_ccloud_config.sh
+# Verify Replicator to Confluent Cloud has started
+MAX_WAIT=120
+echo "Waiting up to $MAX_WAIT seconds for Replicator to Confluent Cloud to start"
+retry $MAX_WAIT check_connector_status_running "replicate-topic-to-ccloud" || exit 1
+echo "Replicator started!"
 
 DATA=$( cat << EOF
 {
@@ -71,8 +79,9 @@ curl -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
         | jq .
 
 
-
 #### Disable ####
+
+echo "Destroying all resources"
 
 for brokerNum in 1 2; do
   docker-compose exec kafka${brokerNum} kafka-configs \
@@ -80,7 +89,7 @@ for brokerNum in 1 2; do
         --alter \
         --entity-type brokers \
         --entity-default \
-        --delete-config "confluent.telemetry.enabled=true,confluent.telemetry.api.key='${METRICS_API_KEY}',confluent.telemetry.api.secret='${METRICS_API_SECRET}'"
+        --delete-config "confluent.telemetry.enabled,confluent.telemetry.api.key,confluent.telemetry.api.secret"
 done
 
 ccloud api-key delete $METRICS_API_KEY
