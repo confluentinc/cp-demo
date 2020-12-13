@@ -1353,63 +1353,26 @@ Monitoring
 ==========
 
 This tutorial has demonstrated how |c3| helps users manage their |cp| deployment and how it provides monitoring capabilities for the cluster and applications.
-For most |cp| users the |c3| monitoring and integrations are sufficient for production usage; however, some users wish to integrate with other monitoring solutions like Prometheus, Grafana, Datadog, and Splunk.
-These sections describe additional options.
+For a practical guide to optimizing your |ak| deployment for various service goals including throughput, latency, durability and availability, and useful metrics to monitor for performance and cluster health for on-prem |ak| clusters, see the `Optimizing Your Apache Kafka Deployment <https://www.confluent.io/white-paper/optimizing-your-apache-kafka-deployment/>`__ whitepaper.
 
-JMX
----
-
-The following JMX-based monitoring stacks help users setup a 'single pane of glass' monitoring solution for all their organization's services and applications, including Kafka.
-
-Here are some examples of monitoring stacks that integrate with |cp|:
-
-#. `JMX Exporter + Prometheus + Grafana <https://github.com/confluentinc/jmx-monitoring-stacks>`__ (runnable with cp-demo from https://github.com/confluentinc/jmx-monitoring-stacks):
-
-   .. figure:: images/monitoring/jmxexporter-prometheus-grafana-1.png
-      :alt: image
-      :width: 500px
-
-   .. figure:: images/monitoring/jmxexporter-prometheus-grafana-2.png
-      :alt: image
-      :width: 500px
-
-   .. figure:: images/monitoring/jmxexporter-prometheus-grafana-3.png
-      :alt: image
-      :width: 500px
-
-#. `Jolokia + Elasticsearch + Kibana <https://github.com/confluentinc/jmx-monitoring-stacks>`__ (runnable with cp-demo from https://github.com/confluentinc/jmx-monitoring-stacks):
-
-   .. figure:: images/monitoring/jolokia-elastic-kibana-1.png
-      :alt: image
-      :width: 500px
-
-   .. figure:: images/monitoring/jolokia-elastic-kibana-2.png
-      :alt: image
-      :width: 500px
-
-   .. figure:: images/monitoring/jolokia-elastic-kibana-3.png
-      :alt: image
-      :width: 500px
-
-#. `Monitoring Confluent Platform with Datadog <https://www.confluent.io/blog/confluent-datadog-integration-kafka-monitoring-metrics>`__:
-
-   .. figure:: images/monitoring/datadog-dashboard.png
-      :alt: image
-      :width: 500px
-
-#. Next step: for a practical guide to optimizing your |ak| deployment for various service goals including throughput, latency, durability and availability, and useful metrics to monitor for performance and cluster health for on-prem |ak| clusters, see the `Optimizing Your Apache Kafka Deployment <https://www.confluent.io/white-paper/optimizing-your-apache-kafka-deployment/>`__ whitepaper.
+For most |cp| users the |c3| monitoring and integrations are sufficient for production usage in their on-prem |ak-tm| deployments.
+There are additional solutions for various use cases, as described below.
 
 Metrics API
 -----------
 
-You can also send all your metrics to the cloud and query them using |ccloud| Metrics API.
-To do this section of the tutorial, it requires a |ccloud| account.
+You can send all your metrics to the cloud and query them using |ccloud| Metrics API.
+This may useful for hybrid |ak-tm| deployment scenarios where you have both an on-prem and |ccloud| deployment, and you want a common monitoring solution.
+In this part of the tutorial, you can run |crep| to send |ak| data to |ccloud| and monitor both.
 
-#. Create an account on |ccloud| at https://confluent.cloud. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
+.. figure:: images/cp-demo-overview-with-ccloud.jpg
+    :alt: image
+
+#. Create a |ccloud| account at https://confluent.cloud. Tip: When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
 
 #. Install `Confluent Cloud CLI <https://docs.confluent.io/ccloud-cli/current/install.html>__ v1.21.0 or later.
 
-#. Log in to |ccloud| with the command ``ccloud login``, and use your |ccloud| username and password. The ``--save`` argument saves your |ccloud| user login credentials or refresh token (in the case of SSO) to the local ``netrc`` file.
+#. Using the CLI, log in to |ccloud| with the command ``ccloud login``, and use your |ccloud| username and password. The ``--save`` argument saves your |ccloud| user login credentials or refresh token (in the case of SSO) to the local ``netrc`` file.
 
    .. code:: shell
 
@@ -1488,6 +1451,50 @@ To do this section of the tutorial, it requires a |ccloud| account.
            --data @/tmp/metrics_query.json \
            https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query \
               | jq .
+
+JMX
+---
+
+Some users wish to integrate with other monitoring solutions like Prometheus, Grafana, Datadog, and Splunk.
+The following JMX-based monitoring stacks help users setup a 'single pane of glass' monitoring solution for all their organization's services and applications, including |ak|.
+
+Here are some examples of monitoring stacks that integrate with |cp|:
+
+#. `JMX Exporter + Prometheus + Grafana <https://github.com/confluentinc/jmx-monitoring-stacks>`__ (runnable with cp-demo from https://github.com/confluentinc/jmx-monitoring-stacks):
+
+   .. figure:: images/monitoring/jmxexporter-prometheus-grafana-1.png
+      :alt: image
+      :width: 500px
+
+   .. figure:: images/monitoring/jmxexporter-prometheus-grafana-2.png
+      :alt: image
+      :width: 500px
+
+   .. figure:: images/monitoring/jmxexporter-prometheus-grafana-3.png
+      :alt: image
+      :width: 500px
+
+#. `Jolokia + Elasticsearch + Kibana <https://github.com/confluentinc/jmx-monitoring-stacks>`__ (runnable with cp-demo from https://github.com/confluentinc/jmx-monitoring-stacks):
+
+   .. figure:: images/monitoring/jolokia-elastic-kibana-1.png
+      :alt: image
+      :width: 500px
+
+   .. figure:: images/monitoring/jolokia-elastic-kibana-2.png
+      :alt: image
+      :width: 500px
+
+   .. figure:: images/monitoring/jolokia-elastic-kibana-3.png
+      :alt: image
+      :width: 500px
+
+#. `Monitoring Confluent Platform with Datadog <https://www.confluent.io/blog/confluent-datadog-integration-kafka-monitoring-metrics>`__:
+
+   .. figure:: images/monitoring/datadog-dashboard.png
+      :alt: image
+      :width: 500px
+
+
 
 
 .. _cp-demo-troubleshooting:
