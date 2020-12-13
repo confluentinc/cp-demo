@@ -1540,7 +1540,7 @@ Telemetry Reporter
           --kafka-cluster-id ${KAFKA_CLUSTER_ID} \
           --connect-cluster-id connect-cluster
 
-#. View the |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`. It copies the |ak| topic ``wikipedia.parsed`` (on-prem) to |ccloud| topic ``wikipedia.parsed.ccloud.replia``. Note that it uses the on-prem connect cluster at the origin site, so the configuration uses overrides for the producer, as needed.
+#. View the |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`. It is configured to copy from the |ak| topic ``wikipedia.parsed`` (on-prem) to the cloud topic ``wikipedia.parsed.ccloud.replica`` in |ccloud|. Note that it uses the on-prem connect cluster at the origin site, so the configuration uses overrides for the producer, as needed.
 
 #. Submit the |crep| connector to the connect cluster.
 
@@ -1548,7 +1548,9 @@ Telemetry Reporter
 
       scripts/connectors/submit_replicator_to_ccloud_config.sh
 
-#. It will take about 1 minute till it shows up in |c3|, but verify |crep| to |ccloud| has started.
+#. It will take about 1 minute till it shows up in |c3|, but verify |crep| to |ccloud| has started. In |c3|, there should now be listed 4 connectors:
+
+   .. figure:: images/connectors-with-rep-to-ccloud.png
 
 #. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify you see the topic ``wikipedia.parsed.ccloud.replia``.
 
@@ -1566,15 +1568,28 @@ Metrics
 
    .. literalinclude:: ../scripts/validate/metrics_query_onprem.json
 
-#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query.  Note that this presumes you have set ``METRICS_API_KEY`` and ``METRICS_API_SECRET`` in the earlier section.
+#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query.  For this query to work, you must have set the following parameters in your environment:
+
+   - ``METRICS_API_KEY``
+   - ``METRICS_API_SECRET``
+   - ``CURRENT_TIME_MINUS_1HR``
+   - ``CURRENT_TIME_PLUS_1HR``
 
    .. code-block:: text
 
+      # Create a parameter DATA which substitutes values into the query json file
+      DATA=$(eval "cat <<EOF       
+      $(<./scripts/validate/metrics_query_onprem.json)
+      EOF
+      ")
+
+      # Send query
       curl -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
            --header 'content-type: application/json' \
-           --data @scripts/validate/metrics_query_onprem.json \
+           --data "${DATA}" \
            https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query \
               | jq .
+
 
 #. View the :devx-cp-demo:`metrics query file for Confluent Cloud|scripts/validate/metrics_query_ccloud.json`. (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
 
@@ -1586,15 +1601,29 @@ Metrics
 
       CCLOUD_CLUSTER_ID=$(ccloud kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-${SERVICE_ACCOUNT_ID}"'")' | jq -r .id)
 
-#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v1/metrics/cloud/query.  Note that this presumes you have set ``METRICS_API_KEY`` and ``METRICS_API_SECRET`` in the earlier section, plus a proper ``CCLOUD_CLUSTER_ID`` to filter clusters in |ccloud|.
+#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v1/metrics/cloud/query. For this query to work, you must have set the following parameters in your environment:
+
+   - ``METRICS_API_KEY``
+   - ``METRICS_API_SECRET`` 
+   - ``CURRENT_TIME_MINUS_1HR`` 
+   - ``CURRENT_TIME_PLUS_1HR`` 
+   - ``CCLOUD_CLUSTER_ID``
 
    .. code-block:: text
 
+      # Create a parameter DATA which substitutes values into the query json file
+      DATA=$(eval "cat <<EOF
+      $(<./scripts/validate/metrics_query_ccloud.json)
+      EOF
+      ")
+
+      # Send query
       curl -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
            --header 'content-type: application/json' \
-           --data @scripts/validate/metrics_query_ccloud.json \
+           --data "${DATA}" \
            https://api.telemetry.confluent.cloud/v1/metrics/cloud/query \
               | jq .
+
 
 .. _cp-demo-ccloud-cleanup:
 

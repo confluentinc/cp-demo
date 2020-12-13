@@ -21,8 +21,8 @@ fi
 
 CURRENT_TIME_MINUS_1HR=$(date -Is -d '-1 hour')
 CURRENT_TIME_PLUS_1HR=$(date -Is -d '+1 hour')
-echo "times: $CURRENT_TIME_MINUS_1HR / $CURRENT_TIME_PLUS_1HR"
-
+echo "CURRENT_TIME_MINUS_1HR=$CURRENT_TIME_MINUS_1HR"
+echo "CURRENT_TIME_PLUS_1HR=$CURRENT_TIME_PLUS_1HR"
 
 # Log into Confluent Cloud CLI
 echo
@@ -58,6 +58,7 @@ ccloud::create_ccloud_stack
 SERVICE_ACCOUNT_ID=$(ccloud kafka cluster list -o json | jq -r '.[0].name' | awk -F'-' '{print $4;}')
 CONFIG_FILE=stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
 CCLOUD_CLUSTER_ID=$(ccloud kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-$SERVICE_ACCOUNT_ID"'")' | jq -r .id)
+echo "CCLOUD_CLUSTER_ID=$CCLOUD_CLUSTER_ID"
 
 # Create parameters customized for Confluent Cloud instance created above
 wget -O ccloud-generate-cp-configs.sh https://raw.githubusercontent.com/confluentinc/examples/latest/ccloud/ccloud-generate-cp-configs.sh
