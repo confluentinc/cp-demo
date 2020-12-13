@@ -88,9 +88,7 @@ ${VALIDATE_DIR}/../connectors/submit_replicator_to_ccloud_config_backed_ccloud.s
 else
 
 ####### Shared connect worker backed to cp-demo (source)
-# TODO: current issue: Unexpected SASL mechanism: PLAIN
-# - Create role binding
-# - No Schema shown in CCloud?
+# TODO: why no CCSR subject shown via curl and C3 deserializes?  Use console consumer to check type of value
 CONNECTOR_SUBMITTER="User:connectorSubmitter"
 KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${VALIDATE_DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
 CONNECT=connect-cluster
@@ -115,6 +113,7 @@ sleep 5
 
 echo "Sleeping 30s"
 sleep 30
+
 
 # Metrics
 # TODO: is possible to do last hour instead of fixed interval range?
@@ -154,8 +153,7 @@ echo "Destroying all resources"
 #docker-compose rm -s replicator-to-ccloud
 docker-compose exec connect curl -XDELETE --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectorSubmitter:connectorSubmitter https://connect:8083/connectors/$REPLICATOR_NAME
 
-# TODO
-# - Invalid config(s): confluent.telemetry.enabled on deletion
+# TODO: Invalid config(s): confluent.telemetry.enabled on deletion
 for brokerNum in 1 2; do
   docker-compose exec kafka${brokerNum} kafka-configs \
     --bootstrap-server kafka${brokerNum}:1209${brokerNum} \
