@@ -129,6 +129,8 @@ You can run it with optional settings:
 
       VIZ=false ./scripts/start.sh
 
+#. After the start script completes, you can run |crep| to copy data from this local on-prem |ak| cluster to |ccloud| and use the Metrics API to monitor both. See the :ref:`cp-demo-monitoring` section.
+
 
 Pre-flight Checks
 -----------------
@@ -182,7 +184,7 @@ Guided Tutorial
 Log into |c3| 
 -------------
 
-#. If you ran ``cp-demo`` with default of ``C3_KSQLDB_HTTPS=false`` (which is the default), log into the |c3| GUI from a web browser at the following URL:
+#. If you ran ``cp-demo`` with ``C3_KSQLDB_HTTPS=false`` (which is the default), log into the |c3| GUI from a web browser at the following URL:
 
    .. code-block:: text
 
@@ -196,11 +198,11 @@ Log into |c3|
 
    The browser will detect a self-signed, untrusted certificate and certificate authority, and issue a privacy warning as shown below. To proceed, accept this certificate using your browser's process for this, which will then last for the duration of that browser session.
 
-   - Chrome: click on ``Advanced`` and when the window expands, click on ``Proceed to localhost (unsafe)``.
+   - _Chrome_: click on ``Advanced`` and when the window expands, click on ``Proceed to localhost (unsafe)``.
 
      .. figure:: images/c3-chrome-cert-warning.png
 
-   - Safari: open a new private browsing window (``Shift + ⌘ + N``), click on ``Show Details`` and when the window expands, click on ``visit this website``.
+   - _Safari_: open a new private browsing window (``Shift + ⌘ + N``), click on ``Show Details`` and when the window expands, click on ``visit this website``.
 
      .. figure:: images/c3-safari-cert-warning.png
 
@@ -1348,6 +1350,8 @@ to setup alerts from there.
       :alt: image
 
 
+.. _cp-demo-monitoring:
+
 ==========
 Monitoring
 ==========
@@ -1362,7 +1366,7 @@ Metrics API
 -----------
 
 You can send all your metrics to the cloud and query them using |ccloud| Metrics API.
-This may useful for hybrid |ak-tm| deployment scenarios where you have both an on-prem and |ccloud| deployment, and you want a common monitoring solution.
+This may useful for hybrid |ak-tm| deployment scenarios where you have both an on-prem and `Confluent Cloud <https://confluent.cloud>`__ deployment, and you want a common method for collecting metrics, optionally with proactive support.
 In this part of the tutorial, you can run |crep| to send |ak| data to |ccloud| and monitor both.
 
 .. figure:: images/cp-demo-overview-with-ccloud.jpg
