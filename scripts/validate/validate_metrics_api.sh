@@ -56,7 +56,7 @@ source ./ccloud_library.sh
 ccloud::create_ccloud_stack
 SERVICE_ACCOUNT_ID=$(ccloud kafka cluster list -o json | jq -r '.[0].name' | awk -F'-' '{print $4;}')
 CONFIG_FILE=stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
-KAFKA_CLUSTER_ID=$(ccloud kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-$SERVICE_ACCOUNT_ID"'")' | jq -r .id)
+CCLOUD_CLUSTER_ID=$(ccloud kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-$SERVICE_ACCOUNT_ID"'")' | jq -r .id)
 
 echo "DIR2: ${DIR}"
 

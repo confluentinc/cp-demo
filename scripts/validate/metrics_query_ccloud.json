@@ -15,7 +15,7 @@
           {
               "field": "metric.label.cluster_id",
               "op": "EQ",
-              "value": "${KAFKA_CLUSTER_ID}"
+              "value": "${CCLOUD_CLUSTER_ID}"
           }
       ],
       "op": "AND"
