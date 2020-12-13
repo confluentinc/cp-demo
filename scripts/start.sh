@@ -163,3 +163,7 @@ curl -u mds:mds -X POST "https://localhost:8091/security/1.0/rbac/principals" --
 echo -e "\n\n\n******************************************************************************************************************"
 echo -e "DONE! Connect to Confluent Control Center at $C3URL (login as superUser/superUser for full access)"
 echo -e "******************************************************************************************************************\n"
+
+echo
+echo "Want more? Run './scripts/validate/validate_metrics_api.sh to connect cp-demo to Confluent Cloud"
+echo
