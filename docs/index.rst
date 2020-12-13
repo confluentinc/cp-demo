@@ -1393,7 +1393,7 @@ In this part of the tutorial, you can run |crep| to send |ak| data to |ccloud| a
 
 #. Create a |ccloud| account at https://confluent.cloud. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
 
-#. Install `Confluent Cloud CLI <https://docs.confluent.io/ccloud-cli/current/install.html>__ v1.21.0 or later.
+#. Install `Confluent Cloud CLI <https://docs.confluent.io/ccloud-cli/current/install.html>`__ v1.21.0 or later.
 
 #. Using the CLI, log in to |ccloud| with the command ``ccloud login``, and use your |ccloud| username and password. The ``--save`` argument saves your |ccloud| user login credentials or refresh token (in the case of SSO) to the local ``netrc`` file.
 
