@@ -55,7 +55,9 @@ We suggest going following the ``cp-demo`` tutorial in order:
 
 #. :ref:`cp-demo-guide`: explore the different areas of |cp|
 
-#. :ref:`cp-demo-monitoring`: run |crep| to copy data from this local on-prem |ak| cluster to |ccloud| and use the Metrics API to monitor both
+#. :ref:`cp-demo-hybrid`: run |crep| to copy data from this local on-prem |ak| cluster to |ccloud| and use the Metrics API to monitor both
+
+#. :ref:`cp-demo-monitoring`: links to JMX-based monitoring solutions
 
 #. :ref:`cp-demo-teardown`: clean up your on-prem and |ccloud| environment
 
@@ -1366,30 +1368,20 @@ to setup alerts from there.
       :alt: image
 
 
-.. _cp-demo-monitoring:
+.. _cp-demo-hybrid:
 
-==========
-Monitoring
-==========
+=============================
+Hybrid Deployment to |ccloud|
+=============================
 
-This tutorial has demonstrated how |c3| helps users manage their |cp| deployment and how it provides monitoring capabilities for the cluster and applications.
-For a practical guide to optimizing your |ak| deployment for various service goals including throughput, latency, durability and availability, and useful metrics to monitor for performance and cluster health for on-prem |ak| clusters, see the `Optimizing Your Apache Kafka Deployment <https://www.confluent.io/white-paper/optimizing-your-apache-kafka-deployment/>`__ whitepaper.
-
-For most |cp| users the |c3| monitoring and integrations are sufficient for production usage in their on-prem |ak-tm| deployments.
-There are additional monitoring solutions for various use cases, as described below.
-
-|ccloud| Metrics API
---------------------
-
-You can send all your metrics to the cloud and query them using |ccloud| Metrics API.
-This may useful for hybrid |ak-tm| deployment scenarios where you have both an on-prem and `Confluent Cloud <https://confluent.cloud>`__ deployment, and you want a common method for collecting metrics, optionally with proactive support.
-In this part of the tutorial, you can run |crep| to send |ak| data to |ccloud| and monitor both.
+In a hybrid |ak-tm| deployment scenario, you can have both an on-prem and `Confluent Cloud <https://confluent.cloud>`__ deployment.
+In this part of the tutorial, you can run |crep| to send |ak| data to |ccloud| and use a common method for collecting metrics.
 
 .. figure:: images/cp-demo-overview-with-ccloud.jpg
     :alt: image
 
-|ccloud|
-~~~~~~~~
+Setup |ccloud|
+--------------
 
 #. Create a |ccloud| account at https://confluent.cloud. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
 
@@ -1411,13 +1403,13 @@ In this part of the tutorial, you can run |crep| to send |ak| data to |ccloud| a
    -  Create ACLs with wildcard for the service account.
    -  Generate a local configuration file with all above connection information, useful for other demos/automation.
 
-   The first step is to get the |ccloud| library, which has useful functions for interacting with |ccloud|. Note note this is only community-supported.
+   The first step is to get a bash library of useful functions for interacting with |ccloud|. This library is supported by community, it is not supported by Confluent.
 
    .. code-block:: text
 
       wget -O ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
 
-#. Create a new ``ccloud-stack``.  (See :ref:`ccloud-stack` for advanced options)
+#. Using the ``ccloud_library.sh`` which you just downloaded, create a new ``ccloud-stack`` (see :ref:`ccloud-stack` for advanced options). It creates real resources in |ccloud| and will take a few minutes to complete.
 
    .. code-block:: text
 
@@ -1430,13 +1422,15 @@ In this part of the tutorial, you can run |crep| to send |ak| data to |ccloud| a
 
       cat stack-configs/java-service-account-*.config
 
-#. Set the environment parameter ``SERVICE_ACCOUNT_ID`` to whatever that number <SERVICE_ACCOUNT_ID> is in the filename.
+#. Set the environment parameter ``SERVICE_ACCOUNT_ID`` to whatever that number <SERVICE_ACCOUNT_ID> is in the filename. For example, if the filename is called ``stack-configs/java-service-account-123456.config``, then set ``SERVICE_ACCOUNT_ID=123456``.
 
    .. code-block:: text
 
       SERVICE_ACCOUNT_ID=<fill in>
 
-#. Use another script to create parameters customized for |ccloud| instance created above. It reads a local |ccloud| configuration file, i.e., the one auto-generated above, and writes delta configuration files for |cp| components and clients connecting to |ccloud|.  Get the script.
+#. To automate some of the |crep| configuration, you will now use another script to create parameters customized for the |ccloud| instance created above. It reads a local |ccloud| configuration file, i.e., the one ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` auto-generated above, and writes delta configuration files for |cp| components and clients connecting to |ccloud|.
+
+   Get the script, which is also supported by community, it is not supported by Confluent.
 
    .. code-block:: text
 
@@ -1462,9 +1456,9 @@ In this part of the tutorial, you can run |crep| to send |ak| data to |ccloud| a
       source delta_configs/env.delta
 
 Telemetry Reporter
-~~~~~~~~~~~~~~~~~~
+------------------
 
-#. Create a new ``Cloud`` API key and secret to authenticate with |ccloud|. These credentials will be used by the Telemetry Reporter and to access the |ccloud| Metrics API.
+#. Create a new ``Cloud`` API key and secret to authenticate with |ccloud|. These credentials will be used by the :ref:`telemetry_reporter` and to access the `Confluent Cloud Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__.
 
    .. code:: shell
 
@@ -1490,7 +1484,7 @@ Telemetry Reporter
       METRICS_API_KEY='QX7X4VA4DFJTTOIA'
       METRICS_API_SECRET='fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D'
 
-#. Configure both |ak| brokers in ``cp-demo`` for Telemetry Reporter, which will send cluster metrics to |ccloud|. This requires setting 3 configuration parameters: ``confluent.telemetry.enabled=true``, ``confluent.telemetry.api.key``, and ``confluent.telemetry.api.secret``.
+#. Configure both |ak| brokers in ``cp-demo`` to use the Telemetry Reporter, which will send your on-prem ``cp-demo`` cluster metrics to |ccloud|. This requires setting 3 configuration parameters: ``confluent.telemetry.enabled=true``, ``confluent.telemetry.api.key``, and ``confluent.telemetry.api.secret``.
 
    .. code-block:: text
 
@@ -1509,13 +1503,13 @@ Telemetry Reporter
         --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key="${METRICS_API_KEY}",confluent.telemetry.api.secret="${METRICS_API_SECRET}"
 
 |crep|
-~~~~~~
+------
 
-#. If you are running ``cp-demo`` for a long time, you may need to refresh your local token to log back into MDS:
+#. If you have been running ``cp-demo`` for a long time, you may need to refresh your local token to log back into MDS:
 
    .. sourcecode:: bash
 
-          ./scripts/helper/refresh_mds_login.sh
+      ./scripts/helper/refresh_mds_login.sh
 
 #. Set the |crep| name.
 
@@ -1523,7 +1517,7 @@ Telemetry Reporter
 
       REPLICATOR_NAME=replicate-topic-to-ccloud
 
-#. Create role binding to permit a new instance of |crep| of this name to be submitted to the connect cluster with id ``connect-cluster``.
+#. Create a role binding to permit a new instance of |crep| to be submitted to the connect cluster with id ``connect-cluster``.
 
    Get the |ak| cluster ID:
 
@@ -1546,9 +1540,9 @@ Telemetry Reporter
 
    .. code-block:: text
 
-      scripts/connectors/submit_replicator_to_ccloud_config.sh
+      ./scripts/connectors/submit_replicator_to_ccloud_config.sh
 
-#. It will take about 1 minute till it shows up in |c3|, but verify |crep| to |ccloud| has started. In |c3|, there should now be listed 4 connectors:
+#. It will take about 1 minute till it shows up in the Connectors view in |c3|.  When it does, verify |crep| to |ccloud| has started properly, and there are now 4 connectors:
 
    .. figure:: images/connectors-with-rep-to-ccloud.png
 
@@ -1558,9 +1552,9 @@ Telemetry Reporter
 
 
 Metrics
-~~~~~~~
+-------
 
-#. Get the current time minus 1 hour and plus 1 hour, to be used later in specifying timestamp intervals in the query.
+#. Get the current time minus 1 hour and plus 1 hour. These will define an interval when querying the Metrics API.
 
    .. code-block:: bash
 
@@ -1571,28 +1565,33 @@ Metrics
 
    .. literalinclude:: ../scripts/validate/metrics_query_onprem.json
 
-#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query.  For this query to work, you must have set the following parameters in your environment:
+#. Create a parameter which substitutes values into the query json file. For this substitution to work, you must have set the following parameters in your environment:
 
-   - ``METRICS_API_KEY``
-   - ``METRICS_API_SECRET``
    - ``CURRENT_TIME_MINUS_1HR``
    - ``CURRENT_TIME_PLUS_1HR``
 
    .. code-block:: text
 
-      # Create a parameter DATA which substitutes values into the query json file
-      DATA=$(eval "cat <<EOF       
+      DATA=$(eval "cat <<EOF
       $(<./scripts/validate/metrics_query_onprem.json)
       EOF
       ")
 
-      # Send query
+      # View this parameter
+      echo $DATA
+
+#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query. For this query to work, you must have set the following parameters in your environment:
+
+   - ``METRICS_API_KEY``
+   - ``METRICS_API_SECRET``
+
+   .. code-block:: text
+
       curl -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
            --header 'content-type: application/json' \
            --data "${DATA}" \
            https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query \
               | jq .
-
 
 #. View the :devx-cp-demo:`metrics query file for Confluent Cloud|scripts/validate/metrics_query_ccloud.json`. (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
 
@@ -1604,23 +1603,29 @@ Metrics
 
       CCLOUD_CLUSTER_ID=$(ccloud kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-${SERVICE_ACCOUNT_ID}"'")' | jq -r .id)
 
-#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v1/metrics/cloud/query. For this query to work, you must have set the following parameters in your environment:
+#. Create a parameter which substitutes values into the query json file. For this substitution to work, you must have set the following parameters in your environment:
 
-   - ``METRICS_API_KEY``
-   - ``METRICS_API_SECRET`` 
-   - ``CURRENT_TIME_MINUS_1HR`` 
-   - ``CURRENT_TIME_PLUS_1HR`` 
+   - ``CURRENT_TIME_MINUS_1HR``
+   - ``CURRENT_TIME_PLUS_1HR``
    - ``CCLOUD_CLUSTER_ID``
 
    .. code-block:: text
 
-      # Create a parameter DATA which substitutes values into the query json file
       DATA=$(eval "cat <<EOF
       $(<./scripts/validate/metrics_query_ccloud.json)
       EOF
       ")
 
-      # Send query
+      # View this parameter
+      echo $DATA
+
+#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v1/metrics/cloud/query. For this query to work, you must have set the following parameters in your environment:
+
+   - ``METRICS_API_KEY``
+   - ``METRICS_API_SECRET`` 
+
+   .. code-block:: text
+
       curl -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
            --header 'content-type: application/json' \
            --data "${DATA}" \
@@ -1631,9 +1636,9 @@ Metrics
 .. _cp-demo-ccloud-cleanup:
 
 Cleanup
-~~~~~~~
+-------
 
-#. Disable Telemetry Reporter in both |ak| brokers in ``cp-demo``.
+#. Disable Telemetry Reporter in both |ak| brokers.
 
    .. code-block:: text
 
@@ -1669,7 +1674,7 @@ Cleanup
 
       ccloud api-key delete ${METRICS_API_KEY}
 
-#. Destroy your |ccloud| environment. Even if you stop ``cp-demo``, the resources in |ccloud| will continue to incur charges.
+#. Destroy your |ccloud| environment. Even if you stop ``cp-demo``, the resources in |ccloud| will continue to incur charges until you remove all the resources.
 
    .. code-block:: text
 
@@ -1677,6 +1682,24 @@ Cleanup
 
 #. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify all your resources have been cleaned up.
 
+
+.. _cp-demo-monitoring:
+
+==========
+Monitoring
+==========
+
+This tutorial has demonstrated how |c3| helps users manage their |cp| deployment and how it provides monitoring capabilities for the cluster and applications.
+For a practical guide to optimizing your |ak| deployment for various service goals including throughput, latency, durability and availability, and useful metrics to monitor for performance and cluster health for on-prem |ak| clusters, see the `Optimizing Your Apache Kafka Deployment <https://www.confluent.io/white-paper/optimizing-your-apache-kafka-deployment/>`__ whitepaper.
+
+For most |cp| users the |c3| monitoring and integrations are sufficient for production usage in their on-prem |ak-tm| deployments.
+There are additional monitoring solutions for various use cases, as described below.
+
+Metrics API
+-----------
+
+You can use the |ccloud| Metrics API for on-prem deployments using the Telemetry Reporter.
+See :ref:`cp-demo-hybrid` for more information.
 
 JMX
 ---
