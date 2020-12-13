@@ -55,9 +55,9 @@ We suggest going following the ``cp-demo`` tutorial in order:
 
 #. :ref:`cp-demo-guide`: explore the different areas of |cp|
 
-#. :ref:`cp-demo-hybrid`: run |crep| to copy data from this local on-prem |ak| cluster to |ccloud| and use the Metrics API to monitor both
+#. :ref:`cp-demo-hybrid`: run |crep| to copy data from a local on-prem |ak| cluster to |ccloud|, and use the Metrics API to monitor both
 
-#. :ref:`cp-demo-monitoring`: links to JMX-based monitoring solutions
+#. :ref:`cp-demo-monitoring`: links to other monitoring solutions, including JMX-based ones
 
 #. :ref:`cp-demo-teardown`: clean up your on-prem and |ccloud| environment
 
