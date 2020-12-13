@@ -19,7 +19,9 @@ retry() {
             sleep $sleep_interval
         fi
     done
-    printf "\n"
+
+    PRETTY_PASS="\e[32m✔ \e[0m"
+    printf "${PRETTY_PASS}%s\n\n"
 }
 
 verify_installed()
@@ -236,7 +238,7 @@ mds_login()
     echo "'expect' is not found. Install 'expect' and try again"
     exit 1
   fi
-  echo -e "\n# Login"
+  echo -e "\n# Login to MDS using Confluent CLI"
   OUTPUT=$(
   expect <<END
     log_user 1

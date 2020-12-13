@@ -1534,7 +1534,7 @@ Telemetry Reporter
 
 #. It will take about 1 minute till it shows up in |c3|, but verify |crep| to |ccloud| has started.
 
-#. Verify you see the topic ``wikipedia.parsed.ccloud.replia`` in |ccloud|.
+#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify you see the topic ``wikipedia.parsed.ccloud.replia``.
 
 Metrics
 ~~~~~~~
@@ -1601,17 +1601,31 @@ Cleanup
         --entity-default \
         --delete-config confluent.telemetry.enabled,confluent.telemetry.api.key,confluent.telemetry.api.secret
 
+#. Remove the |crep| connector that was replicating data to |ccloud|.
+
+   .. code-block:: text
+
+      docker-compose exec connect curl -X DELETE \
+        --cert /etc/kafka/secrets/connect.certificate.pem \
+        --key /etc/kafka/secrets/connect.key \
+        --tlsv1.2 \
+        --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+        -u connectorSubmitter:connectorSubmitter \
+        https://connect:8083/connectors/${REPLICATOR_NAME}
+
 #. Delete the ``Cloud`` API key.
 
    .. code-block:: text
 
       ccloud api-key delete ${METRICS_API_KEY}
 
-#. Destroy your |ccloud| environment. Even if you stop ``cp-demo``, the data in |ccloud| can incur charges.
+#. Destroy your |ccloud| environment. Even if you stop ``cp-demo``, the resources in |ccloud| will continue to incur charges.
 
    .. code-block:: text
 
       ccloud::destroy_ccloud_stack ${SERVICE_ACCOUNT_ID}
+
+#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify all your resources have been cleaned up.
 
 
 JMX

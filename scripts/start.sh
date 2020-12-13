@@ -81,10 +81,11 @@ docker-compose exec kafka1 bash -c "/tmp/helper/create-topics.sh" || exit 1
 
 # Verify Confluent Control Center has started
 MAX_WAIT=300
+echo
 echo "Waiting up to $MAX_WAIT seconds for Confluent Control Center to start"
 retry $MAX_WAIT host_check_control_center_up || exit 1
 
-echo -e "\n\nConfluent Control Center modifications:"
+echo -e "\nConfluent Control Center modifications:"
 ${DIR}/helper/control-center-modifications.sh
 echo
 
@@ -112,6 +113,12 @@ fi
 
 echo -e "\nStart streaming from the Wikipedia SSE source connector:"
 ${DIR}/connectors/submit_wikipedia_sse_config.sh
+
+# Verify connector is running
+MAX_WAIT=120
+echo
+echo "Waiting up to $MAX_WAIT seconds for connector to be in RUNNING state"
+retry $MAX_WAIT check_connector_status_running "wikipedia-sse" || exit 1
 
 # Verify wikipedia.parsed topic is populated and schema is registered
 MAX_WAIT=120
@@ -165,5 +172,5 @@ echo -e "DONE! Connect to Confluent Control Center at $C3URL (login as superUser
 echo -e "******************************************************************************************************************\n"
 
 echo
-echo "Want more? Run './scripts/validate/validate_metrics_api.sh to connect cp-demo to Confluent Cloud"
+echo "Want more? Run './scripts/validate/validate_metrics_api.sh' to connect cp-demo to Confluent Cloud"
 echo

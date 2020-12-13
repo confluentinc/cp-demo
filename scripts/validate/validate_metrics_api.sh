@@ -1,16 +1,15 @@
 #!/bin/bash
   
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
 source ${DIR}/../helper/functions.sh
 source ${DIR}/../../.env
 source ${DIR}/../env.sh
 
-currentTime=$(date -Is)
-CURRENT_TIME_MINUS_1HR=$(date -Is -d '-1 hour')
-CURRENT_TIME_PLUS_1HR=$(date -Is -d '+1 hour')
-echo "times: $CURRENT_TIME_MINUS_1HR / $CURRENT_TIME_PLUS_1HR"
+# Rerun because it gets reset by env.sh
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-echo "DIR1: ${DIR}"
+verify_installed ccloud || exit 1
 
 echo
 echo "This example uses real Confluent Cloud resources."
@@ -22,6 +21,11 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
   exit 1
 fi
+
+CURRENT_TIME_MINUS_1HR=$(date -Is -d '-1 hour')
+CURRENT_TIME_PLUS_1HR=$(date -Is -d '+1 hour')
+echo "times: $CURRENT_TIME_MINUS_1HR / $CURRENT_TIME_PLUS_1HR"
+
 
 # Log into Confluent Cloud CLI
 echo
@@ -104,20 +108,19 @@ ${DIR}/../connectors/submit_replicator_to_ccloud_config.sh
 fi
 
 # Verify Replicator to Confluent Cloud has started
-#echo
-#MAX_WAIT=120
-#echo "Waiting up to $MAX_WAIT seconds for Replicator to Confluent Cloud to start"
-#retry $MAX_WAIT check_connector_status_running ${REPLICATOR_NAME} || exit 1
-#echo "Replicator started!"
-
-echo "sleeping 120 seconds"
-sleep 120
+echo
+MAX_WAIT=120
+echo "Waiting up to $MAX_WAIT seconds for Replicator to Confluent Cloud to start"
+retry $MAX_WAIT check_connector_status_running ${REPLICATOR_NAME} || exit 1
+echo "Replicator started!"
+sleep 5
 
 echo "DIR3: ${DIR}"
 
 echo "Sleeping 30s"
 sleep 30
 
+# Metrics
 # TODO: is possible to do last hour instead of fixed interval range?
 
 # Hosted
@@ -153,7 +156,8 @@ sleep 120
 echo "DIR4: ${DIR}"
 echo "Destroying all resources"
 
-docker-compose rm -s replicator-to-ccloud
+#docker-compose rm -s replicator-to-ccloud
+docker-compose exec connect curl -XDELETE --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectorSubmitter:connectorSubmitter https://connect:8083/connectors/$REPLICATOR_NAME
 
 for brokerNum in 1 2; do
   docker-compose exec kafka${brokerNum} kafka-configs \
