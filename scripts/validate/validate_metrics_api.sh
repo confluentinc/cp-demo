@@ -1,13 +1,10 @@
 #!/bin/bash
   
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+VALIDATE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-source ${DIR}/../helper/functions.sh
-source ${DIR}/../../.env
-source ${DIR}/../env.sh
-
-# Rerun because it gets reset by env.sh
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+source ${VALIDATE_DIR}/../helper/functions.sh
+source ${VALIDATE_DIR}/../../.env
+source ${VALIDATE_DIR}/../env.sh
 
 verify_installed ccloud || exit 1
 
@@ -62,8 +59,6 @@ SERVICE_ACCOUNT_ID=$(ccloud kafka cluster list -o json | jq -r '.[0].name' | awk
 CONFIG_FILE=stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
 CCLOUD_CLUSTER_ID=$(ccloud kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-$SERVICE_ACCOUNT_ID"'")' | jq -r .id)
 
-echo "DIR2: ${DIR}"
-
 # Create parameters customized for Confluent Cloud instance created above
 wget -O ccloud-generate-cp-configs.sh https://raw.githubusercontent.com/confluentinc/examples/latest/ccloud/ccloud-generate-cp-configs.sh
 chmod 744 ./ccloud-generate-cp-configs.sh
@@ -87,35 +82,35 @@ MAX_WAIT=120
 echo -e "\nWaiting up to $MAX_WAIT seconds for Confluent Replicator's Connect Worker to start"
 retry $MAX_WAIT host_check_connect_up "replicator-to-ccloud" || exit 1
 sleep 2 # give connect an exta moment to fully mature
-${DIR}/../connectors/submit_replicator_to_ccloud_config_backed_ccloud.sh
+${VALIDATE_DIR}/../connectors/submit_replicator_to_ccloud_config_backed_ccloud.sh
 
 else
 
 ####### Shared connect worker backed to cp-demo (source)
 # TODO: current issue: Unexpected SASL mechanism: PLAIN
-# Create role binding
+# - Create role binding
+# - No Schema shown in CCloud?
 CONNECTOR_SUBMITTER="User:connectorSubmitter"
-KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
+KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${VALIDATE_DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
 CONNECT=connect-cluster
-${DIR}/../helper/refresh_mds_login.sh
+${VALIDATE_DIR}/../helper/refresh_mds_login.sh
 docker-compose exec tools bash -c "confluent iam rolebinding create \
     --principal $CONNECTOR_SUBMITTER \
     --role ResourceOwner \
     --resource Connector:${REPLICATOR_NAME} \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT"
-${DIR}/../connectors/submit_replicator_to_ccloud_config.sh
+${VALIDATE_DIR}/../connectors/submit_replicator_to_ccloud_config.sh
 fi
 
 # Verify Replicator to Confluent Cloud has started
+echo
 echo
 MAX_WAIT=120
 echo "Waiting up to $MAX_WAIT seconds for Replicator to Confluent Cloud to start"
 retry $MAX_WAIT check_connector_status_running ${REPLICATOR_NAME} || exit 1
 echo "Replicator started!"
 sleep 5
-
-echo "DIR3: ${DIR}"
 
 echo "Sleeping 30s"
 sleep 30
@@ -125,7 +120,7 @@ sleep 30
 
 # Hosted
 DATA=$(eval "cat <<EOF       
-$(<${DIR}/metrics_query_onprem.json)
+$(<${VALIDATE_DIR}/metrics_query_onprem.json)
 EOF
 ")
 echo "DATA: $DATA"
@@ -137,7 +132,7 @@ curl -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
 
 # Confluent Cloud
 DATA=$(eval "cat <<EOF       
-$(<${DIR}/metrics_query_ccloud.json)
+$(<${VALIDATE_DIR}/metrics_query_ccloud.json)
 EOF
 ")
 echo "DATA: $DATA"
@@ -153,12 +148,13 @@ sleep 120
 
 #### Disable ####
 
-echo "DIR4: ${DIR}"
 echo "Destroying all resources"
 
 #docker-compose rm -s replicator-to-ccloud
 docker-compose exec connect curl -XDELETE --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectorSubmitter:connectorSubmitter https://connect:8083/connectors/$REPLICATOR_NAME
 
+# TODO
+# - Invalid config(s): confluent.telemetry.enabled on deletion
 for brokerNum in 1 2; do
   docker-compose exec kafka${brokerNum} kafka-configs \
     --bootstrap-server kafka${brokerNum}:1209${brokerNum} \
@@ -171,5 +167,3 @@ done
 ccloud api-key delete $METRICS_API_KEY
 
 ccloud::destroy_ccloud_stack $SERVICE_ACCOUNT_ID
-echo "DIR4: ${DIR}"
-
