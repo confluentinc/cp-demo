@@ -10,6 +10,7 @@ DATA=$( cat << EOF
     "connector.class": "io.confluent.connect.replicator.ReplicatorSourceConnector",
     "topic.whitelist": "wikipedia.parsed",
     "topic.rename.format": "\${topic}.ccloud.replica",
+    "topic.sync": "false",
     "key.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
     "dest.value.converter": "io.confluent.connect.avro.AvroConverter",
     "dest.value.converter.schema.registry.url": "${SCHEMA_REGISTRY_URL}",

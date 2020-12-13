@@ -1,0 +1,29 @@
+{
+  "aggregations": [
+      {
+          "agg": "SUM",
+          "metric": "io.confluent.kafka.server/received_records"
+      }
+  ],
+  "filter": {
+      "filters": [
+          {
+               "field": "metric.label.topic",
+               "op": "EQ",
+               "value": "wikipedia.parsed.ccloud.replica"
+          },
+          {
+              "field": "metric.label.cluster_id",
+              "op": "EQ",
+              "value": "${KAFKA_CLUSTER_ID}"
+          }
+      ],
+      "op": "AND"
+  },
+  "intervals": ["${CURRENT_TIME_MINUS_1HR}/${CURRENT_TIME_PLUS_1HR}"],
+  "granularity": "PT1H",
+  "group_by": [
+      "metric.label.topic"
+  ],
+  "limit": 5
+}

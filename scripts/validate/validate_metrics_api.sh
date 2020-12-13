@@ -6,9 +6,9 @@ source ${DIR}/../../.env
 source ${DIR}/../env.sh
 
 currentTime=$(date -Is)
-currentTimePlus1Hr=$(date -Is -d '+1 hour')
-currentTimeMinus1Hr=$(date -Is -d '-1 hour')
-echo "times: $currentTime, $currentTimePlus1Hr, $currentTimeMinus1Hr"
+CURRENT_TIME_MINUS_1HR=$(date -Is -d '-1 hour')
+CURRENT_TIME_PLUS_1HR=$(date -Is -d '+1 hour')
+echo "times: $CURRENT_TIME_MINUS_1HR / $CURRENT_TIME_PLUS_1HR"
 
 echo "DIR1: ${DIR}"
 
@@ -56,6 +56,7 @@ source ./ccloud_library.sh
 ccloud::create_ccloud_stack
 SERVICE_ACCOUNT_ID=$(ccloud kafka cluster list -o json | jq -r '.[0].name' | awk -F'-' '{print $4;}')
 CONFIG_FILE=stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
+KAFKA_CLUSTER_ID=$(ccloud kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-$SERVICE_ACCOUNT_ID"'")' | jq -r .id)
 
 echo "DIR2: ${DIR}"
 
@@ -118,28 +119,29 @@ echo "Sleeping 30s"
 sleep 30
 
 # TODO: is possible to do last hour instead of fixed interval range?
-DATA=$( cat << EOF
-{
-  "aggregations": [
-      {
-          "agg": "SUM",
-          "metric": "io.confluent.kafka.server/received_bytes"
-      }
-  ],
-  "intervals": ["${currentTimeMinus1Hr}/${currentTimePlus1Hr}"],
-  "granularity": "PT1M",
-  "group_by": [
-      "metric.label.topic"
-  ],
-  "limit": 5
-}
-EOF
-)
 
+# Hosted
+DATA=$(eval "cat <<EOF       
+$(<${DIR}/metrics_query_onprem.json)
+EOF
+")
+echo "DATA: $DATA"
 curl -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
      --header 'content-type: application/json' \
      --data "${DATA}" \
      https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query \
+        | jq .
+
+# Confluent Cloud
+DATA=$(eval "cat <<EOF       
+$(<${DIR}/metrics_query_ccloud.json)
+EOF
+")
+echo "DATA: $DATA"
+curl -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
+     --header 'content-type: application/json' \
+     --data "${DATA}" \
+     https://api.telemetry.confluent.cloud/v1/metrics/cloud/query \
         | jq .
 
 echo
