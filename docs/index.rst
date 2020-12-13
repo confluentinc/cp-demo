@@ -1552,7 +1552,10 @@ Telemetry Reporter
 
    .. figure:: images/connectors-with-rep-to-ccloud.png
 
-#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify you see the topic ``wikipedia.parsed.ccloud.replia``.
+#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify you see the topic ``wikipedia.parsed.ccloud.replia`` and its messages.
+
+#. Notice that the schema for this topic was registered in |ccloud| |sr| because the |crep| ``value.converter`` was configured to be ``io.confluent.connect.avro.AvroConverter``, which means it registered new schemas on the fly.
+
 
 Metrics
 ~~~~~~~

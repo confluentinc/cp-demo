@@ -88,7 +88,6 @@ ${VALIDATE_DIR}/../connectors/submit_replicator_to_ccloud_config_backed_ccloud.s
 else
 
 ####### Shared connect worker backed to cp-demo (source)
-# TODO: why no CCSR subject shown via curl and C3 deserializes?  Use console consumer to check type of value
 CONNECTOR_SUBMITTER="User:connectorSubmitter"
 KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${VALIDATE_DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
 CONNECT=connect-cluster
