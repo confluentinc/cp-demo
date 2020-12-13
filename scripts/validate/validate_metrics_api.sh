@@ -118,7 +118,7 @@ sleep 30
 # Metrics
 # TODO: is possible to do last hour instead of fixed interval range?
 
-# Hosted
+# On-prem
 DATA=$(eval "cat <<EOF       
 $(<${VALIDATE_DIR}/metrics_query_onprem.json)
 EOF

@@ -46,6 +46,21 @@ Data pattern is as follows:
 | Elasticsearch sink connector        | ``WIKIPEDIABOT`` (from ksqlDB) | Elasticsearch/Kibana                  |
 +-------------------------------------+--------------------------------+---------------------------------------+
 
+How to use this tutorial
+------------------------
+
+We suggest going following the ``cp-demo`` tutorial in order:
+
+#. :ref:`cp-demo-run`: one script to automatically build the entire end-to-end example
+
+#. :ref:`cp-demo-guide`: explore the different areas of |cp|
+
+#. :ref:`cp-demo-monitoring`: run |crep| to copy data from this local on-prem |ak| cluster to |ccloud| and use the Metrics API to monitor both
+
+#. :ref:`cp-demo-teardown`: clean up your on-prem and |ccloud| environment
+
+
+.. _cp-demo-run:
 
 ===========
 Run cp-demo
@@ -129,7 +144,7 @@ You can run it with optional settings:
 
       VIZ=false ./scripts/start.sh
 
-#. After the start script completes, you can run |crep| to copy data from this local on-prem |ak| cluster to |ccloud| and use the Metrics API to monitor both. See the :ref:`cp-demo-monitoring` section.
+#. After the start script completes, run through the pre-flight checks below and follow the guided tutorial through this on-prem deployment.
 
 
 Pre-flight Checks
@@ -176,6 +191,7 @@ If any of these pre-flight checks fails, consult the :ref:`cp-demo-troubleshooti
 
 #. View the |kstreams| application configuration in the :devx-cp-demo:`client configuration|env_files/streams-demo.env` file, set with security parameters to the |ak| cluster and |sr|.
 
+.. _cp-demo-guide:
 
 ===============
 Guided Tutorial
@@ -1580,6 +1596,8 @@ Metrics
            https://api.telemetry.confluent.cloud/v1/metrics/cloud/query \
               | jq .
 
+.. _cp-demo-ccloud-cleanup:
+
 Cleanup
 ~~~~~~~
 
@@ -1671,6 +1689,29 @@ Here are some examples of monitoring stacks that integrate with |cp|:
       :width: 500px
 
 
+.. _cp-demo-teardown:
+      
+========
+Teardown
+========
+
+#. Stop the consumer group ``app`` to stop consuming from topic
+   ``wikipedia.parsed``. Note that the command below stops the consumers
+   gracefully with ``kill -15``, so the consumers follow the shutdown
+   sequence.
+
+   .. code:: bash
+
+         ./scripts/app/stop_consumer_app_group_graceful.sh
+
+#. Stop the Docker environment, destroy all components and clear all Docker
+   volumes.
+
+   .. sourcecode:: bash
+
+          ./scripts/stop.sh
+
+#. If you ran |crep| to copy data from this local on-prem |ak| cluster to |ccloud|, then follow the clean up procedure in :ref:`cp-demo-ccloud-cleanup` to avoid unexpected |ccloud| charges.
 
 
 .. _cp-demo-troubleshooting:
@@ -1756,24 +1797,3 @@ CLI Login
    .. sourcecode:: bash
 
           ./scripts/helper/refresh_mds_login.sh 
-
-      
-========
-Teardown
-========
-
-#. Stop the consumer group ``app`` to stop consuming from topic
-   ``wikipedia.parsed``. Note that the command below stops the consumers
-   gracefully with ``kill -15``, so the consumers follow the shutdown
-   sequence.
-
-   .. code:: bash
-
-         ./scripts/app/stop_consumer_app_group_graceful.sh
-
-#. Stop the Docker environment, destroy all components and clear all Docker
-   volumes.
-
-   .. sourcecode:: bash
-
-          ./scripts/stop.sh
