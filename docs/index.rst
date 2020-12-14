@@ -1422,7 +1422,7 @@ Setup |ccloud|
 
       cat stack-configs/java-service-account-*.config
 
-#. Set the environment parameter ``SERVICE_ACCOUNT_ID`` to whatever that number <SERVICE_ACCOUNT_ID> is in the filename. For example, if the filename is called ``stack-configs/java-service-account-123456.config``, then set ``SERVICE_ACCOUNT_ID=123456``.
+#. Set the environment parameter ``SERVICE_ACCOUNT_ID`` to whatever that number <SERVICE_ACCOUNT_ID> is in the filename. For example, if the filename is called ``stack-configs/java-service-account-154143.config``, then set ``SERVICE_ACCOUNT_ID=154143``.
 
    .. code-block:: text
 
@@ -1550,6 +1550,7 @@ Telemetry Reporter
 
 #. Notice that the schema for this topic was registered in |ccloud| |sr| because the |crep| ``value.converter`` was configured to be ``io.confluent.connect.avro.AvroConverter``, which means it registered new schemas on the fly.
 
+   .. figure:: images/ccloud-schema.png
 
 Metrics
 -------
