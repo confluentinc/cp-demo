@@ -32,7 +32,7 @@ COPY --chown=appuser:appuser confluentinc-kafka-connect-replicator-${CONNECTOR_V
 RUN confluent-hub install --no-prompt /tmp/confluentinc-kafka-connect-replicator-${CONNECTOR_VERSION}.zip
 
 # Install Elasticsearch connector
-RUN confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:latest
+RUN confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:10.0.2
 
 # Add JDK default cacerts to kafka.connect.truststore.jks to allow outgoing HTTPS
 COPY scripts/security/kafka.connect.truststore.jks /tmp/kafka.connect.truststore.jks
