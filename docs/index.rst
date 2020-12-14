@@ -1595,7 +1595,7 @@ Metrics
 
    .. code-block:: text
 
-      curl -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
+      curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
            --header 'content-type: application/json' \
            --data "${DATA}" \
            https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query \
@@ -1634,7 +1634,7 @@ Metrics
 
    .. code-block:: text
 
-      curl -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
+      curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
            --header 'content-type: application/json' \
            --data "${DATA}" \
            https://api.telemetry.confluent.cloud/v1/metrics/cloud/query \
@@ -1652,13 +1652,6 @@ Cleanup
 
       docker-compose exec kafka1 kafka-configs \
         --bootstrap-server kafka1:12091 \
-        --alter \
-        --entity-type brokers \
-        --entity-default \
-        --delete-config confluent.telemetry.enabled,confluent.telemetry.api.key,confluent.telemetry.api.secret
-
-      docker-compose exec kafka2 kafka-configs \
-        --bootstrap-server kafka2:12092 \
         --alter \
         --entity-type brokers \
         --entity-default \

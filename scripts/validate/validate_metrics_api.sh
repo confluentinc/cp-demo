@@ -85,12 +85,10 @@ retry $MAX_WAIT check_connector_status_running ${REPLICATOR_NAME} || exit 1
 echo "Replicator started!"
 sleep 5
 
-echo "Sleeping 30s"
+echo "Sleeping 60s"
 sleep 60
 
 # Query Metrics API
-# TODO: on-prem metrics
-# TODO: ccloud metrics
 
 # On-prem
 DATA=$(eval "cat <<EOF       
@@ -98,7 +96,7 @@ $(<${VALIDATE_DIR}/metrics_query_onprem.json)
 EOF
 ")
 echo "DATA: $DATA"
-curl -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
+curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
      --header 'content-type: application/json' \
      --data "${DATA}" \
      https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query \
@@ -110,7 +108,7 @@ $(<${VALIDATE_DIR}/metrics_query_ccloud.json)
 EOF
 ")
 echo "DATA: $DATA"
-curl -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
+curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
      --header 'content-type: application/json' \
      --data "${DATA}" \
      https://api.telemetry.confluent.cloud/v1/metrics/cloud/query \
@@ -127,13 +125,12 @@ echo "Destroying all resources"
 #docker-compose rm -s replicator-to-ccloud
 docker-compose exec connect curl -XDELETE --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectorSubmitter:connectorSubmitter https://connect:8083/connectors/$REPLICATOR_NAME
 
-# TODO: Invalid config(s): confluent.telemetry.enabled on deletion
 docker-compose exec kafka1 kafka-configs \
   --bootstrap-server kafka1:12091 \
   --alter \
   --entity-type brokers \
   --entity-default \
-  --delete-config confluent.telemetry.enabled,confluent.telemetry.api.key,confluent.telemetry.api.secret=${METRICS_API_SECRET}
+  --delete-config confluent.telemetry.enabled,confluent.telemetry.api.key,confluent.telemetry.api.secret
 
 ccloud api-key delete $METRICS_API_KEY
 
