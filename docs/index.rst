@@ -1375,7 +1375,7 @@ Hybrid Deployment to |ccloud|
 =============================
 
 In a hybrid |ak-tm| deployment scenario, you can have both an on-prem and `Confluent Cloud <https://confluent.cloud>`__ deployment.
-In this part of the tutorial, you can run |crep| to send |ak| data to |ccloud| and use a common method for collecting metrics.
+In this part of the tutorial, you can run |crep| to send |ak| data to |ccloud| and use a common method, the `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__,  for collecting metrics for both.
 
 .. figure:: images/cp-demo-overview-with-ccloud.jpg
     :alt: image
@@ -1458,7 +1458,7 @@ Setup |ccloud|
 Telemetry Reporter
 ------------------
 
-#. Create a new ``Cloud`` API key and secret to authenticate with |ccloud|. These credentials will be used by the :ref:`telemetry_reporter` and to access the `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__ which can be used for hosted on-prem clusters as well as |ccloud| clusters.
+#. Create a new ``Cloud`` API key and secret to authenticate with |ccloud|. These credentials will be used by the :ref:`telemetry_reporter` and to access the Metrics API which can be used for hosted on-prem clusters as well as |ccloud| clusters.
 
    .. code:: shell
 
@@ -1562,7 +1562,7 @@ Telemetry Reporter
 Metrics
 -------
 
-Use the `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__ to get data for both the on-prem cluster as well as the |ccloud| cluster.
+Use the Metrics API to get data for both the on-prem cluster as well as the |ccloud| cluster.
 The Metrics API is a queryable HTTP API in which the user can POST a query written in JSON and get back a time series of metrics specified by the query.
 
 #. Get the current time minus 1 hour and plus 1 hour. These will define an interval when querying the Metrics API.
