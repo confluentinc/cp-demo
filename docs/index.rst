@@ -1458,7 +1458,7 @@ Setup |ccloud|
 Telemetry Reporter
 ------------------
 
-#. Create a new ``Cloud`` API key and secret to authenticate with |ccloud|. These credentials will be used by the :ref:`telemetry_reporter` and to access the `Confluent Cloud Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__.
+#. Create a new ``Cloud`` API key and secret to authenticate with |ccloud|. These credentials will be used by the :ref:`telemetry_reporter` and to access the :ref:`metrics-api`.
 
    .. code:: shell
 
@@ -1562,6 +1562,9 @@ Telemetry Reporter
 Metrics
 -------
 
+Use the :ref:`metrics-api` to get data for both the on-prem cluster as well as the |ccloud| cluster.
+The Metrics API is a queryable HTTP API in which the user can POST a query written in JSON and get back a time series of metrics specified by the query.
+
 #. Get the current time minus 1 hour and plus 1 hour. These will define an interval when querying the Metrics API.
 
    .. code-block:: bash
@@ -1600,6 +1603,25 @@ Metrics
            --data "${DATA}" \
            https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query \
               | jq .
+
+#. Your output should resemble:
+
+   .. code-block:: text
+
+      {
+        "data": [
+          {
+            "timestamp": "2020-12-14T20:52:00Z",
+            "value": 1744066,
+            "metric.label.topic": "wikipedia.parsed"
+          },
+          {
+            "timestamp": "2020-12-14T20:53:00Z",
+            "value": 1847596,
+            "metric.label.topic": "wikipedia.parsed"
+          }
+        ]
+      }
 
 #. View the :devx-cp-demo:`metrics query file for Confluent Cloud|scripts/validate/metrics_query_ccloud.json`. (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
 
@@ -1640,22 +1662,24 @@ Metrics
            https://api.telemetry.confluent.cloud/v1/metrics/cloud/query \
               | jq .
 
+#. Your output should resemble:
+
+   .. code-block:: text
+
+      {
+        "data": [
+          {
+            "timestamp": "2020-12-14T20:00:00Z",
+            "value": 995,
+            "metric.label.topic": "wikipedia.parsed.ccloud.replica"
+          }
+        ]
+      }
 
 .. _cp-demo-ccloud-cleanup:
 
 Cleanup
 -------
-
-#. Disable Telemetry Reporter in both |ak| brokers.
-
-   .. code-block:: text
-
-      docker-compose exec kafka1 kafka-configs \
-        --bootstrap-server kafka1:12091 \
-        --alter \
-        --entity-type brokers \
-        --entity-default \
-        --delete-config confluent.telemetry.enabled,confluent.telemetry.api.key,confluent.telemetry.api.secret
 
 #. Remove the |crep| connector that was replicating data to |ccloud|.
 
@@ -1669,6 +1693,17 @@ Cleanup
         -u connectorSubmitter:connectorSubmitter \
         https://connect:8083/connectors/${REPLICATOR_NAME}
 
+#. Disable Telemetry Reporter in both |ak| brokers.
+
+   .. code-block:: text
+
+      docker-compose exec kafka1 kafka-configs \
+        --bootstrap-server kafka1:12091 \
+        --alter \
+        --entity-type brokers \
+        --entity-default \
+        --delete-config confluent.telemetry.enabled,confluent.telemetry.api.key,confluent.telemetry.api.secret
+
 #. Delete the ``Cloud`` API key.
 
    .. code-block:: text
@@ -1679,6 +1714,7 @@ Cleanup
 
    .. code-block:: text
 
+      source ./ccloud_library.sh
       ccloud::destroy_ccloud_stack ${SERVICE_ACCOUNT_ID}
 
 #. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify all your resources have been cleaned up.

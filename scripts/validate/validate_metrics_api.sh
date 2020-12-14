@@ -59,8 +59,8 @@ chmod 744 ./ccloud-generate-cp-configs.sh
 source "delta_configs/env.delta"
 
 echo
-echo "Sleep 20s to wait for CCloud data to stabilize"
-sleep 20
+echo "Sleep an additional 60s to wait for all Confluent Cloud metadata to propagate"
+sleep 60
 
 echo -e "\nStart Confluent Replicator to Confluent Cloud:"
 export REPLICATOR_NAME=replicate-topic-to-ccloud
@@ -85,7 +85,7 @@ retry $MAX_WAIT check_connector_status_running ${REPLICATOR_NAME} || exit 1
 echo "Replicator started!"
 sleep 5
 
-echo "Sleeping 60s"
+echo "Sleeping 60s to wait for Replicator to start propagating data to Confluent Cloud"
 sleep 60
 
 # Query Metrics API
@@ -120,15 +120,18 @@ curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
      https://api.telemetry.confluent.cloud/v1/metrics/cloud/query \
         | jq .
 
-echo
-echo "Sleeping 120s"
-sleep 120
-
 #### Disable ####
 
-echo "Destroying all resources"
+echo
+read -p "Do you want to destroy the Confluent Cloud resources and Replicator connector created by this validation script? [y/n] " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+  exit 1
+fi
 
-#docker-compose rm -s replicator-to-ccloud
+echo "Destroying all Confluent Cloud resources"
+
 docker-compose exec connect curl -XDELETE --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectorSubmitter:connectorSubmitter https://connect:8083/connectors/$REPLICATOR_NAME
 
 docker-compose exec kafka1 kafka-configs \
