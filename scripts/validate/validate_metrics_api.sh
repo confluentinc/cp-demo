@@ -19,16 +19,12 @@ then
   exit 1
 fi
 
-CURRENT_TIME_MINUS_1HR=$(date -Is -d '-1 hour')
-CURRENT_TIME_PLUS_1HR=$(date -Is -d '+1 hour')
-echo "CURRENT_TIME_MINUS_1HR=$CURRENT_TIME_MINUS_1HR"
-echo "CURRENT_TIME_PLUS_1HR=$CURRENT_TIME_PLUS_1HR"
-
 # Log into Confluent Cloud CLI
 echo
 ccloud login --save || exit 1
 
 # Create credentials for the cloud resource
+echo
 CREDENTIALS=$(ccloud api-key create --resource cloud -o json) || exit 1
 METRICS_API_KEY=$(echo "$CREDENTIALS" | jq -r .key)
 METRICS_API_SECRET=$(echo "$CREDENTIALS" | jq -r .secret)
@@ -62,6 +58,10 @@ chmod 744 ./ccloud-generate-cp-configs.sh
 ./ccloud-generate-cp-configs.sh $CONFIG_FILE
 source "delta_configs/env.delta"
 
+echo
+echo "Sleep 20s to wait for CCloud data to stabilize"
+sleep 20
+
 echo -e "\nStart Confluent Replicator to Confluent Cloud:"
 export REPLICATOR_NAME=replicate-topic-to-ccloud
 CONNECTOR_SUBMITTER="User:connectorSubmitter"
@@ -89,6 +89,12 @@ echo "Sleeping 60s"
 sleep 60
 
 # Query Metrics API
+
+CURRENT_TIME_MINUS_1HR=$(date -Is -d '-1 hour')
+CURRENT_TIME_PLUS_1HR=$(date -Is -d '+1 hour')
+echo
+echo "CURRENT_TIME_MINUS_1HR=$CURRENT_TIME_MINUS_1HR"
+echo "CURRENT_TIME_PLUS_1HR=$CURRENT_TIME_PLUS_1HR"
 
 # On-prem
 DATA=$(eval "cat <<EOF       

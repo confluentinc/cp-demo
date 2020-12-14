@@ -15,7 +15,7 @@ DATA=$( cat << EOF
     "value.converter": "io.confluent.connect.avro.AvroConverter",
     "value.converter.schema.registry.url": "${SCHEMA_REGISTRY_URL}",
     "value.converter.basic.auth.credentials.source": "${BASIC_AUTH_CREDENTIALS_SOURCE}",
-    "value.converter.schema.registry.basic.auth.user.info": "${SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO}",
+    "value.converter.basic.auth.user.info": "${SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO}",
     "src.value.converter": "io.confluent.connect.avro.AvroConverter",
     "src.value.converter.schema.registry.url": "https://schemaregistry:8085",
     "src.value.converter.schema.registry.ssl.truststore.location": "/etc/kafka/secrets/kafka.client.truststore.jks",
