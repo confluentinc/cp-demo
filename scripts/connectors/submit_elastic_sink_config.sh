@@ -10,7 +10,7 @@ DATA=$( cat << EOF
     "topics": "WIKIPEDIABOT",
     "topic.index.map": "WIKIPEDIABOT:wikipediabot",
     "connection.url": "http://elasticsearch:9200",
-    "type.name": "wikichange",
+    "type.name": "_doc",
     "key.ignore": true,
     "key.converter.schema.registry.url": "https://schemaregistry:8085",
     "value.converter": "io.confluent.connect.avro.AvroConverter",
