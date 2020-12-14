@@ -1484,7 +1484,7 @@ Telemetry Reporter
       METRICS_API_KEY='QX7X4VA4DFJTTOIA'
       METRICS_API_SECRET='fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D'
 
-#. Configure both |ak| brokers in ``cp-demo`` to use the Telemetry Reporter, which will send your on-prem ``cp-demo`` cluster metrics to |ccloud|. This requires setting 3 configuration parameters: ``confluent.telemetry.enabled=true``, ``confluent.telemetry.api.key``, and ``confluent.telemetry.api.secret``.
+#. :ref:`Dynamically configure <kafka-dynamic-configurations>` the ``cp-demo`` cluster to use the Telemetry Reporter, which will send its metrics to |ccloud|. This requires setting 3 configuration parameters: ``confluent.telemetry.enabled=true``, ``confluent.telemetry.api.key``, and ``confluent.telemetry.api.secret``.
 
    .. code-block:: text
 
@@ -1493,14 +1493,21 @@ Telemetry Reporter
         --alter \
         --entity-type brokers \
         --entity-default \
-        --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key="${METRICS_API_KEY}",confluent.telemetry.api.secret="${METRICS_API_SECRET}"
+        --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key=${METRICS_API_KEY},confluent.telemetry.api.secret=${METRICS_API_SECRET}
 
-      docker-compose exec kafka2 kafka-configs \
-        --bootstrap-server kafka2:12092 \
-        --alter \
-        --entity-type brokers \
-        --entity-default \
-        --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key="${METRICS_API_KEY}",confluent.telemetry.api.secret="${METRICS_API_SECRET}"
+#. Check the broker logs to verify the brokers were dynamically configured.
+
+   .. sourcecode:: bash
+
+      docker-compose logs kafka1 | grep confluent.telemetry.api.key
+
+   Your output should resemble the following, but the ``confluent.telemetry.api.key`` value will be different in your environment.
+
+   .. code-block:: text
+
+      kafka1            | 	confluent.telemetry.api.key = QX7X4VA4DFJTTOIA
+      kafka1            | 	confluent.telemetry.api.secret = [hidden]
+
 
 |crep|
 ------

@@ -5,6 +5,16 @@
           "metric": "io.confluent.kafka.server/received_bytes"
       }
   ],
+  "filter": {
+      "filters": [
+          {
+               "field": "metric.label.topic",
+               "op": "EQ",
+               "value": "wikipedia.parsed"
+          }
+      ],
+      "op": "AND"
+  },
   "intervals": ["${CURRENT_TIME_MINUS_1HR}/${CURRENT_TIME_PLUS_1HR}"],
   "granularity": "PT1M",
   "group_by": [

@@ -36,18 +36,14 @@ echo "export METRICS_API_KEY=$METRICS_API_KEY"
 echo "export METRICS_API_SECRET=$METRICS_API_SECRET"
 
 # Enable Confluent Telemetry Reporter
-# TODO: docker-compose exec kafka1 kafka-configs --bootstrap-server kafka1:12091 --describe --entity-type brokers is empty
-# TODO: API secret shown in logs
 echo
-echo "Enabling Confluent Telemetry Reporter to send metrics to Confluent Cloud"
-for brokerNum in 1 2; do
-  docker-compose exec kafka${brokerNum} kafka-configs \
-    --bootstrap-server kafka${brokerNum}:1209${brokerNum} \
-    --alter \
-    --entity-type brokers \
-    --entity-default \
-    --add-config "confluent.telemetry.enabled=true,confluent.telemetry.api.key='${METRICS_API_KEY}',confluent.telemetry.api.secret='${METRICS_API_SECRET}'"
-done
+echo "Enabling Confluent Telemetry Reporter cluster-wide to send metrics to Confluent Cloud"
+docker-compose exec kafka1 kafka-configs \
+  --bootstrap-server kafka1:12091 \
+  --alter \
+  --entity-type brokers \
+  --entity-default \
+  --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key=${METRICS_API_KEY},confluent.telemetry.api.secret=${METRICS_API_SECRET}
 
 # Create a new ccloud-stack
 echo
@@ -68,26 +64,6 @@ source "delta_configs/env.delta"
 
 echo -e "\nStart Confluent Replicator to Confluent Cloud:"
 export REPLICATOR_NAME=replicate-topic-to-ccloud
-
-back="origin"
-echo "back: $back"
-
-if [[ "$back" == "destination" ]]; then
-
-####### Separate connect worker backed to CCloud (destination)
-# TODO: current issue: http://localhost:8087/permissions 404 (C3?)
-# TODO: no metrics available
-docker-compose up -d replicator-to-ccloud
-# Verify Confluent Replicator's Connect Worker has started
-MAX_WAIT=120
-echo -e "\nWaiting up to $MAX_WAIT seconds for Confluent Replicator's Connect Worker to start"
-retry $MAX_WAIT host_check_connect_up "replicator-to-ccloud" || exit 1
-sleep 2 # give connect an exta moment to fully mature
-${VALIDATE_DIR}/../connectors/submit_replicator_to_ccloud_config_backed_ccloud.sh
-
-else
-
-####### Shared connect worker backed to cp-demo (source)
 CONNECTOR_SUBMITTER="User:connectorSubmitter"
 KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${VALIDATE_DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
 CONNECT=connect-cluster
@@ -99,7 +75,6 @@ docker-compose exec tools bash -c "confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT"
 ${VALIDATE_DIR}/../connectors/submit_replicator_to_ccloud_config.sh
-fi
 
 # Verify Replicator to Confluent Cloud has started
 echo
@@ -111,11 +86,11 @@ echo "Replicator started!"
 sleep 5
 
 echo "Sleeping 30s"
-sleep 30
+sleep 60
 
-
-# Metrics
-# TODO: is possible to do last hour instead of fixed interval range?
+# Query Metrics API
+# TODO: on-prem metrics
+# TODO: ccloud metrics
 
 # On-prem
 DATA=$(eval "cat <<EOF       
@@ -153,14 +128,12 @@ echo "Destroying all resources"
 docker-compose exec connect curl -XDELETE --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectorSubmitter:connectorSubmitter https://connect:8083/connectors/$REPLICATOR_NAME
 
 # TODO: Invalid config(s): confluent.telemetry.enabled on deletion
-for brokerNum in 1 2; do
-  docker-compose exec kafka${brokerNum} kafka-configs \
-    --bootstrap-server kafka${brokerNum}:1209${brokerNum} \
-        --alter \
-        --entity-type brokers \
-        --entity-default \
-        --delete-config "confluent.telemetry.enabled,confluent.telemetry.api.key,confluent.telemetry.api.secret"
-done
+docker-compose exec kafka1 kafka-configs \
+  --bootstrap-server kafka1:12091 \
+  --alter \
+  --entity-type brokers \
+  --entity-default \
+  --delete-config confluent.telemetry.enabled,confluent.telemetry.api.key,confluent.telemetry.api.secret=${METRICS_API_SECRET}
 
 ccloud api-key delete $METRICS_API_KEY
 
