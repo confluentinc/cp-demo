@@ -11,7 +11,7 @@ verify_installed ccloud || exit 1
 echo
 echo "This example uses real Confluent Cloud resources."
 echo "To avoid unexpected charges, carefully evaluate the cost of resources before launching the script and ensure all resources are destroyed after you are done running it."
-echo "(Use Confluent Cloud promo ``C50INTEG`` to receive \$50 free usage)"
+echo "(Use Confluent Cloud promo code ``C50INTEG`` to receive \$50 free usage)"
 read -p "Do you still want to run this script? [y/n] " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]

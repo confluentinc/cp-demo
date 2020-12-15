@@ -172,5 +172,6 @@ echo -e "DONE! Connect to Confluent Control Center at $C3URL (login as superUser
 echo -e "******************************************************************************************************************\n"
 
 echo
-echo "Want more? Check out https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#hybrid-deployment-to-ccloud to connect cp-demo to Confluent Cloud (use Confluent Cloud promo ``C50INTEG`` to receive \$50 free usage)"
+echo "Want more? Check out https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#hybrid-deployment-to-ccloud to connect cp-demo to Confluent Cloud"
+echo "(Use Confluent Cloud promo code ``C50INTEG`` to receive \$50 free usage)"
 echo
