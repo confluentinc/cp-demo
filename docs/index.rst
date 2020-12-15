@@ -3,8 +3,7 @@
 Confluent Platform Demo (cp-demo)
 =================================
 
-This example builds a full |cp| deployment with an |ak-tm| event streaming application using `ksqlDB <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing, and all the components have security enabled end-to-end.
-It includes an optional hybrid deployment that runs |crep| to copy data from a local on-prem |ak| cluster to |ccloud|.
+This example builds a full |cp| deployment with an |ak-tm| event streaming application using `ksqlDB <https://ksqldb.io>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing, and all the components have security enabled end-to-end.
 Follow the accompanying guided tutorial that steps through the example so that you can learn how it all works together.
 
 
@@ -16,6 +15,7 @@ Use Case
 --------
 
 The use case is an |ak-tm| event streaming application that processes real-time edits to real Wikipedia pages.
+It can be extended to consider a hybrid deployment that runs |crep| to copy data from a local on-prem |ak| cluster to |ccloud|, a fully-managed service for |ak-tm|.
 
 .. figure:: images/cp-demo-overview.jpg
     :alt: image
@@ -23,7 +23,7 @@ The use case is an |ak-tm| event streaming application that processes real-time 
 The full event streaming platform based on |cp| is described as follows.
 Wikimedia's `EventStreams <https://wikitech.wikimedia.org/wiki/Event_Platform/EventStreams>`__ publishes a continuous stream of real-time edits happening to real wiki pages.
 A Kafka source connector `kafka-connect-sse <https://www.confluent.io/hub/cjmatta/kafka-connect-sse>`__ streams the server-sent events (SSE) from https://stream.wikimedia.org/v2/stream/recentchange, and a custom |kconnect| transform `kafka-connect-json-schema <https://www.confluent.io/hub/jcustenborder/kafka-connect-json-schema>`__ extracts the JSON from these messages and then are written to a |ak| cluster.
-This example uses `ksqlDB <https://www.confluent.io/product/ksql/>`__ and a :ref:`Kafka Streams <kafka_streams>` application for data processing.
+This example uses `ksqlDB <https://ksqldb.io>`__ and a :ref:`Kafka Streams <kafka_streams>` application for data processing.
 Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.io/kafka-connect-elasticsearch/index.html>`__ streams the data out of Kafka and is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 |crep-full| is also copying messages from a topic to another topic in the same cluster.
 All data is using |sr-long| and Avro, and `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ is managing and monitoring the deployment.
@@ -1565,14 +1565,12 @@ Metrics
 
 Use the Metrics API to get data for both the on-prem cluster as well as the |ccloud| cluster.
 The Metrics API provides a queryable HTTP API in which the user can POST a query written in JSON and get back a time series of metrics specified by the query.
-The endpoints for the Metrics API are:
+It can be used for both:
 
-- On-prem metrics from Telemetry Reporter: https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query
+- On-prem metrics from Telemetry Reporter: https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query: this is in preview and the API may change
 - |ccloud| metrics: https://api.telemetry.confluent.cloud/v1/metrics/cloud/query
 
-.. note:: The Metrics API that provides the Telemetry Reporter on-prem metrics (https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query) is in preview and the API may change.
-
-   .. figure:: images/metrics-api.jpg
+.. figure:: images/metrics-api.jpg
 
 #. Get the current time minus 1 hour and plus 1 hour. These will define an interval when querying the Metrics API.
 
