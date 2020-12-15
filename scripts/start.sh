@@ -137,6 +137,7 @@ SCHEMA=$(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka/sec
 docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -H "Content-Type: application/vnd.schemaregistry.v1+json" --data "{\"schema\": $SCHEMA}" -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed.replica-value/versions
 
 echo
+echo
 echo "Start the Kafka Streams application wikipedia-activity-monitor"
 docker-compose up -d streams-demo
 echo "..."
@@ -159,6 +160,9 @@ curl -u mds:mds -X POST "https://localhost:8091/security/1.0/rbac/principals" --
   -H "accept: application/json"  -H "Content-Type: application/json" \
   -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}" \
   --cacert scripts/security/snakeoil-ca-1.crt --tlsv1.2 | jq '.[]'
+
+# Do postflight checks
+postflight_checks
 
 echo -e "\n\n\n******************************************************************************************************************"
 echo -e "DONE! Connect to Confluent Control Center at $C3URL (login as superUser/superUser for full access)"
