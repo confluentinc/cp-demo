@@ -1563,14 +1563,7 @@ Telemetry Reporter
 Metrics
 -------
 
-Use the Metrics API to get data for both the on-prem cluster as well as the |ccloud| cluster.
-The Metrics API provides a queryable HTTP API in which the user can POST a query written in JSON and get back a time series of metrics specified by the query.
-It can be used for both:
-
-- On-prem metrics from Telemetry Reporter: https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query: this is in preview and the API may change
-- |ccloud| metrics: https://api.telemetry.confluent.cloud/v1/metrics/cloud/query
-
-.. figure:: images/metrics-api.jpg
+.. include:: includes/metrics-api-intro.rst
 
 #. Get the current time minus 1 hour and plus 1 hour. These will define an interval when querying the Metrics API.
 
@@ -1742,7 +1735,8 @@ There are additional monitoring solutions for various use cases, as described be
 Metrics API
 -----------
 
-You can use the |ccloud| Metrics API for on-prem deployments using the Telemetry Reporter.
+.. include:: includes/metrics-api-intro.rst
+
 See :ref:`cp-demo-hybrid` for more information.
 
 JMX
