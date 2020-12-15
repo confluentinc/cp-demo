@@ -1572,6 +1572,8 @@ The endpoints for the Metrics API are:
 
 .. note:: The Metrics API that provides the Telemetry Reporter on-prem metrics (https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query) is in preview and the API may change.
 
+   .. figure:: images/metrics-api.jpg
+
 #. Get the current time minus 1 hour and plus 1 hour. These will define an interval when querying the Metrics API.
 
    .. code-block:: bash
