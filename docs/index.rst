@@ -1555,7 +1555,7 @@ Telemetry Reporter
 
 #. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify you see the topic ``wikipedia.parsed.ccloud.replica`` and its messages.
 
-#. Notice that the schema for this topic was registered in |ccloud| |sr| because the |crep| ``value.converter`` was configured to be ``io.confluent.connect.avro.AvroConverter``, which means it registered new schemas on the fly.
+#. View the schema for this topic that is already registered in |ccloud| |sr|. In ``cp-demo``, in the :devx-cp-demo:`Replicator configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`, ``value.converter`` is configured to use ``io.confluent.connect.avro.AvroConverter``, therefore it automatically registers new schemas, as needed, while copying data. The schema ID in the on-prem |sr| will not match the schema ID in the |ccloud| |sr|. (See documentation for other :ref:`schema migration options <schemaregistry_migrate>`)
 
    .. figure:: images/ccloud-schema.png
 
