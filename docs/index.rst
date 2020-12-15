@@ -4,6 +4,7 @@ Confluent Platform Demo (cp-demo)
 =================================
 
 This example builds a full |cp| deployment with an |ak-tm| event streaming application using `ksqlDB <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing, and all the components have security enabled end-to-end.
+It includes an optional hybrid deployment that runs |crep| to copy data from a local on-prem |ak| cluster to |ccloud|.
 Follow the accompanying guided tutorial that steps through the example so that you can learn how it all works together.
 
 
@@ -1563,7 +1564,13 @@ Metrics
 -------
 
 Use the Metrics API to get data for both the on-prem cluster as well as the |ccloud| cluster.
-The Metrics API is a queryable HTTP API in which the user can POST a query written in JSON and get back a time series of metrics specified by the query.
+The Metrics API provides a queryable HTTP API in which the user can POST a query written in JSON and get back a time series of metrics specified by the query.
+The endpoints for the Metrics API are:
+
+- On-prem metrics from Telemetry Reporter: https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query
+- |ccloud| metrics: https://api.telemetry.confluent.cloud/v1/metrics/cloud/query
+
+.. info: The Metrics API for the on-prem metrics from Telemetry Reporter (https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query) is in preview (not supported) and may change.
 
 #. Get the current time minus 1 hour and plus 1 hour. These will define an interval when querying the Metrics API.
 
