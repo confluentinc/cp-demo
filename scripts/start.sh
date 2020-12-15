@@ -161,8 +161,8 @@ curl -u mds:mds -X POST "https://localhost:8091/security/1.0/rbac/principals" --
   -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}" \
   --cacert scripts/security/snakeoil-ca-1.crt --tlsv1.2 | jq '.[]'
 
-# Do postflight checks
-postflight_checks
+# Do poststart_checks
+poststart_checks
 
 echo -e "\n\n\n******************************************************************************************************************"
 echo -e "DONE! Connect to Confluent Control Center at $C3URL (login as superUser/superUser for full access)"

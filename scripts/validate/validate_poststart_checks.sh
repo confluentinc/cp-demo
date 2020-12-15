@@ -4,4 +4,4 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ${DIR}/../helper/functions.sh
 source ${DIR}/../env.sh
 
-postflight_checks
+poststart_checks

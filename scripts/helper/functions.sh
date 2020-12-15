@@ -59,7 +59,7 @@ preflight_checks()
 
 }
 
-postflight_checks()
+poststart_checks()
 {
   # Verify no containers have Exited
   if [[ $(docker-compose ps | grep Exit) ]]; then
