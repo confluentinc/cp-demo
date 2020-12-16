@@ -68,15 +68,11 @@ poststart_checks()
 
   # Validate connectors are running
   # The Replicator connector may come fully UP after start script ends, so ignore that connector here (to not add time to start script)
-  if [[ "$VIZ" == "true" ]]; then
-    connectorList="wikipedia-sse elasticsearch-ksqldb"
-  else
-    connectorList="wikipedia-sse"
-  fi
+  connectorList=$(docker-compose exec connect curl -X GET --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://connect:8083/connectors/ | jq -r @sh | xargs echo)
   for connector in $connectorList; do
     STATE=$(docker-compose exec connect curl -X GET --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://connect:8083/connectors/$connector/status | jq -r .connector.state)
     if [[ "$STATE" != "RUNNING" ]]; then
-      echo -e "\nWARNING: Connector $connector should be in RUNNING state but is in $STATE state.  Please troubleshoot, see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
+      echo -e "\nWARNING: Connector $connector should be in RUNNING state but is in $STATE state. Is it still starting up?"
     fi
   done
 

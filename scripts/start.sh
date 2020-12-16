@@ -39,6 +39,8 @@ if [[ "$CLEAN" == "true" ]] ; then
   create_certificates
 fi
 
+#-------------------------------------------------------------------------------
+
 # Bring up openldap
 docker-compose up -d openldap
 sleep 5
@@ -66,6 +68,8 @@ docker-compose exec kafka1 kafka-configs \
    --entity-name _confluent-metadata-auth \
    --alter \
    --add-config min.insync.replicas=1
+
+#-------------------------------------------------------------------------------
 
 # Build custom Kafka Connect image with required jars
 if [[ "$CLEAN" == "true" ]] ; then
@@ -110,6 +114,8 @@ if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
   exit 1
 fi
 
+#-------------------------------------------------------------------------------
+
 echo -e "\nStart streaming from the Wikipedia SSE source connector:"
 ${DIR}/connectors/submit_wikipedia_sse_config.sh
 
@@ -119,7 +125,23 @@ echo
 echo -e "\nWaiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
 retry $MAX_WAIT host_check_schema_registered || exit 1
 
+#-------------------------------------------------------------------------------
+
+# Register the same schema for the replicated topic wikipedia.parsed.replica as was created for the original topic wikipedia.parsed
+# In this case the replicated topic will register with the same schema ID as the original topic
+echo -e "\nRegister subject wikipedia.parsed.replica-value in Schema Registry"
+SCHEMA=$(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed-value/versions/latest | jq .schema)
+docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -H "Content-Type: application/vnd.schemaregistry.v1+json" --data "{\"schema\": $SCHEMA}" -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed.replica-value/versions
+
+echo
+echo -e "\nStart Confluent Replicator:"
+${DIR}/connectors/submit_replicator_config.sh
+
+#-------------------------------------------------------------------------------
+
 # Verify ksqlDB server has started
+echo
+echo
 MAX_WAIT=120
 echo -e "\nWaiting up to $MAX_WAIT seconds for ksqlDB server to start"
 retry $MAX_WAIT host_check_ksqlDBserver_up || exit 1
@@ -130,20 +152,13 @@ echo -e "\nStart consumers for additional topics: WIKIPEDIANOBOT, EN_WIKIPEDIA_G
 ${DIR}/consumers/listen_WIKIPEDIANOBOT.sh
 ${DIR}/consumers/listen_EN_WIKIPEDIA_GT_1_COUNTS.sh
 
-# Register the same schema for the replicated topic wikipedia.parsed.replica as was created for the original topic wikipedia.parsed
-# In this case the replicated topic will register with the same schema ID as the original topic
-echo -e "\nRegister subject wikipedia.parsed.replica-value in Schema Registry"
-SCHEMA=$(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed-value/versions/latest | jq .schema)
-docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -H "Content-Type: application/vnd.schemaregistry.v1+json" --data "{\"schema\": $SCHEMA}" -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed.replica-value/versions
-
 echo
 echo
 echo "Start the Kafka Streams application wikipedia-activity-monitor"
 docker-compose up -d streams-demo
 echo "..."
 
-echo -e "\nStart Confluent Replicator:"
-${DIR}/connectors/submit_replicator_config.sh
+#-------------------------------------------------------------------------------
 
 if [[ "$VIZ" == "true" ]]; then
   build_viz || exit 1
