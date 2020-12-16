@@ -28,7 +28,7 @@ RUN confluent-hub install --no-prompt cjmatta/kafka-connect-sse:latest
 RUN confluent-hub install --no-prompt jcustenborder/kafka-connect-json-schema:latest
 
 # Install Elasticsearch connector
-RUN confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:latest
+RUN confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:11.0.0
 
 # Add JDK default cacerts to kafka.connect.truststore.jks to allow outgoing HTTPS
 COPY scripts/security/kafka.connect.truststore.jks /tmp/kafka.connect.truststore.jks
