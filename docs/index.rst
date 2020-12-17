@@ -1410,7 +1410,7 @@ Setup |ccloud|
 
       wget -O ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
 
-#. Using the ``ccloud_library.sh`` which you just downloaded, create a new ``ccloud-stack`` (see :ref:`ccloud-stack` for advanced options). It creates real resources in |ccloud| and will take a few minutes to complete.
+#. Using the ``ccloud_library.sh`` which you just downloaded, create a new ``ccloud-stack`` (see :ref:`ccloud-stack` for advanced options). It creates real resources in |ccloud| and takes a few minutes to complete.
 
    .. code-block:: text
 
@@ -1429,7 +1429,7 @@ Setup |ccloud|
 
       SERVICE_ACCOUNT_ID=<fill in>
 
-#. The |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh` has parameters that specify how to connect to |ccloud|.  You could set these parameters manually, but to do this in an automated fashion, you will now use another script to set env parameters customized for the |ccloud| instance created above. It reads your local |ccloud| configuration file, i.e., the one ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` auto-generated above, and writes delta configuration files for |cp| components and clients connecting to |ccloud|.
+#. The |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh` has parameters that specify how to connect to |ccloud|.  You could set these parameters manually, but to do this in an automated fashion, use another script to set env parameters customized for the |ccloud| instance created above. It reads your local |ccloud| configuration file, i.e., the one ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` auto-generated above, and writes delta configuration files for |cp| components and clients connecting to |ccloud|.
 
    Get the script, which is also supported by community, it is not supported by Confluent.
 
@@ -1460,7 +1460,7 @@ Setup |ccloud|
 Telemetry Reporter
 ------------------
 
-#. Create a new ``Cloud`` API key and secret to authenticate with |ccloud|. These credentials will be used by the :ref:`telemetry_reporter` and to access the Metrics API which can be used for hosted on-prem clusters as well as |ccloud| clusters.
+#. Create a new ``Cloud`` API key and secret to authenticate with |ccloud|. These credentials will be used by the :ref:`telemetry_reporter` and used by the Metrics API, which can be used for hosted on-prem clusters as well as |ccloud| clusters.
 
    .. code:: shell
 
@@ -1486,7 +1486,7 @@ Telemetry Reporter
       METRICS_API_KEY='QX7X4VA4DFJTTOIA'
       METRICS_API_SECRET='fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D'
 
-#. :ref:`Dynamically configure <kafka-dynamic-configurations>` the ``cp-demo`` cluster to use the Telemetry Reporter, which will send its metrics to |ccloud|. This requires setting 3 configuration parameters: ``confluent.telemetry.enabled=true``, ``confluent.telemetry.api.key``, and ``confluent.telemetry.api.secret``.
+#. :ref:`Dynamically configure <kafka-dynamic-configurations>` the ``cp-demo`` cluster to use the Telemetry Reporter, which sends metrics to |ccloud|. This requires setting 3 configuration parameters: ``confluent.telemetry.enabled=true``, ``confluent.telemetry.api.key``, and ``confluent.telemetry.api.secret``.
 
    .. code-block:: text
 
@@ -1543,7 +1543,7 @@ Telemetry Reporter
           --kafka-cluster-id ${KAFKA_CLUSTER_ID} \
           --connect-cluster-id connect-cluster
 
-#. View the |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`. It is configured to copy from the |ak| topic ``wikipedia.parsed`` (on-prem) to the cloud topic ``wikipedia.parsed.ccloud.replica`` in |ccloud|. Note that it uses the local connect cluster (the origin site), so the |crep| configuration has overrides for the producer. The configuration parameters that use variables will be read from the env variables that you sourced in an earlier step.
+#. View the |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`. It is configured to copy from the |ak| topic ``wikipedia.parsed`` (on-prem) to the cloud topic ``wikipedia.parsed.ccloud.replica`` in |ccloud|. Note that it uses the local connect cluster (the origin site), so the |crep| configuration has overrides for the producer. The configuration parameters that use variables are read from the env variables that you sourced in an earlier step.
 
 #. Submit the |crep| connector to the local connect cluster.
 
@@ -1551,7 +1551,7 @@ Telemetry Reporter
 
       ./scripts/connectors/submit_replicator_to_ccloud_config.sh
 
-#. It will take about 1 minute till it shows up in the Connectors view in |c3|.  When it does, verify |crep| to |ccloud| has started properly, and there are now 4 connectors:
+#. It takes about 1 minute to show up in the Connectors view in |c3|.  When it does, verify |crep| to |ccloud| has started properly, and there are now 4 connectors:
 
    .. figure:: images/connectors-with-rep-to-ccloud.png
 
@@ -1566,7 +1566,7 @@ Metrics
 
 .. include:: includes/metrics-api-intro.rst
 
-#. Get the current time minus 1 hour and plus 1 hour. These will define an interval when querying the Metrics API.
+#. Get the current time minus 1 hour and plus 1 hour. These define a time interval when querying the Metrics API.
 
    .. code-block:: bash
 
@@ -1605,7 +1605,7 @@ Metrics
            https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query \
               | jq .
 
-#. Your output should resemble:
+#. Your output should resemble the output below, and include metrics for the on-prem topic ``wikipedia.parsed``:
 
    .. code-block:: text
 
@@ -1663,7 +1663,7 @@ Metrics
            https://api.telemetry.confluent.cloud/v1/metrics/cloud/query \
               | jq .
 
-#. Your output should resemble:
+#. Your output should resemble the output below, and include metrics for the |ccloud| topic ``wikipedia.parsed.ccloud.replica``:
 
    .. code-block:: text
 
@@ -1711,7 +1711,7 @@ Cleanup
 
       ccloud api-key delete ${METRICS_API_KEY}
 
-#. Destroy your |ccloud| environment. Even if you stop ``cp-demo``, the resources in |ccloud| will continue to incur charges until you remove all the resources.
+#. Destroy your |ccloud| environment. Even if you stop ``cp-demo``, the resources in |ccloud| continue to incur charges until you remove all the resources.
 
    .. code-block:: text
 
