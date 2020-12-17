@@ -1417,7 +1417,7 @@ Setup |ccloud|
       source ./ccloud_library.sh
       ccloud::create_ccloud_stack
  
-#. When it completes, view this file at ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config``.
+#. When it completes, view the local configuration file at ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` that was auto-generated. It contains connection information for connecting to your newly created |ccloud| environment.
 
    .. code-block:: text
 
@@ -1429,7 +1429,7 @@ Setup |ccloud|
 
       SERVICE_ACCOUNT_ID=<fill in>
 
-#. To automate some of the |crep| configuration, you will now use another script to create parameters customized for the |ccloud| instance created above. It reads a local |ccloud| configuration file, i.e., the one ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` auto-generated above, and writes delta configuration files for |cp| components and clients connecting to |ccloud|.
+#. The |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh` has parameters that specify how to connect to |ccloud|.  You could set these parameters manually, but to do this in an automated fashion, you will now use another script to set env parameters customized for the |ccloud| instance created above. It reads your local |ccloud| configuration file, i.e., the one ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` auto-generated above, and writes delta configuration files for |cp| components and clients connecting to |ccloud|.
 
    Get the script, which is also supported by community, it is not supported by Confluent.
 
@@ -1450,11 +1450,12 @@ Setup |ccloud|
 
       cat delta_configs/env.delta
 
-#. Source the ``delta_configs/env.delta`` file  into your environment.
+#. Source the ``delta_configs/env.delta`` file into your environment. These environment variables will be used when you run |crep| in a few sections.
 
    .. code-block:: text
 
       source delta_configs/env.delta
+
 
 Telemetry Reporter
 ------------------
@@ -1525,7 +1526,7 @@ Telemetry Reporter
 
       REPLICATOR_NAME=replicate-topic-to-ccloud
 
-#. Create a role binding to permit a new instance of |crep| to be submitted to the connect cluster with id ``connect-cluster``.
+#. Create a role binding to permit a new instance of |crep| to be submitted to the local connect cluster with id ``connect-cluster``.
 
    Get the |ak| cluster ID:
 
@@ -1542,9 +1543,9 @@ Telemetry Reporter
           --kafka-cluster-id ${KAFKA_CLUSTER_ID} \
           --connect-cluster-id connect-cluster
 
-#. View the |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`. It is configured to copy from the |ak| topic ``wikipedia.parsed`` (on-prem) to the cloud topic ``wikipedia.parsed.ccloud.replica`` in |ccloud|. Note that it uses the on-prem connect cluster at the origin site, so the configuration uses overrides for the producer, as needed.
+#. View the |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`. It is configured to copy from the |ak| topic ``wikipedia.parsed`` (on-prem) to the cloud topic ``wikipedia.parsed.ccloud.replica`` in |ccloud|. Note that it uses the local connect cluster (the origin site), so the |crep| configuration has overrides for the producer. The configuration parameters that use variables will be read from the env variables that you sourced in an earlier step.
 
-#. Submit the |crep| connector to the connect cluster.
+#. Submit the |crep| connector to the local connect cluster.
 
    .. code-block:: text
 
