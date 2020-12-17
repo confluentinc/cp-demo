@@ -1422,7 +1422,7 @@ Setup |ccloud|
 
       cat stack-configs/java-service-account-*.config
 
-#. Set the environment parameter ``SERVICE_ACCOUNT_ID`` to whatever that number <SERVICE_ACCOUNT_ID> is in the filename. For example, if the filename is called ``stack-configs/java-service-account-154143.config``, then set ``SERVICE_ACCOUNT_ID=154143``.
+#. In the current shell, set the environment variable ``SERVICE_ACCOUNT_ID`` to the <SERVICE_ACCOUNT_ID> in the filename. For example, if the filename is called ``stack-configs/java-service-account-154143.config``, then set ``SERVICE_ACCOUNT_ID=154143``.
 
    .. code-block:: text
 
