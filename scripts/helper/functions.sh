@@ -71,10 +71,7 @@ poststart_checks()
   # Validate connectors are running
   connectorList=$(docker-compose exec connect curl -X GET --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://connect:8083/connectors/ | jq -r @sh | xargs echo)
   for connector in $connectorList; do
-    STATE=$(docker-compose exec connect curl -X GET --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://connect:8083/connectors/$connector/status | jq -r .connector.state)
-    if [[ "$STATE" != "RUNNING" ]]; then
-      echo -e "\nWARNING: Connector $connector should be in RUNNING state but is in $STATE state. Is it still starting up?"
-    fi
+    check_connector_status_running $connector || echo -e "\nWARNING: Connector $connector is not in RUNNING state. Is it still starting up?"
   done
 
   # Check number of Schema Registry subjects
