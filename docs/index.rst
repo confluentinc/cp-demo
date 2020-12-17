@@ -50,7 +50,7 @@ Data pattern is as follows:
 How to use this tutorial
 ------------------------
 
-We suggest going following the ``cp-demo`` tutorial in order:
+We suggest following the ``cp-demo`` tutorial in order:
 
 #. :ref:`cp-demo-run`: one script to automatically build the entire end-to-end example
 
