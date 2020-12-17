@@ -61,6 +61,33 @@ preflight_checks()
 
 }
 
+poststart_checks()
+{
+  # Verify no containers have Exited
+  if [[ $(docker-compose ps | grep Exit) ]]; then
+    echo -e "\nWARNING: at least one Docker container unexpectedly exited. Please troubleshoot, see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
+  fi
+
+  # Validate connectors are running
+  connectorList=$(docker-compose exec connect curl -X GET --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://connect:8083/connectors/ | jq -r @sh | xargs echo)
+  for connector in $connectorList; do
+    STATE=$(docker-compose exec connect curl -X GET --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://connect:8083/connectors/$connector/status | jq -r .connector.state)
+    if [[ "$STATE" != "RUNNING" ]]; then
+      echo -e "\nWARNING: Connector $connector should be in RUNNING state but is in $STATE state. Is it still starting up?"
+    fi
+  done
+
+  # Check number of Schema Registry subjects
+  # The subject created by the Kafka Streams app may be created after start script ends, so ignore that subject here (to not add time to start script)
+  numSubjects=7
+  foundSubjects=$(docker-compose exec schemaregistry curl -X GET --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://schemaregistry:8085/subjects | jq length)
+  if [[ $foundSubjects -lt $numSubjects ]]; then
+    echo -e "\nWARNING: Expected to find at least $numSubjects subjects in Schema Registry but found $foundSubjects subjects. Please troubleshoot, see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
+  fi
+
+  echo
+}
+
 get_kafka_cluster_id_from_container()
 {
   KAFKA_CLUSTER_ID=$(curl -s https://kafka1:8091/v1/metadata/id --cert /etc/kafka/secrets/mds.certificate.pem --key /etc/kafka/secrets/mds.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt | jq -r ".id")
