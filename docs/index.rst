@@ -1394,17 +1394,16 @@ Setup |ccloud|
 
       ccloud login --save
 
-#. Use the :ref:`ccloud-stack` to create a stack of fully managed services in |ccloud|.  Executed with a single command, it is a quick way to create fully managed components in |ccloud|, which you can then use for ``cp-demo``.  The script uses the |ccloud| CLI to dynamically do the following in |ccloud|:
+#. Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |ccloud|.  Executed with a single command, it uses the |ccloud| CLI to:
 
    -  Create a new environment.
    -  Create a new service account.
    -  Create a new Kafka cluster and associated credentials.
    -  Enable |sr-ccloud| and associated credentials.
-   -  Create a new ksqlDB app and associated credentials.
    -  Create ACLs with wildcard for the service account.
-   -  Generate a local configuration file with all above connection information, useful for other demos/automation.
+   -  Generate a local configuration file with all above connection information.
 
-   The first step is to get a bash library of useful functions for interacting with |ccloud|. This library is supported by community, it is not supported by Confluent.
+   The first step is to get a bash library of useful functions for interacting with |ccloud| (one of which is ``cloud-stack``). This library is community-supported and is not supported by Confluent.
 
    .. code-block:: text
 
@@ -1431,20 +1430,20 @@ Setup |ccloud|
 
 #. The |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh` has parameters that specify how to connect to |ccloud|.  You could set these parameters manually, but to do this in an automated fashion, use another script to set env parameters customized for the |ccloud| instance created above. It reads your local |ccloud| configuration file, i.e., the one ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` auto-generated above, and writes delta configuration files for |cp| components and clients connecting to |ccloud|.
 
-   Get the script, which is also supported by community, it is not supported by Confluent.
+   Get the script, which is also community-supported and not supported by Confluent.
 
    .. code-block:: text
 
       wget -O ccloud-generate-cp-configs.sh https://raw.githubusercontent.com/confluentinc/examples/latest/ccloud/ccloud-generate-cp-configs.sh
 
-#. Run the script against your auto-generated configuration file.
+#. Run the script against your auto-generated configuration file (the file created by ``ccloud-stack``).
 
    .. code-block:: text
 
       chmod 744 ./ccloud-generate-cp-configs.sh
       ./ccloud-generate-cp-configs.sh stack-configs/java-service-account-${SERVICE_ACCOUNT_ID}.config
 
-#. The output of the script is a folder called ``delta_configs`` with sample configurations for all components and clients. View the ``delta_configs/env.delta`` file.
+#. The output of the script is a folder called ``delta_configs`` with sample configurations for all components and clients, which you can easily apply to any |ak| client or |cp| component. View the ``delta_configs/env.delta`` file.
 
    .. code-block:: text
 
