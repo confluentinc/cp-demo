@@ -257,3 +257,26 @@ END
     exit 1
   fi
 }
+
+create_topic() {
+  broker_host_port=$1
+  cluster_id=$2
+  topic_name=$3
+  confluent_value_schema_validation=$4
+  auth=$5
+
+  RESULT=$(curl -sS --insecure -X POST \
+    -u ${auth} \
+    --header 'Content-Type: application/json' \
+    --data-binary @<(jq -n --arg topic_name "${topic_name}" --arg confluent_value_schema_validation "${confluent_value_schema_validation}" -f ${DIR}/topic.jq) \
+    "https://${broker_host_port}/kafka/v3/clusters/${cluster_id}/topics") && RC=$? || RC=$?
+
+  echo $RESULT | jq || true
+
+  if [[ $RC -ne 0 || -z $RESULT || $RESULT =~ "error_code" ]]; then
+    echo "ERROR: create topic failed $RESULT"
+    return 1
+  fi
+
+  return 0
+}
