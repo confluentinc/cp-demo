@@ -265,8 +265,9 @@ create_topic() {
   confluent_value_schema_validation=$4
   auth=$5
 
-  RESULT=$(curl -sS --insecure -X POST \
+  RESULT=$(curl -sS -X POST \
     -u ${auth} \
+    --cacert ${DIR}/../security/snakeoil-ca-1.crt \
     --header 'Content-Type: application/json' \
     --data-binary @<(jq -n --arg topic_name "${topic_name}" --arg confluent_value_schema_validation "${confluent_value_schema_validation}" -f ${DIR}/topic.jq) \
     "https://${broker_host_port}/kafka/v3/clusters/${cluster_id}/topics") && RC=$? || RC=$?
