@@ -272,6 +272,7 @@ create_topic() {
     -u ${auth} \
     --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
     --header 'Content-Type: application/json' \
+    --header 'Accept: application/json' \
     --data-binary @<(jq -n --arg topic_name "${topic_name}" --arg confluent_value_schema_validation "${confluent_value_schema_validation}" -f ${DIR}/topic.jq) \
     "https://${broker_host_port}/kafka/v3/clusters/${cluster_id}/topics") && RC=$? || RC=$?
 
