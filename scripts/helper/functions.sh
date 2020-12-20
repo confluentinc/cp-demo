@@ -259,6 +259,9 @@ END
 }
 
 create_topic() {
+
+  local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
   broker_host_port=$1
   cluster_id=$2
   topic_name=$3
@@ -267,7 +270,7 @@ create_topic() {
 
   RESULT=$(curl -sS -X POST \
     -u ${auth} \
-    --cacert ${DIR}/../security/snakeoil-ca-1.crt \
+    --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
     --header 'Content-Type: application/json' \
     --data-binary @<(jq -n --arg topic_name "${topic_name}" --arg confluent_value_schema_validation "${confluent_value_schema_validation}" -f ${DIR}/topic.jq) \
     "https://${broker_host_port}/kafka/v3/clusters/${cluster_id}/topics") && RC=$? || RC=$?
