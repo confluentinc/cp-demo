@@ -173,9 +173,6 @@ build_viz()
   ${DIR}/../dashboard/set_elasticsearch_mapping_count.sh
   echo
 
-  # Enable Elasticsearch health status (http://localhost:9200/_cluster/health) show green
-  curl -X PUT "localhost:9200/wikipediabot/_settings?pretty" -H 'Content-Type: application/json' -d' { "number_of_replicas": 0 }'
-
   echo -e "\nStart streaming to Elasticsearch sink connector:"
   ${DIR}/../connectors/submit_elastic_sink_config.sh
   echo
@@ -188,6 +185,9 @@ build_viz()
   echo -e "\nConfigure Kibana dashboard:"
   ${DIR}/../dashboard/configure_kibana_dashboard.sh
   echo
+
+  # Enable Elasticsearch health status (http://localhost:9200/_cluster/health) show green
+  curl -X PUT "localhost:9200/wikipediabot/_settings?pretty" -H 'Content-Type: application/json' -d' { "number_of_replicas": 0 }'
 
   return 0
 }
