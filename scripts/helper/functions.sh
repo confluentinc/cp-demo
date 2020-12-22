@@ -167,10 +167,14 @@ build_viz()
   echo
   echo -e "\nWaiting up to $MAX_WAIT seconds for Elasticsearch to be ready"
   retry $MAX_WAIT host_check_elasticsearch_ready || exit 1
+
   echo -e "\nProvide data mapping to Elasticsearch:"
   ${DIR}/../dashboard/set_elasticsearch_mapping_bot.sh
   ${DIR}/../dashboard/set_elasticsearch_mapping_count.sh
   echo
+
+  # Enable Elasticsearch health status (http://localhost:9200/_cluster/health) show green
+  curl -X PUT "localhost:9200/wikipediabot/_settings?pretty" -H 'Content-Type: application/json' -d' { "number_of_replicas": 0 }'
 
   echo -e "\nStart streaming to Elasticsearch sink connector:"
   ${DIR}/../connectors/submit_elastic_sink_config.sh
