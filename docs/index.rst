@@ -166,7 +166,7 @@ If any of these pre-flight checks fails, consult the :ref:`cp-demo-troubleshooti
       zookeeper                     /etc/confluent/docker/run        Up (healthy)   0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
 
 
-#. Jump to the end of the entire ``cp-demo`` pipeline and view the Kibana dashboard at http://localhost:5601/app/kibana#/dashboard/Wikipedia .  This is a cool view and validates that the ``cp-demo`` start script completed successfully.
+#. Jump to the end of the entire ``cp-demo`` pipeline and view the Kibana dashboard at http://localhost:5601/app/dashboards#/view/Overview .  This is a cool view and validates that the ``cp-demo`` start script completed successfully.
 
    .. figure:: images/kibana-dashboard.png
 
