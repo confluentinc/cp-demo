@@ -4,7 +4,7 @@ Confluent Platform Demo (cp-demo)
 =================================
 
 This example builds a full |cp| deployment with an |ak-tm| event streaming application using `ksqlDB <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing.
-Follow the accompanying guided tutorial that steps through the example so that you can learn how |ak| works all together with |kconnect|, |sr-long|, |c3|, |crep|, and security enabled end-to-end.
+Follow the accompanying guided tutorial, broken down step-by-step, to learn how |ak| works all together with |kconnect|, |sr-long|, |c3|, |crep|, and security enabled end-to-end.
 
 ========
 Overview
