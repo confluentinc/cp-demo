@@ -965,6 +965,11 @@ This demo showcases |crest-long| in two modes:
 - Standalone service, listening for HTTPS requests on port 8086
 - Embedded service on the |ak| brokers, listening for HTTPS requests on port 8091 on ``kafka1`` and on port 8092 on ``kafka2`` (these |crest| ports are shared with the broker's |mds-long| listener)
 
+Standalone |crest|
+~~~~~~~~~~~~~~~~~~
+
+For the next few steps, use the |crest| that is running as a standalone service.
+
 #. Use the standalone |crest| to try to produce a message to the topic ``users``, referencing schema id ``11``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
 
    .. code-block:: text
@@ -1182,7 +1187,12 @@ This demo showcases |crest-long| in two modes:
          -u appSA:appSA \
          https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
 
-#. For the next few steps, use the |crest| that is embedded on the |ak| brokers. Only :ref:`rest-proxy-v3` is supported this time.  Create a role binding for the client to be granted ``ResourceOwner`` role for the topic ``dev_users``.
+Embedded |crest|
+~~~~~~~~~~~~~~~~
+
+For the next few steps, use the |crest| that is embedded on the |ak| brokers. Only :ref:`rest-proxy-v3` is supported this time.
+
+#. Create a role binding for the client to be granted ``ResourceOwner`` role for the topic ``dev_users``.
 
    Get the |ak| cluster ID:
 
