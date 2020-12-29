@@ -199,14 +199,17 @@ Log into |c3|
    - Chrome: click on ``Advanced`` and when the window expands, click on ``Proceed to localhost (unsafe)``.
 
      .. figure:: images/c3-chrome-cert-warning.png
+        :width: 500px
 
    - Safari: open a new private browsing window (``Shift + ⌘ + N``), click on ``Show Details`` and when the window expands, click on ``visit this website``.
 
      .. figure:: images/c3-safari-cert-warning.png
+        :width: 500px
 
 #. At the login screen, log into |c3| as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
 
    .. figure:: images/c3-login.png
+      :width: 500px
 
 
 Brokers 
@@ -215,6 +218,7 @@ Brokers
 #. Select the cluster named "Kafka Raleigh".
 
    .. figure:: images/cluster_raleigh.png
+      :width: 500px
 
 #. Click on "Brokers".
 
