@@ -102,7 +102,7 @@ It generates the keys and certificates, brings up the Docker containers, and con
 You can run it with optional settings:
 
 - ``CLEAN``: controls whether certificates and the locally built |kconnect| image are regenerated in between runs
-- ``C3_KSQLDB_HTTPS``: sets |c3| and ksqlDB server to use ``HTTP`` or ``HTTPS`` (default: ``HTTP``)
+- ``C3_KSQLDB_HTTPS``: controls whether |c3| and ksqlDB server use ``HTTP``, if parameter is false, or ``HTTPS``, if parameter is true (default: ``true`` for ``HTTP``)
 - ``VIZ``: enables Elasticsearch and Kibana (default: ``true``)
 
 #. To run ``cp-demo`` the first time with defaults, run the following command. This takes a few minutes to complete.
@@ -218,7 +218,7 @@ Brokers
 
 #. Click on "Brokers".
 
-#. View the status of the Brokers in the cluster:
+#. View the status of the brokers in the cluster:
 
    .. figure:: images/landing_page.png
 
@@ -366,19 +366,7 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
    .. figure:: images/ksql_properties.png
       :alt: image
 
-#. This example creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS`` to demonstrate how ksqlDB windows work. ``EN_WIKIPEDIA_GT_1`` counts occurrences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but to send just the counts greater than one downstream, there is a separate Kafka topic for ``EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
-
-- View messages in the topic ``EN_WIKIPEDIA_GT_1`` (jump to offset 0/partition 0), and notice the nulls:
-
-  .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1.png
-     :alt: image
-
-- For comparison, view messages in the topic ``EN_WIKIPEDIA_GT_1_COUNTS`` (jump to offset 0/partition 0), and notice no nulls:
-
-  .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1_COUNTS.png
-     :alt: image
-
-11. The `ksqlDB processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their ksqlDB queries. In this example, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the ksqlDB editor run the following "bad" query for 20 seconds:
+#. The `ksqlDB processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their ksqlDB queries. In this example, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the ksqlDB editor run the following "bad" query for 20 seconds:
 
 .. sourcecode:: bash
 
@@ -775,7 +763,6 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
        [
          "wikipedia.parsed.replica-value",
-         "EN_WIKIPEDIA_GT_1_COUNTS-value",
          "WIKIPEDIABOT-value",
          "EN_WIKIPEDIA_GT_1-value",
          "_confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_7-Aggregate-Aggregate-Materialize-changelog-value",
