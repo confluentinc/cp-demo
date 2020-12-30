@@ -148,8 +148,9 @@ retry $MAX_WAIT host_check_ksqlDBserver_up || exit 1
 echo -e "\nRun ksqlDB queries (takes about 1 minute):"
 ${DIR}/ksqlDB/run_ksqlDB.sh
 
-echo -e "\nStart additional consumer for topic WIKIPEDIANOBOT"
+echo -e "\nStart additional consumer for topics WIKIPEDIANOBOT, WIKIPEDIA_COUNT_GT_1"
 ${DIR}/consumers/listen_WIKIPEDIANOBOT.sh
+${DIR}/consumers/listen_WIKIPEDIA_COUNT_GT_1.sh
 
 echo
 echo

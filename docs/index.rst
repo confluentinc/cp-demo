@@ -319,7 +319,7 @@ The |kconnect| worker's embedded producer is configured to be idempotent, exactl
 ksqlDB
 ------
 
-In this example, ksqlDB is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the :devx-cp-demo:`ksqlDB command file|scripts/ksqlDB/statements.sql` .
+In this example, ksqlDB is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the :devx-cp-demo:`ksqlDB command file|scripts/ksqlDB/statements.sql`.
 Its embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
 
 #. In the navigation bar, click **ksqlDB**.
@@ -350,7 +350,7 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
    .. figure:: images/wikipedia_describe.png
       :alt: image
 
-#. View the existing ksqlDB tables. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``).
+#. View the existing ksqlDB tables. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``). One table is called ``WIKIPEDIA_COUNT_GT_1``, which counts occurrences with a tumbling window.
 
    .. figure:: images/ksql_tables_list.png
       :alt: image
@@ -363,7 +363,7 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
 #. View messages from different ksqlDB streams and tables. Click on your stream of choice and then click **Query stream** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA EMIT CHANGES;``, and it shows results for newly arriving data.
 
    .. figure:: images/ksql_query_topic.png
-      :alt: image
+      :width: 500px
 
 #. Click **ksqlDB Editor** and run the ``SHOW PROPERTIES;`` statement. You can see the configured ksqlDB server properties and check these values with the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
 
@@ -372,16 +372,15 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
 
 #. The `ksqlDB processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their ksqlDB queries. In this example, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the ksqlDB editor run the following "bad" query for 20 seconds:
 
-.. sourcecode:: bash
+   .. sourcecode:: bash
 
       SELECT ucase(cast(null as varchar)) FROM wikipedia EMIT CHANGES;
 
-No records should be returned from this query. ksqlDB writes errors into the processing log for each record. View the processing log topic ``ksql-clusterksql_processing_log`` with topic inspection (jump to offset 0/partition 0) or the corresponding ksqlDB stream ``KSQL_PROCESSING_LOG`` with the ksqlDB editor (set ``auto.offset.reset=earliest``).
+   No records should be returned from this query. ksqlDB writes errors into the processing log for each record. View the processing log topic ``ksql-clusterksql_processing_log`` with topic inspection (jump to offset 0/partition 0) or the corresponding ksqlDB stream ``KSQL_PROCESSING_LOG`` with the ksqlDB editor (set ``auto.offset.reset=earliest``).
 
-.. sourcecode:: bash
+   .. sourcecode:: bash
 
       SELECT * FROM KSQL_PROCESSING_LOG EMIT CHANGES;
-
 
 
 Consumers
@@ -768,10 +767,10 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
        [
          "wikipedia.parsed.replica-value",
          "WIKIPEDIABOT-value",
-         "EN_WIKIPEDIA_GT_1-value",
-         "_confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_7-Aggregate-Aggregate-Materialize-changelog-value",
+         "WIKIPEDIA_COUNT_GT_1-value",
+         "_confluent-ksql-ksql-clusterquery_CTAS_WIKIPEDIA_COUNT_GT_1_7-Aggregate-Aggregate-Materialize-changelog-value",
          "WIKIPEDIANOBOT-value",
-         "_confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_7-Aggregate-GroupBy-repartition-value",
+         "_confluent-ksql-ksql-clusterquery_CTAS_WIKIPEDIA_COUNT_GT_1_7-Aggregate-GroupBy-repartition-value",
          "wikipedia.parsed-value"
        ]
 
@@ -1252,7 +1251,7 @@ the two Kafka brokers.
    .. figure:: images/broker_down_failed.png
       :alt: image
 
-#. View Topic information details to see that there are out of sync replicas on broker 2.
+#. View Topic information details to see that there are out of sync replicas.
 
    .. figure:: images/broker_down_replicas.png
       :alt: image
