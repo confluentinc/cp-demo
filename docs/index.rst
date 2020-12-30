@@ -764,15 +764,17 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. code-block:: JSON
 
-       [
-         "wikipedia.parsed.replica-value",
-         "WIKIPEDIABOT-value",
-         "WIKIPEDIA_COUNT_GT_1-value",
-         "_confluent-ksql-ksql-clusterquery_CTAS_WIKIPEDIA_COUNT_GT_1_7-Aggregate-Aggregate-Materialize-changelog-value",
-         "WIKIPEDIANOBOT-value",
-         "_confluent-ksql-ksql-clusterquery_CTAS_WIKIPEDIA_COUNT_GT_1_7-Aggregate-GroupBy-repartition-value",
-         "wikipedia.parsed-value"
-       ]
+      [
+        "WIKIPEDIA_COUNT_GT_1-value",
+        "wikipedia-activity-monitor-KSTREAM-AGGREGATE-STATE-STORE-0000000003-repartition-value",
+        "wikipedia.parsed.replica-value",
+        "WIKIPEDIABOT-value",
+        "WIKIPEDIANOBOT-value",
+        "_confluent-ksql-ksql-clusterquery_CTAS_WIKIPEDIA_COUNT_GT_1_7-Aggregate-GroupBy-repartition-value",
+        "wikipedia.parsed.count-by-domain-value",
+        "wikipedia.parsed-value",
+        "_confluent-ksql-ksql-clusterquery_CTAS_WIKIPEDIA_COUNT_GT_1_7-Aggregate-Aggregate-Materialize-changelog-value"
+      ]
 
 #. Instead of using the superUser credentials, now use client credentials `noexist:noexist` (user does not exist in LDAP) to try to register a new Avro schema (a record with two fields ``username`` and ``userid``) into |sr| for the value of a new topic ``users``. It should fail due to an authorization error.
 
