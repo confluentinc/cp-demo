@@ -102,7 +102,7 @@ It generates the keys and certificates, brings up the Docker containers, and con
 You can run it with optional settings:
 
 - ``CLEAN``: controls whether certificates and the locally built |kconnect| image are regenerated in between runs
-- ``C3_KSQLDB_HTTPS``: controls whether |c3| and ksqlDB server use ``HTTP``, if parameter is false, or ``HTTPS``, if parameter is true (default: ``true`` for ``HTTP``)
+- ``C3_KSQLDB_HTTPS``: controls whether |c3| and ksqlDB server use ``HTTP`` or ``HTTPS`` (default: ``false`` for ``HTTP``)
 - ``VIZ``: enables Elasticsearch and Kibana (default: ``true``)
 
 #. To run ``cp-demo`` the first time with defaults, run the following command. This takes a few minutes to complete.
