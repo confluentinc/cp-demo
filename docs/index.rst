@@ -641,7 +641,7 @@ Authorization with RBAC
 
          kafka1            | 	super.users = User:admin;User:mds;User:superUser;User:ANONYMOUS
 
-#. From the |c3| UI, in the Administration menu, click the *Manage role assignments* option. Click on ``Assignments`` and then the Kafka cluster ID. From the ``Topic`` list, verify that the LDAP user ``appSA`` is allowed to access a few topics, including any topic whose name starts with ``wikipedia``. This role assignment was done during ``cp-demo`` bringup in the :devx-cp-demo:`create-role-bindings.sh script|scripts/helper/create-role-bindings.sh`.
+#. From the |c3| UI, in the Administration menu, click the *Manage role assignments* option. Click on ``Assignments`` and then the Kafka cluster ID. From the ``Topic`` list, verify that the LDAP user ``appSA`` is allowed to access a few topics, including any topic whose name starts with ``wikipedia``. This role assignment was done during ``cp-demo`` startup in the :devx-cp-demo:`create-role-bindings.sh script|scripts/helper/create-role-bindings.sh`.
 
    .. figure:: images/appSA_topic_assignments.png
 
