@@ -348,6 +348,7 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
 #. Click on ``WIKIPEDIA`` to describe the schema (fields or columns) of an existing ksqlDB stream. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``DESCRIBE WIKIPEDIA;``)
 
    .. figure:: images/wikipedia_describe.png
+      :width: 600px
       :alt: image
 
 #. View the existing ksqlDB tables. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``). One table is called ``WIKIPEDIA_COUNT_GT_1``, which counts occurrences with a tumbling window.
@@ -363,7 +364,7 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
 #. View messages from different ksqlDB streams and tables. Click on your stream of choice and then click **Query stream** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA EMIT CHANGES;``, and it shows results for newly arriving data.
 
    .. figure:: images/ksql_query_topic.png
-      :width: 500px
+      :width: 600px
 
 #. Click **ksqlDB Editor** and run the ``SHOW PROPERTIES;`` statement. You can see the configured ksqlDB server properties and check these values with the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
 
@@ -441,6 +442,7 @@ Consumers
    line graph to view a breakdown of latencies through the entire :ref:`request lifecycle <c3_brokers_consumption_metrics>`.
 
    .. figure:: images/slow_consumer_produce_latency_breakdown.png
+      :width: 500px
       :alt: image
 
 
@@ -1281,6 +1283,7 @@ the two Kafka brokers.
    and replication" box to view when broker counts changed.
 
    .. figure:: images/broker_down_times.png
+      :width: 600px
       :alt: image
 
 
