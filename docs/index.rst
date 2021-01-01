@@ -351,7 +351,7 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
       :width: 600px
       :alt: image
 
-#. View the existing ksqlDB tables. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``). One table is called ``WIKIPEDIA_COUNT_GT_1``, which counts occurrences with a tumbling window.
+#. View the existing ksqlDB tables. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``). One table is called ``WIKIPEDIA_COUNT_GT_1``, which counts occurrences within a `tumbling window <https://docs.ksqldb.io/en/latest/concepts/time-and-windows-in-ksqldb-queries/#tumbling-window>`__.
 
    .. figure:: images/ksql_tables_list.png
       :alt: image
