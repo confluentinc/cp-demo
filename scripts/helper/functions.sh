@@ -268,8 +268,10 @@ create_topic() {
   confluent_value_schema_validation=$4
   auth=$5
 
+  # note --tlsv1.2 below sets the _minimum_ allowed TLS version - expect TLS 1.3 to be negotiated here
   RESULT=$(curl -sS -X POST \
     -u ${auth} \
+    --tlsv1.2 \
     --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
     --header 'Content-Type: application/json' \
     --header 'Accept: application/json' \
