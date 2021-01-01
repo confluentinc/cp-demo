@@ -141,7 +141,7 @@ SCHEMA=$(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka/sec
 docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -H "Content-Type: application/vnd.schemaregistry.v1+json" --data "{\"schema\": $SCHEMA}" -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed.replica-value/versions
 
 echo
-echo -e "\nStart Confluent Replicator to loopback to on-prem cluster::"
+echo -e "\nStart Confluent Replicator to loopback to on-prem cluster:"
 ${DIR}/connectors/submit_replicator_config.sh
 
 #-------------------------------------------------------------------------------
