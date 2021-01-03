@@ -3,9 +3,8 @@
 Confluent Platform Demo (cp-demo)
 =================================
 
-This example builds a full |cp| deployment with an |ak-tm| event streaming application using `ksqlDB <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing, and all the components have security enabled end-to-end.
-Follow the accompanying guided tutorial that steps through the example so that you can learn how it all works together.
-
+This example builds a full |cp| deployment with an |ak-tm| event streaming application using `ksqlDB <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing.
+Follow the accompanying guided tutorial, broken down step-by-step, to learn how |ak| works all together with |kconnect|, |sr-long|, |c3|, |crep|, and security enabled end-to-end.
 
 ========
 Overview
@@ -509,6 +508,9 @@ solution, |crep-full| is also configured with security.
 Security
 --------
 
+Overview
+~~~~~~~~
+
 All the |cp| components and clients in this example are enabled with many :ref:`security features <security>`.
 
 -  :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization. It is configured with the |csa| and talks to LDAP to authenticate clients.
@@ -566,6 +568,9 @@ End clients (non-CP clients):
 - Should never use the TOKEN listener which is meant only for internal communication between Confluent components.
 - See :devx-cp-demo:`client configuration|env_files/streams-demo.env/` used in the example by the ``streams-demo`` container running the |kstreams| application ``wikipedia-activity-monitor``.
 
+Broker Listeners
+~~~~~~~~~~~~~~~~
+
 #. Verify the ports on which the Kafka brokers are listening with the
    following command, and they should match the table shown below:
 
@@ -620,6 +625,9 @@ End clients (non-CP clients):
               --bootstrap-server kafka1:9091 \
               --command-config /etc/kafka/secrets/client_sasl_plain.config
 
+Authorization with RBAC
+~~~~~~~~~~~~~~~~~~~~~~~
+
 #. Verify which users are configured to be super users.
 
    .. sourcecode:: bash
@@ -632,6 +640,10 @@ End clients (non-CP clients):
    .. sourcecode:: bash
 
          kafka1            | 	super.users = User:admin;User:mds;User:superUser;User:ANONYMOUS
+
+#. From the |c3| UI, in the Administration menu, click the *Manage role assignments* option. Click on ``Assignments`` and then the Kafka cluster ID. From the ``Topic`` list, verify that the LDAP user ``appSA`` is allowed to access a few topics, including any topic whose name starts with ``wikipedia``. This role assignment was done during ``cp-demo`` startup in the :devx-cp-demo:`create-role-bindings.sh script|scripts/helper/create-role-bindings.sh`.
+
+   .. figure:: images/appSA_topic_assignments.png
 
 #. Verify that LDAP user ``appSA`` (which is not a super user) can consume messages from topic ``wikipedia.parsed``.  Notice that it is configured to authenticate to brokers with mTLS and authenticate to |sr| with LDAP.
 
@@ -953,6 +965,11 @@ This demo showcases |crest-long| in two modes:
 - Standalone service, listening for HTTPS requests on port 8086
 - Embedded service on the |ak| brokers, listening for HTTPS requests on port 8091 on ``kafka1`` and on port 8092 on ``kafka2`` (these |crest| ports are shared with the broker's |mds-long| listener)
 
+Standalone |crest|
+~~~~~~~~~~~~~~~~~~
+
+For the next few steps, use the |crest| that is running as a standalone service.
+
 #. Use the standalone |crest| to try to produce a message to the topic ``users``, referencing schema id ``11``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
 
    .. code-block:: text
@@ -1170,7 +1187,12 @@ This demo showcases |crest-long| in two modes:
          -u appSA:appSA \
          https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance
 
-#. For the next few steps, use the |crest| that is embedded on the |ak| brokers. Only :ref:`rest-proxy-v3` is supported this time.  Create a role binding for the client to be granted ``ResourceOwner`` role for the topic ``dev_users``.
+Embedded |crest|
+~~~~~~~~~~~~~~~~
+
+For the next few steps, use the |crest| that is embedded on the |ak| brokers. Only :ref:`rest-proxy-v3` is supported this time.
+
+#. Create a role binding for the client to be granted ``ResourceOwner`` role for the topic ``dev_users``.
 
    Get the |ak| cluster ID:
 
