@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for t in wikipedia.parsed WIKIPEDIABOT WIKIPEDIANOBOT EN_WIKIPEDIA_GT_1_COUNTS; do
+for t in wikipedia.parsed WIKIPEDIABOT WIKIPEDIANOBOT; do
 
   echo -e "\nSample message from Topic $t"
   docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:11091,kafka2:11092 \

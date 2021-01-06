@@ -5,7 +5,7 @@ DATA=$( cat << EOF
 {
     "order": 0,
     "version": 10000,
-    "index_patterns": "en_wikipedia_gt_*",
+    "index_patterns": "wikipedia_count_gt_*",
     "settings": {
         "index": {
             "number_of_shards": 1,
@@ -37,5 +37,5 @@ DATA=$( cat << EOF
 EOF
 )
 
-curl -XPUT -H "${HEADER}" --data "${DATA}" 'http://localhost:9200/_template/en_wikipedia_gt?pretty'
+curl -XPUT -H "${HEADER}" --data "${DATA}" 'http://localhost:9200/_template/wikipedia_count_gt?pretty'
 echo
