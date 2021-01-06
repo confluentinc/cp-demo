@@ -35,7 +35,7 @@ verify_installed()
 preflight_checks()
 {
   # Verify appropriate tools are installed on host
-  for cmd in jq docker-compose keytool docker openssl xargs awk; do
+  for cmd in curl jq docker-compose keytool docker openssl xargs awk; do
     verify_installed $cmd || exit 1
   done
 
@@ -256,4 +256,41 @@ END
     echo "Failed to log into MDS.  Please check all parameters and run again"
     exit 1
   fi
+}
+
+create_topic() {
+
+  local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+  broker_host_port=$1
+  cluster_id=$2
+  topic_name=$3
+  confluent_value_schema_validation=$4
+  auth=$5
+
+  # note --tlsv1.2 below sets the _minimum_ allowed TLS version - expect TLS 1.3 to be negotiated here
+  {
+  IFS= read -rd '' out
+  IFS= read -rd '' http_code
+  IFS= read -rd '' status
+  } < <({ out=$(curl -sS -X POST \
+    -o /dev/stderr \
+    -w "%{http_code}" \
+    -u ${auth} \
+    --tlsv1.2 \
+    --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+    --header 'Content-Type: application/json' \
+    --header 'Accept: application/json' \
+    --data-binary @<(jq -n --arg topic_name "${topic_name}" --arg confluent_value_schema_validation "${confluent_value_schema_validation}" -f ${DIR}/topic.jq) \
+    "https://${broker_host_port}/kafka/v3/clusters/${cluster_id}/topics"); } 2>&1; printf '\0%s' "$out" "$?") || true
+
+  echo "response code: " $http_code
+  echo $out| jq || true
+
+  if [[ $status -ne 0 || $http_code -gt 299 || -z $out || $out =~ "error_code" ]]; then
+    echo "ERROR: create topic failed $out"
+    return 1
+  fi
+
+  return 0
 }
