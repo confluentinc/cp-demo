@@ -54,6 +54,8 @@ services:
       - ./scripts/security:/etc/kafka/secrets
     entrypoint: /bin/bash
     tty: true
+    environment:
+      TZ: America/New_York
 
   openldap:
     image: osixia/openldap:1.3.0

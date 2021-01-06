@@ -1,5 +1,5 @@
 #!/bin/bash
-  
+
 VALIDATE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 source ${VALIDATE_DIR}/../helper/functions.sh
@@ -8,16 +8,9 @@ source ${VALIDATE_DIR}/../env.sh
 
 verify_installed ccloud || exit 1
 
-echo
-echo "This example uses real Confluent Cloud resources."
-echo "To avoid unexpected charges, carefully evaluate the cost of resources before launching the script and ensure all resources are destroyed after you are done running it."
-echo "(Use Confluent Cloud promo code ``C50INTEG`` to receive \$50 free usage)"
-read -p "Do you still want to run this script? [y/n] " -n 1 -r
-echo
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
-  exit 1
-fi
+wget -O ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
+source ./ccloud_library.sh
+ccloud::prompt_continue_ccloud_demo || exit 1
 
 # Log into Confluent Cloud CLI
 echo
@@ -44,8 +37,6 @@ docker-compose exec kafka1 kafka-configs \
 # Create a new ccloud-stack
 echo
 echo "Configure a new Confluent Cloud ccloud-stack"
-wget -O ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
-source ./ccloud_library.sh
 ccloud::create_ccloud_stack
 SERVICE_ACCOUNT_ID=$(ccloud kafka cluster list -o json | jq -r '.[0].name' | awk -F'-' '{print $4;}')
 CONFIG_FILE=stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
@@ -90,8 +81,8 @@ sleep 60
 
 # Query Metrics API
 
-CURRENT_TIME_MINUS_1HR=$(date -Is -d '-1 hour')
-CURRENT_TIME_PLUS_1HR=$(date -Is -d '+1 hour')
+CURRENT_TIME_MINUS_1HR=$(docker-compose exec tools date -Is -d '-1 hour' | tr -d '\r')
+CURRENT_TIME_PLUS_1HR=$(docker-compose exec tools date -Is -d '+1 hour' | tr -d '\r')
 echo
 echo "CURRENT_TIME_MINUS_1HR=$CURRENT_TIME_MINUS_1HR"
 echo "CURRENT_TIME_PLUS_1HR=$CURRENT_TIME_PLUS_1HR"

@@ -1404,10 +1404,24 @@ In this part of the tutorial, you can run |crep| to send |ak| data to |ccloud| a
 .. figure:: images/cp-demo-overview-with-ccloud.jpg
     :alt: image
 
+
+Cost to Run
+-----------
+
+Caution
+~~~~~~~
+
+.. include:: ../../examples/ccloud/docs/includes/ccloud-examples-caution.rst
+
+|ccloud| Promo Code
+~~~~~~~~~~~~~~~~~~~
+
+.. include:: ../../examples/ccloud/docs/includes/ccloud-examples-promo-code.rst
+
 Setup |ccloud|
 --------------
 
-#. Create a |ccloud| account at https://confluent.cloud. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
+#. Create a |ccloud| account at https://confluent.cloud.
 
 #. Install `Confluent Cloud CLI <https://docs.confluent.io/ccloud-cli/current/install.html>`__ v1.21.0 or later.
 
@@ -1432,14 +1446,14 @@ Setup |ccloud|
 
       wget -O ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
 
-#. Using the ``ccloud_library.sh`` which you just downloaded, create a new ``ccloud-stack`` (see :ref:`ccloud-stack` for advanced options). It creates real resources in |ccloud| and takes a few minutes to complete.
+#. Using ``ccloud_library.sh`` which you downloaded in the previous step, create a new ``ccloud-stack`` (see :ref:`ccloud-stack` for advanced options). It creates real resources in |ccloud| and takes a few minutes to complete.
 
    .. code-block:: text
 
       source ./ccloud_library.sh
       ccloud::create_ccloud_stack
  
-#. When it completes, view the local configuration file at ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` that was auto-generated. It contains connection information for connecting to your newly created |ccloud| environment.
+#. When ``ccloud-stack`` completes, view the local configuration file at ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` that was auto-generated. It contains connection information for connecting to your newly created |ccloud| environment.
 
    .. code-block:: text
 
@@ -1588,12 +1602,12 @@ Metrics
 
 .. include:: includes/metrics-api-intro.rst
 
-#. Get the current time minus 1 hour and plus 1 hour. These define a time interval when querying the Metrics API.
+#. To define the time interval when querying the Metrics API, get the current time minus 1 hour and current time plus 1 hour. The ``date`` utility varies between operating systems, so use the ``tools`` Docker container to get consistent and reliable dates.
 
    .. code-block:: bash
 
-      CURRENT_TIME_MINUS_1HR=$(date -Is -d '-1 hour')
-      CURRENT_TIME_PLUS_1HR=$(date -Is -d '+1 hour')
+      CURRENT_TIME_MINUS_1HR=$(docker-compose exec tools date -Is -d '-1 hour' | tr -d '\r')
+      CURRENT_TIME_PLUS_1HR=$(docker-compose exec tools date -Is -d '+1 hour' | tr -d '\r')
 
 #. View the :devx-cp-demo:`metrics query file for on-prem|scripts/validate/metrics_query_onprem.json`. (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
 
@@ -1703,6 +1717,8 @@ Metrics
 
 Cleanup
 -------
+
+.. include:: ../../examples/ccloud/docs/includes/ccloud-examples-promo-code.rst
 
 #. Remove the |crep| connector that was replicating data to |ccloud|.
 
