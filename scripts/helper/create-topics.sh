@@ -1,47 +1,20 @@
 #!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
 
-# Create Kafka topic users, using appSA principal
-export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
-   --bootstrap-server kafka1:11091 \
-   --command-config /etc/kafka/secrets/appSA.config \
-   --topic users \
-   --create \
-   --replication-factor 2 \
-   --partitions 2 \
-   --config confluent.value.schema.validation=true
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+source ${DIR}/functions.sh
 
-# Create Kafka topics with prefix wikipedia, using connectorSA principal
-export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
-   --bootstrap-server kafka1:11091 \
-   --command-config /etc/kafka/secrets/connectorSA_without_interceptors_ssl.config \
-   --topic wikipedia.parsed \
-   --create \
-   --replication-factor 2 \
-   --partitions 2 \
-   --config confluent.value.schema.validation=true
-export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
-   --bootstrap-server kafka1:11091 \
-   --command-config /etc/kafka/secrets/connectorSA_without_interceptors_ssl.config \
-   --topic wikipedia.parsed.count-by-domain \
-   --create \
-   --replication-factor 2 \
-   --partitions 2
-export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
-   --bootstrap-server kafka1:11091 \
-   --command-config /etc/kafka/secrets/connectorSA_without_interceptors_ssl.config \
-   --topic wikipedia.failed \
-   --create \
-   --replication-factor 2 \
-   --partitions 2
+KAFKA_CLUSTER_ID=$(get_kafka_cluster_id_from_container)
+echo "KAFKA_CLUSTER_ID: ${KAFKA_CLUSTER_ID}"
 
-# Create Kafka topics with prefix WIKIPEDIA or EN_WIKIPEDIA, using ksqlDBUser principal
-for t in WIKIPEDIABOT WIKIPEDIANOBOT EN_WIKIPEDIA_GT_1 EN_WIKIPEDIA_GT_1_COUNTS
-do
-  export KAFKA_LOG4J_OPTS="-Dlog4j.rootLogger=DEBUG,stdout -Dlog4j.logger.kafka=DEBUG,stdout" && kafka-topics \
-     --bootstrap-server kafka1:11091 \
-     --command-config /etc/kafka/secrets/ksqlDBUser_without_interceptors_ssl.config \
-     --topic "$t" \
-     --create \
-     --replication-factor 2 \
-     --partitions 2
-done
+auth="superUser:superUser"
+
+create_topic kafka1:8091 ${KAFKA_CLUSTER_ID} users true ${auth}
+create_topic kafka1:8091 ${KAFKA_CLUSTER_ID} wikipedia.parsed true ${auth}
+create_topic kafka1:8091 ${KAFKA_CLUSTER_ID} wikipedia.parsed.count-by-domain false ${auth}
+create_topic kafka1:8091 ${KAFKA_CLUSTER_ID} wikipedia.failed false ${auth}
+create_topic kafka1:8091 ${KAFKA_CLUSTER_ID} WIKIPEDIABOT false ${auth}
+create_topic kafka1:8091 ${KAFKA_CLUSTER_ID} WIKIPEDIANOBOT false ${auth}
+create_topic kafka1:8091 ${KAFKA_CLUSTER_ID} EN_WIKIPEDIA_GT_1 false ${auth}
+create_topic kafka1:8091 ${KAFKA_CLUSTER_ID} EN_WIKIPEDIA_GT_1_COUNTS false ${auth}
