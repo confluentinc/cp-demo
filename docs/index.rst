@@ -120,7 +120,7 @@ It generates the keys and certificates, brings up the Docker containers, and con
 You can run it with optional settings:
 
 - ``CLEAN``: controls whether certificates and the locally built |kconnect| image are regenerated in between runs
-- ``C3_KSQLDB_HTTPS``: sets |c3| and ksqlDB server to use ``HTTP`` or ``HTTPS`` (default: ``HTTP``)
+- ``C3_KSQLDB_HTTPS``: controls whether |c3| and ksqlDB server use ``HTTP`` or ``HTTPS`` (default: ``false`` for ``HTTP``)
 - ``VIZ``: enables Elasticsearch and Kibana (default: ``true``)
 
 #. To run ``cp-demo`` the first time with defaults, run the following command. This takes a few minutes to complete.
@@ -220,14 +220,17 @@ Log into |c3|
    - _Chrome_: click on ``Advanced`` and when the window expands, click on ``Proceed to localhost (unsafe)``.
 
      .. figure:: images/c3-chrome-cert-warning.png
+        :width: 500px
 
    - _Safari_: open a new private browsing window (``Shift + ⌘ + N``), click on ``Show Details`` and when the window expands, click on ``visit this website``.
 
      .. figure:: images/c3-safari-cert-warning.png
+        :width: 500px
 
 #. At the login screen, log into |c3| as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
 
    .. figure:: images/c3-login.png
+      :width: 500px
 
 
 Brokers 
@@ -236,10 +239,11 @@ Brokers
 #. Select the cluster named "Kafka Raleigh".
 
    .. figure:: images/cluster_raleigh.png
+      :width: 500px
 
 #. Click on "Brokers".
 
-#. View the status of the Brokers in the cluster:
+#. View the status of the brokers in the cluster:
 
    .. figure:: images/landing_page.png
 
@@ -336,7 +340,7 @@ The |kconnect| worker's embedded producer is configured to be idempotent, exactl
 ksqlDB
 ------
 
-In this example, ksqlDB is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the :devx-cp-demo:`ksqlDB command file|scripts/ksqlDB/statements.sql` .
+In this example, ksqlDB is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the :devx-cp-demo:`ksqlDB command file|scripts/ksqlDB/statements.sql`.
 Its embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
 
 #. In the navigation bar, click **ksqlDB**.
@@ -365,9 +369,10 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
 #. Click on ``WIKIPEDIA`` to describe the schema (fields or columns) of an existing ksqlDB stream. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``DESCRIBE WIKIPEDIA;``)
 
    .. figure:: images/wikipedia_describe.png
+      :width: 600px
       :alt: image
 
-#. View the existing ksqlDB tables. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``).
+#. View the existing ksqlDB tables. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``). One table is called ``WIKIPEDIA_COUNT_GT_1``, which counts occurrences within a `tumbling window <https://docs.ksqldb.io/en/latest/concepts/time-and-windows-in-ksqldb-queries/#tumbling-window>`__.
 
    .. figure:: images/ksql_tables_list.png
       :alt: image
@@ -380,37 +385,24 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
 #. View messages from different ksqlDB streams and tables. Click on your stream of choice and then click **Query stream** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA EMIT CHANGES;``, and it shows results for newly arriving data.
 
    .. figure:: images/ksql_query_topic.png
-      :alt: image
+      :width: 600px
 
 #. Click **ksqlDB Editor** and run the ``SHOW PROPERTIES;`` statement. You can see the configured ksqlDB server properties and check these values with the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
 
    .. figure:: images/ksql_properties.png
       :alt: image
 
-#. This example creates two streams ``EN_WIKIPEDIA_GT_1`` and ``EN_WIKIPEDIA_GT_1_COUNTS`` to demonstrate how ksqlDB windows work. ``EN_WIKIPEDIA_GT_1`` counts occurrences with a tumbling window, and for a given key it writes a `null` into the table on the first seen message.  The underlying Kafka topic for ``EN_WIKIPEDIA_GT_1`` does not filter out those nulls, but to send just the counts greater than one downstream, there is a separate Kafka topic for ``EN_WIKIPEDIA_GT_1_COUNTS`` which does filter out those nulls (e.g., the query has a clause ``where ROWTIME is not null``).  From the bash prompt, view those underlying Kafka topics.
+#. The `ksqlDB processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their ksqlDB queries. In this example, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the ksqlDB editor run the following "bad" query for 20 seconds:
 
-- View messages in the topic ``EN_WIKIPEDIA_GT_1`` (jump to offset 0/partition 0), and notice the nulls:
-
-  .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1.png
-     :alt: image
-
-- For comparison, view messages in the topic ``EN_WIKIPEDIA_GT_1_COUNTS`` (jump to offset 0/partition 0), and notice no nulls:
-
-  .. figure:: images/messages_in_EN_WIKIPEDIA_GT_1_COUNTS.png
-     :alt: image
-
-11. The `ksqlDB processing log <https://docs.confluent.io/current/ksql/docs/developer-guide/processing-log.html>`__ captures per-record errors during processing to help developers debug their ksqlDB queries. In this example, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the ksqlDB editor run the following "bad" query for 20 seconds:
-
-.. sourcecode:: bash
+   .. sourcecode:: bash
 
       SELECT ucase(cast(null as varchar)) FROM wikipedia EMIT CHANGES;
 
-No records should be returned from this query. ksqlDB writes errors into the processing log for each record. View the processing log topic ``ksql-clusterksql_processing_log`` with topic inspection (jump to offset 0/partition 0) or the corresponding ksqlDB stream ``KSQL_PROCESSING_LOG`` with the ksqlDB editor (set ``auto.offset.reset=earliest``).
+   No records should be returned from this query. ksqlDB writes errors into the processing log for each record. View the processing log topic ``ksql-clusterksql_processing_log`` with topic inspection (jump to offset 0/partition 0) or the corresponding ksqlDB stream ``KSQL_PROCESSING_LOG`` with the ksqlDB editor (set ``auto.offset.reset=earliest``).
 
-.. sourcecode:: bash
+   .. sourcecode:: bash
 
       SELECT * FROM KSQL_PROCESSING_LOG EMIT CHANGES;
-
 
 
 Consumers
@@ -471,6 +463,7 @@ Consumers
    line graph to view a breakdown of latencies through the entire :ref:`request lifecycle <c3_brokers_consumption_metrics>`.
 
    .. figure:: images/slow_consumer_produce_latency_breakdown.png
+      :width: 500px
       :alt: image
 
 
@@ -807,16 +800,17 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. code-block:: JSON
 
-       [
-         "wikipedia.parsed.replica-value",
-         "EN_WIKIPEDIA_GT_1_COUNTS-value",
-         "WIKIPEDIABOT-value",
-         "EN_WIKIPEDIA_GT_1-value",
-         "_confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_7-Aggregate-Aggregate-Materialize-changelog-value",
-         "WIKIPEDIANOBOT-value",
-         "_confluent-ksql-ksql-clusterquery_CTAS_EN_WIKIPEDIA_GT_1_7-Aggregate-GroupBy-repartition-value",
-         "wikipedia.parsed-value"
-       ]
+      [
+        "WIKIPEDIA_COUNT_GT_1-value",
+        "wikipedia-activity-monitor-KSTREAM-AGGREGATE-STATE-STORE-0000000003-repartition-value",
+        "wikipedia.parsed.replica-value",
+        "WIKIPEDIABOT-value",
+        "WIKIPEDIANOBOT-value",
+        "_confluent-ksql-ksql-clusterquery_CTAS_WIKIPEDIA_COUNT_GT_1_7-Aggregate-GroupBy-repartition-value",
+        "wikipedia.parsed.count-by-domain-value",
+        "wikipedia.parsed-value",
+        "_confluent-ksql-ksql-clusterquery_CTAS_WIKIPEDIA_COUNT_GT_1_7-Aggregate-Aggregate-Materialize-changelog-value"
+      ]
 
 #. Instead of using the superUser credentials, now use client credentials `noexist:noexist` (user does not exist in LDAP) to try to register a new Avro schema (a record with two fields ``username`` and ``userid``) into |sr| for the value of a new topic ``users``. It should fail due to an authorization error.
 
@@ -1305,7 +1299,7 @@ the two Kafka brokers.
    .. figure:: images/broker_down_failed.png
       :alt: image
 
-#. View Topic information details to see that there are out of sync replicas on broker 2.
+#. View Topic information details to see that there are out of sync replicas.
 
    .. figure:: images/broker_down_replicas.png
       :alt: image
@@ -1333,6 +1327,7 @@ the two Kafka brokers.
    and replication" box to view when broker counts changed.
 
    .. figure:: images/broker_down_times.png
+      :width: 600px
       :alt: image
 
 

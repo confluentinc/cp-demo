@@ -14,4 +14,4 @@ docker exec connect kafka-avro-console-consumer --bootstrap-server kafka1:11091,
   --property basic.auth.user.info=clientListen:clientListen \
   --consumer-property group.id=listen-consumer \
   --consumer-property /etc/kafka/secrets/clientListen_with_interceptors.config \
-  --topic EN_WIKIPEDIA_GT_1_COUNTS > /dev/null 2>&1 &
+  --topic WIKIPEDIA_COUNT_GT_1 > /dev/null 2>&1 &

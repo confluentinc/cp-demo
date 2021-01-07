@@ -14,7 +14,7 @@ ${DIR}/stop.sh
 
 # Regenerate certificates and the Connect Docker image if any of the following conditions are true
 if [[ "$CLEAN" == "true" ]] || \
- ! [[ -f "${DIR}/security/control-center-and-ksqldb-server-ca1-signed.crt" ]] || \
+ ! [[ -f "${DIR}/security/controlCenterAndKsqlDBServer-ca1-signed.crt" ]] || \
  ! [[ $(docker images --format "{{.Repository}}:{{.Tag}}" localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}) =~ localbuild ]] ;
 then
   if [[ -z $CLEAN ]] || [[ "$CLEAN" == "false" ]] ; then
@@ -81,7 +81,7 @@ docker-compose up -d schemaregistry connect control-center
 
 echo
 echo -e "Create topics in Kafka cluster:"
-docker-compose exec kafka1 bash -c "/tmp/helper/create-topics.sh" || exit 1
+docker-compose exec tools bash -c "/tmp/helper/create-topics.sh" || exit 1
 
 # Verify Confluent Control Center has started
 MAX_WAIT=300
@@ -155,9 +155,9 @@ retry $MAX_WAIT host_check_ksqlDBserver_up || exit 1
 echo -e "\nRun ksqlDB queries:"
 ${DIR}/ksqlDB/run_ksqlDB.sh
 
-echo -e "\nStart consumers for additional topics: WIKIPEDIANOBOT, EN_WIKIPEDIA_GT_1_COUNTS"
+echo -e "\nStart additional consumers to read from topics WIKIPEDIANOBOT, WIKIPEDIA_COUNT_GT_1"
 ${DIR}/consumers/listen_WIKIPEDIANOBOT.sh
-${DIR}/consumers/listen_EN_WIKIPEDIA_GT_1_COUNTS.sh
+${DIR}/consumers/listen_WIKIPEDIA_COUNT_GT_1.sh
 
 echo
 echo

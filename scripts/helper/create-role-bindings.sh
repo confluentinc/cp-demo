@@ -25,7 +25,7 @@ CONNECTOR_PRINCIPAL="User:connectorSA"
 SR_PRINCIPAL="User:schemaregistryUser"
 KSQLDB_ADMIN="User:ksqlDBAdmin"
 KSQLDB_USER="User:ksqlDBUser"
-KSQLDB_SERVER="User:ksqlDBserver"
+KSQLDB_SERVER="User:controlCenterAndKsqlDBServer"
 C3_ADMIN="User:controlcenterAdmin"
 REST_ADMIN="User:restAdmin"
 CLIENT_PRINCIPAL="User:appSA"
@@ -261,13 +261,6 @@ confluent iam rolebinding create \
 confluent iam rolebinding create \
     --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
-    --resource Topic:EN_WIKIPEDIA \
-    --prefix \
-    --kafka-cluster-id $KAFKA_CLUSTER_ID
-
-confluent iam rolebinding create \
-    --principal $KSQLDB_ADMIN \
-    --role ResourceOwner \
     --resource TransactionalId:${KSQLDB} \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
@@ -290,23 +283,7 @@ confluent iam rolebinding create \
 confluent iam rolebinding create \
     --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
-    --resource Subject:EN_WIKIPEDIA \
-    --prefix \
-    --kafka-cluster-id $KAFKA_CLUSTER_ID \
-    --schema-registry-cluster-id $SR
-
-confluent iam rolebinding create \
-    --principal $KSQLDB_ADMIN \
-    --role ResourceOwner \
     --resource Subject:WIKIPEDIA \
-    --prefix \
-    --kafka-cluster-id $KAFKA_CLUSTER_ID \
-    --schema-registry-cluster-id $SR
-
-confluent iam rolebinding create \
-    --principal $KSQLDB_ADMIN \
-    --role ResourceOwner \
-    --resource Subject:EN_WIKIPEDIA \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
@@ -380,22 +357,7 @@ confluent iam rolebinding create \
 confluent iam rolebinding create \
     --principal $KSQLDB_USER \
     --role ResourceOwner \
-    --resource Topic:EN_WIKIPEDIA \
-    --prefix \
-    --kafka-cluster-id $KAFKA_CLUSTER_ID
-
-confluent iam rolebinding create \
-    --principal $KSQLDB_USER \
-    --role ResourceOwner \
     --resource Subject:WIKIPEDIA \
-    --prefix \
-    --kafka-cluster-id $KAFKA_CLUSTER_ID \
-    --schema-registry-cluster-id $SR
-
-confluent iam rolebinding create \
-    --principal $KSQLDB_USER \
-    --role ResourceOwner \
-    --resource Subject:EN_WIKIPEDIA \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
@@ -506,12 +468,6 @@ confluent iam rolebinding create \
 confluent iam rolebinding create \
     --principal $LISTEN_PRINCIPAL \
     --role ResourceOwner \
-    --resource Topic:EN_WIKIPEDIA \
-    --kafka-cluster-id $KAFKA_CLUSTER_ID
-
-confluent iam rolebinding create \
-    --principal $LISTEN_PRINCIPAL \
-    --role ResourceOwner \
     --resource Subject:wikipedia \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
@@ -521,14 +477,6 @@ confluent iam rolebinding create \
     --principal $LISTEN_PRINCIPAL \
     --role ResourceOwner \
     --resource Subject:WIKIPEDIA \
-    --prefix \
-    --kafka-cluster-id $KAFKA_CLUSTER_ID \
-    --schema-registry-cluster-id $SR
-
-confluent iam rolebinding create \
-    --principal $LISTEN_PRINCIPAL \
-    --role ResourceOwner \
-    --resource Subject:EN_WIKIPEDIA \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
