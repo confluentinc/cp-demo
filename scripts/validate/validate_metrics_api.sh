@@ -62,7 +62,7 @@ ${VALIDATE_DIR}/../helper/refresh_mds_login.sh
 docker-compose exec tools bash -c "confluent iam rolebinding create \
     --principal $CONNECTOR_SUBMITTER \
     --role ResourceOwner \
-    --resource Connector:${REPLICATOR_NAME} \
+    --resource Connector:$REPLICATOR_NAME \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT"
 ${VALIDATE_DIR}/../connectors/submit_replicator_to_ccloud_config.sh
@@ -72,7 +72,7 @@ echo
 echo
 MAX_WAIT=120
 echo "Waiting up to $MAX_WAIT seconds for Replicator to Confluent Cloud to start"
-retry $MAX_WAIT check_connector_status_running ${REPLICATOR_NAME} || exit 1
+retry $MAX_WAIT check_connector_status_running $REPLICATOR_NAME || exit 1
 echo "Replicator started!"
 sleep 5
 

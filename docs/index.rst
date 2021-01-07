@@ -1570,7 +1570,7 @@ Telemetry Reporter
       docker-compose exec tools bash -c "confluent iam rolebinding create \
           --principal User:connectorSubmitter \
           --role ResourceOwner \
-          --resource Connector:${REPLICATOR_NAME} \
+          --resource Connector:$REPLICATOR_NAME \
           --kafka-cluster-id ${KAFKA_CLUSTER_ID} \
           --connect-cluster-id connect-cluster"
 
