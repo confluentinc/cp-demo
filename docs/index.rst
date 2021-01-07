@@ -1713,7 +1713,7 @@ Metrics
 Cleanup
 -------
 
-.. include:: ../../examples/ccloud/docs/includes/ccloud-examples-promo-code.rst
+.. include:: ../../examples/ccloud/docs/includes/ccloud-examples-terminate.rst
 
 #. Remove the |crep| connector that was replicating data to |ccloud|.
 
