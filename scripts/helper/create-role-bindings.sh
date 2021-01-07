@@ -500,10 +500,9 @@ echo "    Connector Submitter: $CONNECTOR_SUBMITTER"
 echo "    Connector Principal: $CONNECTOR_PRINCIPAL"
 echo "    ksqlDB Admin: $KSQLDB_ADMIN"
 echo "    ksqlDB User: $KSQLDB_USER"
+echo "    ksqlDB Server: $KSQLDB_SERVER"
 echo "    C3 Admin: $C3_ADMIN"
 echo "    Rest Admin: $REST_ADMIN"
 echo "    Client service account: $CLIENT_PRINCIPAL"
 echo "    Listen Client service account: $LISTEN_PRINCIPAL"
 echo
-
-
