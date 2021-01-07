@@ -318,12 +318,14 @@ create_topic() {
     --data-binary @<(jq -n --arg topic_name "${topic_name}" --arg confluent_value_schema_validation "${confluent_value_schema_validation}" -f ${DIR}/topic.jq) \
     "https://${broker_host_port}/kafka/v3/clusters/${cluster_id}/topics"); } 2>&1; printf '\0%s' "$out" "$?") || true
 
-  echo "response code: " $http_code
-  echo $out| jq || true
+  #echo "response code: " $http_code
+  #echo $out| jq || true
 
   if [[ $status -ne 0 || $http_code -gt 299 || -z $out || $out =~ "error_code" ]]; then
     echo "ERROR: create topic failed $out"
     return 1
+  else
+    echo "Created topic $topic_name"
   fi
 
   return 0

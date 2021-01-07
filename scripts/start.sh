@@ -186,11 +186,31 @@ curl -u mds:mds -X POST "https://localhost:8091/security/1.0/rbac/principals" --
 # Do poststart_checks
 poststart_checks
 
-echo -e "\n\n\n******************************************************************************************************************"
-echo -e "DONE! Connect to Confluent Control Center at $C3URL (login as superUser/superUser for full access)"
-echo -e "******************************************************************************************************************\n"
 
-echo
-echo "Want more? Check out https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#hybrid-deployment-to-ccloud to connect cp-demo to Confluent Cloud"
-echo "(Use Confluent Cloud promo code ``C50INTEG`` to receive \$50 free usage)"
-echo
+cat << EOF
+
+----------------------------------------------------------------------------------------------------
+DONE! From your browser:
+
+  Confluent Control Center (login superUser/superUser for full access):
+     $C3URL
+
+EOF
+
+if [[ "$VIZ" == "true" ]]; then
+cat << EOF
+  Kibana
+     http://localhost:5601/app/dashboards#/view/Overview
+
+EOF
+fi
+
+cat << EOF
+Want more? Replicate data from cp-demo to Confluent Cloud:
+
+     https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#hybrid-deployment-to-ccloud
+
+Use Confluent Cloud promo code C50INTEG to receive \$50 free usage
+----------------------------------------------------------------------------------------------------
+
+EOF

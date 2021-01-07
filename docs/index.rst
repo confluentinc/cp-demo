@@ -1568,11 +1568,11 @@ Telemetry Reporter
    .. code-block:: text
 
       docker-compose exec tools bash -c "confluent iam rolebinding create \
-          --principal "User:connectorSubmitter" \
+          --principal User:connectorSubmitter \
           --role ResourceOwner \
           --resource Connector:${REPLICATOR_NAME} \
           --kafka-cluster-id ${KAFKA_CLUSTER_ID} \
-          --connect-cluster-id connect-cluster
+          --connect-cluster-id connect-cluster"
 
 #. View the |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`. It is configured to copy from the |ak| topic ``wikipedia.parsed`` (on-prem) to the cloud topic ``wikipedia.parsed.ccloud.replica`` in |ccloud|. Note that it uses the local connect cluster (the origin site), so the |crep| configuration has overrides for the producer. The configuration parameters that use variables are read from the env variables that you sourced in an earlier step.
 
@@ -1725,7 +1725,7 @@ Cleanup
         --tlsv1.2 \
         --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
         -u connectorSubmitter:connectorSubmitter \
-        https://connect:8083/connectors/${REPLICATOR_NAME}
+        https://connect:8083/connectors/$REPLICATOR_NAME
 
 #. Disable Telemetry Reporter in both |ak| brokers.
 
