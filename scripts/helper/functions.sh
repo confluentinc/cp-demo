@@ -77,7 +77,7 @@ poststart_checks()
 
   # Check number of Schema Registry subjects
   # The subject created by the Kafka Streams app may be created after start script ends, so ignore that subject here (to not add time to start script)
-  numSubjects=7
+  numSubjects=6
   foundSubjects=$(docker-compose exec schemaregistry curl -X GET --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://schemaregistry:8085/subjects | jq length)
   if [[ $foundSubjects -lt $numSubjects ]]; then
     echo -e "\nWARNING: Expected to find at least $numSubjects subjects in Schema Registry but found $foundSubjects subjects. Please troubleshoot, see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
