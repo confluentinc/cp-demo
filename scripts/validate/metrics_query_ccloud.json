@@ -2,7 +2,7 @@
   "aggregations": [
       {
           "agg": "SUM",
-          "metric": "io.confluent.kafka.server/received_records"
+          "metric": "io.confluent.kafka.server/received_bytes"
       }
   ],
   "filter": {

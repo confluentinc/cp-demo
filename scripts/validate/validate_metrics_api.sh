@@ -76,8 +76,8 @@ retry $MAX_WAIT check_connector_status_running ${REPLICATOR_NAME} || exit 1
 echo "Replicator started!"
 sleep 5
 
-echo "Sleeping 60s to wait for Replicator to start propagating data to Confluent Cloud"
-sleep 60
+echo "Sleeping 90s to wait for Replicator to start propagating data to Confluent Cloud and for metrics collection to begin"
+sleep 90
 
 # Query Metrics API
 
@@ -86,6 +86,7 @@ CURRENT_TIME_PLUS_1HR=$(docker-compose exec tools date -Is -d '+1 hour' | tr -d 
 echo
 echo "CURRENT_TIME_MINUS_1HR=$CURRENT_TIME_MINUS_1HR"
 echo "CURRENT_TIME_PLUS_1HR=$CURRENT_TIME_PLUS_1HR"
+echo
 
 # On-prem
 DATA=$(eval "cat <<EOF       

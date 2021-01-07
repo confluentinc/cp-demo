@@ -1599,16 +1599,16 @@ Metrics
 
 #. To define the time interval when querying the Metrics API, get the current time minus 1 hour and current time plus 1 hour. The ``date`` utility varies between operating systems, so use the ``tools`` Docker container to get consistent and reliable dates.
 
-   .. code-block:: bash
+   .. code-block:: text
 
       CURRENT_TIME_MINUS_1HR=$(docker-compose exec tools date -Is -d '-1 hour' | tr -d '\r')
       CURRENT_TIME_PLUS_1HR=$(docker-compose exec tools date -Is -d '+1 hour' | tr -d '\r')
 
-#. View the :devx-cp-demo:`metrics query file for on-prem|scripts/validate/metrics_query_onprem.json`. (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
+#. View the :devx-cp-demo:`metrics query file|scripts/validate/metrics_query_onprem.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed`` in the on-prem cluster (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
 
    .. literalinclude:: ../scripts/validate/metrics_query_onprem.json
 
-#. Create a parameter which substitutes values into the query json file. For this substitution to work, you must have set the following parameters in your environment:
+#. Substitute values into the query json file. For this substitution to work, you must have set the following parameters in your environment:
 
    - ``CURRENT_TIME_MINUS_1HR``
    - ``CURRENT_TIME_PLUS_1HR``
@@ -1636,7 +1636,7 @@ Metrics
            https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query \
               | jq .
 
-#. Your output should resemble the output below, and include metrics for the on-prem topic ``wikipedia.parsed``:
+#. Your output should resemble the output below, showing metrics for the on-prem topic ``wikipedia.parsed``:
 
    .. code-block:: text
 
@@ -1655,7 +1655,7 @@ Metrics
         ]
       }
 
-#. View the :devx-cp-demo:`metrics query file for Confluent Cloud|scripts/validate/metrics_query_ccloud.json`. (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
+#. View the :devx-cp-demo:`metrics query file|scripts/validate/metrics_query_ccloud.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed.ccloud.replica`` in |ccloud| (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
 
    .. literalinclude:: ../scripts/validate/metrics_query_ccloud.json
 
@@ -1665,7 +1665,7 @@ Metrics
 
       CCLOUD_CLUSTER_ID=$(ccloud kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-${SERVICE_ACCOUNT_ID}"'")' | jq -r .id)
 
-#. Create a parameter which substitutes values into the query json file. For this substitution to work, you must have set the following parameters in your environment:
+#. Substitute values into the query json file. For this substitution to work, you must have set the following parameters in your environment:
 
    - ``CURRENT_TIME_MINUS_1HR``
    - ``CURRENT_TIME_PLUS_1HR``
@@ -1694,7 +1694,7 @@ Metrics
            https://api.telemetry.confluent.cloud/v1/metrics/cloud/query \
               | jq .
 
-#. Your output should resemble the output below, and include metrics for the |ccloud| topic ``wikipedia.parsed.ccloud.replica``:
+#. Your output should resemble the output below, showing metrics for the |ccloud| topic ``wikipedia.parsed.ccloud.replica``:
 
    .. code-block:: text
 
@@ -1903,7 +1903,7 @@ Validate
 
       ./scripts/consumers/listen.sh
 
-#. Run the scripts in :devx-cp-demo:`validation scripts|scripts/validate/` to verify that they pass.
+#. Run the :devx-cp-demo:`validation scripts|scripts/validate/` to verify that they pass.
 
    .. sourcecode:: bash
 
