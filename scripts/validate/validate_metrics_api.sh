@@ -8,7 +8,7 @@ source ${VALIDATE_DIR}/../env.sh
 
 verify_installed ccloud || exit 1
 
-wget -O ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
+curl -sS -o ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
 source ./ccloud_library.sh
 ccloud::prompt_continue_ccloud_demo || exit 1
 
@@ -44,7 +44,7 @@ CCLOUD_CLUSTER_ID=$(ccloud kafka cluster list -o json | jq -c -r '.[] | select (
 echo "CCLOUD_CLUSTER_ID=$CCLOUD_CLUSTER_ID"
 
 # Create parameters customized for Confluent Cloud instance created above
-wget -O ccloud-generate-cp-configs.sh https://raw.githubusercontent.com/confluentinc/examples/latest/ccloud/ccloud-generate-cp-configs.sh
+curl -sS -o ccloud-generate-cp-configs.sh https://raw.githubusercontent.com/confluentinc/examples/latest/ccloud/ccloud-generate-cp-configs.sh
 chmod 744 ./ccloud-generate-cp-configs.sh
 ./ccloud-generate-cp-configs.sh $CONFIG_FILE
 source "delta_configs/env.delta"

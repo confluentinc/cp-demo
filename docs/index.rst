@@ -90,7 +90,7 @@ This example has been validated with:
 -  MacOS 10.15.3 (note for `Ubuntu environments <https://github.com/confluentinc/cp-demo/issues/53>`__)
 -  OpenSSL 1.1.1d
 -  git
--  wget
+-  curl
 -  jq
 
 Setup
@@ -1439,7 +1439,7 @@ Setup |ccloud|
 
    .. code-block:: text
 
-      wget -O ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
+      curl -sS -o ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
 
 #. Using ``ccloud_library.sh`` which you downloaded in the previous step, create a new ``ccloud-stack`` (see :ref:`ccloud-stack` for advanced options). It creates real resources in |ccloud| and takes a few minutes to complete.
 
@@ -1466,7 +1466,7 @@ Setup |ccloud|
 
    .. code-block:: text
 
-      wget -O ccloud-generate-cp-configs.sh https://raw.githubusercontent.com/confluentinc/examples/latest/ccloud/ccloud-generate-cp-configs.sh
+      curl -sS -o ccloud-generate-cp-configs.sh https://raw.githubusercontent.com/confluentinc/examples/latest/ccloud/ccloud-generate-cp-configs.sh
 
 #. Run the script against your auto-generated configuration file (the file created by ``ccloud-stack``).
 
