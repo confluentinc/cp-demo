@@ -25,7 +25,7 @@ if [[ "$i" == "mds" ]]; then
   DNS_ALT_NAMES=$(printf '%s\n' "$DNS_ALT_NAMES" "DNS.3 = kafka1" "DNS.4 = kafka2")
 fi
 # control-center and ksqldb-server share a certificate
-if [[ "$i" == "control-center-and-ksqldb-server" ]]; then
+if [[ "$i" == "controlCenterAndKsqlDBServer" ]]; then
   DNS_ALT_NAMES=$(printf '%s\n' "$DNS_ALT_NAMES" "DNS.3 = control-center" "DNS.4 = ksqldb-server")
 fi
 
