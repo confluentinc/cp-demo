@@ -1460,7 +1460,7 @@ Setup |ccloud|
 
       SERVICE_ACCOUNT_ID=<fill in>
 
-#. The |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh` has parameters that specify how to connect to |ccloud|.  You could set these parameters manually, but to do this in an automated fashion, use another script to set env parameters customized for the |ccloud| instance created above. It reads your local |ccloud| configuration file, i.e., the one ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` auto-generated above, and writes delta configuration files for |cp| components and clients connecting to |ccloud|.
+#. The |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh` has parameters that specify how to connect to |ccloud|.  You could set these parameters manually, but to do this in an automated fashion, use another script to set env parameters customized for the |ccloud| instance created above. It reads your local |ccloud| configuration file, i.e., the auto-generated ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config``, and creates files useful for |cp| components and clients connecting to |ccloud|.
 
    Get the script, which is also community-supported and not supported by Confluent.
 
@@ -1481,7 +1481,7 @@ Setup |ccloud|
 
       cat delta_configs/env.delta
 
-#. Source the ``delta_configs/env.delta`` file into your environment. These environment variables will be used when you run |crep| in a few sections.
+#. Source the ``delta_configs/env.delta`` file into your environment. These environment variables will be used in a few sections when you run |crep| to copy data from your on-prem cluster to your |ccloud| cluster.
 
    .. code-block:: text
 
