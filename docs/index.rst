@@ -3,8 +3,9 @@
 Confluent Platform Demo (cp-demo)
 =================================
 
-This example builds a full |cp| deployment with an |ak-tm| event streaming application using `ksqlDB <https://www.confluent.io/product/ksql/>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing.
+This example builds a full |cp| deployment with an |ak-tm| event streaming application using `ksqlDB <https://ksqldb.io>`__ and `Kafka Streams <https://docs.confluent.io/current/streams/index.html>`__ for stream processing, and all the components have security enabled end-to-end.
 Follow the accompanying guided tutorial, broken down step-by-step, to learn how |ak| works all together with |kconnect|, |sr-long|, |c3|, |crep|, and security enabled end-to-end.
+The tutorial includes a module to extend it into a hybrid deployment that runs |crep| to copy data from a local on-prem |ak| cluster to |ccloud|, a fully-managed service for |ak-tm|.
 
 ========
 Overview
@@ -21,7 +22,7 @@ The use case is an |ak-tm| event streaming application that processes real-time 
 The full event streaming platform based on |cp| is described as follows.
 Wikimedia's `EventStreams <https://wikitech.wikimedia.org/wiki/Event_Platform/EventStreams>`__ publishes a continuous stream of real-time edits happening to real wiki pages.
 A Kafka source connector `kafka-connect-sse <https://www.confluent.io/hub/cjmatta/kafka-connect-sse>`__ streams the server-sent events (SSE) from https://stream.wikimedia.org/v2/stream/recentchange, and a custom |kconnect| transform `kafka-connect-json-schema <https://www.confluent.io/hub/jcustenborder/kafka-connect-json-schema>`__ extracts the JSON from these messages and then are written to a |ak| cluster.
-This example uses `ksqlDB <https://www.confluent.io/product/ksql/>`__ and a :ref:`Kafka Streams <kafka_streams>` application for data processing.
+This example uses `ksqlDB <https://ksqldb.io>`__ and a :ref:`Kafka Streams <kafka_streams>` application for data processing.
 Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.io/kafka-connect-elasticsearch/index.html>`__ streams the data out of Kafka and is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 |crep-full| is also copying messages from a topic to another topic in the same cluster.
 All data is using |sr-long| and Avro, and `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ is managing and monitoring the deployment.
@@ -45,6 +46,23 @@ Data pattern is as follows:
 | Elasticsearch sink connector        | ``WIKIPEDIABOT`` (from ksqlDB) | Elasticsearch/Kibana                  |
 +-------------------------------------+--------------------------------+---------------------------------------+
 
+How to use this tutorial
+------------------------
+
+We suggest following the ``cp-demo`` tutorial in order:
+
+#. :ref:`cp-demo-run`: one script to automatically build the entire end-to-end example
+
+#. :ref:`cp-demo-guide`: explore the different areas of |cp|
+
+#. :ref:`cp-demo-hybrid`: run |crep| to copy data from a local on-prem |ak| cluster to |ccloud|, and use the Metrics API to monitor both
+
+#. :ref:`cp-demo-monitoring`: links to other monitoring solutions, including JMX-based ones
+
+#. :ref:`cp-demo-teardown`: clean up your on-prem and |ccloud| environment
+
+
+.. _cp-demo-run:
 
 ===========
 Run cp-demo
@@ -72,6 +90,7 @@ This example has been validated with:
 -  MacOS 10.15.3 (note for `Ubuntu environments <https://github.com/confluentinc/cp-demo/issues/53>`__)
 -  OpenSSL 1.1.1d
 -  git
+-  curl
 -  jq
 
 Setup
@@ -128,6 +147,8 @@ You can run it with optional settings:
 
       VIZ=false ./scripts/start.sh
 
+#. After the start script completes, run through the pre-flight checks below and follow the guided tutorial through this on-prem deployment.
+
 
 Pre-flight Checks
 -----------------
@@ -173,6 +194,7 @@ If any of these pre-flight checks fails, consult the :ref:`cp-demo-troubleshooti
 
 #. View the |kstreams| application configuration in the :devx-cp-demo:`client configuration|env_files/streams-demo.env` file, set with security parameters to the |ak| cluster and |sr|.
 
+.. _cp-demo-guide:
 
 ===============
 Guided Tutorial
@@ -181,7 +203,7 @@ Guided Tutorial
 Log into |c3| 
 -------------
 
-#. If you ran ``cp-demo`` with default of ``C3_KSQLDB_HTTPS=false`` (which is the default), log into the |c3| GUI from a web browser at the following URL:
+#. If you ran ``cp-demo`` with ``C3_KSQLDB_HTTPS=false`` (which is the default), log into the |c3| GUI from a web browser at the following URL:
 
    .. code-block:: text
 
@@ -195,12 +217,12 @@ Log into |c3|
 
    The browser will detect a self-signed, untrusted certificate and certificate authority, and issue a privacy warning as shown below. To proceed, accept this certificate using your browser's process for this, which will then last for the duration of that browser session.
 
-   - Chrome: click on ``Advanced`` and when the window expands, click on ``Proceed to localhost (unsafe)``.
+   - _Chrome_: click on ``Advanced`` and when the window expands, click on ``Proceed to localhost (unsafe)``.
 
      .. figure:: images/c3-chrome-cert-warning.png
         :width: 500px
 
-   - Safari: open a new private browsing window (``Shift + ⌘ + N``), click on ``Show Details`` and when the window expands, click on ``visit this website``.
+   - _Safari_: open a new private browsing window (``Shift + ⌘ + N``), click on ``Show Details`` and when the window expands, click on ``visit this website``.
 
      .. figure:: images/c3-safari-cert-warning.png
         :width: 500px
@@ -1365,13 +1387,397 @@ to setup alerts from there.
       :alt: image
 
 
+.. _cp-demo-hybrid:
+
+=============================
+Hybrid Deployment to |ccloud|
+=============================
+
+In a hybrid |ak-tm| deployment scenario, you can have both an on-prem and `Confluent Cloud <https://confluent.cloud>`__ deployment.
+In this part of the tutorial, you can run |crep| to send |ak| data to |ccloud| and use a common method, the `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__,  for collecting metrics for both.
+
+.. figure:: images/cp-demo-overview-with-ccloud.jpg
+    :alt: image
+
+
+Cost to Run
+-----------
+
+Caution
+~~~~~~~
+
+.. include:: ../../examples/ccloud/docs/includes/ccloud-examples-caution.rst
+
+|ccloud| Promo Code
+~~~~~~~~~~~~~~~~~~~
+
+.. include:: ../../examples/ccloud/docs/includes/ccloud-examples-promo-code.rst
+
+Setup |ccloud|
+--------------
+
+#. Create a |ccloud| account at https://confluent.cloud.
+
+#. Install `Confluent Cloud CLI <https://docs.confluent.io/ccloud-cli/current/install.html>`__ v1.21.0 or later.
+
+#. Using the CLI, log in to |ccloud| with the command ``ccloud login``, and use your |ccloud| username and password. The ``--save`` argument saves your |ccloud| user login credentials or refresh token (in the case of SSO) to the local ``netrc`` file.
+
+   .. code:: shell
+
+      ccloud login --save
+
+#. Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |ccloud|.  Executed with a single command, it uses the |ccloud| CLI to:
+
+   -  Create a new environment.
+   -  Create a new service account.
+   -  Create a new Kafka cluster and associated credentials.
+   -  Enable |sr-ccloud| and associated credentials.
+   -  Create ACLs with wildcard for the service account.
+   -  Generate a local configuration file with all above connection information.
+
+   The first step is to get a bash library of useful functions for interacting with |ccloud| (one of which is ``cloud-stack``). This library is community-supported and is not supported by Confluent.
+
+   .. code-block:: text
+
+      curl -sS -o ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
+
+#. Using ``ccloud_library.sh`` which you downloaded in the previous step, create a new ``ccloud-stack`` (see :ref:`ccloud-stack` for advanced options). It creates real resources in |ccloud| and takes a few minutes to complete.
+
+   .. code-block:: text
+
+      source ./ccloud_library.sh
+      ccloud::create_ccloud_stack
+ 
+#. When ``ccloud-stack`` completes, view the local configuration file at ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` that was auto-generated. It contains connection information for connecting to your newly created |ccloud| environment.
+
+   .. code-block:: text
+
+      cat stack-configs/java-service-account-*.config
+
+#. In the current shell, set the environment variable ``SERVICE_ACCOUNT_ID`` to the <SERVICE_ACCOUNT_ID> in the filename. For example, if the filename is called ``stack-configs/java-service-account-154143.config``, then set ``SERVICE_ACCOUNT_ID=154143``.
+
+   .. code-block:: text
+
+      SERVICE_ACCOUNT_ID=<fill in>
+
+#. The |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh` has parameters that specify how to connect to |ccloud|.  You could set these parameters manually, but to do this in an automated fashion, use another script to set env parameters customized for the |ccloud| instance created above. It reads your local |ccloud| configuration file, i.e., the auto-generated ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config``, and creates files useful for |cp| components and clients connecting to |ccloud|.
+
+   Get the script, which is also community-supported and not supported by Confluent.
+
+   .. code-block:: text
+
+      curl -sS -o ccloud-generate-cp-configs.sh https://raw.githubusercontent.com/confluentinc/examples/latest/ccloud/ccloud-generate-cp-configs.sh
+
+#. Run the script against your auto-generated configuration file (the file created by ``ccloud-stack``).
+
+   .. code-block:: text
+
+      chmod 744 ./ccloud-generate-cp-configs.sh
+      ./ccloud-generate-cp-configs.sh stack-configs/java-service-account-${SERVICE_ACCOUNT_ID}.config
+
+#. The output of the script is a folder called ``delta_configs`` with sample configurations for all components and clients, which you can easily apply to any |ak| client or |cp| component. View the ``delta_configs/env.delta`` file.
+
+   .. code-block:: text
+
+      cat delta_configs/env.delta
+
+#. Source the ``delta_configs/env.delta`` file into your environment. These environment variables will be used in a few sections when you run |crep| to copy data from your on-prem cluster to your |ccloud| cluster.
+
+   .. code-block:: text
+
+      source delta_configs/env.delta
+
+
+Telemetry Reporter
+------------------
+
+#. Create a new ``Cloud`` API key and secret to authenticate with |ccloud|. These credentials will be used by the :ref:`telemetry_reporter` and used by the Metrics API, which can be used for hosted on-prem clusters as well as |ccloud| clusters.
+
+   .. code:: shell
+
+      ccloud api-key create --resource cloud -o json
+
+#. Verify your output resembles:
+
+   .. code-block:: text
+
+      {
+         "key": "QX7X4VA4DFJTTOIA",
+         "secret": "fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D"
+      }
+
+   The value of the API key, in this case ``QX7X4VA4DFJTTOIA``, and API secret,
+   in this case ``fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D``,
+   will differ in your output.
+
+#. Set parameters to reference these credentials returned in the previous step.
+
+   .. code-block:: text
+
+      METRICS_API_KEY='QX7X4VA4DFJTTOIA'
+      METRICS_API_SECRET='fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D'
+
+#. :ref:`Dynamically configure <kafka-dynamic-configurations>` the ``cp-demo`` cluster to use the Telemetry Reporter, which sends metrics to |ccloud|. This requires setting 3 configuration parameters: ``confluent.telemetry.enabled=true``, ``confluent.telemetry.api.key``, and ``confluent.telemetry.api.secret``.
+
+   .. code-block:: text
+
+      docker-compose exec kafka1 kafka-configs \
+        --bootstrap-server kafka1:12091 \
+        --alter \
+        --entity-type brokers \
+        --entity-default \
+        --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key=${METRICS_API_KEY},confluent.telemetry.api.secret=${METRICS_API_SECRET}
+
+#. Check the broker logs to verify the brokers were dynamically configured.
+
+   .. sourcecode:: bash
+
+      docker-compose logs kafka1 | grep confluent.telemetry.api.key
+
+   Your output should resemble the following, but the ``confluent.telemetry.api.key`` value will be different in your environment.
+
+   .. code-block:: text
+
+      kafka1            | 	confluent.telemetry.api.key = QX7X4VA4DFJTTOIA
+      kafka1            | 	confluent.telemetry.api.secret = [hidden]
+
+
+|crep|
+------
+
+#. If you have been running ``cp-demo`` for a long time, you may need to refresh your local token to log back into MDS:
+
+   .. sourcecode:: bash
+
+      ./scripts/helper/refresh_mds_login.sh
+
+#. Set the |crep| name.
+
+   .. code-block:: text
+
+      REPLICATOR_NAME=replicate-topic-to-ccloud
+
+#. Create a role binding to permit a new instance of |crep| to be submitted to the local connect cluster with id ``connect-cluster``.
+
+   Get the |ak| cluster ID:
+
+   .. literalinclude:: includes/get_kafka_cluster_id_from_host.sh
+
+   Create the role bindings:
+
+   .. code-block:: text
+
+      docker-compose exec tools bash -c "confluent iam rolebinding create \
+          --principal User:connectorSubmitter \
+          --role ResourceOwner \
+          --resource Connector:$REPLICATOR_NAME \
+          --kafka-cluster-id ${KAFKA_CLUSTER_ID} \
+          --connect-cluster-id connect-cluster"
+
+#. View the |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`. It is configured to copy from the |ak| topic ``wikipedia.parsed`` (on-prem) to the cloud topic ``wikipedia.parsed.ccloud.replica`` in |ccloud|. Note that it uses the local connect cluster (the origin site), so the |crep| configuration has overrides for the producer. The configuration parameters that use variables are read from the env variables that you sourced in an earlier step.
+
+#. Submit the |crep| connector to the local connect cluster.
+
+   .. code-block:: text
+
+      ./scripts/connectors/submit_replicator_to_ccloud_config.sh
+
+#. It takes about 1 minute to show up in the Connectors view in |c3|.  When it does, verify |crep| to |ccloud| has started properly, and there are now 4 connectors:
+
+   .. figure:: images/connectors-with-rep-to-ccloud.png
+
+#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify you see the topic ``wikipedia.parsed.ccloud.replica`` and its messages.
+
+#. View the schema for this topic that is already registered in |ccloud| |sr|. In ``cp-demo``, in the :devx-cp-demo:`Replicator configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`, ``value.converter`` is configured to use ``io.confluent.connect.avro.AvroConverter``, therefore it automatically registers new schemas, as needed, while copying data. The schema ID in the on-prem |sr| will not match the schema ID in the |ccloud| |sr|. (See documentation for other :ref:`schema migration options <schemaregistry_migrate>`)
+
+   .. figure:: images/ccloud-schema.png
+
+Metrics
+-------
+
+.. include:: includes/metrics-api-intro.rst
+
+#. To define the time interval when querying the Metrics API, get the current time minus 1 hour and current time plus 1 hour. The ``date`` utility varies between operating systems, so use the ``tools`` Docker container to get consistent and reliable dates.
+
+   .. code-block:: text
+
+      CURRENT_TIME_MINUS_1HR=$(docker-compose exec tools date -Is -d '-1 hour' | tr -d '\r')
+      CURRENT_TIME_PLUS_1HR=$(docker-compose exec tools date -Is -d '+1 hour' | tr -d '\r')
+
+#. View the :devx-cp-demo:`metrics query file|scripts/validate/metrics_query_onprem.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed`` in the on-prem cluster (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
+
+   .. literalinclude:: ../scripts/validate/metrics_query_onprem.json
+
+#. Substitute values into the query json file. For this substitution to work, you must have set the following parameters in your environment:
+
+   - ``CURRENT_TIME_MINUS_1HR``
+   - ``CURRENT_TIME_PLUS_1HR``
+
+   .. code-block:: text
+
+      DATA=$(eval "cat <<EOF
+      $(<./scripts/validate/metrics_query_onprem.json)
+      EOF
+      ")
+
+      # View this parameter
+      echo $DATA
+
+#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query. For this query to work, you must have set the following parameters in your environment:
+
+   - ``METRICS_API_KEY``
+   - ``METRICS_API_SECRET``
+
+   .. code-block:: text
+
+      curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
+           --header 'content-type: application/json' \
+           --data "${DATA}" \
+           https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query \
+              | jq .
+
+#. Your output should resemble the output below, showing metrics for the on-prem topic ``wikipedia.parsed``:
+
+   .. code-block:: text
+
+      {
+        "data": [
+          {
+            "timestamp": "2020-12-14T20:52:00Z",
+            "value": 1744066,
+            "metric.label.topic": "wikipedia.parsed"
+          },
+          {
+            "timestamp": "2020-12-14T20:53:00Z",
+            "value": 1847596,
+            "metric.label.topic": "wikipedia.parsed"
+          }
+        ]
+      }
+
+#. View the :devx-cp-demo:`metrics query file|scripts/validate/metrics_query_ccloud.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed.ccloud.replica`` in |ccloud| (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
+
+   .. literalinclude:: ../scripts/validate/metrics_query_ccloud.json
+
+#. Get the |ak| cluster ID in |ccloud|, derived from the ``$SERVICE_ACCOUNT_ID``.
+
+   .. code-block:: text
+
+      CCLOUD_CLUSTER_ID=$(ccloud kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-${SERVICE_ACCOUNT_ID}"'")' | jq -r .id)
+
+#. Substitute values into the query json file. For this substitution to work, you must have set the following parameters in your environment:
+
+   - ``CURRENT_TIME_MINUS_1HR``
+   - ``CURRENT_TIME_PLUS_1HR``
+   - ``CCLOUD_CLUSTER_ID``
+
+   .. code-block:: text
+
+      DATA=$(eval "cat <<EOF
+      $(<./scripts/validate/metrics_query_ccloud.json)
+      EOF
+      ")
+
+      # View this parameter
+      echo $DATA
+
+#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v1/metrics/cloud/query. For this query to work, you must have set the following parameters in your environment:
+
+   - ``METRICS_API_KEY``
+   - ``METRICS_API_SECRET`` 
+
+   .. code-block:: text
+
+      curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
+           --header 'content-type: application/json' \
+           --data "${DATA}" \
+           https://api.telemetry.confluent.cloud/v1/metrics/cloud/query \
+              | jq .
+
+#. Your output should resemble the output below, showing metrics for the |ccloud| topic ``wikipedia.parsed.ccloud.replica``:
+
+   .. code-block:: text
+
+      {
+        "data": [
+          {
+            "timestamp": "2020-12-14T20:00:00Z",
+            "value": 995,
+            "metric.label.topic": "wikipedia.parsed.ccloud.replica"
+          }
+        ]
+      }
+
+.. _cp-demo-ccloud-cleanup:
+
+Cleanup
+-------
+
+.. include:: ../../examples/ccloud/docs/includes/ccloud-examples-terminate.rst
+
+#. Remove the |crep| connector that was replicating data to |ccloud|.
+
+   .. code-block:: text
+
+      docker-compose exec connect curl -X DELETE \
+        --cert /etc/kafka/secrets/connect.certificate.pem \
+        --key /etc/kafka/secrets/connect.key \
+        --tlsv1.2 \
+        --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
+        -u connectorSubmitter:connectorSubmitter \
+        https://connect:8083/connectors/$REPLICATOR_NAME
+
+#. Disable Telemetry Reporter in both |ak| brokers.
+
+   .. code-block:: text
+
+      docker-compose exec kafka1 kafka-configs \
+        --bootstrap-server kafka1:12091 \
+        --alter \
+        --entity-type brokers \
+        --entity-default \
+        --delete-config confluent.telemetry.enabled,confluent.telemetry.api.key,confluent.telemetry.api.secret
+
+#. Delete the ``Cloud`` API key.
+
+   .. code-block:: text
+
+      ccloud api-key delete ${METRICS_API_KEY}
+
+#. Destroy your |ccloud| environment. Even if you stop ``cp-demo``, the resources in |ccloud| continue to incur charges until you remove all the resources.
+
+   .. code-block:: text
+
+      source ./ccloud_library.sh
+      ccloud::destroy_ccloud_stack ${SERVICE_ACCOUNT_ID}
+
+#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify all your resources have been cleaned up.
+
+
+.. _cp-demo-monitoring:
+
 ==========
 Monitoring
 ==========
 
 This tutorial has demonstrated how |c3| helps users manage their |cp| deployment and how it provides monitoring capabilities for the cluster and applications.
-For most |cp| users the |c3| monitoring and integrations are sufficient for production usage; however, some users wish to integrate with other monitoring solutions like Prometheus, Grafana, Datadog, and Splunk.
-The following JMX-based monitoring stacks help users setup a 'single pane of glass' monitoring solution for all their organization's services and applications, including Kafka.
+For a practical guide to optimizing your |ak| deployment for various service goals including throughput, latency, durability and availability, and useful metrics to monitor for performance and cluster health for on-prem |ak| clusters, see the `Optimizing Your Apache Kafka Deployment <https://www.confluent.io/white-paper/optimizing-your-apache-kafka-deployment/>`__ whitepaper.
+
+For most |cp| users the |c3| monitoring and integrations are sufficient for production usage in their on-prem |ak-tm| deployments.
+There are additional monitoring solutions for various use cases, as described below.
+
+Metrics API
+-----------
+
+.. include:: includes/metrics-api-intro.rst
+
+See :ref:`cp-demo-hybrid` for more information.
+
+JMX
+---
+
+Some users wish to integrate with other monitoring solutions like Prometheus, Grafana, Datadog, and Splunk.
+The following JMX-based monitoring stacks help users setup a 'single pane of glass' monitoring solution for all their organization's services and applications, including |ak|.
 
 Here are some examples of monitoring stacks that integrate with |cp|:
 
@@ -1409,7 +1815,31 @@ Here are some examples of monitoring stacks that integrate with |cp|:
       :alt: image
       :width: 500px
 
-#. Next step: for a practical guide to optimizing your |ak| deployment for various service goals including throughput, latency, durability and availability, and useful metrics to monitor for performance and cluster health for on-prem |ak| clusters, see the `Optimizing Your Apache Kafka Deployment <https://www.confluent.io/white-paper/optimizing-your-apache-kafka-deployment/>`__ whitepaper.
+
+.. _cp-demo-teardown:
+      
+========
+Teardown
+========
+
+#. Stop the consumer group ``app`` to stop consuming from topic
+   ``wikipedia.parsed``. Note that the command below stops the consumers
+   gracefully with ``kill -15``, so the consumers follow the shutdown
+   sequence.
+
+   .. code:: bash
+
+         ./scripts/app/stop_consumer_app_group_graceful.sh
+
+#. Stop the Docker environment, destroy all components and clear all Docker
+   volumes.
+
+   .. sourcecode:: bash
+
+          ./scripts/stop.sh
+
+#. If you ran |crep| to copy data from this local on-prem |ak| cluster to |ccloud|, then follow the clean up procedure in :ref:`cp-demo-ccloud-cleanup` to avoid unexpected |ccloud| charges.
+
 
 .. _cp-demo-troubleshooting:
 
@@ -1473,7 +1903,7 @@ Validate
 
       ./scripts/consumers/listen.sh
 
-#. Run the scripts in :devx-cp-demo:`validation scripts|scripts/validate/` to verify that they pass.
+#. Run the :devx-cp-demo:`validation scripts|scripts/validate/` to verify that they pass.
 
    .. sourcecode:: bash
 
@@ -1494,24 +1924,3 @@ CLI Login
    .. sourcecode:: bash
 
           ./scripts/helper/refresh_mds_login.sh 
-
-      
-========
-Teardown
-========
-
-#. Stop the consumer group ``app`` to stop consuming from topic
-   ``wikipedia.parsed``. Note that the command below stops the consumers
-   gracefully with ``kill -15``, so the consumers follow the shutdown
-   sequence.
-
-   .. code:: bash
-
-         ./scripts/app/stop_consumer_app_group_graceful.sh
-
-#. Stop the Docker environment, destroy all components and clear all Docker
-   volumes.
-
-   .. sourcecode:: bash
-
-          ./scripts/stop.sh

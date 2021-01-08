@@ -17,3 +17,7 @@
 ui/expanded
 *.zip
 *.log
+**/delta_configs/
+**/stack-configs/
+**/ccloud_library.sh
+**/ccloud-generate-cp-configs.sh

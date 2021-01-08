@@ -45,7 +45,7 @@ fi
 docker-compose up -d openldap
 sleep 5
 if [[ $(docker-compose ps openldap | grep Exit) =~ "Exit" ]] ; then
-  echo "ERROR: openldap container could not start. Troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
+  echo "ERROR: openldap container could not start. Troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#troubleshooting"
   exit 1
 fi
 
@@ -85,17 +85,18 @@ docker-compose exec tools bash -c "/tmp/helper/create-topics.sh" || exit 1
 
 # Verify Confluent Control Center has started
 MAX_WAIT=300
+echo
 echo "Waiting up to $MAX_WAIT seconds for Confluent Control Center to start"
 retry $MAX_WAIT host_check_control_center_up || exit 1
 
-echo -e "\n\nConfluent Control Center modifications:"
+echo -e "\nConfluent Control Center modifications:"
 ${DIR}/helper/control-center-modifications.sh
 echo
 
 # Verify Kafka Connect Worker has started
 MAX_WAIT=240
 echo -e "\nWaiting up to $MAX_WAIT seconds for Connect to start"
-retry $MAX_WAIT host_check_connect_up || exit 1
+retry $MAX_WAIT host_check_connect_up "connect" || exit 1
 sleep 2 # give connect an exta moment to fully mature
 
 NUM_CERTS=$(docker-compose exec connect keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
@@ -119,10 +120,16 @@ fi
 echo -e "\nStart streaming from the Wikipedia SSE source connector:"
 ${DIR}/connectors/submit_wikipedia_sse_config.sh
 
+# Verify connector is running
+MAX_WAIT=120
+echo
+echo "Waiting up to $MAX_WAIT seconds for connector to be in RUNNING state"
+retry $MAX_WAIT check_connector_status_running "wikipedia-sse" || exit 1
+
 # Verify wikipedia.parsed topic is populated and schema is registered
 MAX_WAIT=120
 echo
-echo -e "\nWaiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
+echo -e "Waiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
 retry $MAX_WAIT host_check_schema_registered || exit 1
 
 #-------------------------------------------------------------------------------
@@ -134,7 +141,7 @@ SCHEMA=$(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka/sec
 docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -H "Content-Type: application/vnd.schemaregistry.v1+json" --data "{\"schema\": $SCHEMA}" -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed.replica-value/versions
 
 echo
-echo -e "\nStart Confluent Replicator:"
+echo -e "\nStart Confluent Replicator to loopback to on-prem cluster:"
 ${DIR}/connectors/submit_replicator_config.sh
 
 #-------------------------------------------------------------------------------
@@ -145,7 +152,7 @@ echo
 MAX_WAIT=120
 echo -e "\nWaiting up to $MAX_WAIT seconds for ksqlDB server to start"
 retry $MAX_WAIT host_check_ksqlDBserver_up || exit 1
-echo -e "\nRun ksqlDB queries (takes about 1 minute):"
+echo -e "\nRun ksqlDB queries:"
 ${DIR}/ksqlDB/run_ksqlDB.sh
 
 echo -e "\nStart additional consumers to read from topics WIKIPEDIANOBOT, WIKIPEDIA_COUNT_GT_1"
@@ -179,6 +186,31 @@ curl -u mds:mds -X POST "https://localhost:8091/security/1.0/rbac/principals" --
 # Do poststart_checks
 poststart_checks
 
-echo -e "\n\n\n******************************************************************************************************************"
-echo -e "DONE! Connect to Confluent Control Center at $C3URL (login as superUser/superUser for full access)"
-echo -e "******************************************************************************************************************\n"
+
+cat << EOF
+
+----------------------------------------------------------------------------------------------------
+DONE! From your browser:
+
+  Confluent Control Center (login superUser/superUser for full access):
+     $C3URL
+
+EOF
+
+if [[ "$VIZ" == "true" ]]; then
+cat << EOF
+  Kibana
+     http://localhost:5601/app/dashboards#/view/Overview
+
+EOF
+fi
+
+cat << EOF
+Want more? Replicate data from cp-demo to Confluent Cloud:
+
+     https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#hybrid-deployment-to-ccloud
+
+Use Confluent Cloud promo code C50INTEG to receive \$50 free usage
+----------------------------------------------------------------------------------------------------
+
+EOF
