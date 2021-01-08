@@ -20,7 +20,7 @@ FROM confluentinc/cp-enterprise-replicator:$CP_VERSION
 ARG CONNECTOR_VERSION
 
 ENV CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
-ENV CLASSPATH: "/usr/share/java/kafka-connect-replicator/replicator-rest-extension-$CP_VERSION.jar:/usr/share/java/monitoring-interceptors/monitoring-interceptors-$CP_VERSION.jar"
+
 # Install SSE connector
 RUN confluent-hub install --no-prompt cjmatta/kafka-connect-sse:latest
 
