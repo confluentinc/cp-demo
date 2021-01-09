@@ -1399,7 +1399,6 @@ In this part of the tutorial, you can run |crep| to send |ak| data to |ccloud| a
 .. figure:: images/cp-demo-overview-with-ccloud.jpg
     :alt: image
 
-
 Cost to Run
 -----------
 
@@ -1430,7 +1429,7 @@ Setup |ccloud| and CLI
 
    The first option is to manually complete all the steps in the following sections, which we recommend if you are new to |ccloud| and |cp|: :ref:`cp-demo-ccloud-stack`, :ref:`cp-demo-telemetry-reporter`, :ref:`cp-demo-replicator-to-ccloud`, and :ref:`cp-demo-metrics-api`.
 
-   The second option is to run a script :devx-cp-demo:`scripts/validate/validate_metrics_api.sh|scripts/validate/validate_metrics_api.sh` which automates those configuration steps.
+   The second option is to run :devx-cp-demo:`scripts/validate/validate_metrics_api.sh|scripts/validate/validate_metrics_api.sh` which automates those configuration steps.
 
    .. code-block:: text
 
@@ -1488,7 +1487,7 @@ ccloud-stack
    .. code-block:: text
 
       chmod 744 ./ccloud-generate-cp-configs.sh
-      ./ccloud-generate-cp-configs.sh stack-configs/java-service-account-${SERVICE_ACCOUNT_ID}.config
+      ./ccloud-generate-cp-configs.sh stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
 
 #. The output of the script is a folder called ``delta_configs`` with sample configurations for all components and clients, which you can easily apply to any |ak| client or |cp| component. View the ``delta_configs/env.delta`` file.
 
@@ -1762,7 +1761,7 @@ Cleanup
    .. code-block:: text
 
       source ./ccloud_library.sh
-      ccloud::destroy_ccloud_stack ${SERVICE_ACCOUNT_ID}
+      ccloud::destroy_ccloud_stack $SERVICE_ACCOUNT_ID
 
 #. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify all your resources have been cleaned up.
 

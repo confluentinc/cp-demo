@@ -109,15 +109,18 @@ curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
         | jq .
 
 echo
-echo "Environment:"
+echo "Confluent Cloud Environment:"
 echo
+echo "  export CONFIG_FILE=$CONFIG_FILE"
 echo "  export SERVICE_ACCOUNT_ID=$SERVICE_ACCOUNT_ID"
-echo "  export CURRENT_TIME_MINUS_1HR=$CURRENT_TIME_MINUS_1HR"
-echo "  export CURRENT_TIME_PLUS_1HR=$CURRENT_TIME_PLUS_1HR"
+echo "  export CCLOUD_CLUSTER_ID=$CCLOUD_CLUSTER_ID"
 echo "  export METRICS_API_KEY=$METRICS_API_KEY"
 echo "  export METRICS_API_SECRET=$METRICS_API_SECRET"
-echo "  export CCLOUD_CLUSTER_ID=$CCLOUD_CLUSTER_ID"
 echo
+echo "  export CURRENT_TIME_MINUS_1HR=$CURRENT_TIME_MINUS_1HR"
+echo "  export CURRENT_TIME_PLUS_1HR=$CURRENT_TIME_PLUS_1HR"
+echo
+
 
 # Teardown
 ${VALIDATE_DIR}/validate_destroy_ccloud_replicator.sh

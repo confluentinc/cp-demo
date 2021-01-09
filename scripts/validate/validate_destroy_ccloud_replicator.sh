@@ -3,17 +3,15 @@
 VALIDATE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 source ${VALIDATE_DIR}/../helper/functions.sh
-source ${VALIDATE_DIR}/../../.env
-source ${VALIDATE_DIR}/../env.sh
 
 verify_installed ccloud || exit 1
 
 if [ -z "$SERVICE_ACCOUNT_ID" ]; then
-  echo "ERROR: Must export parameter SERVICE_ACCOUNT_ID before running this script (check your start workflow)."
+  echo "ERROR: Must export parameter SERVICE_ACCOUNT_ID before running this script to destroy Confluent Cloud resources associated to that service account."
   exit 1
 fi
 if [ -z "$METRICS_API_KEY" ]; then
-  echo "ERROR: Must export parameter METRICS_API_KEY before running this script (check your start workflow)."
+  echo "ERROR: Must export parameter METRICS_API_KEY before running this script to destroy the API key created for the Telemetry Reporter."
   exit 1
 fi
 
@@ -26,18 +24,21 @@ ccloud login --save || exit 1
 
 #### Teardown ####
 
-read -p "This script will remove Replicator and destroy all the resources (including the Confluent Cloud environment) for service account ID $SERVICE_ACCOUNT_ID.  Do you want to proceed? [y/n] " -n 1 -r
+echo
+read -p "This script will remove Replicator and destroy the Confluent Cloud environment for service account ID $SERVICE_ACCOUNT_ID.  Do you want to proceed? [y/n] " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
   echo "Don't forget to destroy your Confluent Cloud environment to avoid unexpected charges."
+  echo
   exit 1
 fi
 
-echo "Destroying all Confluent Cloud resources"
 
+echo "Deleting Replicator to Confluent Cloud"
 docker-compose exec connect curl -XDELETE --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectorSubmitter:connectorSubmitter https://connect:8083/connectors/replicate-topic-to-ccloud
 
+echo "Unconfiguring Telemetry Reporter"
 docker-compose exec kafka1 kafka-configs \
   --bootstrap-server kafka1:12091 \
   --alter \
@@ -45,6 +46,8 @@ docker-compose exec kafka1 kafka-configs \
   --entity-default \
   --delete-config confluent.telemetry.enabled,confluent.telemetry.api.key,confluent.telemetry.api.secret
 
+echo "Destroying all Confluent Cloud resources"
 ccloud api-key delete $METRICS_API_KEY
-
 ccloud::destroy_ccloud_stack $SERVICE_ACCOUNT_ID
+
+echo
