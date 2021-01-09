@@ -1426,11 +1426,17 @@ Setup |ccloud| and CLI
 
       ccloud login --save
 
-#. At this point, you have two options. The first option is to manually complete all the steps in the following sections, which we recommend if you are new to |ccloud| and |cp|. The second option is you can run an automated script :devx-cp-demo:`scripts/validate/validate_metrics_api.sh|scripts/validate/validate_metrics_api.sh` which completes all the steps for you.
+#. At this point, you have two options for running the |ccloud| portion of this tutorial.
+
+   The first option is to manually complete all the steps in the following sections, which we recommend if you are new to |ccloud| and |cp|: :ref:`cp-demo-ccloud-stack`, :ref:`cp-demo-telemetry-reporter`, :ref:`cp-demo-replicator-to-ccloud`, and :ref:`cp-demo-metrics-api`.
+
+   The second option is to run a script :devx-cp-demo:`scripts/validate/validate_metrics_api.sh|scripts/validate/validate_metrics_api.sh` which automates those configuration steps.
 
    .. code-block:: text
 
       ./scripts/validate/validate_metrics_api.sh
+
+.. _cp-demo-ccloud-stack:
 
 ccloud-stack
 ------------
@@ -1496,6 +1502,7 @@ ccloud-stack
 
       source delta_configs/env.delta
 
+.. _cp-demo-telemetry-reporter:
 
 Telemetry Reporter
 ------------------
@@ -1550,9 +1557,10 @@ Telemetry Reporter
       kafka1            | 	confluent.telemetry.api.key = QX7X4VA4DFJTTOIA
       kafka1            | 	confluent.telemetry.api.secret = [hidden]
 
+.. _cp-demo-replicator-to-ccloud:
 
-|crep|
-------
+|crep| to |ccloud|
+------------------
 
 #. If you have been running ``cp-demo`` for a long time, you may need to refresh your local token to log back into MDS:
 
@@ -1595,8 +1603,10 @@ Telemetry Reporter
 
    .. figure:: images/ccloud-schema.png
 
-Metrics
--------
+.. _cp-demo-metrics-api:
+
+Metrics API
+-----------
 
 .. include:: includes/metrics-api-intro.rst
 

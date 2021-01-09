@@ -21,8 +21,6 @@ echo
 CREDENTIALS=$(ccloud api-key create --resource cloud -o json) || exit 1
 export METRICS_API_KEY=$(echo "$CREDENTIALS" | jq -r .key)
 export METRICS_API_SECRET=$(echo "$CREDENTIALS" | jq -r .secret)
-echo "export METRICS_API_KEY=$METRICS_API_KEY"
-echo "export METRICS_API_SECRET=$METRICS_API_SECRET"
 
 # Enable Confluent Telemetry Reporter
 echo
@@ -39,10 +37,8 @@ echo
 echo "Configure a new Confluent Cloud ccloud-stack"
 ccloud::create_ccloud_stack || exit 1
 export SERVICE_ACCOUNT_ID=$(ccloud kafka cluster list -o json | jq -r '.[0].name' | awk -F'-' '{print $4;}')
-echo "export SERVICE_ACCOUNT_ID=$SERVICE_ACCOUNT_ID"
 CONFIG_FILE=stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
 CCLOUD_CLUSTER_ID=$(ccloud kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-$SERVICE_ACCOUNT_ID"'")' | jq -r .id)
-echo "CCLOUD_CLUSTER_ID=$CCLOUD_CLUSTER_ID"
 
 # Create parameters customized for Confluent Cloud instance created above
 curl -sS -o ccloud-generate-cp-configs.sh https://raw.githubusercontent.com/confluentinc/examples/latest/ccloud/ccloud-generate-cp-configs.sh
@@ -111,6 +107,17 @@ curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
      --data "${DATA}" \
      https://api.telemetry.confluent.cloud/v1/metrics/cloud/query \
         | jq .
+
+echo
+echo "Environment:"
+echo
+echo "  export SERVICE_ACCOUNT_ID=$SERVICE_ACCOUNT_ID"
+echo "  export CURRENT_TIME_MINUS_1HR=$CURRENT_TIME_MINUS_1HR"
+echo "  export CURRENT_TIME_PLUS_1HR=$CURRENT_TIME_PLUS_1HR"
+echo "  export METRICS_API_KEY=$METRICS_API_KEY"
+echo "  export METRICS_API_SECRET=$METRICS_API_SECRET"
+echo "  export CCLOUD_CLUSTER_ID=$CCLOUD_CLUSTER_ID"
+echo
 
 # Teardown
 ${VALIDATE_DIR}/validate_destroy_ccloud_replicator.sh

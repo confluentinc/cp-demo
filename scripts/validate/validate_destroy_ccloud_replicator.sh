@@ -30,6 +30,7 @@ read -p "This script will remove Replicator and destroy all the resources (inclu
 echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
+  echo "Don't forget to destroy your Confluent Cloud environment to avoid unexpected charges."
   exit 1
 fi
 
