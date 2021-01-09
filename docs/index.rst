@@ -1244,7 +1244,7 @@ For the next few steps, use the |crest| that is embedded on the |ak| brokers. On
          --tlsv1.2 \
          --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
          -u appSA:appSA \
-         "https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" | jq
+         "https://kafka1:8091/kafka/v3/clusters/$KAFKA_CLUSTER_ID/topics" | jq
 
 #. List topics with embedded |crest| to find the newly created ``dev_users``.
 
@@ -1264,7 +1264,7 @@ For the next few steps, use the |crest| that is embedded on the |ak| brokers. On
          --tlsv1.2 \
          --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
          -u appSA:appSA \
-         https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics | jq '.data[].topic_name'
+         https://kafka1:8091/kafka/v3/clusters/$KAFKA_CLUSTER_ID/topics | jq '.data[].topic_name'
 
    Your output should resemble below.  Output may vary, depending on other topics you may have created, but at least you should see the topic ``dev_users`` created in the previous step.
 
@@ -1413,8 +1413,8 @@ Caution
 
 .. include:: ../../examples/ccloud/docs/includes/ccloud-examples-promo-code.rst
 
-Setup |ccloud|
---------------
+Setup |ccloud| and CLI
+----------------------
 
 #. Create a |ccloud| account at https://confluent.cloud.
 
@@ -1425,6 +1425,15 @@ Setup |ccloud|
    .. code:: shell
 
       ccloud login --save
+
+#. At this point, you have two options. The first option is to manually complete all the steps in the following sections, which we recommend if you are new to |ccloud| and |cp|. The second option is you can run an automated script :devx-cp-demo:`scripts/validate/validate_metrics_api.sh|scripts/validate/validate_metrics_api.sh` which completes all the steps for you.
+
+   .. code-block:: text
+
+      ./scripts/validate/validate_metrics_api.sh
+
+ccloud-stack
+------------
 
 #. Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |ccloud|.  Executed with a single command, it uses the |ccloud| CLI to:
 
@@ -1551,12 +1560,6 @@ Telemetry Reporter
 
       ./scripts/helper/refresh_mds_login.sh
 
-#. Set the |crep| name.
-
-   .. code-block:: text
-
-      REPLICATOR_NAME=replicate-topic-to-ccloud
-
 #. Create a role binding to permit a new instance of |crep| to be submitted to the local connect cluster with id ``connect-cluster``.
 
    Get the |ak| cluster ID:
@@ -1570,8 +1573,8 @@ Telemetry Reporter
       docker-compose exec tools bash -c "confluent iam rolebinding create \
           --principal User:connectorSubmitter \
           --role ResourceOwner \
-          --resource Connector:$REPLICATOR_NAME \
-          --kafka-cluster-id ${KAFKA_CLUSTER_ID} \
+          --resource Connector:replicate-topic-to-ccloud \
+          --kafka-cluster-id $KAFKA_CLUSTER_ID \
           --connect-cluster-id connect-cluster"
 
 #. View the |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`. It is configured to copy from the |ak| topic ``wikipedia.parsed`` (on-prem) to the cloud topic ``wikipedia.parsed.ccloud.replica`` in |ccloud|. Note that it uses the local connect cluster (the origin site), so the |crep| configuration has overrides for the producer. The configuration parameters that use variables are read from the env variables that you sourced in an earlier step.
@@ -1725,7 +1728,7 @@ Cleanup
         --tlsv1.2 \
         --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
         -u connectorSubmitter:connectorSubmitter \
-        https://connect:8083/connectors/$REPLICATOR_NAME
+        https://connect:8083/connectors/replicate-topic-to-ccloud
 
 #. Disable Telemetry Reporter in both |ak| brokers.
 
