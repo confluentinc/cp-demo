@@ -1427,9 +1427,9 @@ Setup |ccloud| and CLI
 
 #. At this point, you have two options for running the |ccloud| portion of this tutorial.
 
-   The first option is to manually complete all the steps in the following sections, which we recommend if you are new to |ccloud| and |cp|: :ref:`cp-demo-ccloud-stack`, :ref:`cp-demo-telemetry-reporter`, :ref:`cp-demo-replicator-to-ccloud`, and :ref:`cp-demo-metrics-api`.
+   The first option is to manually complete all the steps in the following sections, which we recommend if you are new to |ccloud| and |cp|: :ref:`cp-demo-ccloud-stack`, :ref:`cp-demo-telemetry-reporter`, :ref:`cp-demo-replicator-to-ccloud`, :ref:`cp-demo-metrics-api`, and :ref:`cp-demo-ccloud-cleanup`.
 
-   The second option is to run :devx-cp-demo:`scripts/validate/validate_metrics_api.sh|scripts/validate/validate_metrics_api.sh` which automates those configuration steps.
+   The second option is to run :devx-cp-demo:`scripts/validate/validate_metrics_api.sh|scripts/validate/validate_metrics_api.sh` which automates those steps.
 
    .. code-block:: text
 
@@ -1440,16 +1440,16 @@ Setup |ccloud| and CLI
 ccloud-stack
 ------------
 
-#. Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |ccloud|.  Executed with a single command, it uses the |ccloud| CLI to:
+Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |ccloud|.  Executed with a single command, it uses the |ccloud| CLI to:
 
-   -  Create a new environment.
-   -  Create a new service account.
-   -  Create a new Kafka cluster and associated credentials.
-   -  Enable |sr-ccloud| and associated credentials.
-   -  Create ACLs with wildcard for the service account.
-   -  Generate a local configuration file with all above connection information.
+-  Create a new environment.
+-  Create a new service account.
+-  Create a new Kafka cluster and associated credentials.
+-  Enable |sr-ccloud| and associated credentials.
+-  Create ACLs with wildcard for the service account.
+-  Generate a local configuration file with all above connection information.
 
-   The first step is to get a bash library of useful functions for interacting with |ccloud| (one of which is ``cloud-stack``). This library is community-supported and is not supported by Confluent.
+#. Get a bash library of useful functions for interacting with |ccloud| (one of which is ``cloud-stack``). This library is community-supported and is not supported by Confluent.
 
    .. code-block:: text
 
@@ -1506,7 +1506,9 @@ ccloud-stack
 Telemetry Reporter
 ------------------
 
-#. Create a new ``Cloud`` API key and secret to authenticate with |ccloud|. These credentials will be used by the :ref:`telemetry_reporter` and used by the Metrics API, which can be used for hosted on-prem clusters as well as |ccloud| clusters.
+Enable :ref:`telemetry_reporter` on the on-prem cluster, and configure it to send metrics to the |ccloud| instance created above..
+
+#. Create a new ``Cloud`` API key and secret to authenticate with |ccloud|. These credentials will be used by the Telemetry Reporter and used by the Metrics API, which can be used for hosted on-prem clusters as well as |ccloud| clusters.
 
    .. code:: shell
 
@@ -1561,6 +1563,10 @@ Telemetry Reporter
 |crep| to |ccloud|
 ------------------
 
+Deploy |crep| to copy data from the on-prem cluster to the |ak| cluster running in |ccloud|.
+It is configured to copy from the |ak| topic ``wikipedia.parsed`` (on-prem) to the cloud topic ``wikipedia.parsed.ccloud.replica`` in |ccloud|. 
+The Replicator instance is running on the existing connect worker in the on-prem cluster.
+
 #. If you have been running ``cp-demo`` for a long time, you may need to refresh your local token to log back into MDS:
 
    .. sourcecode:: bash
@@ -1584,7 +1590,7 @@ Telemetry Reporter
           --kafka-cluster-id $KAFKA_CLUSTER_ID \
           --connect-cluster-id connect-cluster"
 
-#. View the |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`. It is configured to copy from the |ak| topic ``wikipedia.parsed`` (on-prem) to the cloud topic ``wikipedia.parsed.ccloud.replica`` in |ccloud|. Note that it uses the local connect cluster (the origin site), so the |crep| configuration has overrides for the producer. The configuration parameters that use variables are read from the env variables that you sourced in an earlier step.
+#. View the |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`. Note that it uses the local connect cluster (the origin site), so the |crep| configuration has overrides for the producer. The configuration parameters that use variables are read from the env variables that you sourced in an earlier step.
 
 #. Submit the |crep| connector to the local connect cluster.
 
