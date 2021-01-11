@@ -1413,6 +1413,8 @@ Caution
 
 .. include:: ../../examples/ccloud/docs/includes/ccloud-examples-promo-code.rst
 
+.. _cp-demo-setup-ccloud:
+
 Setup |ccloud|
 --------------
 
@@ -1433,6 +1435,7 @@ Setup |ccloud|
    -  Create a new Kafka cluster and associated credentials.
    -  Enable |sr-ccloud| and associated credentials.
    -  Create ACLs with wildcard for the service account.
+   -  Create a new ksqlDB app and associated credentials
    -  Generate a local configuration file with all above connection information.
 
    The first step is to get a bash library of useful functions for interacting with |ccloud| (one of which is ``cloud-stack``). This library is community-supported and is not supported by Confluent.
@@ -1441,12 +1444,12 @@ Setup |ccloud|
 
       curl -sS -o ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
 
-#. Using ``ccloud_library.sh`` which you downloaded in the previous step, create a new ``ccloud-stack`` (see :ref:`ccloud-stack` for advanced options). It creates real resources in |ccloud| and takes a few minutes to complete.
+#. Using ``ccloud_library.sh`` which you downloaded in the previous step, create a new ``ccloud-stack`` (see :ref:`ccloud-stack` for advanced options). It creates real resources in |ccloud| and takes a few minutes to complete. The ``true`` flag creates a ksqlDB application in |ccloud|, which has hourly charges even if you are not actively using it.
 
    .. code-block:: text
 
       source ./ccloud_library.sh
-      ccloud::create_ccloud_stack
+      ccloud::create_ccloud_stack true
  
 #. When ``ccloud-stack`` completes, view the local configuration file at ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` that was auto-generated. It contains connection information for connecting to your newly created |ccloud| environment.
 
@@ -1707,6 +1710,36 @@ Metrics
           }
         ]
       }
+
+
+|ccloud| ksqlDB
+---------------
+
+This section creates queries in the |ccloud| ksqlDB application that processes data from the ``wikipedia.parsed.ccloud.replica`` topic that |crep| copied from the on-prem cluster.
+You must have completed :ref:`cp-demo-setup-ccloud` before proceeding.
+
+#. Get the |ccloud| ksqlDB application ID.
+
+   .. code-block:: text
+
+      ksqlDBAppId=$(ccloud ksql app list | grep "$KSQLDB_ENDPOINT" | awk '{print $1}')
+
+#. Configure ksqlDB ACLs to permit the ksqlDB application to read from ``wikipedia.parsed.ccloud.replica``.
+
+   .. code-block:: text
+
+      ccloud ksql app configure-acls $ksqlDBAppId wikipedia.parsed.ccloud.replica
+
+#. Create new ksqlDB queries from the :devx-cp-demo:`statements.sql|scripts/validate/statements.sql` file.
+
+   .. literalinclude:: ../scripts/validate/submit_ksql_queries.sh 
+
+#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify you see the ksqlDB application.
+
+#. View the events in the ksqlDB streams in |ccloud|.
+
+#. The ksqlDB application in |ccloud| has hourly charges even if you are not actively using it, so after you are finished, proceed to :ref:`cp-demo-ccloud-cleanup`.
+
 
 .. _cp-demo-ccloud-cleanup:
 
