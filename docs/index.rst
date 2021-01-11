@@ -1738,7 +1738,7 @@ You must have completed :ref:`cp-demo-setup-ccloud` before proceeding.
 
 #. Create new ksqlDB queries from the :devx-cp-demo:`statements.sql|scripts/validate/statements.sql` file.
 
-   .. literalinclude:: ../scripts/validate/submit_ksqldb_queries.sh 
+   .. literalinclude:: ../scripts/validate/submit_ksqldb_queries
 
 #. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify you see the ksqlDB application.
 
