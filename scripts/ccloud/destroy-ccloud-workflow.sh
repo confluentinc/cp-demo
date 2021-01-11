@@ -29,7 +29,8 @@ read -p "This script will remove Replicator and destroy the Confluent Cloud envi
 echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
-  echo "Don't forget to destroy your Confluent Cloud environment to avoid unexpected charges."
+  echo
+  echo "--> Don't forget to destroy your Confluent Cloud environment to avoid unexpected charges."
   echo
   exit 1
 fi

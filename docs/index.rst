@@ -1435,11 +1435,11 @@ Setup |ccloud| and CLI
 
    The first option is to manually complete all the steps in the following sections, which we recommend if you are new to |ccloud| and |cp|.
 
-   The second option is to run :devx-cp-demo:`scripts/validate/validate_metrics_api.sh|scripts/validate/validate_metrics_api.sh` which automates those steps and which we recommend if you have run this tutorial before and want to quickly bring it up.
+   The second option is to run :devx-cp-demo:`scripts/ccloud/create-ccloud-workflow.sh|scripts/ccloud/create-ccloud-workflow.sh` which automates those steps and which we recommend if you have run this tutorial before and want to quickly bring it up.
 
    .. code-block:: text
 
-      ./scripts/validate/validate_metrics_api.sh
+      (cd scripts/ccloud/ && ./create-ccloud-workflow.sh)
 
 .. _cp-demo-ccloud-stack:
 
@@ -1629,9 +1629,9 @@ Metrics API
       CURRENT_TIME_MINUS_1HR=$(docker-compose exec tools date -Is -d '-1 hour' | tr -d '\r')
       CURRENT_TIME_PLUS_1HR=$(docker-compose exec tools date -Is -d '+1 hour' | tr -d '\r')
 
-#. View the :devx-cp-demo:`metrics query file|scripts/validate/metrics_query_onprem.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed`` in the on-prem cluster (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
+#. View the :devx-cp-demo:`metrics query file|scripts/ccloud/metrics_query_onprem.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed`` in the on-prem cluster (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
 
-   .. literalinclude:: ../scripts/validate/metrics_query_onprem.json
+   .. literalinclude:: ../scripts/ccloud/metrics_query_onprem.json
 
 #. Substitute values into the query json file. For this substitution to work, you must have set the following parameters in your environment:
 
@@ -1641,7 +1641,7 @@ Metrics API
    .. code-block:: text
 
       DATA=$(eval "cat <<EOF
-      $(<./scripts/validate/metrics_query_onprem.json)
+      $(<./scripts/ccloud/metrics_query_onprem.json)
       EOF
       ")
 
@@ -1680,9 +1680,9 @@ Metrics API
         ]
       }
 
-#. View the :devx-cp-demo:`metrics query file|scripts/validate/metrics_query_ccloud.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed.ccloud.replica`` in |ccloud| (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
+#. View the :devx-cp-demo:`metrics query file|scripts/ccloud/metrics_query_ccloud.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed.ccloud.replica`` in |ccloud| (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
 
-   .. literalinclude:: ../scripts/validate/metrics_query_ccloud.json
+   .. literalinclude:: ../scripts/ccloud/metrics_query_ccloud.json
 
 #. Get the |ak| cluster ID in |ccloud|, derived from the ``$SERVICE_ACCOUNT_ID``.
 
@@ -1699,7 +1699,7 @@ Metrics API
    .. code-block:: text
 
       DATA=$(eval "cat <<EOF
-      $(<./scripts/validate/metrics_query_ccloud.json)
+      $(<./scripts/ccloud/metrics_query_ccloud.json)
       EOF
       ")
 
@@ -1759,9 +1759,9 @@ You must have completed :ref:`cp-demo-ccloud-stack` before proceeding.
 
       ccloud ksql app configure-acls $ksqlDBAppId wikipedia.parsed.ccloud.replica
 
-#. Create new ksqlDB queries from the :devx-cp-demo:`statements.sql|scripts/validate/statements.sql` file.
+#. Create new ksqlDB queries from the :devx-cp-demo:`statements.sql|scripts/ccloud/statements.sql` file.
 
-   .. literalinclude:: ../scripts/validate/submit_ksqldb_queries
+   .. literalinclude:: ../scripts/ccloud/submit_ksqldb_queries
 
 #. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and view the ksqlDB application Flow.
 

@@ -16,22 +16,6 @@ ccloud::prompt_continue_ccloud_demo || exit 1
 echo
 ccloud login --save || exit 1
 
-# Create credentials for the cloud resource
-echo
-CREDENTIALS=$(ccloud api-key create --resource cloud -o json) || exit 1
-export METRICS_API_KEY=$(echo "$CREDENTIALS" | jq -r .key)
-export METRICS_API_SECRET=$(echo "$CREDENTIALS" | jq -r .secret)
-
-# Enable Confluent Telemetry Reporter
-echo
-echo "Enabling Confluent Telemetry Reporter cluster-wide to send metrics to Confluent Cloud"
-docker-compose exec kafka1 kafka-configs \
-  --bootstrap-server kafka1:12091 \
-  --alter \
-  --entity-type brokers \
-  --entity-default \
-  --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key=${METRICS_API_KEY},confluent.telemetry.api.secret=${METRICS_API_SECRET}
-
 # Create a new ccloud-stack
 echo
 echo "Configure a new Confluent Cloud ccloud-stack (including a new ksqlDB application)"
@@ -70,7 +54,22 @@ MAX_WAIT=120
 echo "Waiting up to $MAX_WAIT seconds for Replicator to Confluent Cloud to start"
 retry $MAX_WAIT check_connector_status_running replicate-topic-to-ccloud || exit 1
 echo "Replicator started!"
-sleep 5
+
+# Create credentials for the cloud resource
+echo
+CREDENTIALS=$(ccloud api-key create --resource cloud -o json) || exit 1
+export METRICS_API_KEY=$(echo "$CREDENTIALS" | jq -r .key)
+export METRICS_API_SECRET=$(echo "$CREDENTIALS" | jq -r .secret)
+
+# Enable Confluent Telemetry Reporter
+echo
+echo "Enabling Confluent Telemetry Reporter cluster-wide to send metrics to Confluent Cloud"
+docker-compose exec kafka1 kafka-configs \
+  --bootstrap-server kafka1:12091 \
+  --alter \
+  --entity-type brokers \
+  --entity-default \
+  --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key=${METRICS_API_KEY},confluent.telemetry.api.secret=${METRICS_API_SECRET}
 
 echo "Sleeping 90s to wait for Replicator to start propagating data to Confluent Cloud and for metrics collection to begin"
 sleep 90
@@ -123,4 +122,4 @@ echo
 
 
 # Teardown
-${VALIDATE_DIR}/validate_destroy_ccloud_replicator.sh
+${VALIDATE_DIR}/destroy-ccloud-workflow.sh
