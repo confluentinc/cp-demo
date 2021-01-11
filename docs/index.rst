@@ -1740,9 +1740,13 @@ You must have completed :ref:`cp-demo-setup-ccloud` before proceeding.
 
    .. literalinclude:: ../scripts/validate/submit_ksqldb_queries
 
-#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify you see the ksqlDB application.
+#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and view the ksqlDB application Flow.
+
+   .. figure:: images/ccloud_ksqldb_flow.png
 
 #. View the events in the ksqlDB streams in |ccloud|.
+
+   .. figure:: images/ccloud_ksqldb_stream.png
 
 #. The ksqlDB application in |ccloud| has hourly charges even if you are not actively using it, so after you are finished, proceed to :ref:`cp-demo-ccloud-cleanup`.
 
