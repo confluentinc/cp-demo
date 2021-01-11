@@ -34,8 +34,8 @@ docker-compose exec kafka1 kafka-configs \
 
 # Create a new ccloud-stack
 echo
-echo "Configure a new Confluent Cloud ccloud-stack"
-ccloud::create_ccloud_stack || exit 1
+echo "Configure a new Confluent Cloud ccloud-stack (including a new ksqlDB application)"
+ccloud::create_ccloud_stack true || exit 1
 export SERVICE_ACCOUNT_ID=$(ccloud kafka cluster list -o json | jq -r '.[0].name' | awk -F'-' '{print $4;}')
 CONFIG_FILE=stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
 CCLOUD_CLUSTER_ID=$(ccloud kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-$SERVICE_ACCOUNT_ID"'")' | jq -r .id)
