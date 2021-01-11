@@ -71,7 +71,8 @@ docker-compose exec kafka1 kafka-configs \
   --entity-default \
   --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key=${METRICS_API_KEY},confluent.telemetry.api.secret=${METRICS_API_SECRET}
 
-echo "Sleeping 90s to wait for Replicator to start propagating data to Confluent Cloud and for metrics collection to begin"
+echo
+echo "Sleeping 90s to wait for metrics collection to begin"
 sleep 90
 
 # Query Metrics API
