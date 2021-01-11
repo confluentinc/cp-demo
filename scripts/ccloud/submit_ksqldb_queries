@@ -12,4 +12,4 @@ while read ksqlCmd; do
 EOF
 )
 
-done <statements.sql
+done < ./scripts/ccloud/statements.sql
