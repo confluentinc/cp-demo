@@ -1399,6 +1399,9 @@ In this part of the tutorial, you can run |crep| to send |ak| data to |ccloud| a
 .. figure:: images/cp-demo-overview-with-ccloud.jpg
     :alt: image
 
+Run this part of the tutorial only after you have completed the :ref:initial bring-up <cp-demo-run>` of ``cp-demo``, because the initial bring-up deploys the on-prem cluster.
+The steps in this section brings up the |ccloud| instance and interconnects it to your on-prem cluster.
+
 Cost to Run
 -----------
 
