@@ -1718,11 +1718,17 @@ Metrics
 This section creates queries in the |ccloud| ksqlDB application that processes data from the ``wikipedia.parsed.ccloud.replica`` topic that |crep| copied from the on-prem cluster.
 You must have completed :ref:`cp-demo-setup-ccloud` before proceeding.
 
-#. Get the |ccloud| ksqlDB application ID.
+#. Get the |ccloud| ksqlDB application ID and save it to the parameter ``ksqlDBAppId``.
 
    .. code-block:: text
 
       ksqlDBAppId=$(ccloud ksql app list | grep "$KSQLDB_ENDPOINT" | awk '{print $1}')
+
+#. Verify the |ccloud| ksqlDB application has transitioned from ``PROVISIONING`` to ``UP`` state. This may take a few minutes.
+
+   .. code-block:: text
+
+      ccloud ksql app describe $ksqlDBAppId -o json
 
 #. Configure ksqlDB ACLs to permit the ksqlDB application to read from ``wikipedia.parsed.ccloud.replica``.
 
@@ -1732,7 +1738,7 @@ You must have completed :ref:`cp-demo-setup-ccloud` before proceeding.
 
 #. Create new ksqlDB queries from the :devx-cp-demo:`statements.sql|scripts/validate/statements.sql` file.
 
-   .. literalinclude:: ../scripts/validate/submit_ksql_queries.sh 
+   .. literalinclude:: ../scripts/validate/submit_ksqldb_queries.sh 
 
 #. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify you see the ksqlDB application.
 
