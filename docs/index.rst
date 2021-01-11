@@ -1431,11 +1431,11 @@ Setup |ccloud| and CLI
 
       ccloud login --save
 
-#. At this point, you have two options for running the |ccloud| portion of this tutorial.
+#. The remainder of the |ccloud| portion of this tutorial must be completed sequentially. You have two options for proceeding.
 
-   The first option is to manually complete all the steps in the following sections, which we recommend if you are new to |ccloud| and |cp|: :ref:`cp-demo-ccloud-stack`, :ref:`cp-demo-telemetry-reporter`, :ref:`cp-demo-replicator-to-ccloud`, :ref:`cp-demo-metrics-api`, and :ref:`cp-demo-ccloud-cleanup`.
+   The first option is to manually complete all the steps in the following sections, which we recommend if you are new to |ccloud| and |cp|.
 
-   The second option is to run :devx-cp-demo:`scripts/validate/validate_metrics_api.sh|scripts/validate/validate_metrics_api.sh` which automates those steps.
+   The second option is to run :devx-cp-demo:`scripts/validate/validate_metrics_api.sh|scripts/validate/validate_metrics_api.sh` which automates those steps and which we recommend if you have run this tutorial before and want to quickly bring it up.
 
    .. code-block:: text
 
@@ -1733,6 +1733,7 @@ Metrics API
         ]
       }
 
+.. _cp-demo-ccloud-ksqldb:
 
 |ccloud| ksqlDB
 ---------------
