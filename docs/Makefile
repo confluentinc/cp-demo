@@ -55,7 +55,17 @@ html:
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
-livehtml:
+livehtmlbase: html
+ifndef RELEASE_VERSION
+	echo "RELEASE_VERSION is not defined."
+	echo "Either use ./build_documentation.sh --live, or source ./settings.sh before running livehtml"
+	exit 1
+endif
+	# prepare live website
+	mkdir -p _build/live/
+	cp -R _build/html/* _build/live/
+
+livehtml: livehtmlbase
 	python autoreload.py
 
 dirhtml:
