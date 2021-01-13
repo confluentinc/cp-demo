@@ -1769,7 +1769,7 @@ You must have completed :ref:`cp-demo-ccloud-stack` before proceeding.
 
    .. figure:: images/ccloud_ksqldb_stream.png
 
-#. The ksqlDB application in |ccloud| has hourly charges even if you are not actively using it, so after you are finished, proceed to :ref:`cp-demo-ccloud-cleanup`.
+#. Go to :ref:`cp-demo-ccloud-cleanup` and destroy the demo resources used. Important: The ksqlDB application in |ccloud| has hourly charges even if you are not actively using it.
 
 
 .. _cp-demo-ccloud-cleanup:
