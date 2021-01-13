@@ -1811,14 +1811,14 @@ Cleanup
 
       ccloud api-key delete ${METRICS_API_KEY}
 
-#. Destroy your |ccloud| environment. Even if you stop ``cp-demo``, the resources in |ccloud| continue to incur charges until you remove all the resources.
+#. Destroy your |ccloud| environment. Even if you stop ``cp-demo``, the resources in |ccloud| continue to incur charges until you destroy all the resources.
 
    .. code-block:: text
 
       source ./ccloud_library.sh
       ccloud::destroy_ccloud_stack $SERVICE_ACCOUNT_ID
 
-#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify all your resources have been cleaned up.
+#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify all your resources have been destroyed.
 
 
 .. _cp-demo-monitoring:
@@ -1905,7 +1905,7 @@ Teardown
 
           ./scripts/stop.sh
 
-#. If you ran |crep| to copy data from this local on-prem |ak| cluster to |ccloud|, then follow the clean up procedure in :ref:`cp-demo-ccloud-cleanup` to avoid unexpected |ccloud| charges.
+#. If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included creating resources in |ccloud|, follow the clean up procedure in :ref:`cp-demo-ccloud-cleanup` to avoid unexpected |ccloud| charges.
 
 
 .. _cp-demo-troubleshooting:
