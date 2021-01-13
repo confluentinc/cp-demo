@@ -30,7 +30,7 @@ repositories {
     mavenCentral()
     jcenter()
     maven {
-        url = 'https://packages.confluent.io/maven/'
+        url = 'https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/6.1.x/136/maven'
     }
 }
 
