@@ -1454,7 +1454,7 @@ Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |c
 -  Create a new ksqlDB app and associated credentials
 -  Generate a local configuration file with all above connection information.
 
-#. Get a bash library of useful functions for interacting with |ccloud| (one of which is ``cloud-stack``). This library is community-supported and is not supported by Confluent.
+#. Get a bash library of useful functions for interacting with |ccloud| (one of which is ``cloud-stack``). This library is community-supported and not supported by Confluent.
 
    .. code-block:: text
 
