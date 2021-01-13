@@ -73,7 +73,7 @@ jib {
   to.image = "cnfldemos/cp-demo-kstreams:${version}"
   container {
     entrypoint = '/app/start.sh'
-    useCurrentTimestamp=true
+    creationTime = 'USE_CURRENT_TIMESTAMP'
   }
   extraDirectories {
     permissions = [
