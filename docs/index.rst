@@ -1736,7 +1736,7 @@ Metrics API
 |ccloud| ksqlDB
 ---------------
 
-This section creates queries in the |ccloud| ksqlDB application that processes data from the ``wikipedia.parsed.ccloud.replica`` topic that |crep| copied from the on-prem cluster.
+This section shows how to create queries in the |ccloud| ksqlDB application that processes data from the ``wikipedia.parsed.ccloud.replica`` topic that |crep| copied from the on-prem cluster.
 You must have completed :ref:`cp-demo-ccloud-stack` before proceeding.
 
 #. Get the |ccloud| ksqlDB application ID and save it to the parameter ``ksqlDBAppId``.
