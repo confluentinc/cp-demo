@@ -1570,7 +1570,7 @@ Enable :ref:`telemetry_reporter` on the on-prem cluster, and configure it to sen
 
 Deploy |crep| to copy data from the on-prem cluster to the |ak| cluster running in |ccloud|.
 It is configured to copy from the |ak| topic ``wikipedia.parsed`` (on-prem) to the cloud topic ``wikipedia.parsed.ccloud.replica`` in |ccloud|. 
-The Replicator instance is running on the existing connect worker in the on-prem cluster.
+The Replicator instance is running on the existing Connect worker in the on-prem cluster.
 
 #. If you have been running ``cp-demo`` for a long time, you may need to refresh your local token to log back into MDS:
 
