@@ -1595,7 +1595,7 @@ The Replicator instance is running on the existing Connect worker in the on-prem
           --kafka-cluster-id $KAFKA_CLUSTER_ID \
           --connect-cluster-id connect-cluster"
 
-#. View the |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`. Note that it uses the local connect cluster (the origin site), so the |crep| configuration has overrides for the producer. The configuration parameters that use variables are read from the env variables that you sourced in an earlier step.
+#. View the |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`. Note that it uses the local connect cluster (the origin site), so the |crep| configuration has overrides for the producer. The configuration parameters that use variables are read from the environment variables you sourced in an earlier step.
 
 #. Submit the |crep| connector to the local connect cluster.
 
