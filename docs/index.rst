@@ -76,7 +76,7 @@ Using a dedicated metrics cluster is more resilient because it continues to prov
 
 If you prefer non-Docker examples, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
 
-After you run through the guided tutorial below, apply the concepts you learn here to build your own event streaming pipeline in |ccloud|, a fully managed, cloud-native event streaming platform powered by |ak|. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
+After you run through the guided tutorial below, apply the concepts you learn here to build your own event streaming pipeline in |ccloud|, a fully managed, cloud-native event streaming platform powered by |ak|. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``CPDEMO50`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
 
 
 Prerequisites
@@ -1414,7 +1414,8 @@ Caution
 |ccloud| Promo Code
 ~~~~~~~~~~~~~~~~~~~
 
-.. include:: ../../examples/ccloud/docs/includes/ccloud-examples-promo-code.rst
+To receive an additional $50 free usage in |ccloud|, enter promo code ``CPDEMO50`` in the |ccloud| UI `Billing and payment` section (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
+This promo code should sufficiently cover up to one day of running this |ccloud| example, beyond which you may be billed for the services that have an hourly charge until you destroy the |ccloud| resources created by this example.
 
 
 .. _cp-demo-setup-ccloud:
