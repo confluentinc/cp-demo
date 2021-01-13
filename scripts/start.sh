@@ -210,7 +210,7 @@ Want more? Replicate data from cp-demo to Confluent Cloud:
 
      https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#hybrid-deployment-to-ccloud
 
-Use Confluent Cloud promo code C50INTEG to receive \$50 free usage
+Use Confluent Cloud promo code CPDEMO50 to receive \$50 free usage
 ----------------------------------------------------------------------------------------------------
 
 EOF
