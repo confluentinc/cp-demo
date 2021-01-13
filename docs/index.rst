@@ -1450,7 +1450,7 @@ Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |c
 -  Create a new service account.
 -  Create a new Kafka cluster and associated credentials.
 -  Enable |sr-ccloud| and associated credentials.
--  Create ACLs with wildcard for the service account.
+-  Create ACLs with a wildcard for the service account.
 -  Create a new ksqlDB app and associated credentials
 -  Generate a local configuration file with all above connection information.
 
