@@ -1395,13 +1395,13 @@ Hybrid Deployment to |ccloud|
 =============================
 
 In a hybrid |ak-tm| deployment scenario, you can have both an on-prem and `Confluent Cloud <https://confluent.cloud>`__ deployment.
-In this part of the tutorial, you can run |crep| to send |ak| data to |ccloud| and use a common method, the `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__,  for collecting metrics for both.
+This part of the tutorial runs |crep| to send |ak| data to |ccloud|, and uses a common method, the `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__, for collecting metrics for both.
 
 .. figure:: images/cp-demo-overview-with-ccloud.jpg
     :alt: image
 
-Run this part of the tutorial only after you have completed the :ref:initial bring-up <cp-demo-run>` of ``cp-demo``, because the initial bring-up deploys the on-prem cluster.
-The steps in this section brings up the |ccloud| instance and interconnects it to your on-prem cluster.
+Run this part of the tutorial only after you have completed the cp-demo :ref:`initial bring-up <cp-demo-run>`, because the initial bring-up deploys the on-prem cluster.
+The steps in this section bring up the |ccloud| instance and interconnects it to your on-prem cluster.
 
 Cost to Run
 -----------
@@ -1432,11 +1432,7 @@ Setup |ccloud| and CLI
 
       ccloud login --save
 
-#. The remainder of the |ccloud| portion of this tutorial must be completed sequentially. You have two options for proceeding.
-
-   The first option is to manually complete all the steps in the following sections, which we recommend if you are new to |ccloud| and |cp|.
-
-   The second option is to run :devx-cp-demo:`scripts/ccloud/create-ccloud-workflow.sh|scripts/ccloud/create-ccloud-workflow.sh` which automates those steps and which we recommend if you have run this tutorial before and want to quickly bring it up.
+#. The remainder of the |ccloud| portion of this tutorial must be completed sequentially. We recommend that you manually complete all the steps in the following sections. However, you may also run the script :devx-cp-demo:`scripts/ccloud/create-ccloud-workflow.sh|scripts/ccloud/create-ccloud-workflow.sh` which automates those steps; this option is recommended for users who have run this tutorial before and want to quickly bring it up.
 
    .. code-block:: text
 
@@ -1476,7 +1472,7 @@ Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |c
 
       cat stack-configs/java-service-account-*.config
 
-#. In the current shell, set the environment variable ``SERVICE_ACCOUNT_ID`` to the <SERVICE_ACCOUNT_ID> in the filename. For example, if the filename is called ``stack-configs/java-service-account-154143.config``, then set ``SERVICE_ACCOUNT_ID=154143``.
+#. In the current shell, set the environment variable ``SERVICE_ACCOUNT_ID`` to the <SERVICE_ACCOUNT_ID> in the filename. For example, if the filename is called ``stack-configs/java-service-account-154143.config``, then set ``SERVICE_ACCOUNT_ID=154143``. This environment variable is used later in the tutorial.
 
    .. code-block:: text
 
@@ -1630,7 +1626,7 @@ Metrics API
       CURRENT_TIME_MINUS_1HR=$(docker-compose exec tools date -Is -d '-1 hour' | tr -d '\r')
       CURRENT_TIME_PLUS_1HR=$(docker-compose exec tools date -Is -d '+1 hour' | tr -d '\r')
 
-#. View the :devx-cp-demo:`metrics query file|scripts/ccloud/metrics_query_onprem.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed`` in the on-prem cluster (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
+#. For the on-prem metrics: view the :devx-cp-demo:`metrics query file|scripts/ccloud/metrics_query_onprem.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed`` in the on-prem cluster (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
 
    .. literalinclude:: ../scripts/ccloud/metrics_query_onprem.json
 
@@ -1681,7 +1677,7 @@ Metrics API
         ]
       }
 
-#. View the :devx-cp-demo:`metrics query file|scripts/ccloud/metrics_query_ccloud.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed.ccloud.replica`` in |ccloud| (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
+#. For the |ccloud| metrics: view the :devx-cp-demo:`metrics query file|scripts/ccloud/metrics_query_ccloud.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed.ccloud.replica`` in |ccloud| (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
 
    .. literalinclude:: ../scripts/ccloud/metrics_query_ccloud.json
 
@@ -1728,7 +1724,7 @@ Metrics API
         "data": [
           {
             "timestamp": "2020-12-14T20:00:00Z",
-            "value": 995,
+            "value": 1690522,
             "metric.label.topic": "wikipedia.parsed.ccloud.replica"
           }
         ]
@@ -1760,7 +1756,7 @@ You must have completed :ref:`cp-demo-ccloud-stack` before proceeding.
 
       ccloud ksql app configure-acls $ksqlDBAppId wikipedia.parsed.ccloud.replica
 
-#. Create new ksqlDB queries from the :devx-cp-demo:`statements.sql|scripts/ccloud/statements.sql` file.
+#. Create new ksqlDB queries from the :devx-cp-demo:`scripts/ccloud/statements.sql|scripts/ccloud/statements.sql` file.
 
    .. literalinclude:: ../scripts/ccloud/submit_ksqldb_queries
 
