@@ -1515,7 +1515,7 @@ Telemetry Reporter
 
 Enable :ref:`telemetry_reporter` on the on-prem cluster, and configure it to send metrics to the |ccloud| instance created above..
 
-#. Create a new ``Cloud`` API key and secret to authenticate with |ccloud|. These credentials will be used by the Telemetry Reporter and used by the Metrics API, which can be used for hosted on-prem clusters as well as |ccloud| clusters.
+#. Create a new ``Cloud`` API key and secret to authenticate to |ccloud|. These credentials will be used to configure the Telemetry Reporter and used by the Metrics API.
 
    .. code:: shell
 
