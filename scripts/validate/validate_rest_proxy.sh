@@ -48,7 +48,7 @@ docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vn
 # Get the Avro schema id
 schemaid=$(docker-compose exec schemaregistry curl -X GET --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u $CLIENT_NAME:$CLIENT_NAME https://schemaregistry:8085/subjects/$subject/versions/1 | jq '.id')
 
-# Go through steps at https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html?utm_source=github&utm_medium=demo&utm_campaign=ch.cp-demo_type.community_content.cp-demo#confluent-rest-proxy
+# Go through steps at https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#crest-long?utm_source=github&utm_medium=demo&utm_campaign=ch.cp-demo_type.community_content.cp-demo#confluent-rest-proxy
 
 docker-compose exec tools bash -c "confluent iam rolebinding create \
     --principal $CLIENT_PRINCIPAL \
