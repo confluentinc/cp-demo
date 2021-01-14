@@ -1558,14 +1558,16 @@ Enable :ref:`telemetry_reporter` on the on-prem cluster, and configure it to sen
 
    .. sourcecode:: bash
 
-      docker-compose logs kafka1 | grep confluent.telemetry.api.key
+      docker-compose logs kafka1 | grep confluent.telemetry.api
 
    Your output should resemble the following, but the ``confluent.telemetry.api.key`` value will be different in your environment.
 
    .. code-block:: text
 
+      ...
       kafka1            | 	confluent.telemetry.api.key = QX7X4VA4DFJTTOIA
       kafka1            | 	confluent.telemetry.api.secret = [hidden]
+      ...
 
 .. _cp-demo-replicator-to-ccloud:
 
