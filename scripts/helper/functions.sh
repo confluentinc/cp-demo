@@ -19,7 +19,9 @@ retry() {
             sleep $sleep_interval
         fi
     done
-    printf "\n"
+
+    PRETTY_PASS="\e[32m✔ \e[0m"
+    printf "${PRETTY_PASS}%s\n\n"
 }
 
 verify_installed()
@@ -57,6 +59,30 @@ preflight_checks()
 
   return 0
 
+}
+
+poststart_checks()
+{
+  # Verify no containers have Exited
+  if [[ $(docker-compose ps | grep Exit) ]]; then
+    echo -e "\nWARNING: at least one Docker container unexpectedly exited. Please troubleshoot, see https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#troubleshooting"
+  fi
+
+  # Validate connectors are running
+  connectorList=$(docker-compose exec connect curl -X GET --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://connect:8083/connectors/ | jq -r @sh | xargs echo)
+  for connector in $connectorList; do
+    check_connector_status_running $connector || echo -e "\nWARNING: Connector $connector is not in RUNNING state. Is it still starting up?"
+  done
+
+  # Check number of Schema Registry subjects
+  # The subject created by the Kafka Streams app may be created after start script ends, so ignore that subject here (to not add time to start script)
+  numSubjects=6
+  foundSubjects=$(docker-compose exec schemaregistry curl -X GET --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://schemaregistry:8085/subjects | jq length)
+  if [[ $foundSubjects -lt $numSubjects ]]; then
+    echo -e "\nWARNING: Expected to find at least $numSubjects subjects in Schema Registry but found $foundSubjects subjects. Please troubleshoot, see https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#troubleshooting"
+  fi
+
+  echo
 }
 
 get_kafka_cluster_id_from_container()
@@ -110,14 +136,11 @@ build_connect_image()
   echo "Building custom Docker image with Connect version ${CONFLUENT_DOCKER_TAG} and connector version ${CONNECTOR_VERSION}"
 
   local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-  
-  if [[ "${CONNECTOR_VERSION}" =~ "SNAPSHOT" ]]; then
-    DOCKERFILE="${DIR}/../../Dockerfile-local"
-  else
-    DOCKERFILE="${DIR}/../../Dockerfile-confluenthub"
-  fi
-  echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE ${DIR}/../../."
-  docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE ${DIR}/../../. || {
+
+  DOCKERFILE="${DIR}/../../Dockerfile"
+  CONTEXT="${DIR}/../../."
+  echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg REPOSITORY=$REPOSITORY -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE $CONTEXT"
+  docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg REPOSITORY=$REPOSITORY -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE $CONTEXT || {
     echo "ERROR: Docker image build failed. Please troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#troubleshooting"
     exit 1
   }
@@ -193,7 +216,8 @@ host_check_ksqlDBserver_up()
 
 host_check_connect_up()
 {
-  FOUND=$(docker-compose logs connect | grep "Herder started")
+  containerName=$1
+  FOUND=$(docker-compose logs $containerName | grep "Herder started")
   if [ -z "$FOUND" ]; then
     return 1
   fi
@@ -238,7 +262,7 @@ mds_login()
     echo "'expect' is not found. Install 'expect' and try again"
     exit 1
   fi
-  echo -e "\n# Login"
+  echo -e "\n# Login to MDS using Confluent CLI"
   OUTPUT=$(
   expect <<END
     log_user 1
@@ -256,6 +280,16 @@ END
     echo "Failed to log into MDS.  Please check all parameters and run again"
     exit 1
   fi
+}
+
+check_connector_status_running() {
+  connectorName=$1
+
+  STATE=$(docker-compose exec connect curl -X GET --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://connect:8083/connectors/$connectorName/status | jq -r .connector.state)
+  if [[ "$STATE" != "RUNNING" ]]; then
+    return 1
+  fi
+  return 0
 }
 
 create_topic() {
@@ -284,12 +318,14 @@ create_topic() {
     --data-binary @<(jq -n --arg topic_name "${topic_name}" --arg confluent_value_schema_validation "${confluent_value_schema_validation}" -f ${DIR}/topic.jq) \
     "https://${broker_host_port}/kafka/v3/clusters/${cluster_id}/topics"); } 2>&1; printf '\0%s' "$out" "$?") || true
 
-  echo "response code: " $http_code
-  echo $out| jq || true
+  #echo "response code: " $http_code
+  #echo $out| jq || true
 
   if [[ $status -ne 0 || $http_code -gt 299 || -z $out || $out =~ "error_code" ]]; then
     echo "ERROR: create topic failed $out"
     return 1
+  else
+    echo "Created topic $topic_name"
   fi
 
   return 0

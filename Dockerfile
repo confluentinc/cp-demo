@@ -13,11 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+ARG REPOSITORY
 ARG CP_VERSION
 
-FROM confluentinc/cp-server-connect-base:$CP_VERSION
-
-ARG CONNECTOR_VERSION
+FROM $REPOSITORY/cp-enterprise-replicator:$CP_VERSION
 
 ENV CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
 
@@ -27,11 +26,8 @@ RUN confluent-hub install --no-prompt cjmatta/kafka-connect-sse:latest
 # Install FromJson transformation
 RUN confluent-hub install --no-prompt jcustenborder/kafka-connect-json-schema:latest
 
-# Install Confluent Replicator connector
-RUN confluent-hub install --no-prompt confluentinc/kafka-connect-replicator:${CONNECTOR_VERSION}
-
 # Install Elasticsearch connector
-RUN confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:10.0.2
+RUN confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:11.0.0
 
 # Add JDK default cacerts to kafka.connect.truststore.jks to allow outgoing HTTPS
 COPY scripts/security/kafka.connect.truststore.jks /tmp/kafka.connect.truststore.jks

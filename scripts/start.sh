@@ -39,6 +39,8 @@ if [[ "$CLEAN" == "true" ]] ; then
   create_certificates
 fi
 
+#-------------------------------------------------------------------------------
+
 # Bring up openldap
 docker-compose up -d openldap
 sleep 5
@@ -67,6 +69,8 @@ docker-compose exec kafka1 kafka-configs \
    --alter \
    --add-config min.insync.replicas=1
 
+#-------------------------------------------------------------------------------
+
 # Build custom Kafka Connect image with required jars
 if [[ "$CLEAN" == "true" ]] ; then
   build_connect_image || exit 1
@@ -81,17 +85,18 @@ docker-compose exec tools bash -c "/tmp/helper/create-topics.sh" || exit 1
 
 # Verify Confluent Control Center has started
 MAX_WAIT=300
+echo
 echo "Waiting up to $MAX_WAIT seconds for Confluent Control Center to start"
 retry $MAX_WAIT host_check_control_center_up || exit 1
 
-echo -e "\n\nConfluent Control Center modifications:"
+echo -e "\nConfluent Control Center modifications:"
 ${DIR}/helper/control-center-modifications.sh
 echo
 
 # Verify Kafka Connect Worker has started
 MAX_WAIT=240
 echo -e "\nWaiting up to $MAX_WAIT seconds for Connect to start"
-retry $MAX_WAIT host_check_connect_up || exit 1
+retry $MAX_WAIT host_check_connect_up "connect" || exit 1
 sleep 2 # give connect an exta moment to fully mature
 
 NUM_CERTS=$(docker-compose exec connect keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
@@ -110,25 +115,24 @@ if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
   exit 1
 fi
 
+#-------------------------------------------------------------------------------
+
 echo -e "\nStart streaming from the Wikipedia SSE source connector:"
 ${DIR}/connectors/submit_wikipedia_sse_config.sh
+
+# Verify connector is running
+MAX_WAIT=120
+echo
+echo "Waiting up to $MAX_WAIT seconds for connector to be in RUNNING state"
+retry $MAX_WAIT check_connector_status_running "wikipedia-sse" || exit 1
 
 # Verify wikipedia.parsed topic is populated and schema is registered
 MAX_WAIT=120
 echo
-echo -e "\nWaiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
+echo -e "Waiting up to $MAX_WAIT seconds for subject wikipedia.parsed-value (for topic wikipedia.parsed) to be registered in Schema Registry"
 retry $MAX_WAIT host_check_schema_registered || exit 1
 
-# Verify ksqlDB server has started
-MAX_WAIT=120
-echo -e "\nWaiting up to $MAX_WAIT seconds for ksqlDB server to start"
-retry $MAX_WAIT host_check_ksqlDBserver_up || exit 1
-echo -e "\nRun ksqlDB queries (takes about 1 minute):"
-${DIR}/ksqlDB/run_ksqlDB.sh
-
-echo -e "\nStart consumers for additional topics: WIKIPEDIANOBOT, EN_WIKIPEDIA_GT_1_COUNTS"
-${DIR}/consumers/listen_WIKIPEDIANOBOT.sh
-${DIR}/consumers/listen_EN_WIKIPEDIA_GT_1_COUNTS.sh
+#-------------------------------------------------------------------------------
 
 # Register the same schema for the replicated topic wikipedia.parsed.replica as was created for the original topic wikipedia.parsed
 # In this case the replicated topic will register with the same schema ID as the original topic
@@ -137,12 +141,31 @@ SCHEMA=$(docker-compose exec schemaregistry curl -s -X GET --cert /etc/kafka/sec
 docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -H "Content-Type: application/vnd.schemaregistry.v1+json" --data "{\"schema\": $SCHEMA}" -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed.replica-value/versions
 
 echo
+echo -e "\nStart Confluent Replicator to loopback to on-prem cluster:"
+${DIR}/connectors/submit_replicator_config.sh
+
+#-------------------------------------------------------------------------------
+
+# Verify ksqlDB server has started
+echo
+echo
+MAX_WAIT=120
+echo -e "\nWaiting up to $MAX_WAIT seconds for ksqlDB server to start"
+retry $MAX_WAIT host_check_ksqlDBserver_up || exit 1
+echo -e "\nRun ksqlDB queries:"
+${DIR}/ksqlDB/run_ksqlDB.sh
+
+echo -e "\nStart additional consumers to read from topics WIKIPEDIANOBOT, WIKIPEDIA_COUNT_GT_1"
+${DIR}/consumers/listen_WIKIPEDIANOBOT.sh
+${DIR}/consumers/listen_WIKIPEDIA_COUNT_GT_1.sh
+
+echo
+echo
 echo "Start the Kafka Streams application wikipedia-activity-monitor"
 docker-compose up -d streams-demo
 echo "..."
 
-echo -e "\nStart Confluent Replicator:"
-${DIR}/connectors/submit_replicator_config.sh
+#-------------------------------------------------------------------------------
 
 if [[ "$VIZ" == "true" ]]; then
   build_viz || exit 1
@@ -160,6 +183,34 @@ curl -u mds:mds -X POST "https://localhost:8091/security/1.0/rbac/principals" --
   -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}" \
   --cacert scripts/security/snakeoil-ca-1.crt --tlsv1.2 | jq '.[]'
 
-echo -e "\n\n\n******************************************************************************************************************"
-echo -e "DONE! Connect to Confluent Control Center at $C3URL (login as superUser/superUser for full access)"
-echo -e "******************************************************************************************************************\n"
+# Do poststart_checks
+poststart_checks
+
+
+cat << EOF
+
+----------------------------------------------------------------------------------------------------
+DONE! From your browser:
+
+  Confluent Control Center (login superUser/superUser for full access):
+     $C3URL
+
+EOF
+
+if [[ "$VIZ" == "true" ]]; then
+cat << EOF
+  Kibana
+     http://localhost:5601/app/dashboards#/view/Overview
+
+EOF
+fi
+
+cat << EOF
+Want more? Replicate data from cp-demo to Confluent Cloud:
+
+     https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#hybrid-deployment-to-ccloud
+
+Use Confluent Cloud promo code C50INTEG to receive \$50 free usage
+----------------------------------------------------------------------------------------------------
+
+EOF

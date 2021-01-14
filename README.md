@@ -1,6 +1,6 @@
 # Kafka Event Streaming Applications
 
-This example and accompanying tutorial show users how to deploy an Apache Kafka® event streaming application using [ksqlDB](https://www.confluent.io/product/ksql/?utm_source=github&utm_medium=demo&utm_campaign=ch.cp-demo_type.community_content.cp-demo) and [Kafka Streams](https://docs.confluent.io/platform/current/streams/index.html?utm_source=github&utm_medium=demo&utm_campaign=ch.cp-demo_type.community_content.cp-demo) for stream processing. All the components in the Confluent platform have security enabled end-to-end. Run the example with the [tutorial](https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html?utm_source=github&utm_medium=demo&utm_campaign=ch.cp-demo_type.community_content.cp-demo).
+This example and accompanying tutorial show users how to deploy an Apache Kafka® event streaming application using [ksqlDB](https://ksqldb.io?utm_source=github&utm_medium=demo&utm_campaign=ch.cp-demo_type.community_content.cp-demo) and [Kafka Streams](https://docs.confluent.io/platform/current/streams/index.html?utm_source=github&utm_medium=demo&utm_campaign=ch.cp-demo_type.community_content.cp-demo) for stream processing. All the components in the Confluent Platform have security enabled end-to-end. Run the example with the [tutorial](https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html?utm_source=github&utm_medium=demo&utm_campaign=ch.cp-demo_type.community_content.cp-demo).
 
 **Table of Contents**
 

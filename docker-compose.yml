@@ -54,6 +54,8 @@ services:
       - ./scripts/security:/etc/kafka/secrets
     entrypoint: /bin/bash
     tty: true
+    environment:
+      TZ: America/New_York
 
   openldap:
     image: osixia/openldap:1.3.0
@@ -158,7 +160,7 @@ services:
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka1.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka1_truststore_creds
       KAFKA_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
-      KAFKA_SSL_CLIENT_AUTH: "required"
+      KAFKA_SSL_CLIENT_AUTH: "requested"
 
       KAFKA_LISTENER_NAME_SSL_SSL_PRINCIPAL_MAPPING_RULES: RULE:^CN=([a-zA-Z0-9.]*).*$$/$$1/ , DEFAULT
       KAFKA_LISTENER_NAME_TOKEN_SSL_PRINCIPAL_MAPPING_RULES: RULE:^CN=([a-zA-Z0-9.]*).*$$/$$1/ , DEFAULT
@@ -321,7 +323,7 @@ services:
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka2.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka2_truststore_creds
       KAFKA_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
-      KAFKA_SSL_CLIENT_AUTH: "required"
+      KAFKA_SSL_CLIENT_AUTH: "requested"
 
       KAFKA_LISTENER_NAME_SSL_SSL_PRINCIPAL_MAPPING_RULES: RULE:^CN=([a-zA-Z0-9.]*).*$$/$$1/ , DEFAULT
       KAFKA_LISTENER_NAME_TOKEN_SSL_PRINCIPAL_MAPPING_RULES: RULE:^CN=([a-zA-Z0-9.]*).*$$/$$1/ , DEFAULT
@@ -401,7 +403,7 @@ services:
     restart: always
     build:
       context: .
-      dockerfile: Dockerfile-confluenthub
+      dockerfile: Dockerfile
     depends_on:
       - kafka1
       - kafka2
@@ -432,14 +434,12 @@ services:
 
       CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
       CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
 
       CONNECT_REST_ADVERTISED_HOST_NAME: connect
       CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CLASSPATH: "/usr/share/confluent-hub-components/confluentinc-kafka-connect-replicator/lib/replicator-rest-extension-${CONNECTOR_VERSION}.jar:/usr/share/java/monitoring-interceptors/*"
+      CLASSPATH: "/usr/share/java/kafka-connect-replicator/replicator-rest-extension-${CONNECTOR_VERSION}.jar:/usr/share/java/monitoring-interceptors/*"
 
       # Connect Worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
@@ -569,20 +569,19 @@ services:
 
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.0
     container_name: elasticsearch
     #restart: always
     ports:
       - 9200:9200
       - 9300:9300
     environment:
-      xpack.security.enabled: 'false'
       discovery.type: "single-node"
-      ES_JAVA_OPTS: "-Xms750m -Xmx750m"
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
       cluster.name: "elasticsearch-cp-demo"
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:5.5.2
+    image: docker.elastic.co/kibana/kibana-oss:7.10.0
     container_name: kibana
     restart: always
     depends_on:
@@ -590,7 +589,12 @@ services:
     ports:
       - 5601:5601
     environment:
-      xpack.security.enabled: 'false'
+      NEWSFEED_ENABLED: 'false'
+      TELEMETRY_OPTIN: 'false'
+      TELEMETRY_ENABLED: 'false'
+      SERVER_MAXPAYLOADBYTES: 4194304
+      KIBANA_AUTOCOMPLETETIMEOUT: 3000
+      KIBANA_AUTOCOMPLETETERMINATEAFTER: 2500000
 
   control-center:
     image: ${REPOSITORY}/cp-enterprise-control-center:${CONFLUENT_DOCKER_TAG}
@@ -716,7 +720,7 @@ services:
       SCHEMA_REGISTRY_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.schemaregistry.keystore.jks
       SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: confluent
       SCHEMA_REGISTRY_SSL_KEY_PASSWORD: confluent
-      SCHEMA_REGISTRY_SSL_CLIENT_AUTH: 'false'
+      SCHEMA_REGISTRY_SSL_CLIENT_AUTHENTICATION: 'NONE'
 
       SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "https"
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
@@ -878,7 +882,7 @@ services:
       KAFKA_REST_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.restproxy.keystore.jks
       KAFKA_REST_SSL_KEYSTORE_PASSWORD: confluent
       KAFKA_REST_SSL_KEY_PASSWORD: confluent
-      KAFKA_REST_SSL_CLIENT_AUTH: 'false'
+      KAFKA_REST_SSL_CLIENT_AUTHENTICATION: 'NONE'
 
       KAFKA_REST_CLIENT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.restproxy.truststore.jks
       KAFKA_REST_CLIENT_SSL_TRUSTSTORE_PASSWORD: confluent

@@ -3,27 +3,33 @@
 HEADER="Content-Type: application/json"
 DATA=$( cat << EOF
 {
+    "order": 0,
+    "version": 10000,
+    "index_patterns": "wikipedia_count_gt_*",
     "settings": {
-        "number_of_shards": 1
+        "index": {
+            "number_of_shards": 1,
+            "number_of_replicas": 1,
+            "refresh_interval": "10s",
+            "codec": "best_compression"
+        }
     },
     "mappings": {
-        "wikichange": {
-            "properties": {
-                "ROWTIME": {
-                    "type": "text"
-                },
-                "ROWKEY": {
-                    "type": "text"
-                },
-                "META.URI": {
-                    "type": "keyword"
-                },
-                "USER": {
-                    "type": "keyword"
-                },
-                "COUNT": {
-                    "type": "integer"
+        "properties": {
+            "META": {
+                "dynamic": true,
+                "type": "object",
+                "properties": {
+                    "URI": {
+                        "type": "keyword"
+                    }
                 }
+            },
+            "USER": {
+                "type": "keyword"
+            },
+            "COUNT": {
+                "type": "long"
             }
         }
     }
@@ -31,5 +37,5 @@ DATA=$( cat << EOF
 EOF
 )
 
-curl -XPUT -H "${HEADER}" --data "${DATA}" 'http://localhost:9200/en_wikipedia_gt_1?pretty'
+curl -XPUT -H "${HEADER}" --data "${DATA}" 'http://localhost:9200/_template/wikipedia_count_gt?pretty'
 echo
