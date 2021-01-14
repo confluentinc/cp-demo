@@ -1761,9 +1761,24 @@ You must have completed :ref:`cp-demo-ccloud-stack` before proceeding.
 
       ccloud ksql app configure-acls $ksqlDBAppId wikipedia.parsed.ccloud.replica
 
-#. Create new ksqlDB queries from the :devx-cp-demo:`scripts/ccloud/statements.sql|scripts/ccloud/statements.sql` file.
+#. Create new ksqlDB queries in |ccloud| from the :devx-cp-demo:`scripts/ccloud/statements.sql|scripts/ccloud/statements.sql` file. Note: depending on which folder you are in, you may need to modify the relative path to the ``statements.sql`` file.
 
-   .. literalinclude:: ../scripts/ccloud/submit_ksqldb_queries
+   .. code-block:: text
+
+       while read ksqlCmd; do
+         echo -e "\n$ksqlCmd\n"
+         curl -X POST $KSQLDB_ENDPOINT/ksql \
+              -H "Content-Type: application/vnd.ksql.v1+json; charset=utf-8" \
+              -u $KSQLDB_BASIC_AUTH_USER_INFO \
+              --silent \
+              -d @<(cat <<EOF
+       {
+         "ksql": "$ksqlCmd",
+         "streamsProperties": {}
+       }
+       EOF
+       )
+       done <scripts/ccloud/statements.sql
 
 #. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and view the ksqlDB application Flow.
 

@@ -108,6 +108,28 @@ curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
      https://api.telemetry.confluent.cloud/v1/metrics/cloud/query \
         | jq .
 
+# Write ksqlDB queries
+
+echo 
+echo "Writing ksqlDB queries in Confluent Cloud"
+ksqlDBAppId=$(ccloud ksql app list | grep "$KSQLDB_ENDPOINT" | awk '{print $1}')
+ccloud ksql app describe $ksqlDBAppId -o json
+ccloud ksql app configure-acls $ksqlDBAppId wikipedia.parsed.ccloud.replica
+while read ksqlCmd; do
+  echo -e "\n$ksqlCmd\n"
+  curl -X POST $KSQLDB_ENDPOINT/ksql \
+       -H "Content-Type: application/vnd.ksql.v1+json; charset=utf-8" \
+       -u $KSQLDB_BASIC_AUTH_USER_INFO \
+       --silent \
+       -d @<(cat <<EOF
+{
+  "ksql": "$ksqlCmd",
+  "streamsProperties": {}
+}
+EOF
+)
+done < ${VALIDATE_DIR}/statements.sql
+
 echo
 echo "Confluent Cloud Environment:"
 echo

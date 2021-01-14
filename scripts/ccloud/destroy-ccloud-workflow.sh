@@ -30,7 +30,7 @@ echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
   echo
-  echo "--> Don't forget to destroy your Confluent Cloud environment to avoid unexpected charges."
+  echo "--> Don't forget to destroy your Confluent Cloud environment, which may accrue hourly charges even if you are not actively using it."
   echo
   exit 1
 fi
