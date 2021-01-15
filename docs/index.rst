@@ -1834,6 +1834,7 @@ Cleanup
    .. code-block:: text
 
       source ./ccloud_library.sh
+      source delta_configs/env.delta
       ccloud::destroy_ccloud_stack $SERVICE_ACCOUNT_ID
 
 #. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify all your resources have been destroyed.
