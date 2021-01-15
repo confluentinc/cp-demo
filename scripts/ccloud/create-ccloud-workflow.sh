@@ -18,7 +18,10 @@ ccloud login --save || exit 1
 
 # Create a new ccloud-stack
 echo
-echo "Configure a new Confluent Cloud ccloud-stack (including a new ksqlDB application)"
+echo "Configuring a new Confluent Cloud ccloud-stack (including a new Confluent Cloud ksqlDB application)"
+echo "Note: real Confluent Cloud resources will be created and you are responsible for destroying them."
+echo
+
 ccloud::create_ccloud_stack true || exit 1
 export SERVICE_ACCOUNT_ID=$(ccloud kafka cluster list -o json | jq -r '.[0].name' | awk -F'-' '{print $4;}')
 CONFIG_FILE=stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
@@ -109,6 +112,9 @@ curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
         | jq .
 
 # Write ksqlDB queries
+MAX_WAIT=720
+echo "Waiting up to $MAX_WAIT seconds for Confluent Cloud ksqlDB cluster to be UP"
+retry $MAX_WAIT ccloud::validate_ccloud_ksqldb_endpoint_ready $KSQLDB_ENDPOINT
 
 echo 
 echo "Writing ksqlDB queries in Confluent Cloud"

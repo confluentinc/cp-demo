@@ -49,6 +49,7 @@ docker-compose exec kafka1 kafka-configs \
 
 echo "Destroying all Confluent Cloud resources"
 ccloud api-key delete $METRICS_API_KEY
+source "delta_configs/env.delta"
 ccloud::destroy_ccloud_stack $SERVICE_ACCOUNT_ID
 
 echo
