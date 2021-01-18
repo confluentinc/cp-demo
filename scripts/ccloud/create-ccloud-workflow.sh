@@ -16,32 +16,16 @@ ccloud::prompt_continue_ccloud_demo || exit 1
 echo
 ccloud login --save || exit 1
 
-# Create credentials for the cloud resource
-echo
-CREDENTIALS=$(ccloud api-key create --resource cloud -o json) || exit 1
-METRICS_API_KEY=$(echo "$CREDENTIALS" | jq -r .key)
-METRICS_API_SECRET=$(echo "$CREDENTIALS" | jq -r .secret)
-echo "export METRICS_API_KEY=$METRICS_API_KEY"
-echo "export METRICS_API_SECRET=$METRICS_API_SECRET"
-
-# Enable Confluent Telemetry Reporter
-echo
-echo "Enabling Confluent Telemetry Reporter cluster-wide to send metrics to Confluent Cloud"
-docker-compose exec kafka1 kafka-configs \
-  --bootstrap-server kafka1:12091 \
-  --alter \
-  --entity-type brokers \
-  --entity-default \
-  --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key=${METRICS_API_KEY},confluent.telemetry.api.secret=${METRICS_API_SECRET}
-
 # Create a new ccloud-stack
 echo
-echo "Configure a new Confluent Cloud ccloud-stack"
-ccloud::create_ccloud_stack || exit 1
-SERVICE_ACCOUNT_ID=$(ccloud kafka cluster list -o json | jq -r '.[0].name' | awk -F'-' '{print $4;}')
+echo "Configuring a new Confluent Cloud ccloud-stack (including a new Confluent Cloud ksqlDB application)"
+echo "Note: real Confluent Cloud resources will be created and you are responsible for destroying them."
+echo
+
+ccloud::create_ccloud_stack true || exit 1
+export SERVICE_ACCOUNT_ID=$(ccloud kafka cluster list -o json | jq -r '.[0].name' | awk -F'-' '{print $4;}')
 CONFIG_FILE=stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
 CCLOUD_CLUSTER_ID=$(ccloud kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-$SERVICE_ACCOUNT_ID"'")' | jq -r .id)
-echo "CCLOUD_CLUSTER_ID=$CCLOUD_CLUSTER_ID"
 
 # Create parameters customized for Confluent Cloud instance created above
 curl -sS -o ccloud-generate-cp-configs.sh https://raw.githubusercontent.com/confluentinc/examples/latest/ccloud/ccloud-generate-cp-configs.sh
@@ -54,7 +38,6 @@ echo "Sleep an additional 60s to wait for all Confluent Cloud metadata to propag
 sleep 60
 
 echo -e "\nStart Confluent Replicator to Confluent Cloud:"
-export REPLICATOR_NAME=replicate-topic-to-ccloud
 CONNECTOR_SUBMITTER="User:connectorSubmitter"
 KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${VALIDATE_DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
 CONNECT=connect-cluster
@@ -62,7 +45,7 @@ ${VALIDATE_DIR}/../helper/refresh_mds_login.sh
 docker-compose exec tools bash -c "confluent iam rolebinding create \
     --principal $CONNECTOR_SUBMITTER \
     --role ResourceOwner \
-    --resource Connector:$REPLICATOR_NAME \
+    --resource Connector:replicate-topic-to-ccloud \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT"
 ${VALIDATE_DIR}/../connectors/submit_replicator_to_ccloud_config.sh
@@ -72,11 +55,27 @@ echo
 echo
 MAX_WAIT=120
 echo "Waiting up to $MAX_WAIT seconds for Replicator to Confluent Cloud to start"
-retry $MAX_WAIT check_connector_status_running $REPLICATOR_NAME || exit 1
+retry $MAX_WAIT check_connector_status_running replicate-topic-to-ccloud || exit 1
 echo "Replicator started!"
-sleep 5
 
-echo "Sleeping 90s to wait for Replicator to start propagating data to Confluent Cloud and for metrics collection to begin"
+# Create credentials for the cloud resource
+echo
+CREDENTIALS=$(ccloud api-key create --resource cloud -o json) || exit 1
+export METRICS_API_KEY=$(echo "$CREDENTIALS" | jq -r .key)
+export METRICS_API_SECRET=$(echo "$CREDENTIALS" | jq -r .secret)
+
+# Enable Confluent Telemetry Reporter
+echo
+echo "Enabling Confluent Telemetry Reporter cluster-wide to send metrics to Confluent Cloud"
+docker-compose exec kafka1 kafka-configs \
+  --bootstrap-server kafka1:12091 \
+  --alter \
+  --entity-type brokers \
+  --entity-default \
+  --add-config confluent.telemetry.enabled=true,confluent.telemetry.api.key=${METRICS_API_KEY},confluent.telemetry.api.secret=${METRICS_API_SECRET}
+
+echo
+echo "Sleeping 90s to wait for metrics collection to begin"
 sleep 90
 
 # Query Metrics API
@@ -112,27 +111,44 @@ curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
      https://api.telemetry.confluent.cloud/v1/metrics/cloud/query \
         | jq .
 
-#### Disable ####
+# Write ksqlDB queries
+MAX_WAIT=720
+echo "Waiting up to $MAX_WAIT seconds for Confluent Cloud ksqlDB cluster to be UP"
+retry $MAX_WAIT ccloud::validate_ccloud_ksqldb_endpoint_ready $KSQLDB_ENDPOINT
+
+echo 
+echo "Writing ksqlDB queries in Confluent Cloud"
+ksqlDBAppId=$(ccloud ksql app list | grep "$KSQLDB_ENDPOINT" | awk '{print $1}')
+ccloud ksql app describe $ksqlDBAppId -o json
+ccloud ksql app configure-acls $ksqlDBAppId wikipedia.parsed.ccloud.replica
+while read ksqlCmd; do
+  echo -e "\n$ksqlCmd\n"
+  curl -X POST $KSQLDB_ENDPOINT/ksql \
+       -H "Content-Type: application/vnd.ksql.v1+json; charset=utf-8" \
+       -u $KSQLDB_BASIC_AUTH_USER_INFO \
+       --silent \
+       -d @<(cat <<EOF
+{
+  "ksql": "$ksqlCmd",
+  "streamsProperties": {}
+}
+EOF
+)
+done < ${VALIDATE_DIR}/statements.sql
 
 echo
-read -p "Do you want to destroy the Confluent Cloud resources and Replicator connector created by this validation script? [y/n] " -n 1 -r
+echo "Confluent Cloud Environment:"
 echo
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
-  exit 1
-fi
+echo "  export CONFIG_FILE=$CONFIG_FILE"
+echo "  export SERVICE_ACCOUNT_ID=$SERVICE_ACCOUNT_ID"
+echo "  export CCLOUD_CLUSTER_ID=$CCLOUD_CLUSTER_ID"
+echo "  export METRICS_API_KEY=$METRICS_API_KEY"
+echo "  export METRICS_API_SECRET=$METRICS_API_SECRET"
+echo
+echo "  export CURRENT_TIME_MINUS_1HR=$CURRENT_TIME_MINUS_1HR"
+echo "  export CURRENT_TIME_PLUS_1HR=$CURRENT_TIME_PLUS_1HR"
+echo
 
-echo "Destroying all Confluent Cloud resources"
 
-docker-compose exec connect curl -XDELETE --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectorSubmitter:connectorSubmitter https://connect:8083/connectors/$REPLICATOR_NAME
-
-docker-compose exec kafka1 kafka-configs \
-  --bootstrap-server kafka1:12091 \
-  --alter \
-  --entity-type brokers \
-  --entity-default \
-  --delete-config confluent.telemetry.enabled,confluent.telemetry.api.key,confluent.telemetry.api.secret
-
-ccloud api-key delete $METRICS_API_KEY
-
-ccloud::destroy_ccloud_stack $SERVICE_ACCOUNT_ID
+# Teardown
+${VALIDATE_DIR}/destroy-ccloud-workflow.sh

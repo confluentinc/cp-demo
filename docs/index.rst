@@ -76,7 +76,7 @@ Using a dedicated metrics cluster is more resilient because it continues to prov
 
 If you prefer non-Docker examples, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
 
-After you run through the guided tutorial below, apply the concepts you learn here to build your own event streaming pipeline in |ccloud|, a fully managed, cloud-native event streaming platform powered by |ak|. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``C50INTEG`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
+After you run through the guided tutorial below, apply the concepts you learn here to build your own event streaming pipeline in |ccloud|, a fully managed, cloud-native event streaming platform powered by |ak|. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``CPDEMO50`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
 
 
 Prerequisites
@@ -276,6 +276,7 @@ Topics
 
    .. figure:: images/topic_info.png
       :alt: image
+      :width: 600px
 
 #. Inspect messages for this topic, in real-time.
 
@@ -410,7 +411,7 @@ Consumers
 
 #. |c3| enables you to monitor consumer lag and throughput performance. Consumer lag is the topic's high water mark (latest offset for the topic that has been written) minus the current consumer offset (latest offset read for that topic by that consumer group). Keep in mind the topic's write rate and consumer group's read rate when you consider the significance the consumer lag's size. Click on "Consumers".
 
-#. Consumer lag is available on a `per-consumer basis <https://docs.confluent.io/platform/current/control-center/consumers.html#view-consumer-lag-details-for-a-consumer-group>`__, including the embedded Connect consumers for sink connectors (e.g., ``connect-elasticsearch-ksqldb``), ksqlDB queries (e.g., consumer groups whose names start with ``_confluent-ksql-default_query_``), console consumers (e.g., ``WIKIPEDIANOBOT-consumer``), etc.  Consumer lag is also available on a `per-topic basis <https://docs.confluent.io/platform/current/control-center/topics/view.html#view-consumer-lag-for-a-topic>`__.
+#. Consumer lag is available on a `per-consumer basis <https://docs.confluent.io/platform/current/control-center/consumers.html#view-consumer-lag-details-for-a-consumer-group>`__, including the embedded Connect consumers for sink connectors (e.g., ``connect-elasticsearch-ksqldb``), ksqlDB queries (e.g., consumer groups whose names start with ``_confluent-ksql-ksql-clusterquery_``), console consumers (e.g., ``WIKIPEDIANOBOT-consumer``), etc.  Consumer lag is also available on a `per-topic basis <https://docs.confluent.io/platform/current/control-center/topics/view.html#view-consumer-lag-for-a-topic>`__.
 
    .. figure:: images/consumer_group_list.png
       :alt: image
@@ -425,7 +426,7 @@ Consumers
    .. figure:: images/activity-monitor-consumer.png
       :alt: image
 
-#. Consumption metrics are available on a `per-consumer basis <https://docs.confluent.io/platform/current/control-center/consumers.html#view-consumption-details-for-a-consumer-group>`__. These consumption charts are only populated if `Confluent Monitoring Interceptors <https://docs.confluent.io/platform/current/control-center/installation/clients.html>`__ are configured, as they are in this example. You can view ``% messages consumed`` and ``end-to-end latency``.  View consumption metrics for the persistent ksqlDB "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-default_query_CSAS_WIKIPEDIABOT_0`` in the consumer group list.
+#. Consumption metrics are available on a `per-consumer basis <https://docs.confluent.io/platform/current/control-center/consumers.html#view-consumption-details-for-a-consumer-group>`__. These consumption charts are only populated if `Confluent Monitoring Interceptors <https://docs.confluent.io/platform/current/control-center/installation/clients.html>`__ are configured, as they are in this example. You can view ``% messages consumed`` and ``end-to-end latency``.  View consumption metrics for the persistent ksqlDB "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_5`` in the consumer group list.
 
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumption.png
       :alt: image
@@ -1244,7 +1245,7 @@ For the next few steps, use the |crest| that is embedded on the |ak| brokers. On
          --tlsv1.2 \
          --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
          -u appSA:appSA \
-         "https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" | jq
+         "https://kafka1:8091/kafka/v3/clusters/$KAFKA_CLUSTER_ID/topics" | jq
 
 #. List topics with embedded |crest| to find the newly created ``dev_users``.
 
@@ -1264,7 +1265,7 @@ For the next few steps, use the |crest| that is embedded on the |ak| brokers. On
          --tlsv1.2 \
          --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
          -u appSA:appSA \
-         https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics | jq '.data[].topic_name'
+         https://kafka1:8091/kafka/v3/clusters/$KAFKA_CLUSTER_ID/topics | jq '.data[].topic_name'
 
    Your output should resemble below.  Output may vary, depending on other topics you may have created, but at least you should see the topic ``dev_users`` created in the previous step.
 
@@ -1394,11 +1395,13 @@ Hybrid Deployment to |ccloud|
 =============================
 
 In a hybrid |ak-tm| deployment scenario, you can have both an on-prem and `Confluent Cloud <https://confluent.cloud>`__ deployment.
-In this part of the tutorial, you can run |crep| to send |ak| data to |ccloud| and use a common method, the `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__,  for collecting metrics for both.
+This part of the tutorial runs |crep| to send |ak| data to |ccloud|, and uses a common method, the `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__, for collecting metrics for both.
 
 .. figure:: images/cp-demo-overview-with-ccloud.jpg
     :alt: image
 
+Run this part of the tutorial only after you have completed the cp-demo :ref:`initial bring-up <cp-demo-run>`, because the initial bring-up deploys the on-prem cluster.
+The steps in this section bring up the |ccloud| instance and interconnects it to your on-prem cluster.
 
 Cost to Run
 -----------
@@ -1411,12 +1414,18 @@ Caution
 |ccloud| Promo Code
 ~~~~~~~~~~~~~~~~~~~
 
-.. include:: ../../examples/ccloud/docs/includes/ccloud-examples-promo-code.rst
+To receive an additional $50 free usage in |ccloud|, enter promo code ``CPDEMO50`` in the |ccloud| UI `Billing and payment` section (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
+This promo code should sufficiently cover up to one day of running this |ccloud| example, beyond which you may be billed for the services that have an hourly charge until you destroy the |ccloud| resources created by this example.
 
-Setup |ccloud|
---------------
+
+.. _cp-demo-setup-ccloud:
+
+Setup |ccloud| and CLI
+----------------------
 
 #. Create a |ccloud| account at https://confluent.cloud.
+
+#. Setup a payment method for your |ccloud| account and optionally enter the promo code ``CPDEMO50`` in the |ccloud| UI `Billing and payment` section to receive an additional $50 free usage.
 
 #. Install `Confluent Cloud CLI <https://docs.confluent.io/ccloud-cli/current/install.html>`__ v1.21.0 or later.
 
@@ -1426,16 +1435,28 @@ Setup |ccloud|
 
       ccloud login --save
 
-#. Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |ccloud|.  Executed with a single command, it uses the |ccloud| CLI to:
+#. The remainder of the |ccloud| portion of this tutorial must be completed sequentially. We recommend that you manually complete all the steps in the following sections. However, you may also run the script :devx-cp-demo:`scripts/ccloud/create-ccloud-workflow.sh|scripts/ccloud/create-ccloud-workflow.sh` which automates those steps. This option is recommended for users who have run this tutorial before and want to quickly bring it up.
 
-   -  Create a new environment.
-   -  Create a new service account.
-   -  Create a new Kafka cluster and associated credentials.
-   -  Enable |sr-ccloud| and associated credentials.
-   -  Create ACLs with wildcard for the service account.
-   -  Generate a local configuration file with all above connection information.
+   .. code-block:: text
 
-   The first step is to get a bash library of useful functions for interacting with |ccloud| (one of which is ``cloud-stack``). This library is community-supported and is not supported by Confluent.
+      (cd scripts/ccloud/ && ./create-ccloud-workflow.sh)
+
+.. _cp-demo-ccloud-stack:
+
+ccloud-stack
+------------
+
+Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |ccloud|.  Executed with a single command, it uses the |ccloud| CLI to:
+
+-  Create a new environment.
+-  Create a new service account.
+-  Create a new Kafka cluster and associated credentials.
+-  Enable |sr-ccloud| and associated credentials.
+-  Create ACLs with a wildcard for the service account.
+-  Create a new ksqlDB app and associated credentials
+-  Generate a local configuration file with all above connection information.
+
+#. Get a bash library of useful functions for interacting with |ccloud| (one of which is ``cloud-stack``). This library is community-supported and not supported by Confluent.
 
    .. code-block:: text
 
@@ -1443,10 +1464,12 @@ Setup |ccloud|
 
 #. Using ``ccloud_library.sh`` which you downloaded in the previous step, create a new ``ccloud-stack`` (see :ref:`ccloud-stack` for advanced options). It creates real resources in |ccloud| and takes a few minutes to complete.
 
+   .. note:: The ``true`` flag adds creation of a ksqlDB application in |ccloud|, which has hourly charges even if you are not actively using it.
+
    .. code-block:: text
 
       source ./ccloud_library.sh
-      ccloud::create_ccloud_stack
+      ccloud::create_ccloud_stack true
  
 #. When ``ccloud-stack`` completes, view the local configuration file at ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` that was auto-generated. It contains connection information for connecting to your newly created |ccloud| environment.
 
@@ -1454,7 +1477,7 @@ Setup |ccloud|
 
       cat stack-configs/java-service-account-*.config
 
-#. In the current shell, set the environment variable ``SERVICE_ACCOUNT_ID`` to the <SERVICE_ACCOUNT_ID> in the filename. For example, if the filename is called ``stack-configs/java-service-account-154143.config``, then set ``SERVICE_ACCOUNT_ID=154143``.
+#. In the current shell, set the environment variable ``SERVICE_ACCOUNT_ID`` to the <SERVICE_ACCOUNT_ID> in the filename. For example, if the filename is called ``stack-configs/java-service-account-154143.config``, then set ``SERVICE_ACCOUNT_ID=154143``. This environment variable is used later in the tutorial.
 
    .. code-block:: text
 
@@ -1473,7 +1496,7 @@ Setup |ccloud|
    .. code-block:: text
 
       chmod 744 ./ccloud-generate-cp-configs.sh
-      ./ccloud-generate-cp-configs.sh stack-configs/java-service-account-${SERVICE_ACCOUNT_ID}.config
+      ./ccloud-generate-cp-configs.sh stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
 
 #. The output of the script is a folder called ``delta_configs`` with sample configurations for all components and clients, which you can easily apply to any |ak| client or |cp| component. View the ``delta_configs/env.delta`` file.
 
@@ -1487,11 +1510,14 @@ Setup |ccloud|
 
       source delta_configs/env.delta
 
+.. _cp-demo-telemetry-reporter:
 
 Telemetry Reporter
 ------------------
 
-#. Create a new ``Cloud`` API key and secret to authenticate with |ccloud|. These credentials will be used by the :ref:`telemetry_reporter` and used by the Metrics API, which can be used for hosted on-prem clusters as well as |ccloud| clusters.
+Enable :ref:`telemetry_reporter` on the on-prem cluster, and configure it to send metrics to the |ccloud| instance created above..
+
+#. Create a new ``Cloud`` API key and secret to authenticate to |ccloud|. These credentials will be used to configure the Telemetry Reporter and used by the Metrics API.
 
    .. code:: shell
 
@@ -1532,30 +1558,31 @@ Telemetry Reporter
 
    .. sourcecode:: bash
 
-      docker-compose logs kafka1 | grep confluent.telemetry.api.key
+      docker-compose logs kafka1 | grep confluent.telemetry.api
 
    Your output should resemble the following, but the ``confluent.telemetry.api.key`` value will be different in your environment.
 
    .. code-block:: text
 
+      ...
       kafka1            | 	confluent.telemetry.api.key = QX7X4VA4DFJTTOIA
       kafka1            | 	confluent.telemetry.api.secret = [hidden]
+      ...
 
+.. _cp-demo-replicator-to-ccloud:
 
-|crep|
-------
+|crep| to |ccloud|
+------------------
+
+Deploy |crep| to copy data from the on-prem cluster to the |ak| cluster running in |ccloud|.
+It is configured to copy from the |ak| topic ``wikipedia.parsed`` (on-prem) to the cloud topic ``wikipedia.parsed.ccloud.replica`` in |ccloud|. 
+The Replicator instance is running on the existing Connect worker in the on-prem cluster.
 
 #. If you have been running ``cp-demo`` for a long time, you may need to refresh your local token to log back into MDS:
 
    .. sourcecode:: bash
 
       ./scripts/helper/refresh_mds_login.sh
-
-#. Set the |crep| name.
-
-   .. code-block:: text
-
-      REPLICATOR_NAME=replicate-topic-to-ccloud
 
 #. Create a role binding to permit a new instance of |crep| to be submitted to the local connect cluster with id ``connect-cluster``.
 
@@ -1570,11 +1597,11 @@ Telemetry Reporter
       docker-compose exec tools bash -c "confluent iam rolebinding create \
           --principal User:connectorSubmitter \
           --role ResourceOwner \
-          --resource Connector:$REPLICATOR_NAME \
-          --kafka-cluster-id ${KAFKA_CLUSTER_ID} \
+          --resource Connector:replicate-topic-to-ccloud \
+          --kafka-cluster-id $KAFKA_CLUSTER_ID \
           --connect-cluster-id connect-cluster"
 
-#. View the |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`. It is configured to copy from the |ak| topic ``wikipedia.parsed`` (on-prem) to the cloud topic ``wikipedia.parsed.ccloud.replica`` in |ccloud|. Note that it uses the local connect cluster (the origin site), so the |crep| configuration has overrides for the producer. The configuration parameters that use variables are read from the env variables that you sourced in an earlier step.
+#. View the |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`. Note that it uses the local connect cluster (the origin site), so the |crep| configuration has overrides for the producer. The configuration parameters that use variables are read from the environment variables you sourced in an earlier step.
 
 #. Submit the |crep| connector to the local connect cluster.
 
@@ -1592,8 +1619,10 @@ Telemetry Reporter
 
    .. figure:: images/ccloud-schema.png
 
-Metrics
--------
+.. _cp-demo-metrics-api:
+
+Metrics API
+-----------
 
 .. include:: includes/metrics-api-intro.rst
 
@@ -1604,9 +1633,9 @@ Metrics
       CURRENT_TIME_MINUS_1HR=$(docker-compose exec tools date -Is -d '-1 hour' | tr -d '\r')
       CURRENT_TIME_PLUS_1HR=$(docker-compose exec tools date -Is -d '+1 hour' | tr -d '\r')
 
-#. View the :devx-cp-demo:`metrics query file|scripts/validate/metrics_query_onprem.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed`` in the on-prem cluster (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
+#. For the on-prem metrics: view the :devx-cp-demo:`metrics query file|scripts/ccloud/metrics_query_onprem.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed`` in the on-prem cluster (for all queryable metrics examples, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
 
-   .. literalinclude:: ../scripts/validate/metrics_query_onprem.json
+   .. literalinclude:: ../scripts/ccloud/metrics_query_onprem.json
 
 #. Substitute values into the query json file. For this substitution to work, you must have set the following parameters in your environment:
 
@@ -1616,7 +1645,7 @@ Metrics
    .. code-block:: text
 
       DATA=$(eval "cat <<EOF
-      $(<./scripts/validate/metrics_query_onprem.json)
+      $(<./scripts/ccloud/metrics_query_onprem.json)
       EOF
       ")
 
@@ -1655,9 +1684,9 @@ Metrics
         ]
       }
 
-#. View the :devx-cp-demo:`metrics query file|scripts/validate/metrics_query_ccloud.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed.ccloud.replica`` in |ccloud| (this is just one example—for examples of all the queryable metrics, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
+#. For the |ccloud| metrics: view the :devx-cp-demo:`metrics query file|scripts/ccloud/metrics_query_ccloud.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed.ccloud.replica`` in |ccloud| (for all queryable metrics examples, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
 
-   .. literalinclude:: ../scripts/validate/metrics_query_ccloud.json
+   .. literalinclude:: ../scripts/ccloud/metrics_query_ccloud.json
 
 #. Get the |ak| cluster ID in |ccloud|, derived from the ``$SERVICE_ACCOUNT_ID``.
 
@@ -1674,7 +1703,7 @@ Metrics
    .. code-block:: text
 
       DATA=$(eval "cat <<EOF
-      $(<./scripts/validate/metrics_query_ccloud.json)
+      $(<./scripts/ccloud/metrics_query_ccloud.json)
       EOF
       ")
 
@@ -1702,11 +1731,67 @@ Metrics
         "data": [
           {
             "timestamp": "2020-12-14T20:00:00Z",
-            "value": 995,
+            "value": 1690522,
             "metric.label.topic": "wikipedia.parsed.ccloud.replica"
           }
         ]
       }
+
+.. _cp-demo-ccloud-ksqldb:
+
+|ccloud| ksqlDB
+---------------
+
+This section shows how to create queries in the |ccloud| ksqlDB application that processes data from the ``wikipedia.parsed.ccloud.replica`` topic that |crep| copied from the on-prem cluster.
+You must have completed :ref:`cp-demo-ccloud-stack` before proceeding.
+
+#. Get the |ccloud| ksqlDB application ID and save it to the parameter ``ksqlDBAppId``.
+
+   .. code-block:: text
+
+      ksqlDBAppId=$(ccloud ksql app list | grep "$KSQLDB_ENDPOINT" | awk '{print $1}')
+
+#. Verify the |ccloud| ksqlDB application has transitioned from ``PROVISIONING`` to ``UP`` state. This may take a few minutes.
+
+   .. code-block:: text
+
+      ccloud ksql app describe $ksqlDBAppId -o json
+
+#. Configure ksqlDB ACLs to permit the ksqlDB application to read from ``wikipedia.parsed.ccloud.replica``.
+
+   .. code-block:: text
+
+      ccloud ksql app configure-acls $ksqlDBAppId wikipedia.parsed.ccloud.replica
+
+#. Create new ksqlDB queries in |ccloud| from the :devx-cp-demo:`scripts/ccloud/statements.sql|scripts/ccloud/statements.sql` file. Note: depending on which folder you are in, you may need to modify the relative path to the ``statements.sql`` file.
+
+   .. code-block:: text
+
+       while read ksqlCmd; do
+         echo -e "\n$ksqlCmd\n"
+         curl -X POST $KSQLDB_ENDPOINT/ksql \
+              -H "Content-Type: application/vnd.ksql.v1+json; charset=utf-8" \
+              -u $KSQLDB_BASIC_AUTH_USER_INFO \
+              --silent \
+              -d @<(cat <<EOF
+       {
+         "ksql": "$ksqlCmd",
+         "streamsProperties": {}
+       }
+       EOF
+       )
+       done <scripts/ccloud/statements.sql
+
+#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and view the ksqlDB application Flow.
+
+   .. figure:: images/ccloud_ksqldb_flow.png
+
+#. View the events in the ksqlDB streams in |ccloud|.
+
+   .. figure:: images/ccloud_ksqldb_stream.png
+
+#. Go to :ref:`cp-demo-ccloud-cleanup` and destroy the demo resources used. Important: The ksqlDB application in |ccloud| has hourly charges even if you are not actively using it.
+
 
 .. _cp-demo-ccloud-cleanup:
 
@@ -1725,7 +1810,7 @@ Cleanup
         --tlsv1.2 \
         --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
         -u connectorSubmitter:connectorSubmitter \
-        https://connect:8083/connectors/$REPLICATOR_NAME
+        https://connect:8083/connectors/replicate-topic-to-ccloud
 
 #. Disable Telemetry Reporter in both |ak| brokers.
 
@@ -1744,14 +1829,15 @@ Cleanup
 
       ccloud api-key delete ${METRICS_API_KEY}
 
-#. Destroy your |ccloud| environment. Even if you stop ``cp-demo``, the resources in |ccloud| continue to incur charges until you remove all the resources.
+#. Destroy your |ccloud| environment. Even if you stop ``cp-demo``, the resources in |ccloud| continue to incur charges until you destroy all the resources.
 
    .. code-block:: text
 
       source ./ccloud_library.sh
-      ccloud::destroy_ccloud_stack ${SERVICE_ACCOUNT_ID}
+      source delta_configs/env.delta
+      ccloud::destroy_ccloud_stack $SERVICE_ACCOUNT_ID
 
-#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify all your resources have been cleaned up.
+#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify all your resources have been destroyed.
 
 
 .. _cp-demo-monitoring:
@@ -1838,7 +1924,7 @@ Teardown
 
           ./scripts/stop.sh
 
-#. If you ran |crep| to copy data from this local on-prem |ak| cluster to |ccloud|, then follow the clean up procedure in :ref:`cp-demo-ccloud-cleanup` to avoid unexpected |ccloud| charges.
+#. If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included creating resources in |ccloud|, follow the clean up procedure in :ref:`cp-demo-ccloud-cleanup` to avoid unexpected |ccloud| charges.
 
 
 .. _cp-demo-troubleshooting:
