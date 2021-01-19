@@ -1487,7 +1487,7 @@ Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |c
 
    .. code-block:: text
 
-      ccloud::generate_delta_configs stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
+      ccloud::generate_configs stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
 
 #. The output of the script is a folder called ``delta_configs`` with sample configurations for all components and clients, which you can easily apply to any |ak| client or |cp| component. View the ``delta_configs/env.delta`` file.
 

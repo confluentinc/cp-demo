@@ -28,7 +28,7 @@ CONFIG_FILE=stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
 CCLOUD_CLUSTER_ID=$(ccloud kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-$SERVICE_ACCOUNT_ID"'")' | jq -r .id)
 
 # Create parameters customized for Confluent Cloud instance created above
-ccloud::generate_delta_configs $CONFIG_FILE
+ccloud::generate_configs $CONFIG_FILE
 source "delta_configs/env.delta"
 
 echo
