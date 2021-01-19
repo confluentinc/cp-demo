@@ -1483,20 +1483,11 @@ Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |c
 
       SERVICE_ACCOUNT_ID=<fill in>
 
-#. The |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh` has parameters that specify how to connect to |ccloud|.  You could set these parameters manually, but to do this in an automated fashion, use another script to set env parameters customized for the |ccloud| instance created above. It reads your local |ccloud| configuration file, i.e., the auto-generated ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config``, and creates files useful for |cp| components and clients connecting to |ccloud|.
-
-   Get the script, which is also community-supported and not supported by Confluent.
+#. The |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh` has parameters that specify how to connect to |ccloud|.  You could set these parameters manually, but to do this in an automated fashion, use another function to set env parameters customized for the |ccloud| instance created above. It reads your local |ccloud| configuration file, i.e., the auto-generated ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config``, and creates files useful for |cp| components and clients connecting to |ccloud|.  Using ``ccloud_library.sh`` which you downloaded in the previous step, run the function against your auto-generated configuration file (the file created by ``ccloud-stack``).
 
    .. code-block:: text
 
-      curl -sS -o ccloud-generate-cp-configs.sh https://raw.githubusercontent.com/confluentinc/examples/latest/ccloud/ccloud-generate-cp-configs.sh
-
-#. Run the script against your auto-generated configuration file (the file created by ``ccloud-stack``).
-
-   .. code-block:: text
-
-      chmod 744 ./ccloud-generate-cp-configs.sh
-      ./ccloud-generate-cp-configs.sh stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
+      ccloud::generate_delta_configs stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
 
 #. The output of the script is a folder called ``delta_configs`` with sample configurations for all components and clients, which you can easily apply to any |ak| client or |cp| component. View the ``delta_configs/env.delta`` file.
 
