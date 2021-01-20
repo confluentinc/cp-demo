@@ -45,7 +45,7 @@ fi
 docker-compose up -d openldap
 sleep 5
 if [[ $(docker-compose ps openldap | grep Exit) =~ "Exit" ]] ; then
-  echo "ERROR: openldap container could not start. Troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#troubleshooting"
+  echo "ERROR: openldap container could not start. Troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/troubleshooting.html"
   exit 1
 fi
 
@@ -206,9 +206,9 @@ EOF
 fi
 
 cat << EOF
-Want more? Replicate data from cp-demo to Confluent Cloud:
+Want more? Learn how to replicate data from the on-prem cluster to Confluent Cloud:
 
-     https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#hybrid-deployment-to-ccloud
+     https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/hybrid-cloud.html
 
 Use Confluent Cloud promo code CPDEMO50 to receive \$50 free usage
 ----------------------------------------------------------------------------------------------------

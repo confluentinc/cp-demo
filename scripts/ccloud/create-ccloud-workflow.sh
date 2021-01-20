@@ -22,6 +22,7 @@ echo "Configuring a new Confluent Cloud ccloud-stack (including a new Confluent 
 echo "Note: real Confluent Cloud resources will be created and you are responsible for destroying them."
 echo
 
+export EXAMPLE="cp-demo"
 ccloud::create_ccloud_stack true || exit 1
 export SERVICE_ACCOUNT_ID=$(ccloud kafka cluster list -o json | jq -r '.[0].name' | awk -F'-' '{print $4;}')
 CONFIG_FILE=stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
