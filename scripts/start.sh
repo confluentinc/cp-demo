@@ -206,9 +206,9 @@ EOF
 fi
 
 cat << EOF
-Want more? Replicate data from cp-demo to Confluent Cloud:
+Want more? Learn how to replicate data from the on-prem cluster to Confluent Cloud:
 
-     https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#hybrid-deployment-to-ccloud
+     https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/hybrid-cloud.html
 
 Use Confluent Cloud promo code CPDEMO50 to receive \$50 free usage
 ----------------------------------------------------------------------------------------------------
