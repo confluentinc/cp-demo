@@ -22,6 +22,7 @@ Module 1: On-prem
 
           ./scripts/stop.sh
 
+
 .. _cp-demo-ccloud-cleanup:
 
 Module 2: |ccloud|
@@ -31,7 +32,7 @@ If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included cr
 
 .. include:: ../../examples/ccloud/docs/includes/ccloud-examples-terminate.rst
 
-#. Remove the |crep| connector that was replicating data to |ccloud|.
+#. If the on-prem cluster is still running, remove the |crep| connector that was replicating data to |ccloud|.
 
    .. code-block:: text
 
@@ -43,7 +44,7 @@ If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included cr
         -u connectorSubmitter:connectorSubmitter \
         https://connect:8083/connectors/replicate-topic-to-ccloud
 
-#. Disable Telemetry Reporter in both |ak| brokers.
+#. If the on-prem cluster is still running, disable Telemetry Reporter in both |ak| brokers.
 
    .. code-block:: text
 

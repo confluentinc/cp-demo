@@ -7,7 +7,7 @@ Confluent Platform Demo (cp-demo)
   :maxdepth: 2
   :titlesonly:
 
-  Overview: Overview <overview>
+  cp-demo Overview <overview>
   Module 1: On-Prem Tutorial <on-prem>
   Module 2: Hybrid Deployment to Confluent Cloud Tutorial <hybrid-cloud>
   Teardown <teardown>
