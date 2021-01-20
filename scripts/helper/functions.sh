@@ -172,7 +172,7 @@ build_viz()
   echo
 
   echo -e "\nStart streaming to Elasticsearch sink connector:"
-  ${DIR}/../connectors/submit_elastic_sink_config.sh
+  ${DIR}/../connectors/submit_elastic_sink_config.sh || exit 1
   echo
 
   # Verify Kibana is ready
