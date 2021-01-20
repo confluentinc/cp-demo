@@ -867,7 +867,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
           --kafka-cluster-id $KAFKA_CLUSTER_ID \
           --schema-registry-cluster-id schema-registry"
 
-#. Again try to register the schema. It should pass this time.  Note the schema id that it returns, e.g. below schema id is ``11``.
+#. Again try to register the schema. It should pass this time.  Note the schema id that it returns, e.g. below schema id is ``9``.
 
    .. code-block:: text
 
@@ -883,7 +883,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. code-block:: JSON
 
-     {"id":11}
+     {"id":9}
 
 #. View the new schema for the subject ``users-value``. From |c3|, click **Topics**. Scroll down to and click on the topic `users` and select "SCHEMA".
 
@@ -907,7 +907,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
      {
        "subject": "users-value",
        "version": 1,
-       "id": 11,
+       "id": 9,
        "schema": "{\"type\":\"record\",\"name\":\"user\",\"fields\":[{\"name\":\"username\",\"type\":\"string\"},{\"name\":\"userid\",\"type\":\"long\"}]}"
      }
 
@@ -987,7 +987,7 @@ Standalone |crest|
 
 For the next few steps, use the |crest| that is running as a standalone service.
 
-#. Use the standalone |crest| to try to produce a message to the topic ``users``, referencing schema id ``11``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
+#. Use the standalone |crest| to try to produce a message to the topic ``users``, referencing schema id ``9``. This schema was registered in |sr| in the previous section. It should fail due to an authorization error.
 
    .. code-block:: text
 
@@ -998,7 +998,7 @@ For the next few steps, use the |crest| that is running as a standalone service.
         --key /etc/kafka/secrets/restproxy.key \
         --tlsv1.2 \
         --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
-        --data '{"value_schema_id": 11, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' \
+        --data '{"value_schema_id": 9, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' \
         -u appSA:appSA \
         https://restproxy:8086/topics/users
 
@@ -1006,7 +1006,7 @@ For the next few steps, use the |crest| that is running as a standalone service.
 
    .. code-block:: JSON
 
-      {"offsets":[{"partition":null,"offset":null,"error_code":40301,"error":"Not authorized to access topics: [users]"}],"key_schema_id":null,"value_schema_id":11}
+      {"offsets":[{"partition":null,"offset":null,"error_code":40301,"error":"Not authorized to access topics: [users]"}],"key_schema_id":null,"value_schema_id":9}
 
 #. Create a role binding for the client permitting it produce to the topic ``users``.
 
@@ -1036,7 +1036,7 @@ For the next few steps, use the |crest| that is running as a standalone service.
         --key /etc/kafka/secrets/restproxy.key \
         --tlsv1.2 \
         --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
-        --data '{"value_schema_id": 11, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' \
+        --data '{"value_schema_id": 9, "records": [{"value": {"user":{"userid": 1, "username": "Bunny Smith"}}}]}' \
         -u appSA:appSA \
         https://restproxy:8086/topics/users
 
@@ -1044,7 +1044,7 @@ For the next few steps, use the |crest| that is running as a standalone service.
 
    .. code-block:: JSON
 
-     {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":11}
+     {"offsets":[{"partition":1,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":9}
 
 #. Create consumer instance ``my_avro_consumer``.
 
