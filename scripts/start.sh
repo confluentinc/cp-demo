@@ -118,7 +118,7 @@ fi
 #-------------------------------------------------------------------------------
 
 echo -e "\nStart streaming from the Wikipedia SSE source connector:"
-${DIR}/connectors/submit_wikipedia_sse_config.sh
+${DIR}/connectors/submit_wikipedia_sse_config.sh || exit 1
 
 # Verify connector is running
 MAX_WAIT=120
@@ -142,7 +142,7 @@ docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schema
 
 echo
 echo -e "\nStart Confluent Replicator to loopback to on-prem cluster:"
-${DIR}/connectors/submit_replicator_config.sh
+${DIR}/connectors/submit_replicator_config.sh || exit 1
 
 #-------------------------------------------------------------------------------
 
