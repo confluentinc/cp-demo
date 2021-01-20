@@ -82,7 +82,7 @@ Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |c
    .. code-block:: text
 
       source ./ccloud_library.sh
-      ccloud::create_ccloud_stack true
+      export EXAMPLE="cp-demo" && ccloud::create_ccloud_stack true
  
 #. When ``ccloud-stack`` completes, view the local configuration file at ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` that was auto-generated. It contains connection information for connecting to your newly created |ccloud| environment.
 
