@@ -1,5 +1,3 @@
-.. _cp-demo:
-  
 Confluent Platform Demo (cp-demo)
 =================================
 
@@ -51,22 +49,10 @@ How to use this tutorial
 
 We suggest following the ``cp-demo`` tutorial in order:
 
-#. :ref:`cp-demo-run`: one script to automatically build the entire end-to-end example
+#. :ref:`cp-demo-on-prem-tutorial`: bring up the on-prem |ak| cluster
 
-#. :ref:`cp-demo-guide`: explore the different areas of |cp|
+#. :ref:`cp-demo-guide`: explore the different technical areas of |cp|
 
 #. :ref:`cp-demo-hybrid`: run |crep| to copy data from a local on-prem |ak| cluster to |ccloud|, and use the Metrics API to monitor both
 
-#. :ref:`cp-demo-monitoring`: links to other monitoring solutions, including JMX-based ones
-
 #. :ref:`cp-demo-teardown`: clean up your on-prem and |ccloud| environment
-
-
-.. toctree::
-  :maxdepth: 2
-  :titlesonly:
-
-  Module 1: On-Prem Tutorial <index>
-  Module 2: Hybrid Deployment to Confluent Cloud Tutorial <hybrid-cloud>
-  Teardown <teardown>
-  Troubleshooting <troubleshooting>
