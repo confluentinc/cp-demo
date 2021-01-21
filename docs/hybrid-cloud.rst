@@ -52,7 +52,7 @@ Setup |ccloud| and CLI
 
    .. code-block:: text
 
-      (cd scripts/ccloud/ && ./create-ccloud-workflow.sh)
+      ./scripts/ccloud/create-ccloud-workflow.sh
 
 .. _cp-demo-ccloud-stack:
 
