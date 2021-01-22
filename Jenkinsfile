@@ -9,7 +9,7 @@ def config = jobConfig(defaultConfig)
 
 def job = {
     stage("Startup") {
-//        withDockerServer([uri: dockerHost()]) {
+        withDockerServer([uri: dockerHost()]) {
             writeFile file:'extract-iam-credential.sh', text:libraryResource('scripts/extract-iam-credential.sh')
             sh '''
                 bash extract-iam-credential.sh
@@ -25,7 +25,7 @@ def job = {
                 export REPOSITORY=368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc
                 ./scripts/start.sh
             '''
-//        }
+        }
     }
 
     return null
