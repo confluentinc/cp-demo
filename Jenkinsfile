@@ -20,11 +20,14 @@ def job = {
                 LOGIN_CMD=$(aws ecr get-login --no-include-email --region us-west-2)
                 $LOGIN_CMD
             '''
-
-            sh '''
-                export REPOSITORY=368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc
-                ./scripts/start.sh
-            '''
+            try {
+                sh '''
+                    export REPOSITORY=368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc
+                    ./scripts/start.sh
+                '''
+            } finally {
+                sh '''docker-compose logs zookeeper'''
+            }
         }
     }
 
