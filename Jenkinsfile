@@ -27,7 +27,7 @@ def job = {
                 '''
             } finally {
                 sh '''docker-compose logs zookeeper'''
-                sh '''netstat -ltnp | grep -w ":2181"'''
+                //sh '''netstat -ltnp | grep -w ":2181"'''
                 sh '''lsof -i :2181''' 
             }
         }
