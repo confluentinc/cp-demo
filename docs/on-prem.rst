@@ -52,6 +52,12 @@ Setup
       cd cp-demo
       git checkout |release_post_branch|
 
+#. (Optional) Download the required Docker images before starting ``cp-demo``. There are 13 Docker images and downloading all of them takes a few minutes to complete.
+
+   .. sourcecode:: bash
+
+      ./scripts/docker-images-pull.sh
+
 
 Start
 -----

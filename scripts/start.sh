@@ -9,6 +9,9 @@ source ${DIR}/env.sh
 # Do preflight checks
 preflight_checks || exit
 
+# Pull Docker images
+${DIR}/docker-images-pull.sh || exit 1
+
 # Stop existing Docker containers
 ${DIR}/stop.sh
 
