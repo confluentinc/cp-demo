@@ -25,7 +25,7 @@ blocks:
         - name: REPOSITORY
           value: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc
         - name: VIZ
-          value: false
+          value: "false"
       prologue:
         commands:
           - checkout
