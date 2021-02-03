@@ -1,0 +1,35 @@
+version: v1.0
+name: CP Demo Pipeline
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+global_job_config:
+  secrets:
+    - name: vault_sem2_approle_prod
+  prologue:
+    commands:
+      - checkout
+      - make install-vault
+      - . vault-bin/vault-setup
+      - . vault-sem-get-secret aws_credentials
+      - . vault-sem-get-secret dockerhub-semaphore-cred
+      - >
+        aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin "$(aws sts get-caller-identity | jq -r .Account).dkr.ecr.us-west-2.amazonaws.com"
+      - docker login --username $DOCKERHUB_USER --password $DOCKERHUB_APIKEY
+
+blocks:
+  - name: Start CP Demo
+    task:
+      env_vars:
+        - name: REPOSITORY
+          value: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc
+        - name: VIZ
+          value: false
+      prologue:
+        commands:
+          - checkout
+      jobs:
+        - name: Start
+          commands:
+            - ./scripts/start.sh
