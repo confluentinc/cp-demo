@@ -17,6 +17,7 @@ global_job_config:
       - >
         aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin "$(aws sts get-caller-identity | jq -r .Account).dkr.ecr.us-west-2.amazonaws.com"
       - docker login --username $DOCKERHUB_USER --password $DOCKERHUB_APIKEY
+
 blocks:
   - name: Start CP Demo
     task:
