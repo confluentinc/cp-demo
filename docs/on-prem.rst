@@ -64,7 +64,7 @@ You can run it with optional settings:
 - ``C3_KSQLDB_HTTPS``: controls whether |c3| and ksqlDB server use ``HTTP`` or ``HTTPS`` (default: ``false`` for ``HTTP``)
 - ``VIZ``: enables Elasticsearch and Kibana (default: ``true``)
 
-#. To run ``cp-demo`` the first time with defaults, run the following command. This takes a few minutes to complete.
+#. To run ``cp-demo`` the first time with defaults, run the following command. The very first run downloads all Docker images and sets up the environment, which may take about 10 minutes.
 
    .. sourcecode:: bash
 
