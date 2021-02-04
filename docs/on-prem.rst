@@ -64,13 +64,13 @@ You can run it with optional settings:
 - ``C3_KSQLDB_HTTPS``: controls whether |c3| and ksqlDB server use ``HTTP`` or ``HTTPS`` (default: ``false`` for ``HTTP``)
 - ``VIZ``: enables Elasticsearch and Kibana (default: ``true``)
 
-#. To run ``cp-demo`` the first time with defaults, run the following command. The very first run downloads all Docker images (~10 minutes) and sets up the environment (~5 minutes).
+#. To run ``cp-demo`` the first time with defaults, run the following command. The very first run downloads all the required Docker images (~15 minutes) and sets up the environment (~5 minutes).
 
    .. sourcecode:: bash
 
       ./scripts/start.sh
 
-#. On subsequent runs, if you have not deleted the generated certificates and the locally built |kconnect| image, they will be reused. To force them to be regenerated, you can set ``CLEAN=true``.
+#. On subsequent runs, if you have not deleted the generated certificates and the locally built |kconnect| image, they will be reused. To force them to be rebuilt, you can set ``CLEAN=true``.
 
    .. sourcecode:: bash
 
