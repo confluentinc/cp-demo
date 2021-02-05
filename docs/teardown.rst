@@ -69,4 +69,4 @@ If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included cr
       source delta_configs/env.delta
       ccloud::destroy_ccloud_stack $SERVICE_ACCOUNT_ID
 
-#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify all your resources have been destroyed.
+#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify all your resources have been destroyed. Note that the ``Hosted monitoring`` cluster will be shown in the |ccloud| UI until it ages out.
