@@ -173,6 +173,11 @@ Enable :ref:`telemetry_reporter` on the on-prem cluster, and configure it to sen
       kafka1            | 	confluent.telemetry.api.secret = [hidden]
       ...
 
+#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify you see this cluster dashboard in the ``Hosted monitoring`` section under ``Confluent Platform``.
+
+   .. figure:: images/hosted-monitoring.png
+
+
 .. _cp-demo-replicator-to-ccloud:
 
 |crep| to |ccloud|
