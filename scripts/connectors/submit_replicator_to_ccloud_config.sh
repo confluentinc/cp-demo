@@ -57,7 +57,6 @@ DATA=$( cat << EOF
     "src.kafka.timestamps.producer.confluent.monitoring.interceptor.sasl.login.callback.handler.class": "io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler",
     "src.kafka.timestamps.producer.confluent.monitoring.interceptor.sasl.jaas.config": "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username=\"connectorSA\" password=\"connectorSA\" metadataServerUrls=\"https://kafka1:8091,https://kafka2:8092\";",
     "src.kafka.timestamps.producer.confluent.monitoring.interceptor.sasl.mechanism": "OAUTHBEARER",
-
     "producer.override.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor",
     "producer.override.confluent.monitoring.interceptor.security.protocol": "SASL_SSL",
     "producer.override.confluent.monitoring.interceptor.bootstrap.servers": "kafka1:10091",
@@ -82,6 +81,7 @@ DATA=$( cat << EOF
     "src.consumer.confluent.monitoring.interceptor.sasl.mechanism": "OAUTHBEARER",
     "src.consumer.group.id": "connect-replicator",
     "tasks.max": "1",
+    "topic.config.sync": "false",
     "provenance.header.enable": "true"
   }
 }
