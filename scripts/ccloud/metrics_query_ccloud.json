@@ -13,7 +13,7 @@
                "value": "wikipedia.parsed.ccloud.replica"
           },
           {
-              "field": "metric.cluster_id",
+              "field": "resource.kafka.id",
               "op": "EQ",
               "value": "${CCLOUD_CLUSTER_ID}"
           }
