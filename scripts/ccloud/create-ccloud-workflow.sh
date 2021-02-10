@@ -95,7 +95,7 @@ echo "DATA: $DATA"
 curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
      --header 'content-type: application/json' \
      --data "${DATA}" \
-     https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query \
+     https://api.telemetry.confluent.cloud/v2/metrics/hosted-monitoring/query \
         | jq .
 
 # Confluent Cloud
@@ -107,7 +107,7 @@ echo "DATA: $DATA"
 curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
      --header 'content-type: application/json' \
      --data "${DATA}" \
-     https://api.telemetry.confluent.cloud/v1/metrics/cloud/query \
+     https://api.telemetry.confluent.cloud/v2/metrics/cloud/query \
         | jq .
 
 # Write ksqlDB queries
