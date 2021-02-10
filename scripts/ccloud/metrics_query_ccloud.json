@@ -8,12 +8,12 @@
   "filter": {
       "filters": [
           {
-               "field": "metric.label.topic",
+               "field": "metric.topic",
                "op": "EQ",
                "value": "wikipedia.parsed.ccloud.replica"
           },
           {
-              "field": "metric.label.cluster_id",
+              "field": "resource.kafka.id",
               "op": "EQ",
               "value": "${CCLOUD_CLUSTER_ID}"
           }
@@ -23,7 +23,7 @@
   "intervals": ["${CURRENT_TIME_MINUS_1HR}/${CURRENT_TIME_PLUS_1HR}"],
   "granularity": "PT1H",
   "group_by": [
-      "metric.label.topic"
+      "metric.topic"
   ],
   "limit": 5
 }
