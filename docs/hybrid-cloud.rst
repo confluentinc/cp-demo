@@ -283,12 +283,12 @@ Metrics API
           {
             "timestamp": "2020-12-14T20:52:00Z",
             "value": 1744066,
-            "metric.label.topic": "wikipedia.parsed"
+            "metric.topic": "wikipedia.parsed"
           },
           {
             "timestamp": "2020-12-14T20:53:00Z",
             "value": 1847596,
-            "metric.label.topic": "wikipedia.parsed"
+            "metric.topic": "wikipedia.parsed"
           }
         ]
       }
@@ -341,7 +341,7 @@ Metrics API
           {
             "timestamp": "2020-12-14T20:00:00Z",
             "value": 1690522,
-            "metric.label.topic": "wikipedia.parsed.ccloud.replica"
+            "metric.topic": "wikipedia.parsed.ccloud.replica"
           }
         ]
       }
