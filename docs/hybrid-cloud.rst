@@ -261,7 +261,7 @@ Metrics API
       # View this parameter
       echo $DATA
 
-#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query. For this query to work, you must have set the following parameters in your environment:
+#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v2/metrics/hosted-monitoring/query. For this query to work, you must have set the following parameters in your environment:
 
    - ``METRICS_API_KEY``
    - ``METRICS_API_SECRET``
@@ -271,7 +271,7 @@ Metrics API
       curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
            --header 'content-type: application/json' \
            --data "${DATA}" \
-           https://api.telemetry.confluent.cloud/v1/metrics/hosted-monitoring/query \
+           https://api.telemetry.confluent.cloud/v2/metrics/hosted-monitoring/query \
               | jq .
 
 #. Your output should resemble the output below, showing metrics for the on-prem topic ``wikipedia.parsed``:
@@ -283,12 +283,12 @@ Metrics API
           {
             "timestamp": "2020-12-14T20:52:00Z",
             "value": 1744066,
-            "metric.label.topic": "wikipedia.parsed"
+            "metric.topic": "wikipedia.parsed"
           },
           {
             "timestamp": "2020-12-14T20:53:00Z",
             "value": 1847596,
-            "metric.label.topic": "wikipedia.parsed"
+            "metric.topic": "wikipedia.parsed"
           }
         ]
       }
@@ -319,7 +319,7 @@ Metrics API
       # View this parameter
       echo $DATA
 
-#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v1/metrics/cloud/query. For this query to work, you must have set the following parameters in your environment:
+#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v2/metrics/cloud/query. For this query to work, you must have set the following parameters in your environment:
 
    - ``METRICS_API_KEY``
    - ``METRICS_API_SECRET`` 
@@ -329,7 +329,7 @@ Metrics API
       curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
            --header 'content-type: application/json' \
            --data "${DATA}" \
-           https://api.telemetry.confluent.cloud/v1/metrics/cloud/query \
+           https://api.telemetry.confluent.cloud/v2/metrics/cloud/query \
               | jq .
 
 #. Your output should resemble the output below, showing metrics for the |ccloud| topic ``wikipedia.parsed.ccloud.replica``:
@@ -341,7 +341,7 @@ Metrics API
           {
             "timestamp": "2020-12-14T20:00:00Z",
             "value": 1690522,
-            "metric.label.topic": "wikipedia.parsed.ccloud.replica"
+            "metric.topic": "wikipedia.parsed.ccloud.replica"
           }
         ]
       }
