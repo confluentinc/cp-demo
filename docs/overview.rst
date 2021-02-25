@@ -19,7 +19,7 @@ The use case is an |ak-tm| event streaming application that processes real-time 
 
 The full event streaming platform based on |cp| is described as follows.
 Wikimedia's `EventStreams <https://wikitech.wikimedia.org/wiki/Event_Platform/EventStreams>`__ publishes a continuous stream of real-time edits happening to real wiki pages.
-A Kafka source connector `kafka-connect-sse <https://www.confluent.io/hub/cjmatta/kafka-connect-sse>`__ streams the server-sent events (SSE) from https://stream.wikimedia.org/v2/stream/recentchange, and a custom |kconnect| transform `kafka-connect-json-schema <https://www.confluent.io/hub/jcustenborder/kafka-connect-json-schema>`__ extracts the JSON from these messages and then the messages are written to a |ak| cluster.
+A Kafka source connector `kafka-connect-sse <https://www.confluent.io/hub/cjmatta/kafka-connect-sse>`__ streams the server-sent events (SSE) from https://stream.wikimedia.org/v2/stream/recentchange, and a custom |kconnect| transform `kafka-connect-json-schema <https://www.confluent.io/hub/jcustenborder/kafka-connect-json-schema>`__ extracts the JSON from these messages and then the content is written to a |ak| cluster.
 This example uses `ksqlDB <https://ksqldb.io>`__ and a :ref:`Kafka Streams <kafka_streams>` application for data processing.
 Then a Kafka sink connector `kafka-connect-elasticsearch <https://www.confluent.io/hub/confluentinc/kafka-connect-elasticsearch>`__ streams the data out of Kafka and is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 |crep-full| is also copying messages from a topic to another topic in the same cluster.
