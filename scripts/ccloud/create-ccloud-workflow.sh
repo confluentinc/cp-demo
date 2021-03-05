@@ -136,6 +136,7 @@ EOF
 done < ${VALIDATE_DIR}/statements.sql
 
 echo
+echo
 echo "Confluent Cloud Environment:"
 echo
 echo "  export CONFIG_FILE=$CONFIG_FILE"
