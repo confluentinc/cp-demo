@@ -9,6 +9,18 @@ If the start script does not complete successfully, please go through the follow
 Docker
 ======
 
+#. Upon startup, if the output is similar to below, it is possible that the environment is not supported or ``cp-demo`` was not started properly. Please read the pre-requisites and follow proper instructions at :ref:`Module 1 <cp-demo-on-prem-tutorial>`.
+
+   .. code-block:: bash
+
+      WARNING: The REPOSITORY variable is not set. Defaulting to a blank string.
+      WARNING: The SSL_CIPHER_SUITES variable is not set. Defaulting to a blank string.
+      WARNING: The CONNECTOR_VERSION variable is not set. Defaulting to a blank string.
+      WARNING: The CONTROL_CENTER_KSQL_WIKIPEDIA_URL variable is not set. Defaulting to a blank string.
+      WARNING: The CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL variable is not set. Defaulting to a blank string.
+      Pulling zookeeper (/cp-zookeeper:6.1.0)...
+      ERROR: invalid reference format
+
 #. Verify that the status of all the Docker containers show ``Up`` state.
 
    .. code-block:: bash
@@ -21,18 +33,6 @@ Docker
    - CPU cores: at least 2 cores
 
 #. Verify you have not run out of disk storage needed for Docker's "disk image" file (`Docker documentation <https://docs.docker.com/docker-for-mac/space/>`__).
-
-#. If upon start up the output is similar to below, then it is possible that the environment is not supported or the demo was not started properly. Please read the pre-requisites and follow proper startup directions at :ref:`Module 1 <cp-demo-on-prem-tutorial>`.
-
-   .. code-block:: bash
-
-      WARNING: The REPOSITORY variable is not set. Defaulting to a blank string.
-      WARNING: The SSL_CIPHER_SUITES variable is not set. Defaulting to a blank string.
-      WARNING: The CONNECTOR_VERSION variable is not set. Defaulting to a blank string.
-      WARNING: The CONTROL_CENTER_KSQL_WIKIPEDIA_URL variable is not set. Defaulting to a blank string.
-      WARNING: The CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL variable is not set. Defaulting to a blank string.
-      Pulling zookeeper (/cp-zookeeper:6.1.0)...
-      ERROR: invalid reference format
 
 
 ====
