@@ -49,7 +49,7 @@ services:
       - ./scripts/security:/etc/kafka/secrets
 
   tools:
-    image: cnfldemos/tools:0.1
+    image: cnfldemos/tools:0.2
     hostname: tools
     container_name: tools
     depends_on:
