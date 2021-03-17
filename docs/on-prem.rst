@@ -76,7 +76,7 @@ You can run it with optional settings:
 
       CLEAN=true ./scripts/start.sh
 
-#. ``cp-demo`` supports access to the |c3| GUI via either ``http://`` (the default) or secure ``https://``, the latter employing a self-signed CA and certificates generated during deployment. Due to |c3| integrations to other components include ksqlDB server, only one mode at a time is fully supported. To run ``cp-demo`` in ``https`` mode, set ``C3_KSQLDB_HTTPS=true`` when starting ``cp-demo``:
+#. ``cp-demo`` supports access to the |c3| GUI via either ``http://`` (the default) or secure ``https://``, the latter employing a self-signed CA and certificates generated during deployment. Because |c3| integrates with ksqlDB server, only one mode at a time is `supported <https://docs.confluent.io/platform/current/ksqldb/integrate-ksql-with-confluent-control-center.html#configuration-settings-for-ksqldb-and-c3-short>`__. To run ``cp-demo`` in ``https`` mode, set ``C3_KSQLDB_HTTPS=true`` when starting ``cp-demo``:
 
    .. sourcecode:: bash
 
