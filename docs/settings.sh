@@ -1,7 +1,9 @@
 #!/bin/bash
 
+source ../env_files/config.env
+
 # docs component release version
-export RELEASE_VERSION="6.0.0"
+export RELEASE_VERSION="$CONFLUENT"
 
 # Jenkins sets CHANGE_ID for pull request builds with pull request ID
 if [[ $CHANGE_ID ]]; then
@@ -90,15 +92,3 @@ if [ -z "$DOCS_BUCKET_PRODUCTION" ]; then
   exit 1
 fi
 
-# Sanity check BRANCH and *_BRANCH overrides
-#
-# Note: `compgen` is a bash built-in command and is thus available on
-# all platforms where bash itself is available.
-for branch_variable in BRANCH `compgen -v | grep "_BRANCH$"`; do
-  [[ $branch_variable =~ ^(GIT_BRANCH|CHANGE_BRANCH)$ ]] && continue
-  eval "branch_value=\${$branch_variable}"
-  if [[ "$branch_value" != origin/* && "$branch_value" != v[0-9]* ]]; then
-    echo "ERROR: $branch_variable is set to '$branch_value', which is neither a remote branch ref (e.g. 'origin/3.2.x') nor a tag (e.g. 'v3.2.0')"
-    exit 2
-  fi
-done

@@ -8,25 +8,22 @@ Procedure:
 
 1.  Set up a `docs` virtual environment (venv). You only have to do this step once. On subsequent builds you simply activate your existing venv.
 
-    1.  Create a `~/.virtualenvs` directory and navigate into it.
+    1.  Create a `~/.virtualenvs` directory if it doesn't already exist
 
         ```
-        mkdir ~/.virtualenvs
-        cd ~/.virtualenvs
+        mkdir -p ~/.virtualenvs
         ```
 
-    1.  Create a virtual environment named `docs`.
+    1.  Create a virtual environment named `cp-demo-docs`.
 
         ```
-        python3 -m venv docs    
+        python3 -m venv ~/.virtualenvs/cp-demo-docs
         ```
-
-1.  Change directories to your local docs repository and check out the branch you want to build (`git checkout <branch>`).
 
 1.  Source configs and activate your venv from within your local docs repository.
 
     ```
-    source ./settings.sh && source ~/.virtualenvs/docs/bin/activate
+    source ./settings.sh && source ~/.virtualenvs/cp-demo-docs/bin/activate
     ```
     **Tip:** If you are using `zsh` run `autoload bashcompinit; bashcompinit` so that you can source the `settings.sh` file.
 
