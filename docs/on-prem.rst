@@ -76,7 +76,7 @@ You can run it with optional settings:
 
       CLEAN=true ./scripts/start.sh
 
-#. ``cp-demo`` supports access to the |c3| GUI via either ``http://`` (the default) or secure ``https://``, the latter employing a self-signed CA and certificates generated during deployment. Due to |c3| integrations to other components include ksqlDB server, only one mode at a time is fully supported. To run ``cp-demo`` in ``https`` mode, set ``C3_KSQLDB_HTTPS=true`` when starting ``cp-demo``:
+#. ``cp-demo`` supports access to the |c3| GUI via either ``http://`` (the default) or secure ``https://``, the latter employing a self-signed CA and certificates generated during deployment. In order to run ksqlDB queries from |c3| later in this tutorial, both ksqlDB and |c3| must be running in either ``http`` or ``https`` `mode <https://docs.confluent.io/platform/current/ksqldb/integrate-ksql-with-confluent-control-center.html#configuration-settings-for-ksqldb-and-c3-short>`__. To run ``cp-demo`` in ``https`` mode, set ``C3_KSQLDB_HTTPS=true`` when starting ``cp-demo``:
 
    .. sourcecode:: bash
 
@@ -158,12 +158,12 @@ Log into |c3|
 
    The browser will detect a self-signed, untrusted certificate and certificate authority, and issue a privacy warning as shown below. To proceed, accept this certificate using your browser's process for this, which will then last for the duration of that browser session.
 
-   - _Chrome_: click on ``Advanced`` and when the window expands, click on ``Proceed to localhost (unsafe)``.
+   - **Chrome**: click on ``Advanced`` and when the window expands, click on ``Proceed to localhost (unsafe)``.
 
      .. figure:: images/c3-chrome-cert-warning.png
         :width: 500px
 
-   - _Safari_: open a new private browsing window (``Shift + ⌘ + N``), click on ``Show Details`` and when the window expands, click on ``visit this website``.
+   - **Safari**: open a new private browsing window (``Shift + ⌘ + N``), click on ``Show Details`` and when the window expands, click on ``visit this website``.
 
      .. figure:: images/c3-safari-cert-warning.png
         :width: 500px
@@ -473,7 +473,7 @@ All the |cp| components and clients in this example are enabled with many :ref:`
 -  :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization. It is configured with the |csa| and talks to LDAP to authenticate clients.
 -  :ref:`SSL <kafka_ssl_authentication>` for encryption and mTLS. The example :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password. 
 -  :ref:`Role-Based Access Control (RBAC) <rbac-overview>` for authorization. If a resource has no associated ACLs, then users are not allowed to access the resource, except super users.
--  |zk| is configured for :ref`SSL <zk-mtls>` AND `SASL/DIGEST-MD5 <zk-auth-sasl>` (Note: no |crest| and |sr| TLS support with `trial licenses <https://docs.confluent.io/5.5.0/release-notes/index.html#schema-registry>`__).
+-  |zk| is configured for :ref:`SSL <zk-mtls>` AND :ref:`SASL/DIGEST-MD5 <zk-auth-sasl>` (Note: no |crest| and |sr| TLS support with `trial licenses <https://docs.confluent.io/5.5.0/release-notes/index.html#schema-registry>`__).
 -  :ref:`HTTPS for Control Center <https_settings>`.
 -  :ref:`HTTPS for Schema Registry <schemaregistry_security>`.
 -  :ref:`HTTPS for Connect <connect_security>`.
@@ -708,8 +708,7 @@ Authorization with RBAC
 
    .. sourcecode:: bash
 
-          cd scripts/validate
-          ./validate_bindings.sh
+          ./scripts/validate/validate_bindings.sh
 
 #. Because |zk| is configured for :ref:`SASL/DIGEST-MD5 <kafka_sasl_auth_plain>`, any commands that communicate with |zk| need properties set for |zk| authentication. This authentication configuration is provided by the ``KAFKA_OPTS`` setting on the brokers. For example, notice that the :devx-cp-demo:`consumer throttle script|scripts/app/throttle_consumer.sh` runs on the Docker container ``kafka1`` which has the appropriate `KAFKA_OPTS` setting. The command would otherwise fail if run on any other container aside from ``kafka1`` or ``kafka2``.
 
