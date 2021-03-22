@@ -9,7 +9,8 @@ source ${DIR}/../env.sh
 
 #-------------------------------------------------------------------------------
 
-echo "Starting broker kafka3, which will trigger a Self Balancing Cluster rebalance."
+(cd $DIR/security && ./certs-create-per-user.sh kafka3) || exit 1
+
 docker-compose -f $DIR/../docker-compose.yml -f $DIR/sbc/docker-compose.yml up -d kafka3
 
 # verify SBC responds with an add-broker balance plan
