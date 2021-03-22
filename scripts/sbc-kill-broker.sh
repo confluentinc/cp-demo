@@ -9,6 +9,10 @@ source ${DIR}/env.sh
 
 #-------------------------------------------------------------------------------
 
-echo "Killing broker kafka3, then tailing SBC logging output.  SBC will commence healing after about 30 seconds.  Type CTRL-C to stop tailing logs."
+echo "Killing broker kafka3, which will trigger Self Balancing Cluster healing after about 30 seconds"
 docker stop kafka3
-docker-compose logs -f --tail=1000 | grep -E "(databalancer|cruisecontrol)" | grep -v "confluent.balancer.class"
+
+# verify SBC responds with
+MAX_WAIT=120
+echo "Waiting up to $MAX_WAIT seconds for SBC self-healing to start"
+retry $MAX_WAIT $DIR/validate/validate_sbc_kill_broker.sh || exit 1
