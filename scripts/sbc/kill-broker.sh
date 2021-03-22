@@ -4,8 +4,8 @@ set -euo pipefail
 IFS=$'\n\t'
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-source ${DIR}/helper/functions.sh
-source ${DIR}/env.sh
+source ${DIR}/../helper/functions.sh
+source ${DIR}/../env.sh
 
 #-------------------------------------------------------------------------------
 

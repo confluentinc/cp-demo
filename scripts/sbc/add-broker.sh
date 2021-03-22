@@ -4,13 +4,13 @@ set -euo pipefail
 IFS=$'\n\t'
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-source ${DIR}/helper/functions.sh
-source ${DIR}/env.sh
+source ${DIR}/../helper/functions.sh
+source ${DIR}/../env.sh
 
 #-------------------------------------------------------------------------------
 
-echo "Starting broker kafka3, which will trigger a Self Balancing Cluster rebalance.""
-docker-compose up -d kafka3
+echo "Starting broker kafka3, which will trigger a Self Balancing Cluster rebalance."
+docker-compose -f $DIR/../docker-compose.yml -f $DIR/sbc/docker-compose.yml up -d kafka3
 
 # verify SBC responds with an add-broker balance plan
 MAX_WAIT=120
