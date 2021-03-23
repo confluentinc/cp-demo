@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-source ${DIR}/../helper/functions.sh
-source ${DIR}/../env.sh
+SBCDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+source ${SBCDIR}/../helper/functions.sh
+source ${SBCDIR}/../env.sh
 
-docker-compose -f $DIR/../docker-compose.yml -f $DIR/sbc/docker-compose.yml logs kafka1 kafka2 | grep "COMPLETED.*databalancer"
+docker-compose -f $SBCDIR/../../docker-compose.yml -f $SBCDIR/docker-compose.yml logs kafka1 kafka2 | grep "COMPLETED.*databalancer"
