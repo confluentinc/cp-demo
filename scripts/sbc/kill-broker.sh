@@ -15,4 +15,4 @@ docker stop kafka3
 # verify SBC responds with
 MAX_WAIT=120
 echo "Waiting up to $MAX_WAIT seconds for SBC self-healing to start"
-retry $MAX_WAIT $DIR/validate/validate_sbc_kill_broker_started.sh || exit 1
+retry $MAX_WAIT ${DIR}/sbc/validate_sbc_kill_broker_started.sh || exit 1

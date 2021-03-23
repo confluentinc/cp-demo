@@ -4,4 +4,4 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ${DIR}/../helper/functions.sh
 source ${DIR}/../env.sh
 
-docker-compose logs kafka1 kafka2 | grep "PLAN_COMPUTATION.*databalancer"
+docker-compose -f $DIR/../docker-compose.yml -f $DIR/sbc/docker-compose.yml logs kafka1 kafka2 | grep "PLAN_COMPUTATION.*databalancer"
