@@ -16,7 +16,7 @@ The use case is a Kafka event streaming application for real-time edits to real 
 Wikimedia Foundation has IRC channels that publish edits happening to real wiki pages (e.g. ``#en.wikipedia``, ``#en.wiktionary``) in real time.
 Using `Kafka Connect <http://docs.confluent.io/current/connect/index.html>`__, a Kafka source connector `kafka-connect-irc <https://github.com/cjmatta/kafka-connect-irc>`__ streams raw messages from these IRC channels, and a custom Kafka Connect transform `kafka-connect-transform-wikiedit <https://github.com/cjmatta/kafka-connect-transform-wikiedit>`__ transforms these messages and then the messages are written to a Kafka cluster.
 This demo uses `KSQL <https://www.confluent.io/product/ksql/>`__ and a `Kafka Streams <http://docs.confluent.io/current/streams/index.html>`__ application for data processing.
-Then a Kafka sink connector `kafka-connect-elasticsearch <http://docs.confluent.io/current/connect/connect-elasticsearch/docs/elasticsearch_connector.html>`__ streams the data out of Kafka, and the data is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
+Then a Kafka sink connector `kafka-connect-elasticsearch <https://docs.confluent.io/kafka-connect-elasticsearch/current/>`__ streams the data out of Kafka, and the data is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
 |crep-full| is also copying messages from a topic to another topic in the same cluster.
 All data is using |sr-long| and Avro.
 `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ is managing and monitoring the deployment.
