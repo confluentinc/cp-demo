@@ -87,8 +87,4 @@ if [ -z "DOCS_BUCKET" ]; then
   echo "ERROR: DOCS_BUCKET must be set"
   exit 1
 fi
-if [ -z "$DOCS_BUCKET_PRODUCTION" ]; then
-  echo "ERROR: DOCS_BUCKET_PRODUCTION must be set"
-  exit 1
-fi
 
