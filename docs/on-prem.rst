@@ -1330,6 +1330,64 @@ to setup alerts from there.
 
 .. _cp-demo-monitoring:
 
+
+Self-Balancing Clusters
+-----------------------
+
+Confluent Platform Self-Balancing Clusters automates resource workload balancing across brokers in the cluster and provides self-healing in cases where a broker fails.  This simplifies scale-up and scale-down operations, ensuring workload is assigned to new brokers and automates recovery in case of a failure.
+
+#. Run the following command to add a new broker ``kafka3`` to the cluster.
+
+   .. sourcecode:: bash
+
+      ./scripts/sbc/add-broker.sh
+
+   The script will return when Self Balancing Clusters has acknowledged the broker-addition and started a rebalance task.
+
+#. Open Control Center at http://localhost:9021 and navigate to Brokers.  The Self-balancing panel will show 1 in-progress task.
+   Click on the panel and locate the in-progress add-broker task for broker with ID ``broker.3``.
+
+#. The add-broker rebalance task will progress through stages ``PLAN_COMPUTATION``, ``REASSIGNMENT`` and finally ``COMPLETED``.  The time spent in each phase will vary depending on the hardware you are running.
+   You can check the status using the following scripts to read the broker logs:
+
+   .. sourcecode:: bash
+
+      ./scripts/sbc/validate_sbc_add_broker_plan_computation.sh
+      ./scripts/sbc/validate_sbc_add_broker_reassignment.sh
+      ./scripts/sbc/validate_sbc_add_broker_completed.sh
+
+#. When rebalancing has completed, you will see the task move to Success in the Control Center Self-balancing interface.
+   Run the following command to view replica placements for all topic-partitions in the cluster:
+
+   .. sourcecode:: bash
+
+      docker-compose exec kafka1 kafka-replica-status --bootstrap-server kafka1:9091 --admin.config /etc/kafka/secrets/client_sasl_plain.config
+
+   Look for instances of ``3`` in the ``Replica`` column, showing that rebalancing has assigned partition replicas (leaders and followers) to the new broker.
+
+#. Simulate a broker-failure by running the the script to kill the previously-added broker `kafka3`:
+
+   .. sourcecode:: bash
+
+      ./scripts/sbc/kill-broker.sh
+
+   This script will return when Self-Balancing Clusters has detected the broker failure and the recovery wait-time ``KAFKA_CONFLUENT_BALANCER_HEAL_BROKER_FAILURE_THRESHOLD_MS`` has expired, when self-healing has been triggered to reassign replicas on the ``kafka3`` broker to the remaining two brokers.
+   This has been set artificially-low for ``cp-demo`` to ``30000` (30 seconds) in order to trigger self-healing promptly for the demo.
+
+#. Monitor the progress of replica-reassignment from the failed broker, which will eventually reduce the under-replicated partitions in the cluster back to zero.  To track completion of self-healing, run the following scripts:
+
+   .. sourcecode:: bash
+
+      ./scripts/sbc/validate_sbc_kill_broker_started.sh
+      ./scripts/sbc/validate_sbc_kill_broker_completed.sh
+
+#. When self-healing has completed, the cluster should no longer have any under-replicated partitions that were previously assigned to failed broker ``kafka3``.
+   You can confirm this by running this command and verifying no output, meaning no out-of-sync replicas:
+
+   .. sourcecode:: bash
+
+      docker-compose exec kafka1 kafka-replica-status --bootstrap-server kafka1:9091 --admin.config /etc/kafka/secrets/client_sasl_plain.config --verbose | grep "IsInIsr: false"
+
 ==========
 Monitoring
 ==========
