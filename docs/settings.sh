@@ -52,7 +52,7 @@ DOCS_COMPONENT_PAGE_NAME="ansible"
 # Production S3 bucket that contains our production documentation repository.
 #
 # NOTE: You should never need to modify this setting!
-DOCS_BUCKET_PRODUCTION="docs-independent.confluent.io"
+DOCS_BUCKET_PRODUCTION=""
 
 BUCKET_POLICY_FILE_TEMPLATE="bucket-policy-public-read.json.template"
 BUCKET_POLICY_FILE="bucket-policy-public-read.json"
@@ -85,10 +85,6 @@ fi
 # Ensure that buckets are configured.
 if [ -z "DOCS_BUCKET" ]; then
   echo "ERROR: DOCS_BUCKET must be set"
-  exit 1
-fi
-if [ -z "$DOCS_BUCKET_PRODUCTION" ]; then
-  echo "ERROR: DOCS_BUCKET_PRODUCTION must be set"
   exit 1
 fi
 
