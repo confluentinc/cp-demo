@@ -1344,7 +1344,7 @@ Self-Balancing Clusters
 
    The script will return when |sbc-long| has acknowledged the broker addition and started a rebalance task.
 
-#. Open Control Center at http://localhost:9021 and navigate to Brokers.  The Self-balancing panel will show 1 in-progress task.
+#. Open |c3-short| at http://localhost:9021 and navigate to ``Brokers``.  The Self-balancing panel will show 1 in-progress task.
    Click on the panel and locate the in-progress add-broker task for broker with ID ``broker.3``.
 
 #. The add-broker rebalance task will progress through stages ``PLAN_COMPUTATION``, ``REASSIGNMENT`` and finally ``COMPLETED``.  The time spent in each phase will vary depending on the hardware you are running.
