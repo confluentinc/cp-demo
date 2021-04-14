@@ -1371,7 +1371,7 @@ Self-Balancing Clusters
 
       ./scripts/sbc/kill-broker.sh
 
-   This script will return when Self-Balancing Clusters has detected the broker failure and the recovery wait-time ``KAFKA_CONFLUENT_BALANCER_HEAL_BROKER_FAILURE_THRESHOLD_MS`` has expired, when self-healing has been triggered to reassign replicas on the ``kafka3`` broker to the remaining two brokers.
+   This script will return when |sbc-long| has detected the broker failure and the recovery wait-time ``KAFKA_CONFLUENT_BALANCER_HEAL_BROKER_FAILURE_THRESHOLD_MS`` has expired, when self-healing has been triggered to reassign replicas on the ``kafka3`` broker to the remaining two brokers.
    This has been set artificially-low for ``cp-demo`` to ``30000`` (30 seconds) in order to trigger self-healing promptly for the demo.
 
 #. Monitor the progress of replica-reassignment from the failed broker, which will eventually reduce the under-replicated partitions in the cluster back to zero.  To track completion of self-healing, run the following scripts:
