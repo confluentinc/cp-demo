@@ -168,7 +168,7 @@ Log into |c3|
      .. figure:: images/c3-safari-cert-warning.png
         :width: 500px
 
-#. At the login screen, log into |c3| as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts//security/ldap_users` to learn how each user's view changes depending on their permissions.
+#. At the login screen, log into |c3| as ``superUser`` and password ``superUser``, which has super user access to the cluster. You may also log in as :devx-cp-demo:`other users|scripts/security/ldap_users` to learn how each user's view changes depending on their permissions.
 
    .. figure:: images/c3-login.png
       :width: 500px
@@ -1331,38 +1331,41 @@ to setup alerts from there.
 .. _cp-demo-monitoring:
 
 
-Self-Balancing Clusters
------------------------
+|sbc-full|
+----------
 
-|sbc-full| automates resource workload balancing across brokers in the |ak| cluster and provides self-healing in cases where a broker fails.  This simplifies scale-up and scale-down operations, ensuring workload is assigned to new brokers and automating recovery in case of a failure.
+:ref:`Self-Balancing Clusters <sbc>` automates your resource workload balancing, provides failure detection and self-healing, and allows you to add or decommission brokers as needed, with no manual tuning required. This simplifies scale-up and scale-down operations, ensuring workload is assigned to new brokers and automating recovery in case of a failure.
 
-This demo shows two features of |sbc-long|:
+This section showcases two features of |sbc-long|:
 
-- You will add a new broker to the cluster (scale-up) and observe |sbc-long| rebalance the cluster by assigning existing partitions to the new broker.
-- You will simulate a failure by killing a broker and observe |sbc-long| run self-healing to assign the failed broker's replicas to remaining brokers.
+- Adding a new broker to the cluster (scale-up): observe |sbc-long| rebalance the cluster by assigning existing partitions to the new broker.
+- Simulating a failure by killing a broker: observe |sbc-long| reassign the failed broker's replicas to the remaining brokers.
 
-#. Run the following command to add a new broker ``kafka3`` to the cluster.
+Before running this section:
+
+- |sbc| requires 15 minutes to initialize and collect metrics from brokers in the cluster, so after starting ``cp-demo``, wait at least this time before proceeding.
+- Because these steps add a third broker, ensure you have adequate resources allocated to Docker.
+
+#. Run :devx-cp-demo:`scripts/sbc/add-broker.sh|scripts/sbc/add-broker.sh` to add a new broker ``kafka3`` to the cluster.
 
    .. sourcecode:: bash
 
       ./scripts/sbc/add-broker.sh
 
-   The script will return when |sbc-long| has acknowledged the broker addition and started a rebalance task.
+   The script returns when |sbc-long| has acknowledged the broker addition and started a rebalance task.
 
-#. Open |c3-short| at http://localhost:9021 and navigate to ``Brokers``.  The Self-balancing panel will show 1 in-progress task.
-   Click on the panel and locate the in-progress add-broker task for broker with ID ``broker.3``.
+#. Open |c3-short| at http://localhost:9021 and navigate to ``Brokers``.  The Self-balancing panel shows 1 in-progress task.
 
    .. figure:: images/sbc-add-broker-overview.png
       :alt: image
 
-   .. figure:: images/sbc-add-broker-panel.png
-      :alt: image
+   Click on the panel and locate the in-progress add-broker task for broker with ID ``broker.3``.
 
    .. figure:: images/sbc-add-broker-task.png
       :alt: image
 
-#. The add-broker rebalance task will progress through stages ``PLAN_COMPUTATION``, ``REASSIGNMENT`` and finally ``COMPLETED``.  The time spent in each phase will vary depending on the hardware you are running.
-   You can check the status using the following scripts to read the broker logs:
+#. The add-broker rebalance task progresses through stages ``PLAN_COMPUTATION``, ``REASSIGNMENT`` and finally ``COMPLETED``.  The time spent in each phase varies depending on the hardware you are running.
+   Check the status using the following scripts to read the broker logs:
 
    .. sourcecode:: bash
 
@@ -1370,33 +1373,35 @@ This demo shows two features of |sbc-long|:
       ./scripts/sbc/validate_sbc_add_broker_reassignment.sh
       ./scripts/sbc/validate_sbc_add_broker_completed.sh
 
-#. When rebalancing has completed, the add-broker rebalance task will move to ``Success``.
+#. After a few minutes, when rebalancing has completed, the add-broker rebalance task in |c3| moves to ``Success``.
    Run the following command to view replica placements for all topic-partitions in the cluster:
 
    .. sourcecode:: bash
 
-      docker-compose exec kafka1 kafka-replica-status --bootstrap-server kafka1:9091 --admin.config /etc/kafka/secrets/client_sasl_plain.config
+      docker-compose exec kafka1 kafka-replica-status \
+          --bootstrap-server kafka1:9091 \
+          --admin.config /etc/kafka/secrets/client_sasl_plain.config
 
    Look for instances of ``3`` in the ``Replica`` column, showing that rebalancing has assigned partition replicas (leaders and followers) to the new broker.
 
-#. Simulate a broker-failure by running the the script to kill the previously-added broker `kafka3`:
+#. Simulate a broker-failure by running :devx-cp-demo:`scripts/sbc/kill-broker.sh|scripts/sbc/kill-broker.sh` to kill the previously-added broker ``kafka3``:
 
    .. sourcecode:: bash
 
       ./scripts/sbc/kill-broker.sh
 
-   This script will return when |sbc-long| has detected the broker failure and the recovery wait-time ``KAFKA_CONFLUENT_BALANCER_HEAL_BROKER_FAILURE_THRESHOLD_MS`` has expired, when self-healing has been triggered to reassign replicas on the ``kafka3`` broker to the remaining two brokers.
-   This has been set artificially-low for ``cp-demo`` to ``30000`` (30 seconds) in order to trigger self-healing promptly for the demo.
+   This script returns when |sbc-long| has detected the broker failure and the recovery wait-time ``KAFKA_CONFLUENT_BALANCER_HEAL_BROKER_FAILURE_THRESHOLD_MS`` has expired, triggering replica reassignment from the ``kafka3`` broker to the original two brokers.
+   Note that in ``cp-demo``, the threshold time has been set to 30 seconds, which is artificially low but useful in a demo environment.
 
-#. Monitor the progress of replica-reassignment from the failed broker, which will eventually reduce the under-replicated partitions in the cluster back to zero.  To track completion of self-healing, run the following scripts:
+#. Monitor the progress of replica-reassignment from the failed broker, which eventually reduces the under-replicated partitions in the cluster back to zero.  To track completion of self-healing, check the ``Self-Balancing`` panel in |c3|, or run the following scripts:
 
    .. sourcecode:: bash
 
       ./scripts/sbc/validate_sbc_kill_broker_started.sh
       ./scripts/sbc/validate_sbc_kill_broker_completed.sh
 
-#. When self-healing has completed, the cluster should no longer have any under-replicated partitions that were previously assigned to failed broker ``kafka3``.
-   You can confirm this by running this command and verifying no output, meaning no out-of-sync replicas:
+#. When self-healing has completed, the |ak| cluster should no longer have any under-replicated partitions that were previously assigned to failed broker ``kafka3``.
+   Confirm this by running this command and verifying no output, meaning no out-of-sync replicas:
 
    .. sourcecode:: bash
 
