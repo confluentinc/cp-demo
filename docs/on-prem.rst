@@ -1342,7 +1342,7 @@ Self-Balancing Clusters
 
       ./scripts/sbc/add-broker.sh
 
-   The script will return when Self Balancing Clusters has acknowledged the broker-addition and started a rebalance task.
+   The script will return when |sbc-long| has acknowledged the broker addition and started a rebalance task.
 
 #. Open Control Center at http://localhost:9021 and navigate to Brokers.  The Self-balancing panel will show 1 in-progress task.
    Click on the panel and locate the in-progress add-broker task for broker with ID ``broker.3``.
