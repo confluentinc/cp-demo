@@ -1339,7 +1339,7 @@ to setup alerts from there.
 This section showcases two features of |sbc-long|:
 
 - Adding a new broker to the cluster (scale-up): observe |sbc-long| rebalance the cluster by assigning existing partitions to the new broker.
-- Simulating a failure by killing a broker (scale-down): observe |sbc-long| reassign the failed broker's replicas to the remaining brokers.
+- Simulating a failure by killing a broker: observe |sbc-long| reassign the failed broker's replicas to the remaining brokers.
 
 #. Run :devx-cp-demo:`scripts/sbc/add-broker.sh|scripts/sbc/add-broker.sh` to add a new broker ``kafka3`` to the cluster.
 
