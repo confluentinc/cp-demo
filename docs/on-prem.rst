@@ -1356,7 +1356,7 @@ Self-Balancing Clusters
       ./scripts/sbc/validate_sbc_add_broker_reassignment.sh
       ./scripts/sbc/validate_sbc_add_broker_completed.sh
 
-#. When rebalancing has completed, you will see the task move to Success in the Control Center Self-balancing interface.
+#. When rebalancing has completed, the add-broker rebalance task will move to ``Success``.
    Run the following command to view replica placements for all topic-partitions in the cluster:
 
    .. sourcecode:: bash
