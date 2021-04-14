@@ -1341,6 +1341,11 @@ This section showcases two features of |sbc-long|:
 - Adding a new broker to the cluster (scale-up): observe |sbc-long| rebalance the cluster by assigning existing partitions to the new broker.
 - Simulating a failure by killing a broker: observe |sbc-long| reassign the failed broker's replicas to the remaining brokers.
 
+Before running this section:
+
+- |sbc| requires 15 minutes to initialize and collect metrics from brokers in the cluster, so after starting ``cp-demo``, wait at least this time before proceeding.
+- Because these steps add a third broker, ensure you have adequate resources allocated to Docker.
+
 #. Run :devx-cp-demo:`scripts/sbc/add-broker.sh|scripts/sbc/add-broker.sh` to add a new broker ``kafka3`` to the cluster.
 
    .. sourcecode:: bash
