@@ -1336,6 +1336,11 @@ Self-Balancing Clusters
 
 |sbc-full| automates resource workload balancing across brokers in the |ak| cluster and provides self-healing in cases where a broker fails.  This simplifies scale-up and scale-down operations, ensuring workload is assigned to new brokers and automating recovery in case of a failure.
 
+This demo shows two features of |sbc-long|:
+
+- You will add a new broker to the cluster (scale-up) and observe |sbc-long| rebalance the cluster by assigning existing partitions to the new broker.
+- You will simulate a failure by killing a broker and observe |sbc-long| run self-healing to assign the failed broker's replicas to remaining brokers.
+
 #. Run the following command to add a new broker ``kafka3`` to the cluster.
 
    .. sourcecode:: bash
