@@ -1386,7 +1386,10 @@ Self-Balancing Clusters
 
    .. sourcecode:: bash
 
-      docker-compose exec kafka1 kafka-replica-status --bootstrap-server kafka1:9091 --admin.config /etc/kafka/secrets/client_sasl_plain.config --verbose | grep "IsInIsr: false"
+      docker-compose exec kafka1 kafka-replica-status \
+           --bootstrap-server kafka1:9091 \
+           --admin.config /etc/kafka/secrets/client_sasl_plain.config \
+           --verbose | grep "IsInIsr: false"
 
 ==========
 Monitoring
