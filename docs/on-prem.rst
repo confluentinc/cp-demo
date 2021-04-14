@@ -1347,6 +1347,15 @@ Self-Balancing Clusters
 #. Open |c3-short| at http://localhost:9021 and navigate to ``Brokers``.  The Self-balancing panel will show 1 in-progress task.
    Click on the panel and locate the in-progress add-broker task for broker with ID ``broker.3``.
 
+   .. figure:: images/sbc-add-broker-overview.png
+      :alt: image
+
+   .. figure:: images/sbc-add-broker-panel.png
+      :alt: image
+
+   .. figure:: images/sbc-add-broker-task.png
+      :alt: image
+
 #. The add-broker rebalance task will progress through stages ``PLAN_COMPUTATION``, ``REASSIGNMENT`` and finally ``COMPLETED``.  The time spent in each phase will vary depending on the hardware you are running.
    You can check the status using the following scripts to read the broker logs:
 
