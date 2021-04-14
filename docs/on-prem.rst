@@ -1334,7 +1334,7 @@ to setup alerts from there.
 Self-Balancing Clusters
 -----------------------
 
-Confluent Platform Self-Balancing Clusters automates resource workload balancing across brokers in the cluster and provides self-healing in cases where a broker fails.  This simplifies scale-up and scale-down operations, ensuring workload is assigned to new brokers and automates recovery in case of a failure.
+|sbc-full| automates resource workload balancing across brokers in the |ak| cluster and provides self-healing in cases where a broker fails.  This simplifies scale-up and scale-down operations, ensuring workload is assigned to new brokers and automating recovery in case of a failure.
 
 #. Run the following command to add a new broker ``kafka3`` to the cluster.
 
