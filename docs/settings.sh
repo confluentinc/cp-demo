@@ -38,7 +38,11 @@ fi
 # can automatically pass them as environment variables to the Makefile.
 #
 # IMPORTANT: For *branches*, this must be a remote ref, i.e. "orgin/foobar", not just "foobar"!
+<<<<<<< HEAD
 export BRANCH="origin/6.2.0-post"
+=======
+export BRANCH="origin/6.2.x"
+>>>>>>> Bump Confluent to 6.2.1-0, Kafka to 6.2.1-0
 
 export MAVEN_OPTS="-XX:MaxPermSize=128M -Dhttps.protocols=TLSv1.2"
 
