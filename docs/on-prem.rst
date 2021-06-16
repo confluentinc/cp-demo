@@ -891,7 +891,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
       ERROR Error when sending message to topic users with key: null, value: 5 bytes with error: (org.apache.kafka.clients.producer.internals.ErrorLoggingCallback)
       org.apache.kafka.common.InvalidRecordException: This record has failed the validation on broker and hence be rejected.
 
-   Close the console producer by entering `CTRL+C`.
+   Close the console producer by entering ``CTRL+C``.
 
 #. Describe the topic ``wikipedia.parsed``, which is the topic that the `kafka-connect-sse` source connector is writing to. Notice that it also has enabled |sv|.
 
