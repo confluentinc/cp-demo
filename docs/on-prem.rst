@@ -869,7 +869,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 	      Topic: users	Partition: 0	Leader: 1	Replicas: 1,2	Isr: 1,2	Offline: 
 	      Topic: users	Partition: 1	Leader: 2	Replicas: 2,1	Isr: 2,1	Offline: 
 
-#. Produce a non-Avro message to this topic using ``kafka-console-producer``, and it results in a failure.
+#. Now produce a non-Avro message to this topic using ``kafka-console-producer``.
 
    .. sourcecode:: bash
 
@@ -883,12 +883,15 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
            --producer-property ssl.keystore.password=confluent \
            --producer-property ssl.key.password=confluent
 
-   The error should resemble:
+   After starting the console producer, it will wait for input. Enter a few characters and press enter.
+   It should result in a failure with an error message that resembles:
 
    .. sourcecode:: bash
 
       ERROR Error when sending message to topic users with key: null, value: 5 bytes with error: (org.apache.kafka.clients.producer.internals.ErrorLoggingCallback)
       org.apache.kafka.common.InvalidRecordException: This record has failed the validation on broker and hence be rejected.
+
+   Close the console producer by entering ``CTRL+C``.
 
 #. Describe the topic ``wikipedia.parsed``, which is the topic that the `kafka-connect-sse` source connector is writing to. Notice that it also has enabled |sv|.
 
