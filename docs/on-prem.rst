@@ -869,7 +869,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 	      Topic: users	Partition: 0	Leader: 1	Replicas: 1,2	Isr: 1,2	Offline: 
 	      Topic: users	Partition: 1	Leader: 2	Replicas: 2,1	Isr: 2,1	Offline: 
 
-#. Now produce some non-Avro messages to this topic using ``kafka-console-producer``.
+#. Now produce a non-Avro message to this topic using ``kafka-console-producer``.
 
    .. sourcecode:: bash
 
