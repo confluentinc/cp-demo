@@ -41,6 +41,9 @@ preflight_checks()
     verify_installed $cmd || exit 1
   done
 
+  # Verify Docker daemon is running
+  docker ps -q || exit 1
+
   # Verify Docker memory is at least 8 GB
   if [[ $(docker system info --format '{{.MemTotal}}') -lt 8000000000 ]]; then
     echo -e "\nWARNING: Memory available to Docker should be at least 8 GB (default is 2 GB), otherwise cp-demo may not work properly.\n"
@@ -136,7 +139,7 @@ build_connect_image()
   echo "Building custom Docker image with Connect version ${CONFLUENT_DOCKER_TAG} and connector version ${CONNECTOR_VERSION}"
 
   local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-  
+
   DOCKERFILE="${DIR}/../../Dockerfile"
   CONTEXT="${DIR}/../../."
   echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg REPOSITORY=$REPOSITORY -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE $CONTEXT"
@@ -144,7 +147,7 @@ build_connect_image()
     echo "ERROR: Docker image build failed. Please troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/troubleshooting.html"
     exit 1
   }
-  
+
   # Copy the updated kafka.connect.truststore.jks back to the host
   docker create --name cp-demo-tmp-connect localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}
   docker cp cp-demo-tmp-connect:/tmp/kafka.connect.truststore.jks ${DIR}/../security/kafka.connect.truststore.jks
