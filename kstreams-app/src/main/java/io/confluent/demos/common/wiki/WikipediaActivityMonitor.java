@@ -100,7 +100,7 @@ class WikipediaActivityMonitor {
     final Enumeration<?> names = props.propertyNames();
     while (names.hasMoreElements()) {
       final String key = (String)names.nextElement();
-      rv.put(key, props.getProperty(key));
+      rv.put(key, props.get(key));
     }
     return rv;
   }
