@@ -3,7 +3,7 @@
 # Run "bad" query
 echo "Running 'bad' query (approximately 60 seconds)"
 docker-compose exec ksqldb-cli bash -c "ksql -u ksqlDBUser -p ksqlDBUser http://ksqldb-server:8088 << EOF
-SELECT ucase(cast(null as varchar)) FROM wikipedia EMIT CHANGES LIMIT 20;
+SELECT 1/0 FROM wikipedia EMIT CHANGES LIMIT 20;
 exit ;
 EOF"
 
