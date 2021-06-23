@@ -338,7 +338,7 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
 
    .. sourcecode:: bash
 
-      SELECT ucase(cast(null as varchar)) FROM wikipedia EMIT CHANGES;
+      SELECT 1/0 FROM wikipedia EMIT CHANGES;
 
    No records should be returned from this query. ksqlDB writes errors into the processing log for each record. View the processing log topic ``ksql-clusterksql_processing_log`` with topic inspection (jump to offset 0/partition 0) or the corresponding ksqlDB stream ``KSQL_PROCESSING_LOG`` with the ksqlDB editor (set ``auto.offset.reset=earliest``).
 
