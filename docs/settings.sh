@@ -38,7 +38,7 @@ fi
 # can automatically pass them as environment variables to the Makefile.
 #
 # IMPORTANT: For *branches*, this must be a remote ref, i.e. "orgin/foobar", not just "foobar"!
-export BRANCH="origin/master"
+export BRANCH="origin/6.0.3-post"
 
 export MAVEN_OPTS="-XX:MaxPermSize=128M -Dhttps.protocols=TLSv1.2"
 
