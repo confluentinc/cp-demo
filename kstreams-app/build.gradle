@@ -22,7 +22,7 @@ def props = new Properties()
 file("../env_files/config.env").withInputStream { props.load(it) }
 
 ext {
-  cpVersion = props.getProperty("CONFLUENT") ?: '6.0.0'
+  cpVersion = props.getProperty("CONFLUENT") ?: '6.2.0'
 }
 
 repositories {
