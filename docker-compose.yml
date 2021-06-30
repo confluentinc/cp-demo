@@ -943,7 +943,7 @@ services:
 
 
   streams-demo:
-    image: cnfldemos/cp-demo-kstreams:0.0.9
+    image: cnfldemos/cp-demo-kstreams:0.0.10
     restart: always
     depends_on:
       - kafka1
@@ -958,3 +958,4 @@ services:
       - ./env_files/streams-demo.env
     environment:
       KAFKA_REPLICATION_FACTOR: 2
+  
