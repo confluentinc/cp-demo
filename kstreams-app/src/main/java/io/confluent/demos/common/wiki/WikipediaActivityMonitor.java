@@ -100,7 +100,7 @@ class WikipediaActivityMonitor {
     final Enumeration<?> names = props.propertyNames();
     while (names.hasMoreElements()) {
       final String key = (String)names.nextElement();
-      rv.put(key, props.getProperty(key));
+      rv.put(key, props.get(key));
     }
     return rv;
   }
@@ -136,7 +136,7 @@ class WikipediaActivityMonitor {
             loadEnvProperties(args[0]));
 
     final SpecificAvroSerde<WikiFeedMetric> metricSerde = new SpecificAvroSerde<>();
-    metricSerde.configure(propertiesToMap(props),false);
+    metricSerde.configure(propertiesToMap(props), false);
 
     final StreamsBuilder builder = new StreamsBuilder();
 
