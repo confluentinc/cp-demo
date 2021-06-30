@@ -787,7 +787,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. code-block:: JSON
 
-      {"error_code":40403,"message":"User is denied operation Write on Subject: users-value"}
+      {"error_code":40301,"message":"User is denied operation Write on Subject: users-value"}
 
 #. Create a role binding for the ``appSA`` client permitting it access to |sr|.
 
