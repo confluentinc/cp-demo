@@ -168,6 +168,12 @@ services:
       # To avoid race condition with control-center
       # CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: 'false'
       CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: 'true'
+      
+      #Confluent Telemetry Reporter for Health+
+      #KAFKA_CONFLUENT_TELEMETRY_ENABLED: 'true'
+      #KAFKA_CONFLUENT_TELEMETRY_API_KEY: 
+      #KAFKA_CONFLUENT_TELEMETRY_API_SECRET: 
+
 
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka1.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka1_keystore_creds
@@ -339,6 +345,11 @@ services:
       # To avoid race condition with control-center
       # CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: 'false'
       CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: 'true'
+      
+      #Confluent Telemetry Reporter for Health+
+      #KAFKA_CONFLUENT_TELEMETRY_ENABLED: 'true'
+      #KAFKA_CONFLUENT_TELEMETRY_API_KEY: 
+      #KAFKA_CONFLUENT_TELEMETRY_API_SECRET: 
 
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka2.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka2_keystore_creds
