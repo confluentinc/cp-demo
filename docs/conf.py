@@ -162,9 +162,9 @@ ccloud_cli_release = 'current'
 #Confluent CLI release
 confluent_cli_release = 'current'
 # The short X.Y version.
-version = '7.0'
+version = '7.1'
 # The full version, including alpha/beta/rc tags.
-release = '7.0.0-0'
+release = '7.1.0-0'
 # Kafka version
 kafka_branch = '2.6'
 # Kafka Javadoc version
@@ -172,7 +172,7 @@ kafka_javadoc_version = '26'
 # Kafka release we're tracking from upstream, so we can refer to it without the -cp version
 kafka_upstream_release = '2.6.0'
 # Kafka release (included in CP examples)
-kafka_release = '6.0.0-ccs'
+kafka_release = '7.1.0-0-ccs'
 # Scala version used for CP packages
 scala_version = '2.13'
 # release post branch, used in ksqlDB, streams, examples
