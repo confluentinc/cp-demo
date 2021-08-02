@@ -109,6 +109,9 @@ clean_demo_env()
   # Remove existing keys and certificates
   (cd ${DIR}/../security && ./certs-clean.sh)
 
+  # Remove existing image used for creating certificates
+  docker rmi -f localbuild/certs:latest
+
   # Remove existing Connect image
   docker rmi -f localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}
 }
