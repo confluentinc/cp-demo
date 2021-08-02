@@ -122,15 +122,12 @@ create_certificates()
 
   # Generate keys and certificates used for SSL
   echo -e "Generate keys and certificates used for SSL (see ${DIR}/security)"
-  docker build -t localbuild/certs:latest -f ./Dockerfile_certs .
-  docker-compose up -d certs
-  docker-compose exec certs bash -c 'cd /etc/kafka/secrets && ./certs-create.sh'
+  # Install findutils to be able to use 'xargs' in the certs-create.sh script
+  docker run -v ${DIR}/../security/:/etc/kafka/secrets/ -u0 confluentinc/cp-server:6.2.0 bash -c "yum -y install findutils; cd /etc/kafka/secrets && ./certs-create.sh"
 
   # Generating public and private keys for token signing
   echo "Generating public and private keys for token signing"
-  docker-compose exec certs bash -c 'mkdir -p /etc/kafka/secrets/keypair'
-  docker-compose exec certs bash -c 'openssl genrsa -out /etc/kafka/secrets/keypair/keypair.pem 2048'
-  docker-compose exec certs bash -c 'openssl rsa -in /etc/kafka/secrets/keypair/keypair.pem -outform PEM -pubout -out /etc/kafka/secrets/keypair/public.pem'
+  docker run -v ${DIR}/../security/:/etc/kafka/secrets/ -u0 confluentinc/cp-server:6.2.0 bash -c "mkdir -p /etc/kafka/secrets/keypair; openssl genrsa -out /etc/kafka/secrets/keypair/keypair.pem 2048; openssl rsa -in /etc/kafka/secrets/keypair/keypair.pem -outform PEM -pubout -out /etc/kafka/secrets/keypair/public.pem"
 
   # Enable Docker appuser to read files when created by a different UID
   echo -e "Setting insecure permissions on some files in ${DIR}/../security for demo purposes\n"
