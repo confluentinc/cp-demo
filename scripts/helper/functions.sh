@@ -119,13 +119,15 @@ create_certificates()
 
   # Generate keys and certificates used for SSL
   echo -e "Generate keys and certificates used for SSL (see ${DIR}/security)"
-  (cd ${DIR}/../security && ./certs-create.sh)
+  docker build -t localbuild/certs:latest -f ./Dockerfile_certs .
+  docker-compose up -d certs
+  docker-compose exec certs bash -c 'cd /etc/kafka/secrets && ./certs-create.sh'
 
   # Generating public and private keys for token signing
   echo "Generating public and private keys for token signing"
-  mkdir -p ${DIR}/../security/keypair
-  openssl genrsa -out ${DIR}/../security/keypair/keypair.pem 2048
-  openssl rsa -in ${DIR}/../security/keypair/keypair.pem -outform PEM -pubout -out ${DIR}/../security/keypair/public.pem
+  docker-compose exec certs bash -c 'mkdir -p /etc/kafka/secrets/keypair'
+  docker-compose exec certs bash -c 'openssl genrsa -out /etc/kafka/secrets/keypair/keypair.pem 2048'
+  docker-compose exec certs bash -c 'openssl rsa -in /etc/kafka/secrets/keypair/keypair.pem -outform PEM -pubout -out /etc/kafka/secrets/keypair/public.pem'
 
   # Enable Docker appuser to read files when created by a different UID
   echo -e "Setting insecure permissions on some files in ${DIR}/../security for demo purposes\n"

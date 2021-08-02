@@ -78,6 +78,15 @@ services:
         - ./scripts/security/ldap_users:/container/service/slapd/assets/config/bootstrap/ldif/custom
     command: "--copy-service --loglevel debug"
 
+  certs:
+    image: localbuild/certs:latest
+    hostname: certs 
+    container_name: certs
+    volumes:
+      - ./scripts/helper:/tmp/helper
+      - ./scripts/security:/etc/kafka/secrets
+    tty: true
+
   kafka1:
     image: ${REPOSITORY}/cp-server:${CONFLUENT_DOCKER_TAG}
     hostname: kafka1
