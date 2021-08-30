@@ -9,7 +9,7 @@ fi
 ID=$1
 
 
-docker exec schemaregistry bash -c 'export CLASSPATH=$(ls /usr/share/java/monitoring-interceptors/monitoring-interceptors-*.jar); \
+docker exec schemaregistry bash -c "export CLASSPATH=\$(ls /usr/share/java/monitoring-interceptors/monitoring-interceptors-*.jar); \
    kafka-avro-console-consumer \
    --bootstrap-server kafka1:11091,kafka2:11092 \
    --topic wikipedia.parsed \
@@ -32,7 +32,7 @@ docker exec schemaregistry bash -c 'export CLASSPATH=$(ls /usr/share/java/monito
    --consumer-property confluent.monitoring.interceptor.ssl.keystore.password=confluent \
    --consumer-property confluent.monitoring.interceptor.ssl.key.password=confluent \
    --consumer-property group.id=app \
-   --consumer-property client.id=consumer_app_$ID' > /dev/null 2>&1 &
+   --consumer-property client.id=consumer_app_$ID" > /dev/null 2>&1 &
 
 #docker exec connect kafka-avro-console-consumer \
 #   --bootstrap-server kafka1:12091,kafka2:12092 \
