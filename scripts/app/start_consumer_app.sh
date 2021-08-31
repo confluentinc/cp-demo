@@ -9,7 +9,7 @@ fi
 ID=$1
 
 
-docker exec schemaregistry bash -c "export CLASSPATH=\$(ls /usr/share/java/monitoring-interceptors/monitoring-interceptors-*.jar); \
+docker exec connect bash -c "export CLASSPATH=\$(ls /usr/share/java/monitoring-interceptors/monitoring-interceptors-*.jar); \
    kafka-avro-console-consumer \
    --bootstrap-server kafka1:11091,kafka2:11092 \
    --topic wikipedia.parsed \
