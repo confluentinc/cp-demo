@@ -53,7 +53,7 @@ fi
 docker-compose up -d zookeeper kafka1 kafka2 tools
 
 # Verify MDS has started
-MAX_WAIT=120
+MAX_WAIT=1000
 echo "Waiting up to $MAX_WAIT seconds for MDS to start"
 retry $MAX_WAIT host_check_mds_up || exit 1
 sleep 5
