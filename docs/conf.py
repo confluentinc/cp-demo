@@ -168,10 +168,14 @@ confluent_cli_release = 'current'
 version = '6.2'
 # The full version, including alpha/beta/rc tags.
 <<<<<<< HEAD
+<<<<<<< HEAD
 release = '6.2.0'
 =======
 release = '6.2.1-0'
 >>>>>>> Bump Confluent to 6.2.1-0, Kafka to 6.2.1-0
+=======
+release = '6.2.1'
+>>>>>>> Set Confluent to 6.2.1, Kafka to 6.2.1.
 # Kafka version
 kafka_branch = '2.6'
 # Kafka Javadoc version
@@ -180,10 +184,14 @@ kafka_javadoc_version = '26'
 kafka_upstream_release = '2.6.0'
 # Kafka release (included in CP examples)
 <<<<<<< HEAD
+<<<<<<< HEAD
 kafka_release = '6.2.0-ccs'
 =======
 kafka_release = '6.2.1-0-ccs'
 >>>>>>> Bump Confluent to 6.2.1-0, Kafka to 6.2.1-0
+=======
+kafka_release = '6.2.1-ccs'
+>>>>>>> Set Confluent to 6.2.1, Kafka to 6.2.1.
 # Scala version used for CP packages
 scala_version = '2.13'
 # release post branch, used in ksqlDB, streams, examples
