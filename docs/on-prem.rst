@@ -19,6 +19,7 @@ If you prefer non-Docker examples, please go to `confluentinc/examples GitHub re
 
 After you run through the guided tutorial below, apply the concepts you learn here to build your own event streaming pipeline in |ccloud|, a fully managed, cloud-native event streaming platform powered by |ak|. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``CPDEMO50`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
 
+.. note:: Instead of running ``cp-demo`` locally with Docker, you can also run it in a cloud IDE using `gitpod.io <https://gitpod.io>`__ by following this `link <https://gitpod.io/#https://github.com/confluentinc/cp-demo>`__
 
 Prerequisites
 -------------
