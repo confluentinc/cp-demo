@@ -69,7 +69,7 @@ services:
     hostname: openldap
     container_name: openldap
     ports:
-        - 389:389
+        - 1389:389
     environment:
         LDAP_ORGANISATION: "ConfluentDemo"
         LDAP_DOMAIN: "confluentdemo.io"
