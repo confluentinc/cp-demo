@@ -1,0 +1,35 @@
+github:
+  prebuilds:
+    # enable for the default branch (defaults to true)
+    master: true
+    # enable for all branches in this repo (defaults to false)
+    branches: true
+    # enable for pull requests coming from this repo (defaults to true)
+    pullRequests: true
+    # add a "Review in Gitpod" button as a comment to pull requests (defaults to false)
+    addComment: true
+    # configure whether Gitpod registers itself as a status check to pull requests
+    addCheck: false
+
+tasks:
+  - init: |
+      ./scripts/start.sh && ./scripts/stop.sh
+    command: |
+      curl -L --http1.1 https://cnfl.io/ccloud-cli | sudo sh -s -- -b /usr/local/bin
+      echo "🚀 You can now follow steps in https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/overview.html"
+
+vscode:
+  extensions:
+    - ms-azuretools.vscode-docker
+
+ports:
+  - port: 1000-5600
+    onOpen: ignore
+  - port: 5601
+    onOpen: notify
+  - port: 5602-9020
+    onOpen: ignore
+  - port: 9021-9022
+    onOpen: notify
+  - port: 9023-13000
+    onOpen: ignore
