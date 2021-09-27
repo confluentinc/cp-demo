@@ -33,8 +33,8 @@ ccloud::generate_configs $CONFIG_FILE
 source "delta_configs/env.delta"
 
 echo
-echo "Sleep an additional 60s to wait for all Confluent Cloud metadata to propagate"
-sleep 60
+echo "Sleep an additional 90s to wait for all Confluent Cloud metadata to propagate"
+sleep 90
 
 echo -e "\nStart Confluent Replicator to Confluent Cloud:"
 CONNECTOR_SUBMITTER="User:connectorSubmitter"
