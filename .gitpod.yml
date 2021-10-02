@@ -16,6 +16,7 @@ tasks:
       ./scripts/start.sh && ./scripts/stop.sh
     command: |
       curl -L --http1.1 https://cnfl.io/ccloud-cli | sudo sh -s -- -b /usr/local/bin
+      if [ -z "$DISABLE_AUTOSTART" ]; then ./scripts/start.sh; fi
       echo "🚀 You can now follow steps in https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/on-prem.html#guided-tutorial"
 
 vscode:
