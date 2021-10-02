@@ -16,7 +16,7 @@ tasks:
       ./scripts/start.sh && ./scripts/stop.sh
     command: |
       curl -L --http1.1 https://cnfl.io/ccloud-cli | sudo sh -s -- -b /usr/local/bin
-      echo "🚀 You can now follow steps in https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/overview.html"
+      echo "🚀 You can now follow steps in https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/on-prem.html#guided-tutorial"
 
 vscode:
   extensions:
