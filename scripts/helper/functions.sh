@@ -131,8 +131,8 @@ create_certificates()
   if [[ "$OSTYPE" == "darwin"* ]]
   then
       # Mac OS
-  chmod 644 ${DIR}/../security/keypair/keypair.pem
-  chmod 644 ${DIR}/../security/*.key
+      chmod 644 ${DIR}/../security/keypair/keypair.pem
+      chmod 644 ${DIR}/../security/*.key
   else
       # Linux
       sudo chmod 644 ${DIR}/../security/keypair/keypair.pem
