@@ -16,8 +16,7 @@ tasks:
       ./scripts/start.sh && ./scripts/stop.sh
     command: |
       curl -L --http1.1 https://cnfl.io/ccloud-cli | sudo sh -s -- -b /usr/local/bin
-      if [ -z "$DISABLE_AUTOSTART" ]; then ./scripts/start.sh; fi
-      echo "🚀 You can now follow steps in https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/on-prem.html#guided-tutorial"
+      if [ -z "$DISABLE_AUTOSTART" ]; then echo "🚀 Starting up cp-demo (you can disable autostart by exporting DISABLE_AUTOSTART environment variable, see https://www.gitpod.io/docs/environment-variables)";./scripts/start.sh; echo "🚀 You can now follow steps in https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/on-prem.html#guided-tutorial"; else echo "ℹ️ DISABLE_AUTOSTART environment variable is set, use ./scripts/start.sh to start cp-demo";fi
 
 vscode:
   extensions:
