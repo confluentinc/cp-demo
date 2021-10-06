@@ -23,13 +23,60 @@ vscode:
     - ms-azuretools.vscode-docker
 
 ports:
-  - port: 1000-5600
-    onOpen: ignore
-  - port: 5601
-    onOpen: notify
-  - port: 5602-9020
-    onOpen: ignore
-  - port: 9021-9022
-    onOpen: notify
-  - port: 9023-13000
-    onOpen: ignore
+# zookeeper
+- port: 2181
+  onOpen: ignore
+- port: 2182
+  onOpen: ignore
+# kafka1
+- port: 8091
+  onOpen: ignore
+- port: 9091
+  onOpen: ignore
+- port: 10091
+  onOpen: ignore
+- port: 11091
+  onOpen: ignore
+- port: 12091
+  onOpen: ignore
+# kafka2
+- port: 8092
+  onOpen: ignore
+- port: 9092
+  onOpen: ignore
+- port: 10092
+  onOpen: ignore
+- port: 11092
+  onOpen: ignore
+- port: 12092
+  onOpen: ignore
+# connect
+- port: 8083
+  onOpen: ignore
+# elasticsearch
+- port: 9200
+  onOpen: ignore
+- port: 9300
+  onOpen: ignore
+# kibana
+- port: 5601
+  onOpen: notify
+# control-center
+- port: 9021
+  onOpen: notify
+- port: 9022
+  onOpen: notify
+# schemaregistry
+- port: 8085
+  onOpen: ignore
+# ksqldb-server
+- port: 8088
+  onOpen: ignore
+- port: 8089
+  onOpen: ignore
+# ksqldb-cli
+- port: 8086
+  onOpen: ignore
+# restproxy
+- port: 8086
+  onOpen: ignore
