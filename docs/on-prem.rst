@@ -36,7 +36,7 @@ This example has been validated with:
 Setup
 -----
 
-You can run this demo locally with Docker and follow the 3 steps below, or you can run it in a cloud IDE using `Gitpod.io <https://gitpod.io>`__ workspace by following this `link <https://gitpod.io/#https://github.com/confluentinc/cp-demo>`__.
+You can run this demo locally with Docker and follow the 3 steps below, or you can run it in a cloud IDE using `Gitpod.io <https://gitpod.io>`__ workspace by following this link |gitpod_link|.
 
 #. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8 GB (default is 2 GB) and ensure Docker is allocated at least 2 CPU cores.
 
