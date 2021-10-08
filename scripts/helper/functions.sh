@@ -116,8 +116,14 @@ build_connect_image()
   else
     DOCKERFILE="${DIR}/../../Dockerfile-confluenthub"
   fi
-  echo "docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE ${DIR}/../../."
-  docker build --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE ${DIR}/../../. || {
+  # If Repo defined, then use that, otherwise default to Dockerhub
+  if [ -z "${REPOSITORY}" ]; then
+          CONNECT_DOCKER_ARGS="--build-arg REPOSITORY=confluentinc/"
+  else
+          CONNECT_DOCKER_ARGS="--build-arg REPOSITORY=${REPOSITORY}"
+  fi
+  echo "docker build ${CONNECT_DOCKER_ARGS} --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE ${DIR}/../../."
+  docker build ${CONNECT_DOCKER_ARGS} --build-arg CP_VERSION=${CONFLUENT_DOCKER_TAG} --build-arg CONNECTOR_VERSION=${CONNECTOR_VERSION} -t localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} -f $DOCKERFILE ${DIR}/../../. || {
     echo "ERROR: Docker image build failed. Please troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/current/tutorials/cp-demo/docs/index.html#troubleshooting"
     exit 1
   }
