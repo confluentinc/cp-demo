@@ -66,19 +66,20 @@ ports:
 # control-center
 - port: 9021
   onOpen: notify
+  visibility: public
 - port: 9022
   onOpen: notify
+  visibility: public
 # schemaregistry
 - port: 8085
   onOpen: ignore
 # ksqldb-server
 - port: 8088
   onOpen: ignore
+  visibility: public
 - port: 8089
   onOpen: ignore
-# ksqldb-cli
-- port: 8086
-  onOpen: ignore
+  visibility: public
 # restproxy
 - port: 8086
   onOpen: ignore
