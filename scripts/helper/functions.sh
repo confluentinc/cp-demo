@@ -128,8 +128,17 @@ create_certificates()
 
   # Enable Docker appuser to read files when created by a different UID
   echo -e "Setting insecure permissions on some files in ${DIR}/../security for demo purposes\n"
-  chmod 644 ${DIR}/../security/keypair/keypair.pem
-  chmod 644 ${DIR}/../security/*.key
+  if [[ "$OSTYPE" == "darwin"* ]]
+  then
+      # Mac OS
+      chmod 644 ${DIR}/../security/keypair/keypair.pem
+      chmod 644 ${DIR}/../security/*.key
+  else
+      # Linux
+      sudo chmod 644 ${DIR}/../security/keypair/keypair.pem
+      sudo chmod 644 ${DIR}/../security/*.key
+  fi
+
 }
 
 build_connect_image()
