@@ -18,13 +18,24 @@ export CONNECTOR_VERSION=${CONNECTOR_VERSION:-$CONFLUENT}
 export C3_KSQLDB_HTTPS=${C3_KSQLDB_HTTPS:-false}
 if [[ "$C3_KSQLDB_HTTPS" == "false" ]]; then
   export CONTROL_CENTER_KSQL_WIKIPEDIA_URL="http://ksqldb-server:8088"
-  export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="http://localhost:8088"
-  C3URL=http://localhost:9021
+  if [[ -n "$GITPOD_WORKSPACE_URL" ]]; then
+    export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="$GITPOD_WORKSPACE_URL:8088"
+    C3URL="$GITPOD_WORKSPACE_URL:9021"
+  else
+    export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="http://localhost:8088"
+    C3URL=http://localhost:9021
+  fi
 else
   export CONTROL_CENTER_KSQL_WIKIPEDIA_URL="https://ksqldb-server:8089"
-  export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="https://localhost:8089"
-  C3URL=https://localhost:9022
+  if [[ -n "$GITPOD_WORKSPACE_URL" ]]; then
+    export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="$GITPOD_WORKSPACE_URL:8089"
+    C3URL="$GITPOD_WORKSPACE_URL:9022"
+  else
+    export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="https://localhost:8089"
+    C3URL=https://localhost:9022
+  fi
 fi
+
 
 # Elasticsearch and Kibana increase memory requirements for cp-demo
 # VIZ=true : run Elasticsearch and Kibana (default)
