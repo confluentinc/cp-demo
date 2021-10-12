@@ -177,8 +177,6 @@ kafka_release = '7.1.0-0-ccs'
 scala_version = '2.13'
 # release post branch, used in ksqlDB, streams, examples
 release_post_branch = release + '-post'
-# gitpod link
-gitpod_link = 'https://gitpod.io/#https://github.com/confluentinc/cp-demo/tree/' + release + '-post'
 # CP preview release
 preview = '5.4-preview'
 # Version of ksqlDB, currently used for linking into ksqldb.io docs
@@ -243,7 +241,6 @@ custom_config_names = [
     "kafka_javadoc_version",
     "ksqldb_version",
     "release_post_branch",
-    "gitpod_link",
     "scala_version",
     "ak_props",
     "c3_props",
