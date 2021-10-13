@@ -27,13 +27,8 @@ if [[ "$C3_KSQLDB_HTTPS" == "false" ]]; then
   fi
 else
   export CONTROL_CENTER_KSQL_WIKIPEDIA_URL="https://ksqldb-server:8089"
-  if [[ -n "$GITPOD_WORKSPACE_URL" ]]; then
-    export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="https://8089-${GITPOD_WORKSPACE_URL#https://}"
-    C3URL="https://9022-${GITPOD_WORKSPACE_URL#https://}"
-  else
-    export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="https://localhost:8089"
-    C3URL=https://localhost:9022
-  fi
+  export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="https://localhost:8089"
+  C3URL=https://localhost:9022
 fi
 
 
