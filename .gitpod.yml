@@ -68,8 +68,7 @@ ports:
   onOpen: notify
   visibility: public
 - port: 9022
-  onOpen: notify
-  visibility: public
+  onOpen: ignore
 # schemaregistry
 - port: 8085
   onOpen: ignore
@@ -79,7 +78,6 @@ ports:
   visibility: public
 - port: 8089
   onOpen: ignore
-  visibility: public
 # restproxy
 - port: 8086
   onOpen: ignore
