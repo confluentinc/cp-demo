@@ -14,8 +14,9 @@
 # limitations under the License.
 
 ARG CP_VERSION
+ARG REPOSITORY=confluentinc
 
-FROM confluentinc/cp-server-connect-base:$CP_VERSION
+FROM ${REPOSITORY}/cp-server-connect-base:$CP_VERSION
 
 ARG CONNECTOR_VERSION=5.4.1
 
