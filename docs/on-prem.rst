@@ -61,7 +61,7 @@ If you are using Docker:
 Gitpod
 ~~~~~~
 
-If you are using :gitpod_link:`Gitpod|`, ``cp-demo`` is already running in the workspace.
+If you are using :gitpod_link:`Gitpod|`, the demo will automatically start after the Gitpod workspace is ready.
 
 Login into |c3| (port ``9021``) or the Kibana dashboard (port ``5601``) by clicking on ``Open Browser`` option in the pop-up:
 
