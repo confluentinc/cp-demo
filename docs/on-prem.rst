@@ -159,7 +159,7 @@ Log into |c3|
 
       http://localhost:9021
 
-#. If you ran ``cp-demo`` with ``C3_KSQLDB_HTTPS=true`` (not supported when using `Gitpod.io <https://gitpod.io>`__ workspace), log into the |c3| GUI from a web browser at the following URL:
+#. If you ran ``cp-demo`` with ``C3_KSQLDB_HTTPS=true`` (not supported with :gitpod_link:`Gitpod|`), log into the |c3| GUI from a web browser at the following URL:
 
    .. code-block:: text
 
