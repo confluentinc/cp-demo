@@ -63,7 +63,7 @@ Gitpod
 
 If you are using :gitpod_link:`Gitpod|`, ``cp-demo`` is already running in the workspace.
 
-Login into |c3| (port ``9021`` or ``9022``) or the Kibana dashboard (port ``5601``) by clicking on ``Open Browser`` option in the pop-up:
+Login into |c3| (port ``9021``) or the Kibana dashboard (port ``5601``) by clicking on ``Open Browser`` option in the pop-up:
 
 .. figure:: images/gitpod_port_popup.png
 
