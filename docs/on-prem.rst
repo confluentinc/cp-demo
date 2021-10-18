@@ -58,7 +58,7 @@ You can run this demo locally with Docker and follow the 3 steps below, or you c
 
    .. figure:: images/gitpod_port_popup.png
 
-   or select ``Remote Explorer`` on the left sidebar and then click on the ``Open Browser`` option corresponding to the port you want to connect to:
+   or by selecting ``Remote Explorer`` on the left sidebar and then clicking on the ``Open Browser`` option corresponding to the port you want to connect to:
 
    .. figure:: images/gitpod_port_explorer.png
 
