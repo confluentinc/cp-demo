@@ -36,6 +36,13 @@ This example has been validated with:
 Setup
 -----
 
+You can run this demo locally with Docker or in a cloud IDE with :gitpod_link:`Gitpod|`.
+
+Docker
+~~~~~~
+
+If you are using Docker:
+
 #. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8 GB (default is 2 GB) and ensure Docker is allocated at least 2 CPU cores.
 
 #. Clone the `confluentinc/cp-demo GitHub repository <https://github.com/confluentinc/cp-demo>`__:
@@ -51,6 +58,19 @@ Setup
       cd cp-demo
       git checkout |release_post_branch|
 
+Gitpod
+~~~~~~
+
+If you are using :gitpod_link:`Gitpod|`, the demo will automatically start after the Gitpod workspace is ready.
+
+Login into |c3| (port ``9021``) or the Kibana dashboard (port ``5601``) by clicking on ``Open Browser`` option in the pop-up:
+
+.. figure:: images/gitpod_port_popup.png
+
+or by selecting ``Remote Explorer`` on the left sidebar and then clicking on the ``Open Browser`` option corresponding to the port you want to connect to:
+
+.. figure:: images/gitpod_port_explorer.png
+
 
 Start
 -----
@@ -60,7 +80,7 @@ It generates the keys and certificates, brings up the Docker containers, and con
 You can run it with optional settings:
 
 - ``CLEAN``: controls whether certificates and the locally built |kconnect| image are regenerated in between runs
-- ``C3_KSQLDB_HTTPS``: controls whether |c3| and ksqlDB server use ``HTTP`` or ``HTTPS`` (default: ``false`` for ``HTTP``)
+- ``C3_KSQLDB_HTTPS``: controls whether |c3| and ksqlDB server use ``HTTP`` or ``HTTPS`` (default: ``false`` for ``HTTP``). This option is not supported with :gitpod_link:`Gitpod|`.
 - ``VIZ``: enables Elasticsearch and Kibana (default: ``true``)
 
 #. To run ``cp-demo`` the first time with defaults, run the following command. The very first run downloads all the required Docker images (~15 minutes) and sets up the environment (~5 minutes).
@@ -149,7 +169,7 @@ Log into |c3|
 
       http://localhost:9021
 
-#. If you ran ``cp-demo`` with ``C3_KSQLDB_HTTPS=true``, log into the |c3| GUI from a web browser at the following URL:
+#. If you ran ``cp-demo`` with ``C3_KSQLDB_HTTPS=true`` (not supported with :gitpod_link:`Gitpod|`), log into the |c3| GUI from a web browser at the following URL:
 
    .. code-block:: text
 

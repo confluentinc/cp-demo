@@ -100,6 +100,8 @@ def setup(app):
             linkPrefix = 'https://kafka.apache.org/' + kafka_javadoc_version + '/javadoc/'
         if role == 'kafka-file':
             linkPrefix = 'https://github.com/apache/kafka/blob/' + kafka_branch + '/'
+        if role == 'gitpod_link':
+            linkPrefix = 'https://gitpod.io/#https://github.com/confluentinc/cp-demo/tree/' + release + '-post'
         elif role == 'ccloud-cta':
             linkPrefix = 'https://www.confluent.io/confluent-cloud/'
         linktext = tokens[0]
@@ -118,6 +120,7 @@ def setup(app):
     app.add_role('connect-common', makeLink)
     app.add_role('kafka-javadoc', makeLink)
     app.add_role('kafka-file', makeLink)
+    app.add_role('gitpod_link', makeLink)
     app.add_role('ccloud-cta', makeLink)
     app.add_config_value('cloud_docs', True, 'env')
 
