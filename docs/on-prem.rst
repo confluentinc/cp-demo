@@ -36,7 +36,12 @@ This example has been validated with:
 Setup
 -----
 
-You can run this demo locally with Docker and follow the 3 steps below, or you can run it in a cloud IDE with :gitpod_link:`Gitpod|`.
+You can run this demo locally with Docker or in a cloud IDE with :gitpod_link:`Gitpod|`.
+
+Docker
+~~~~~~
+
+If you are using Docker:
 
 #. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8 GB (default is 2 GB) and ensure Docker is allocated at least 2 CPU cores.
 
@@ -53,14 +58,19 @@ You can run this demo locally with Docker and follow the 3 steps below, or you c
       cd cp-demo
       git checkout |release_post_branch|
 
+Gitpod
+~~~~~~
 
-.. note:: If you ran the demo with :gitpod_link:`Gitpod|`, you can login into |c3| (port ``9021`` or ``9022``) or the Kibana dashboard (port ``5601``) by clicking on ``Open Browser`` option in the pop-up:
+If you are using :gitpod_link:`Gitpod|`, the demo will automatically start after the Gitpod workspace is ready.
 
-   .. figure:: images/gitpod_port_popup.png
+Login into |c3| (port ``9021``) or the Kibana dashboard (port ``5601``) by clicking on ``Open Browser`` option in the pop-up:
 
-   or by selecting ``Remote Explorer`` on the left sidebar and then clicking on the ``Open Browser`` option corresponding to the port you want to connect to:
+.. figure:: images/gitpod_port_popup.png
 
-   .. figure:: images/gitpod_port_explorer.png
+or by selecting ``Remote Explorer`` on the left sidebar and then clicking on the ``Open Browser`` option corresponding to the port you want to connect to:
+
+.. figure:: images/gitpod_port_explorer.png
+
 
 Start
 -----
