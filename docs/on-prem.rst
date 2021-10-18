@@ -70,7 +70,7 @@ It generates the keys and certificates, brings up the Docker containers, and con
 You can run it with optional settings:
 
 - ``CLEAN``: controls whether certificates and the locally built |kconnect| image are regenerated in between runs
-- ``C3_KSQLDB_HTTPS``: controls whether |c3| and ksqlDB server use ``HTTP`` or ``HTTPS`` (default: ``false`` for ``HTTP``). This option is not supported when using `Gitpod.io <https://gitpod.io>`__ workspace
+- ``C3_KSQLDB_HTTPS``: controls whether |c3| and ksqlDB server use ``HTTP`` or ``HTTPS`` (default: ``false`` for ``HTTP``). This option is not supported with :gitpod_link:`Gitpod|`.
 - ``VIZ``: enables Elasticsearch and Kibana (default: ``true``)
 
 #. To run ``cp-demo`` the first time with defaults, run the following command. The very first run downloads all the required Docker images (~15 minutes) and sets up the environment (~5 minutes).
