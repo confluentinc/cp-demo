@@ -72,6 +72,14 @@ or by selecting ``Remote Explorer`` on the left sidebar and then clicking on the
 .. figure:: images/gitpod_port_explorer.png
 
 
+.. note:: If you ran the demo with :gitpod_link:`Gitpod|`, you can login into |c3| (port ``9021`` or ``9022``) or the Kibana dashboard (port ``5601``) by clicking on ``Open Browser`` option in the pop-up:
+
+   .. figure:: images/gitpod_port_popup.png
+
+   or by selecting ``Remote Explorer`` on the left sidebar and then clicking on the ``Open Browser`` option corresponding to the port you want to connect to:
+
+   .. figure:: images/gitpod_port_explorer.png
+
 Start
 -----
 
