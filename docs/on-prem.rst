@@ -54,7 +54,7 @@ You can run this demo locally with Docker and follow the 3 steps below, or you c
       git checkout |release_post_branch|
 
 
-.. note:: When using `Gitpod.io <https://gitpod.io>`__ workspace, you can login into |c3| (port ``9021`` or ``9022``) or Kibana dashboard (port ``5601``) by clicking on ``Open Browser`` option in pop-up:
+.. note:: If you ran the demo with :gitpod_link:`Gitpod|`, you can login into |c3| (port ``9021`` or ``9022``) or the Kibana dashboard (port ``5601``) by clicking on ``Open Browser`` option in the pop-up:
 
    .. figure:: images/gitpod_port_popup.png
 
