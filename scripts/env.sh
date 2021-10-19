@@ -26,6 +26,15 @@ else
   C3URL=https://localhost:9022
 fi
 
+# Gitpod only supports the C3_KSQLDB_HTTPS=false scenario and exposes services with a custom URL
+if [[ -n "$GITPOD_WORKSPACE_URL" ]]; then
+  C3_KSQLDB_HTTPS="false"
+  export CONTROL_CENTER_KSQL_WIKIPEDIA_URL="http://ksqldb-server:8088"
+  export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="https://8088-${GITPOD_WORKSPACE_URL#https://}"
+  C3URL="https://9021-${GITPOD_WORKSPACE_URL#https://} (port 9022 not supported on Gitpod)"
+fi
+
+
 # Elasticsearch and Kibana increase memory requirements for cp-demo
 # VIZ=true : run Elasticsearch and Kibana (default)
 # VIZ=false: do not run Elasticsearch and Kibana
