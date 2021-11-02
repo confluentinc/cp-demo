@@ -26,7 +26,7 @@ tasks:
     command: |
       if [ -z "$DISABLE_AUTOSTART" ]; then
         echo "🚀 Starting up cp-demo (you can disable autostart by exporting DISABLE_AUTOSTART environment variable, see https://www.gitpod.io/docs/environment-variables)";
-        if [ -z "$MONITORING_STACK"]; then
+        if [ -z "$MONITORING_STACK" ]; then
           echo "cp-demo is not including any JMX monitoring stack (you can enable them by exporting MONITORING_STACK environment variable, see https://github.com/confluentinc/jmx-monitoring-stacks)."
           ./scripts/start.sh;
         else
