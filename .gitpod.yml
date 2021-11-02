@@ -14,7 +14,7 @@ github:
 tasks:
   - name: prebuild
     init: |
-      cd .. && git clone https://github.com/confluentinc/jmx-monitoring-stacks && cd ../cp-demo/. \
+      cd .. && git clone https://github.com/confluentinc/jmx-monitoring-stacks && cd ../cp-demo/. && \
         ./scripts/start.sh && ./scripts/stop.sh && \
         gp sync-done prebuild
     command: |
