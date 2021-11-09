@@ -27,7 +27,7 @@ else
 fi
 
 # Gitpod only supports the C3_KSQLDB_HTTPS=false scenario and exposes services with a custom URL
-if [[ -n "$GITPOD_WORKSPACE_URL" ]]; then
+if [[ -n "${GITPOD_WORKSPACE_URL:-}" ]]; then
   C3_KSQLDB_HTTPS="false"
   export CONTROL_CENTER_KSQL_WIKIPEDIA_URL="http://ksqldb-server:8088"
   export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="https://8088-${GITPOD_WORKSPACE_URL#https://}"
