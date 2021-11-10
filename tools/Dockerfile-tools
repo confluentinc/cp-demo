@@ -16,6 +16,7 @@ RUN apt-get update \
         expect \
     && mkdir ~/confluent-v1 \
     && curl --http1.1 -L https://cnfl.io/cli | sh -s -- -b ~/confluent-v1 v1.43.1 \
-    && alias confluent-v1="HOME=~/confluent-v1 ~/confluent-v1/confluent"
+    && echo '#!/bin/bash\nHOME=~/confluent-v1 ~/confluent-v1/confluent "$@"' > /usr/bin/confluent-v1 \
+    && chmod +x /usr/bin/confluent-v1 \
     && curl --http1.1 -L https://cnfl.io/cli | sh -s -- -b /usr/bin \
     && rm -rf /var/lib/apt/lists/*
