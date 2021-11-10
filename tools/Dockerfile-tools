@@ -14,6 +14,8 @@ RUN apt-get update \
         peco \
         vim \
         expect \
-    && curl --http1.1 -L https://cnfl.io/cli | sh -s -- -b /usr/bin v1.18.0 \
-    && curl --http1.1 -L https://cnfl.io/ccloud-cli | sh -s -- -b /usr/bin \
+    && mkdir ~/confluent-v1 \
+    && curl --http1.1 -L https://cnfl.io/cli | sh -s -- -b ~/confluent-v1 v1.43.1 \
+    && alias confluent-v1="HOME=~/confluent-v1 ~/confluent-v1/confluent"
+    && curl --http1.1 -L https://cnfl.io/cli | sh -s -- -b /usr/bin \
     && rm -rf /var/lib/apt/lists/*

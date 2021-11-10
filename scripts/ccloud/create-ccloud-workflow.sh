@@ -6,15 +6,15 @@ source ${VALIDATE_DIR}/../helper/functions.sh
 source ${VALIDATE_DIR}/../../.env
 source ${VALIDATE_DIR}/../env.sh
 
-verify_installed ccloud || exit 1
+verify_installed confluent || exit 1
 
 curl -sS -o ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
 source ./ccloud_library.sh
 ccloud::prompt_continue_ccloud_demo || exit 1
 
-# Log into Confluent Cloud CLI
+# Log into Confluent CLI
 echo
-ccloud login --save || exit 1
+confluent login --save || exit 1
 
 # Create a new ccloud-stack
 echo
@@ -24,9 +24,9 @@ echo
 
 export EXAMPLE="cp-demo"
 ccloud::create_ccloud_stack true || exit 1
-export SERVICE_ACCOUNT_ID=$(ccloud kafka cluster list -o json | jq -r '.[0].name' | awk -F'-' '{print $4;}')
+export SERVICE_ACCOUNT_ID=$(confluent kafka cluster list -o json | jq -r '.[0].name' | awk -F'-' '{print $4;}')
 CONFIG_FILE=stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
-CCLOUD_CLUSTER_ID=$(ccloud kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-$SERVICE_ACCOUNT_ID"'")' | jq -r .id)
+CCLOUD_CLUSTER_ID=$(confluent kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-$SERVICE_ACCOUNT_ID"'")' | jq -r .id)
 
 # Create parameters customized for Confluent Cloud instance created above
 ccloud::generate_configs $CONFIG_FILE
@@ -41,7 +41,7 @@ CONNECTOR_SUBMITTER="User:connectorSubmitter"
 KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${VALIDATE_DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
 CONNECT=connect-cluster
 ${VALIDATE_DIR}/../helper/refresh_mds_login.sh
-docker-compose exec tools bash -c "confluent iam rolebinding create \
+docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
     --principal $CONNECTOR_SUBMITTER \
     --role ResourceOwner \
     --resource Connector:replicate-topic-to-ccloud \
@@ -59,7 +59,7 @@ echo "Replicator started!"
 
 # Create credentials for the cloud resource
 echo
-CREDENTIALS=$(ccloud api-key create --resource cloud -o json) || exit 1
+CREDENTIALS=$(confluent api-key create --resource cloud -o json) || exit 1
 export METRICS_API_KEY=$(echo "$CREDENTIALS" | jq -r .key)
 export METRICS_API_SECRET=$(echo "$CREDENTIALS" | jq -r .secret)
 
@@ -117,9 +117,9 @@ retry $MAX_WAIT ccloud::validate_ccloud_ksqldb_endpoint_ready $KSQLDB_ENDPOINT
 
 echo 
 echo "Writing ksqlDB queries in Confluent Cloud"
-ksqlDBAppId=$(ccloud ksql app list | grep "$KSQLDB_ENDPOINT" | awk '{print $1}')
-ccloud ksql app describe $ksqlDBAppId -o json
-ccloud ksql app configure-acls $ksqlDBAppId wikipedia.parsed.ccloud.replica
+ksqlDBAppId=$(confluent ksql app list | grep "$KSQLDB_ENDPOINT" | awk '{print $1}')
+confluent ksql app describe $ksqlDBAppId -o json
+confluent ksql app configure-acls $ksqlDBAppId wikipedia.parsed.ccloud.replica
 while read ksqlCmd; do
   echo -e "\n$ksqlCmd\n"
   curl -X POST $KSQLDB_ENDPOINT/ksql \

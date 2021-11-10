@@ -4,7 +4,7 @@ VALIDATE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 source ${VALIDATE_DIR}/../helper/functions.sh
 
-verify_installed ccloud || exit 1
+verify_installed confluent || exit 1
 
 if [ -z "$SERVICE_ACCOUNT_ID" ]; then
   echo "ERROR: Must export parameter SERVICE_ACCOUNT_ID before running this script to destroy Confluent Cloud resources associated to that service account."
@@ -18,9 +18,9 @@ fi
 curl -sS -o ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
 source ./ccloud_library.sh
 
-# Log into Confluent Cloud CLI
+# Log into Confluent CLI
 echo
-ccloud login --save || exit 1
+confluent login --save || exit 1
 
 #### Teardown ####
 
@@ -48,7 +48,7 @@ docker-compose exec kafka1 kafka-configs \
   --delete-config confluent.telemetry.enabled,confluent.telemetry.api.key,confluent.telemetry.api.secret
 
 echo "Destroying all Confluent Cloud resources"
-ccloud api-key delete $METRICS_API_KEY
+confluent api-key delete $METRICS_API_KEY
 source "delta_configs/env.delta"
 ccloud::destroy_ccloud_stack $SERVICE_ACCOUNT_ID
 

@@ -277,7 +277,7 @@ mds_login()
   OUTPUT=$(
   expect <<END
     log_user 1
-    spawn confluent login --ca-cert-path /etc/kafka/secrets/snakeoil-ca-1.crt --url $MDS_URL
+    spawn confluent-v1 login --ca-cert-path /etc/kafka/secrets/snakeoil-ca-1.crt --url $MDS_URL
     expect "Username: "
     send "${SUPER_USER}\r";
     expect "Password: "
