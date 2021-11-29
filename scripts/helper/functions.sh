@@ -268,19 +268,19 @@ mds_login()
   OUTPUT=$(
   expect <<END
     log_user 1
-    spawn confluent login --ca-cert-path /etc/kafka/secrets/snakeoil-ca-1.crt --url $MDS_URL
+    spawn confluent-v1 login --ca-cert-path /etc/kafka/secrets/snakeoil-ca-1.crt --url $MDS_URL
     expect "Username: "
     send "${SUPER_USER}\r";
     expect "Password: "
     send "${SUPER_USER_PASSWORD}\r";
-    expect "Logged in as "
-    set result $expect_out(buffer)
+    expect EOF
+    catch wait result
+    exit [lindex \$result 3]
 END
   )
-  echo "$OUTPUT"
-  if [[ ! "$OUTPUT" =~ "Logged in as" ]]; then
-    echo "Failed to log into MDS.  Please check all parameters and run again"
-    exit 1
+  if [ $? -ne 0 ]; then
+    echo "Failed to log into MDS. Please check all parameters and run again."
+    exit
   fi
 }
 

@@ -36,24 +36,24 @@ mds_login $MDS_URL ${SUPER_USER} ${SUPER_USER_PASSWORD} || exit 1
 ################################### SUPERUSER ###################################
 echo "Creating role bindings for Super User"
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $SUPER_USER_PRINCIPAL  \
     --role SystemAdmin \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $SUPER_USER_PRINCIPAL \
     --role SystemAdmin \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $SUPER_USER_PRINCIPAL \
     --role SystemAdmin \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $SUPER_USER_PRINCIPAL \
     --role SystemAdmin \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
@@ -63,7 +63,7 @@ confluent iam rolebinding create \
 echo "Creating role bindings for Schema Registry"
 
 # SecurityAdmin on SR cluster itself
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $SR_PRINCIPAL \
     --role SecurityAdmin \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
@@ -72,7 +72,7 @@ confluent iam rolebinding create \
 # ResourceOwner for groups and topics on broker
 for resource in Topic:_schemas Group:schema-registry
 do
-    confluent iam rolebinding create \
+    confluent-v1 iam rolebinding create \
         --principal $SR_PRINCIPAL \
         --role ResourceOwner \
         --resource $resource \
@@ -81,7 +81,7 @@ done
 
 for role in DeveloperRead DeveloperWrite
 do
-    confluent iam rolebinding create \
+    confluent-v1 iam rolebinding create \
         --principal $SR_PRINCIPAL \
         --role $role \
         --resource $LICENSE_RESOURCE \
@@ -92,7 +92,7 @@ done
 echo "Creating role bindings for Connect Admin"
 
 # SecurityAdmin on the connect cluster itself
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CONNECT_ADMIN \
     --role SecurityAdmin \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
@@ -110,7 +110,7 @@ declare -a ConnectResources=(
 )
 for resource in ${ConnectResources[@]}
 do
-    confluent iam rolebinding create \
+    confluent-v1 iam rolebinding create \
         --principal $CONNECT_ADMIN \
         --role ResourceOwner \
         --resource $resource \
@@ -120,21 +120,21 @@ done
 ################################### Connectors ###################################
 echo "Creating role bindings for wikipedia-sse connector"
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CONNECTOR_SUBMITTER \
     --role ResourceOwner \
     --resource Connector:wikipedia-sse \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CONNECTOR_PRINCIPAL \
     --role ResourceOwner \
     --resource Topic:wikipedia \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CONNECTOR_PRINCIPAL \
     --role ResourceOwner \
     --resource Subject:wikipedia \
@@ -143,7 +143,7 @@ confluent iam rolebinding create \
     --schema-registry-cluster-id $SR
 
 # enable.idempotence=true requires IdempotentWrite
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CONNECTOR_PRINCIPAL \
     --role DeveloperWrite \
     --resource Cluster:kafka-cluster \
@@ -151,21 +151,21 @@ confluent iam rolebinding create \
 
 echo "Creating role bindings for replicate-topic connector"
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CONNECTOR_SUBMITTER \
     --role ResourceOwner \
     --resource Connector:replicate-topic \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CONNECTOR_PRINCIPAL \
     --role ResourceOwner \
     --resource Topic:_confluent \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CONNECTOR_PRINCIPAL \
     --role ResourceOwner \
     --resource Group:connect-replicator \
@@ -173,27 +173,27 @@ confluent iam rolebinding create \
 
 echo "Creating role bindings for elasticsearch-ksqldb connector"
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CONNECTOR_SUBMITTER \
     --role ResourceOwner \
     --resource Connector:elasticsearch-ksqldb \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --connect-cluster-id $CONNECT
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CONNECTOR_PRINCIPAL \
     --role ResourceOwner \
     --resource Group:connect-elasticsearch-ksqldb \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CONNECTOR_PRINCIPAL \
     --role ResourceOwner \
     --resource Topic:WIKIPEDIA \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CONNECTOR_PRINCIPAL \
     --role ResourceOwner \
     --resource Subject:WIKIPEDIA \
@@ -204,28 +204,28 @@ confluent iam rolebinding create \
 ################################### ksqlDB Admin ###################################
 echo "Creating role bindings for ksqlDB Admin"
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource KsqlCluster:$KSQLDB \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --ksql-cluster-id $KSQLDB
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_ADMIN \
     --role DeveloperRead \
     --resource Group:_confluent-ksql-${KSQLDB} \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource Topic:_confluent-ksql-${KSQLDB} \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource Subject:_confluent-ksql-${KSQLDB} \
@@ -233,38 +233,38 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource Topic:_confluent-monitoring \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource Topic:${KSQLDB}ksql_processing_log \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_ADMIN \
     --role DeveloperRead \
     --resource Topic:wikipedia.parsed \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource Topic:WIKIPEDIA \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource TransactionalId:${KSQLDB} \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource Subject:wikipedia \
@@ -272,7 +272,7 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource Subject:WIKIPEDIA \
@@ -280,7 +280,7 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_ADMIN \
     --role ResourceOwner \
     --resource Subject:WIKIPEDIA \
@@ -289,7 +289,7 @@ confluent iam rolebinding create \
     --schema-registry-cluster-id $SR
 
 # enable.idempotence=true requires IdempotentWrite
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_ADMIN \
     --role DeveloperWrite \
     --resource Cluster:kafka-cluster \
@@ -298,28 +298,28 @@ confluent iam rolebinding create \
 ################################### ksqlDB User ###################################
 echo "Creating role bindings for ksqlDB User"
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_USER \
     --role DeveloperWrite \
     --resource KsqlCluster:$KSQLDB \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --ksql-cluster-id $KSQLDB
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_USER \
     --role DeveloperRead \
     --resource Group:_confluent-ksql-${KSQLDB} \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_USER \
     --role ResourceOwner \
     --resource Topic:_confluent-ksql-${KSQLDB} \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_USER \
     --role ResourceOwner \
     --resource Subject:_confluent-ksql-${KSQLDB} \
@@ -327,19 +327,19 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_USER \
     --role DeveloperRead \
     --resource Topic:${KSQLDB}ksql_processing_log \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_USER \
     --role DeveloperRead \
     --resource Topic:wikipedia.parsed \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_USER \
     --role ResourceOwner \
     --resource Subject:wikipedia \
@@ -347,14 +347,14 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_USER \
     --role ResourceOwner \
     --resource Topic:WIKIPEDIA \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_USER \
     --role ResourceOwner \
     --resource Subject:WIKIPEDIA \
@@ -363,7 +363,7 @@ confluent iam rolebinding create \
     --schema-registry-cluster-id $SR
 
 # enable.idempotence=true requires IdempotentWrite
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_USER \
     --role DeveloperWrite \
     --resource Cluster:kafka-cluster \
@@ -371,7 +371,7 @@ confluent iam rolebinding create \
 
 ################################### KSQLDB Server #############################
 echo "Creating role bindings for ksqlDB Server (used for ksqlDB Processing Log)"
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $KSQLDB_SERVER \
     --role ResourceOwner \
     --resource Topic:${KSQLDB}ksql_processing_log \
@@ -381,7 +381,7 @@ confluent iam rolebinding create \
 echo "Creating role bindings for Control Center"
 
 # C3 only needs SystemAdmin on the kafka cluster itself
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $C3_ADMIN \
     --role SystemAdmin \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
@@ -390,7 +390,7 @@ confluent iam rolebinding create \
 echo "Creating role bindings for Rest Proxy"
 for role in DeveloperRead DeveloperWrite
 do
-    confluent iam rolebinding create \
+    confluent-v1 iam rolebinding create \
         --principal $REST_ADMIN \
         --role $role \
         --resource $LICENSE_RESOURCE \
@@ -400,40 +400,40 @@ done
 ################################### Client ###################################
 echo "Creating role bindings for the streams-demo application"
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CLIENT_PRINCIPAL \
     --role ResourceOwner \
     --resource Group:wikipedia \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CLIENT_PRINCIPAL \
     --role ResourceOwner \
     --resource Group:app \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CLIENT_PRINCIPAL \
     --role ResourceOwner \
     --resource Topic:wikipedia \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CLIENT_PRINCIPAL \
     --role ResourceOwner \
     --resource Topic:users \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CLIENT_PRINCIPAL \
     --role ResourceOwner \
     --resource Topic:_confluent-monitoring \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $CLIENT_PRINCIPAL \
     --role ResourceOwner \
     --resource Subject:wikipedia \
@@ -444,28 +444,28 @@ confluent iam rolebinding create \
 ################################### Listen Client ###################################
 echo "Creating role bindings for the listen client application"
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $LISTEN_PRINCIPAL \
     --role ResourceOwner \
     --resource Group:listen-consumer \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $LISTEN_PRINCIPAL \
     --role ResourceOwner \
     --resource Topic:wikipedia \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $LISTEN_PRINCIPAL \
     --role ResourceOwner \
     --resource Topic:WIKIPEDIA \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $LISTEN_PRINCIPAL \
     --role ResourceOwner \
     --resource Subject:wikipedia \
@@ -473,7 +473,7 @@ confluent iam rolebinding create \
     --kafka-cluster-id $KAFKA_CLUSTER_ID \
     --schema-registry-cluster-id $SR
 
-confluent iam rolebinding create \
+confluent-v1 iam rolebinding create \
     --principal $LISTEN_PRINCIPAL \
     --role ResourceOwner \
     --resource Subject:WIKIPEDIA \

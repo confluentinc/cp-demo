@@ -59,7 +59,7 @@ If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included cr
 
    .. code-block:: text
 
-      ccloud api-key delete ${METRICS_API_KEY}
+      confluent api-key delete ${METRICS_API_KEY}
 
 #. Destroy your |ccloud| environment. Even if you stop ``cp-demo``, the resources in |ccloud| continue to incur charges until you destroy all the resources.
 
