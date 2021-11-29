@@ -40,13 +40,13 @@ Setup |ccloud| and CLI
 
 #. Setup a payment method for your |ccloud| account and optionally enter the promo code ``CPDEMO50`` in the |ccloud| UI `Billing and payment` section to receive an additional $50 free usage.
 
-#. Install `Confluent Cloud CLI <https://docs.confluent.io/ccloud-cli/current/install.html>`__ v1.25.0 or later.
+#. Install `Confluent CLI <https://docs.confluent.io/confluent-cli/current/install.html>`__ v2.2.0 or later. Do not confuse this Confluent CLI binary v2 that is used to manage |ccloud| with the Confluent CLI binary v1 that is used to manage |cp| |release|.  See `documentation <https://docs.confluent.io/confluent-cli/current/migrate.html>`__ for more information on the CLI migration and running the CLIs in parallel.
 
-#. Using the CLI, log in to |ccloud| with the command ``ccloud login``, and use your |ccloud| username and password. The ``--save`` argument saves your |ccloud| user login credentials or refresh token (in the case of SSO) to the local ``netrc`` file.
+#. Using the CLI, log in to |ccloud| with the command ``confluent login``, and use your |ccloud| username and password. The ``--save`` argument saves your |ccloud| user login credentials or refresh token (in the case of SSO) to the local ``netrc`` file.
 
    .. code:: shell
 
-      ccloud login --save
+      confluent login --save
 
 #. The remainder of the |ccloud| portion of this tutorial must be completed sequentially. We recommend that you manually complete all the steps in the following sections. However, you may also run the script :devx-cp-demo:`scripts/ccloud/create-ccloud-workflow.sh|scripts/ccloud/create-ccloud-workflow.sh` which automates those steps. This option is recommended for users who have run this tutorial before and want to quickly bring it up.
 
@@ -125,7 +125,7 @@ Enable :ref:`telemetry_reporter` on the on-prem cluster, and configure it to sen
 
    .. code:: shell
 
-      ccloud api-key create --resource cloud -o json
+      confluent api-key create --resource cloud -o json
 
 #. Verify your output resembles:
 
@@ -203,7 +203,7 @@ The Replicator instance is running on the existing Connect worker in the on-prem
 
    .. code-block:: text
 
-      docker-compose exec tools bash -c "confluent iam rolebinding create \
+      docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
           --principal User:connectorSubmitter \
           --role ResourceOwner \
           --resource Connector:replicate-topic-to-ccloud \
@@ -301,7 +301,7 @@ Metrics API
 
    .. code-block:: text
 
-      CCLOUD_CLUSTER_ID=$(ccloud kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-${SERVICE_ACCOUNT_ID}"'")' | jq -r .id)
+      CCLOUD_CLUSTER_ID=$(confluent kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-${SERVICE_ACCOUNT_ID}"'")' | jq -r .id)
 
 #. Substitute values into the query json file. For this substitution to work, you must have set the following parameters in your environment:
 
@@ -358,19 +358,19 @@ You must have completed :ref:`cp-demo-ccloud-stack` before proceeding.
 
    .. code-block:: text
 
-      ksqlDBAppId=$(ccloud ksql app list | grep "$KSQLDB_ENDPOINT" | awk '{print $1}')
+      ksqlDBAppId=$(confluent ksql app list | grep "$KSQLDB_ENDPOINT" | awk '{print $1}')
 
 #. Verify the |ccloud| ksqlDB application has transitioned from ``PROVISIONING`` to ``UP`` state. This may take a few minutes.
 
    .. code-block:: text
 
-      ccloud ksql app describe $ksqlDBAppId -o json
+      confluent ksql app describe $ksqlDBAppId -o json
 
 #. Configure ksqlDB ACLs to permit the ksqlDB application to read from ``wikipedia.parsed.ccloud.replica``.
 
    .. code-block:: text
 
-      ccloud ksql app configure-acls $ksqlDBAppId wikipedia.parsed.ccloud.replica
+      confluent ksql app configure-acls $ksqlDBAppId wikipedia.parsed.ccloud.replica
 
 #. Create new ksqlDB queries in |ccloud| from the :devx-cp-demo:`scripts/ccloud/statements.sql|scripts/ccloud/statements.sql` file. Note: depending on which folder you are in, you may need to modify the relative path to the ``statements.sql`` file.
 
