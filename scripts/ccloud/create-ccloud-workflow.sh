@@ -24,7 +24,7 @@ echo
 
 export EXAMPLE="cp-demo"
 ccloud::create_ccloud_stack true || exit 1
-export SERVICE_ACCOUNT_ID=$(confluent kafka cluster list -o json | jq -r '.[0].name' | awk -F'-' '{print $4 "-" $5;}')
+export SERVICE_ACCOUNT_ID=$(ccloud:get_service_account_from_current_cluster_name)
 CONFIG_FILE=stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
 CCLOUD_CLUSTER_ID=$(confluent kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-$SERVICE_ACCOUNT_ID"'")' | jq -r .id)
 
