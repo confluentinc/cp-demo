@@ -716,7 +716,7 @@ services:
     ports:
       - 8088:8088
     environment:
-      CUB_CLASSPATH: '/usr/share/java/ksql-server/*:/usr/share/java/cp-base-new/*'
+      CUB_CLASSPATH: '/etc/confluent/docker/docker-utils.jar:/usr/share/java/ksql-server/*:/usr/share/java/cp-base-new/*'
       KSQL_LOG4J_ROOT_LOGLEVEL: INFO
 
       KSQL_KSQL_SERVICE_ID: "ksql-cluster"
