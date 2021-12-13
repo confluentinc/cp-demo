@@ -19,6 +19,9 @@ If you prefer non-Docker examples, please go to `confluentinc/examples GitHub re
 
 After you run through the guided tutorial below, apply the concepts you learn here to build your own event streaming pipeline in |ccloud|, a fully managed, cloud-native event streaming platform powered by |ak|. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``CPDEMO50`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
 
+
+.. _cp-demo-prereqs:
+
 Prerequisites
 -------------
 
@@ -41,6 +44,7 @@ You can run this demo locally with Docker or in a cloud IDE with :gitpod_link:`G
 Docker
 ~~~~~~
 
+This demo has been validated with Docker as described in :ref:`cp-demo-prereqs`.
 If you are using Docker:
 
 #. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8 GB (default is 2 GB) and ensure Docker is allocated at least 2 CPU cores.
@@ -61,7 +65,8 @@ If you are using Docker:
 Gitpod
 ~~~~~~
 
-If you are using :gitpod_link:`Gitpod|`, the demo will automatically start after the Gitpod workspace is ready.
+This demo is enabled to run with :gitpod_link:`Gitpod|`, but support for the Gitpod workflow is best effort from the `community <https://github.com/confluentinc/cp-demo>`__.
+If you are using Gitpod, the demo will automatically start after the Gitpod workspace is ready.
 
 Login into |c3| (port ``9021``) or the Kibana dashboard (port ``5601``) by clicking on ``Open Browser`` option in the pop-up:
 
