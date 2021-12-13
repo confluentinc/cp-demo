@@ -65,8 +65,8 @@ If you are using Docker:
 Gitpod
 ~~~~~~
 
-This demo is enabled to run with :gitpod_link:`Gitpod|`, but support for the Gitpod workflow is best effort from the `community <https://github.com/confluentinc/cp-demo>`__.
-If you are using Gitpod, the demo will automatically start after the Gitpod workspace is ready.
+This demo is enabled to run with Gitpod, but support for the Gitpod workflow is best effort from the `community <https://github.com/confluentinc/cp-demo>`__.
+If you are using :gitpod_link:`Gitpod|`, the demo will automatically start after the Gitpod workspace is ready.
 
 Login into |c3| (port ``9021``) or the Kibana dashboard (port ``5601``) by clicking on ``Open Browser`` option in the pop-up:
 
