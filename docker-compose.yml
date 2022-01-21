@@ -442,7 +442,6 @@ services:
       CUB_CLASSPATH: '/usr/share/java/confluent-security/connect/*:/usr/share/java/kafka/*:/usr/share/java/cp-base-new/*'
 
       CONNECT_BOOTSTRAP_SERVERS: kafka1:10091,kafka2:10092
-      CONNECT_REST_PORT: 8083
       CONNECT_LISTENERS: https://0.0.0.0:8083
       CONNECT_GROUP_ID: "connect-cluster"
       CONNECT_PRODUCER_CLIENT_ID: "connect-worker-producer"
