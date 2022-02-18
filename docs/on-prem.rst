@@ -755,7 +755,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. code-block:: text
 
-       docker-compose exec schemaregistry curl -X GET \
+       docker-compose exec --no-TTY schemaregistry curl -s -X GET \
           --tlsv1.2 \
           --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
           -u superUser:superUser \
@@ -858,7 +858,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. code-block:: text
 
-       docker-compose exec schemaregistry curl -X GET \
+       docker-compose exec --no-TTY schemaregistry curl -s -X GET \
           --tlsv1.2 \
           --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
           -u appSA:appSA \
