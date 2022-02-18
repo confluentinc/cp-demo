@@ -27,10 +27,10 @@ Prerequisites
 
 This example has been validated with:
 
--  Docker version 17.06.1-ce
--  Docker Compose version 1.16.0 with Docker Compose file format 2.3
+-  Docker engine version 20.10.12
+-  Docker Compose version 2.2.3 with Docker Compose file format 2.3
 -  Java version 1.8.0_92
--  MacOS 10.15.3 (note for `Ubuntu environments <https://github.com/confluentinc/cp-demo/issues/53>`__)
+-  MacOS 12.2.1 (note for `Ubuntu environments <https://github.com/confluentinc/cp-demo/issues/53>`__)
 -  OpenSSL 1.1.1d
 -  git
 -  curl
