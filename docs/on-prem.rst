@@ -686,21 +686,21 @@ Authorization with RBAC
    .. code-block:: text
 
       # Create the role binding for the topic ``wikipedia.parsed``
-      docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
+      docker-compose exec tools bash -c "confluent iam rbac role-binding create \
           --principal User:badapp \
           --role ResourceOwner \
           --resource Topic:wikipedia.parsed \
           --kafka-cluster-id $KAFKA_CLUSTER_ID"
 
       # Create the role binding for the group ``wikipedia.test``
-      docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
+      docker-compose exec tools bash -c "confluent iam rbac role-binding create \
           --principal User:badapp \
           --role ResourceOwner \
           --resource Group:wikipedia.test \
           --kafka-cluster-id $KAFKA_CLUSTER_ID"
 
       # Create the role binding for the subject ``wikipedia.parsed-value``, i.e., the topic-value (versus the topic-key)
-      docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
+      docker-compose exec tools bash -c "confluent iam rbac role-binding create \
           --principal User:badapp \
           --role ResourceOwner \
           --resource Subject:wikipedia.parsed-value \
@@ -824,7 +824,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
    .. code-block:: text
 
       # Create the role binding for the subject ``users-value``, i.e., the topic-value (versus the topic-key)
-      docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
+      docker-compose exec tools bash -c "confluent iam rbac role-binding create \
           --principal User:appSA \
           --role ResourceOwner \
           --resource Subject:users-value \
@@ -986,7 +986,7 @@ For the next few steps, use the |crest| that is running as a standalone service.
    .. code-block:: text
 
       # Create the role binding for the topic ``users``
-      docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
+      docker-compose exec tools bash -c "confluent iam rbac role-binding create \
           --principal User:appSA \
           --role DeveloperWrite \
           --resource Topic:users \
@@ -1077,7 +1077,7 @@ For the next few steps, use the |crest| that is running as a standalone service.
    .. code-block:: text
 
       # Create the role binding for the group ``my_avro_consumer``
-      docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
+      docker-compose exec tools bash -c "confluent iam rbac role-binding create \
           --principal User:appSA \
           --role ResourceOwner \
           --resource Group:my_avro_consumer \
@@ -1123,7 +1123,7 @@ For the next few steps, use the |crest| that is running as a standalone service.
    .. code-block:: text
 
       # Create the role binding for the group my_avro_consumer
-      docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
+      docker-compose exec tools bash -c "confluent iam rbac role-binding create \
           --principal User:appSA \
           --role DeveloperRead \
           --resource Topic:users \
@@ -1187,7 +1187,7 @@ For the next few steps, use the |crest| that is embedded on the |ak| brokers. On
    .. code-block:: text
 
       # Create the role binding for the topic ``dev_users``
-      docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
+      docker-compose exec tools bash -c "confluent iam rbac role-binding create \
           --principal User:appSA \
           --role ResourceOwner \
           --resource Topic:dev_users \
