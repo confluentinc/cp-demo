@@ -40,7 +40,7 @@ Setup |ccloud| and CLI
 
 #. Setup a payment method for your |ccloud| account and optionally enter the promo code ``CPDEMO50`` in the |ccloud| UI `Billing and payment` section to receive an additional $50 free usage.
 
-#. Install `Confluent CLI <https://docs.confluent.io/confluent-cli/current/install.html>`__ v2.2.0 or later. Do not confuse this Confluent CLI binary v2 that is used to manage |ccloud| with the Confluent CLI binary v1 that is used to manage |cp| |release|.  See `documentation <https://docs.confluent.io/confluent-cli/current/migrate.html>`__ for more information on the CLI migration and running the CLIs in parallel.
+#. Install `Confluent CLI <https://docs.confluent.io/confluent-cli/current/install.html>`__ v2.3.1 or later.
 
 #. Using the CLI, log in to |ccloud| with the command ``confluent login``, and use your |ccloud| username and password. The ``--save`` argument saves your |ccloud| user login credentials or refresh token (in the case of SSO) to the local ``netrc`` file.
 
@@ -203,7 +203,7 @@ The Replicator instance is running on the existing Connect worker in the on-prem
 
    .. code-block:: text
 
-      docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
+      docker-compose exec tools bash -c "confluent iam rbac role-binding create \
           --principal User:connectorSubmitter \
           --role ResourceOwner \
           --resource Connector:replicate-topic-to-ccloud \

@@ -41,7 +41,7 @@ CONNECTOR_SUBMITTER="User:connectorSubmitter"
 KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${VALIDATE_DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
 CONNECT=connect-cluster
 ${VALIDATE_DIR}/../helper/refresh_mds_login.sh
-docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
+docker-compose exec tools bash -c "confluent iam rbac role-binding create \
     --principal $CONNECTOR_SUBMITTER \
     --role ResourceOwner \
     --resource Connector:replicate-topic-to-ccloud \
