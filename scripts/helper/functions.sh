@@ -111,6 +111,9 @@ clean_demo_env()
 
   # Remove existing Connect image
   docker rmi -f localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}
+
+  # Remove existing tools image
+  docker rmi -f localbuild/tools:${CONFLUENT_DOCKER_TAG}
 }
 
 create_certificates()
@@ -130,6 +133,22 @@ create_certificates()
   echo -e "Setting insecure permissions on some files in ${DIR}/../security for demo purposes\n"
   chmod 644 ${DIR}/../security/keypair/keypair.pem
   chmod 644 ${DIR}/../security/*.key
+}
+
+build_tools_image()
+{
+  echo
+  echo "Building custom Docker tools image with version ${CONFLUENT_DOCKER_TAG}"
+
+  local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+  DOCKERFILE="${DIR}/../../tools/Dockerfile-tools"
+  CONTEXT="${DIR}/../../."
+  echo "docker build -t localbuild/tools:${CONFLUENT_DOCKER_TAG} -f $DOCKERFILE $CONTEXT"
+  docker build -t localbuild/tools:${CONFLUENT_DOCKER_TAG} -f $DOCKERFILE $CONTEXT || {
+    echo "ERROR: Docker tools image build failed. Please troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/troubleshooting.html"
+    exit 1
+  }
 }
 
 build_connect_image()
@@ -268,7 +287,7 @@ mds_login()
   OUTPUT=$(
   expect <<END
     log_user 1
-    spawn confluent-v1 login --ca-cert-path /etc/kafka/secrets/snakeoil-ca-1.crt --url $MDS_URL
+    spawn confluent login --ca-cert-path /etc/kafka/secrets/snakeoil-ca-1.crt --url $MDS_URL
     expect "Username: "
     send "${SUPER_USER}\r";
     expect "Password: "

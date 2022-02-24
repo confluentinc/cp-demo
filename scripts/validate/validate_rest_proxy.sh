@@ -35,7 +35,7 @@ topic="users"
 subject="$topic-value"
 group="my_avro_consumer"
 
-docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
+docker-compose exec tools bash -c "confluent iam rbac role-binding create \
     --principal $CLIENT_PRINCIPAL \
     --role ResourceOwner \
     --resource Subject:$subject \
@@ -50,7 +50,7 @@ schemaid=$(docker-compose exec schemaregistry curl -X GET --tlsv1.2 --cacert /et
 
 # Go through steps at https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#crest-long?utm_source=github&utm_medium=demo&utm_campaign=ch.cp-demo_type.community_content.cp-demo#confluent-rest-proxy
 
-docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
+docker-compose exec tools bash -c "confluent iam rbac role-binding create \
     --principal $CLIENT_PRINCIPAL \
     --role DeveloperWrite \
     --resource Topic:$topic \
@@ -62,13 +62,13 @@ docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kaf
 
 docker-compose exec restproxy curl -X POST -H "Content-Type: application/vnd.kafka.v2+json" --cert /etc/kafka/secrets/restproxy.certificate.pem --key /etc/kafka/secrets/restproxy.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{"topics":["users"]}' -u $CLIENT_NAME:$CLIENT_NAME https://restproxy:8086/consumers/$group/instances/my_consumer_instance/subscription
 
-docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
+docker-compose exec tools bash -c "confluent iam rbac role-binding create \
     --principal $CLIENT_PRINCIPAL \
     --role ResourceOwner \
     --resource Group:$group \
     --kafka-cluster-id $KAFKA_CLUSTER_ID"
 
-docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
+docker-compose exec tools bash -c "confluent iam rbac role-binding create \
     --principal $CLIENT_PRINCIPAL \
     --role DeveloperRead \
     --resource Topic:$topic \
@@ -90,7 +90,7 @@ docker-compose exec restproxy curl -X DELETE -H "Content-Type: application/vnd.k
 
 echo -e "\n\n\nValidating the embedded REST Proxy...\n"
 
-docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
+docker-compose exec tools bash -c "confluent iam rbac role-binding create \
     --principal User:appSA \
     --role ResourceOwner \
     --resource Topic:dev_users \

@@ -12,13 +12,14 @@ preflight_checks || exit
 # Stop existing Docker containers
 ${DIR}/stop.sh
 
-# Regenerate certificates and the Connect Docker image if any of the following conditions are true
+# Regenerate certificates and the Connect or tools Docker image if any of the following conditions are true
 if [[ "$CLEAN" == "true" ]] || \
  ! [[ -f "${DIR}/security/controlCenterAndKsqlDBServer-ca1-signed.crt" ]] || \
- ! [[ $(docker images --format "{{.Repository}}:{{.Tag}}" localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}) =~ localbuild ]] ;
+ ! [[ $(docker images --format "{{.Repository}}:{{.Tag}}" localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}) =~ localbuild ]] || \
+ ! [[ $(docker images --format "{{.Repository}}:{{.Tag}}" localbuild/tools:${CONFLUENT_DOCKER_TAG}) =~ localbuild ]] ;
 then
   if [[ -z $CLEAN ]] || [[ "$CLEAN" == "false" ]] ; then
-    echo "INFO: Setting CLEAN=true because minimum conditions (existing certificates and existing Docker image localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}) not met"
+    echo "INFO: Setting CLEAN=true because minimum conditions not met (existing certificates, Connect Docker image localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}), tools Docker image localbuild/tools:${CONFLUENT_DOCKER_TAG})"
   fi
   CLEAN=true
   clean_demo_env
@@ -50,6 +51,7 @@ if [[ $(docker-compose ps openldap | grep Exit) =~ "Exit" ]] ; then
 fi
 
 # Bring up base cluster and Confluent CLI
+build_tools_image
 docker-compose up -d zookeeper kafka1 kafka2 tools
 
 # Verify MDS has started
