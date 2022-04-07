@@ -46,7 +46,7 @@ docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
 docker-compose exec schemaregistry curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --data '{ "schema": "[ { \"type\":\"record\", \"name\":\"user\", \"fields\": [ {\"name\":\"userid\",\"type\":\"long\"}, {\"name\":\"username\",\"type\":\"string\"} ]} ]" }' -u $CLIENT_NAME:$CLIENT_NAME https://schemaregistry:8085/subjects/$subject/versions
 
 # Get the Avro schema id
-schemaid=$(docker-compose exec schemaregistry curl -X GET --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u $CLIENT_NAME:$CLIENT_NAME https://schemaregistry:8085/subjects/$subject/versions/1 | jq '.id')
+schemaid=$(docker-compose exec --no-TTY schemaregistry curl -s -X GET --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u $CLIENT_NAME:$CLIENT_NAME https://schemaregistry:8085/subjects/$subject/versions/1 | jq '.id')
 
 # Go through steps at https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/index.html#crest-long?utm_source=github&utm_medium=demo&utm_campaign=ch.cp-demo_type.community_content.cp-demo#confluent-rest-proxy
 
@@ -96,9 +96,9 @@ docker-compose exec tools bash -c "confluent-v1 iam rolebinding create \
     --resource Topic:dev_users \
     --kafka-cluster-id $KAFKA_CLUSTER_ID"
 
-docker-compose exec restproxy curl -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA "https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}" --cert /etc/kafka/secrets/mds.certificate.pem --key /etc/kafka/secrets/mds.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt | jq
+docker-compose exec --no-TTY restproxy curl -s -X POST -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA "https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics" -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}" --cert /etc/kafka/secrets/mds.certificate.pem --key /etc/kafka/secrets/mds.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt | jq
 
-output=$(docker-compose exec restproxy curl -X GET -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics --cert /etc/kafka/secrets/mds.certificate.pem --key /etc/kafka/secrets/mds.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt | jq '.data[].topic_name')
+output=$(docker-compose exec --no-TTY restproxy curl -s -X GET -H "Content-Type: application/json" -H "accept: application/json" -u appSA:appSA https://kafka1:8091/kafka/v3/clusters/${KAFKA_CLUSTER_ID}/topics --cert /etc/kafka/secrets/mds.certificate.pem --key /etc/kafka/secrets/mds.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt | jq '.data[].topic_name')
 if [[ $output =~ "dev_users" ]]; then
   printf "\nPASS: Output includes dev_users and matches expected output:\n$output"
 else
