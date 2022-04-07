@@ -1203,7 +1203,7 @@ For the next few steps, use the |crest| that is embedded on the |ak| brokers. On
 
    .. code-block:: text
 
-      docker-compose exec restproxy curl -X POST \
+      docker-compose exec --no-TTY restproxy curl -s -X POST \
          -H "Content-Type: application/json" \
          -H "accept: application/json" \
          -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}" \
@@ -1224,7 +1224,7 @@ For the next few steps, use the |crest| that is embedded on the |ak| brokers. On
 
    .. code-block:: text
 
-      docker-compose exec restproxy curl -X GET \
+      docker-compose exec --no-TTY restproxy curl -s -X GET \
          -H "Content-Type: application/json" \
          -H "accept: application/json" \
          --cert /etc/kafka/secrets/mds.certificate.pem \
@@ -1432,7 +1432,7 @@ Before running this section:
 
    .. sourcecode:: bash
 
-      docker-compose exec kafka1 kafka-replica-status \
+      docker exec kafka1 kafka-replica-status \
            --bootstrap-server kafka1:9091 \
            --admin.config /etc/kafka/secrets/client_sasl_plain.config \
            --verbose | grep "IsInIsr: false"
