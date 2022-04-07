@@ -4,7 +4,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ${DIR}/../env_files/config.env
 source ${DIR}/env.sh
 
-docker-compose down --volumes
+docker-compose down --volumes --remove-orphans
 
 cat << EOF
 
