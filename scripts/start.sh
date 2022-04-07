@@ -50,8 +50,14 @@ if [[ $(docker-compose ps openldap | grep Exit) =~ "Exit" ]] ; then
   exit 1
 fi
 
-# Bring up base cluster and Confluent CLI
+# Build tools image
 build_tools_image
+# Build custom Kafka Connect image with required jars
+if [[ "$CLEAN" == "true" ]] ; then
+  build_connect_image || exit 1
+fi
+
+# Bring up base cluster
 docker-compose up -d zookeeper kafka1 kafka2 tools
 
 # Verify MDS has started
@@ -75,11 +81,6 @@ docker-compose exec kafka1 kafka-configs \
    --add-config min.insync.replicas=1
 
 #-------------------------------------------------------------------------------
-
-# Build custom Kafka Connect image with required jars
-if [[ "$CLEAN" == "true" ]] ; then
-  build_connect_image || exit 1
-fi
 
 # Bring up more containers
 docker-compose up -d schemaregistry connect control-center
