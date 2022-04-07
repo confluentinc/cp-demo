@@ -27,10 +27,10 @@ Prerequisites
 
 This example has been validated with:
 
--  Docker version 17.06.1-ce
--  Docker Compose version 1.16.0 with Docker Compose file format 2.3
+-  Docker engine version 20.10.12
+-  Docker Compose version 2.2.3 with Docker Compose file format 2.3
 -  Java version 1.8.0_92
--  MacOS 10.15.3 (note for `Ubuntu environments <https://github.com/confluentinc/cp-demo/issues/53>`__)
+-  MacOS 12.2.1 (note for `Ubuntu environments <https://github.com/confluentinc/cp-demo/issues/53>`__)
 -  OpenSSL 1.1.1d
 -  git
 -  curl
@@ -755,7 +755,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. code-block:: text
 
-       docker-compose exec schemaregistry curl -X GET \
+       docker-compose exec --no-TTY schemaregistry curl -s -X GET \
           --tlsv1.2 \
           --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
           -u superUser:superUser \
@@ -858,7 +858,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. code-block:: text
 
-       docker-compose exec schemaregistry curl -X GET \
+       docker-compose exec --no-TTY schemaregistry curl -s -X GET \
           --tlsv1.2 \
           --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
           -u appSA:appSA \
@@ -1203,7 +1203,7 @@ For the next few steps, use the |crest| that is embedded on the |ak| brokers. On
 
    .. code-block:: text
 
-      docker-compose exec restproxy curl -X POST \
+      docker-compose exec --no-TTY restproxy curl -s -X POST \
          -H "Content-Type: application/json" \
          -H "accept: application/json" \
          -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}" \
@@ -1224,7 +1224,7 @@ For the next few steps, use the |crest| that is embedded on the |ak| brokers. On
 
    .. code-block:: text
 
-      docker-compose exec restproxy curl -X GET \
+      docker-compose exec --no-TTY restproxy curl -s -X GET \
          -H "Content-Type: application/json" \
          -H "accept: application/json" \
          --cert /etc/kafka/secrets/mds.certificate.pem \
@@ -1432,7 +1432,7 @@ Before running this section:
 
    .. sourcecode:: bash
 
-      docker-compose exec kafka1 kafka-replica-status \
+      docker exec kafka1 kafka-replica-status \
            --bootstrap-server kafka1:9091 \
            --admin.config /etc/kafka/secrets/client_sasl_plain.config \
            --verbose | grep "IsInIsr: false"
