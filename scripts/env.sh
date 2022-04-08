@@ -30,12 +30,12 @@ fi
 kibanaURL="http://localhost:5601/app/dashboards#/view/Overview"
 
 # Gitpod only supports the C3_KSQLDB_HTTPS=false scenario and exposes services with a custom URL
-if [[ -n "${GITPOD_WORKSPACE_ID:-}" ]]; then
+if [[ -n "${GITPOD_WORKSPACE_URL:-}" ]]; then
   C3_KSQLDB_HTTPS="false"
   export CONTROL_CENTER_KSQL_WIKIPEDIA_URL="http://ksqldb-server:8088"
-  export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="https://8088-${GITPOD_WORKSPACE_ID}"
-  C3URL="https://9021-${GITPOD_WORKSPACE_ID} (port 9022 not supported on Gitpod)"
-  kibanaURL="https://5601-${GITPOD_WORKSPACE_ID}/app/dashboards#/view/Overview"
+  export CONTROL_CENTER_KSQL_WIKIPEDIA_ADVERTISED_URL="https://8088-${GITPOD_WORKSPACE_URL#https://}"
+  C3URL="https://9021-${GITPOD_WORKSPACE_URL#https://} (port 9022 not supported on Gitpod)"
+  kibanaURL="https://5601-${GITPOD_WORKSPACE_URL#https://}/app/dashboards#/view/Overview"
 fi
 
 
