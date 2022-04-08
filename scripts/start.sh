@@ -56,12 +56,11 @@ if [[ "$CLEAN" == "true" ]] ; then
   build_connect_image || exit 1
 fi
 
-# Add root CA to container (obviates need for supplying it at CLI login '--ca-cert-path')
-docker-compose up -d tools
-docker-compose exec tools bash -c "cp /etc/kafka/secrets/snakeoil-ca-1.crt /usr/local/share/ca-certificates && /usr/sbin/update-ca-certificates"
+# Bring up base kafka cluster and tools
+docker-compose up -d zookeeper kafka1 kafka2 tools
 
-# Bring up base kafka cluster
-docker-compose up -d zookeeper kafka1 kafka2
+# Add root CA to container (obviates need for supplying it at CLI login '--ca-cert-path')
+docker-compose exec tools bash -c "cp /etc/kafka/secrets/snakeoil-ca-1.crt /usr/local/share/ca-certificates && /usr/sbin/update-ca-certificates"
 
 # Verify MDS has started
 MAX_WAIT=120
