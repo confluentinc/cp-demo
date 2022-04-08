@@ -50,18 +50,24 @@ if [[ $(docker-compose ps openldap | grep Exit) =~ "Exit" ]] ; then
   exit 1
 fi
 
-# Bring up base cluster and Confluent CLI
+# Build custom tools image and connect image
 build_tools_image
-docker-compose up -d zookeeper kafka1 kafka2 tools
+if [[ "$CLEAN" == "true" ]] ; then
+  build_connect_image || exit 1
+fi
+
+# Add root CA to container (obviates need for supplying it at CLI login '--ca-cert-path')
+docker-compose up -d tools
+docker-compose exec tools bash -c "cp /etc/kafka/secrets/snakeoil-ca-1.crt /usr/local/share/ca-certificates && /usr/sbin/update-ca-certificates"
+
+# Bring up base kafka cluster
+docker-compose up -d zookeeper kafka1 kafka2
 
 # Verify MDS has started
 MAX_WAIT=120
 echo "Waiting up to $MAX_WAIT seconds for MDS to start"
 retry $MAX_WAIT host_check_mds_up || exit 1
 sleep 5
-
-# Add root CA to container (obviates need for supplying it at CLI login '--ca-cert-path')
-docker-compose exec tools bash -c "cp /etc/kafka/secrets/snakeoil-ca-1.crt /usr/local/share/ca-certificates && /usr/sbin/update-ca-certificates"
 
 echo "Creating role bindings for principals"
 docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh" || exit 1
@@ -76,10 +82,6 @@ docker-compose exec kafka1 kafka-configs \
 
 #-------------------------------------------------------------------------------
 
-# Build custom Kafka Connect image with required jars
-if [[ "$CLEAN" == "true" ]] ; then
-  build_connect_image || exit 1
-fi
 
 # Bring up more containers
 docker-compose up -d schemaregistry connect control-center
