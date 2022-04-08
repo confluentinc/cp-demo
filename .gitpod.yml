@@ -19,7 +19,7 @@ tasks:
         echo "ℹ️ AUTOSTART environment variable is set to false, so use ./scripts/start.sh to start cp-demo"
       else
         echo "🚀 Starting up cp-demo (you can disable autostart by exporting environment variable AUTOSTART=false, see https://www.gitpod.io/docs/environment-variables)"
-        CLEAN=true ./scripts/start.sh || exit 1
+        CLEAN=true ./scripts/start.sh || ./scripts/start.sh
         echo "🚀 You can now follow steps in https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/on-prem.html#guided-tutorial"
       fi
 
