@@ -12,19 +12,17 @@ github:
     addCheck: true
 
 tasks:
-  - name: prebuild
-    init: CLEAN=true ./scripts/start.sh && gp sync-done prebuild
+  - name: cp-demo
+    before: |
+      if [[ "$AUTOSTART" =~ "false" ]]; then
+        echo "ℹ️ AUTOSTART environment variable is set to false, so use ./scripts/start.sh to start cp-demo"
+      else
+        echo "🚀 Starting up cp-demo (you can disable autostart by exporting environment variable AUTOSTART=false, see https://www.gitpod.io/docs/environment-variables)"
+        CLEAN=true ./scripts/start.sh
+        echo "🚀 You can now follow steps in https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/on-prem.html#guided-tutorial"
+      fi
     command: curl -L --http1.1 https://cnfl.io/ccloud-cli | sudo sh -s -- -b /usr/local/bin; exit
 
-  - name: cp-demo
-    init: gp sync-await prebuild
-    command: |
-      if [ -z "$DISABLE_AUTOSTART" ]; then
-        echo "🚀 Starting up cp-demo (you can disable autostart by exporting DISABLE_AUTOSTART environment variable, see https://www.gitpod.io/docs/environment-variables)"
-        ./scripts/start.sh
-        echo "🚀 You can now follow steps in https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/on-prem.html#guided-tutorial"
-      else echo "ℹ️ DISABLE_AUTOSTART environment variable is set, use ./scripts/start.sh to start cp-demo"
-      fi
 
 vscode:
   extensions:
