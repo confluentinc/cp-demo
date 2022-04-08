@@ -93,6 +93,11 @@ echo
 echo -e "Create topics in Kafka cluster:"
 docker-compose exec tools bash -c "/tmp/helper/create-topics.sh" || exit 1
 
+# Verify Kafka Connect Worker has started
+MAX_WAIT=240
+echo -e "\nWaiting up to $MAX_WAIT seconds for Connect to start"
+retry $MAX_WAIT host_check_connect_up "connect" || exit 1
+
 # Verify Confluent Control Center has started
 MAX_WAIT=300
 echo
@@ -102,12 +107,6 @@ retry $MAX_WAIT host_check_control_center_up || exit 1
 echo -e "\nConfluent Control Center modifications:"
 ${DIR}/helper/control-center-modifications.sh
 echo
-
-# Verify Kafka Connect Worker has started
-MAX_WAIT=240
-echo -e "\nWaiting up to $MAX_WAIT seconds for Connect to start"
-retry $MAX_WAIT host_check_connect_up "connect" || exit 1
-sleep 10 # give connect an exta moment to fully mature
 
 NUM_CERTS=$(docker-compose exec connect keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
 if [[ "$NUM_CERTS" -eq "1" ]]; then
