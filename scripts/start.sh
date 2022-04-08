@@ -97,7 +97,6 @@ docker-compose exec tools bash -c "/tmp/helper/create-topics.sh" || exit 1
 MAX_WAIT=240
 echo -e "\nWaiting up to $MAX_WAIT seconds for Connect to start"
 retry $MAX_WAIT host_check_connect_up "connect" || exit 1
-sleep 20 # give connect a moment to settle
 
 # Verify Confluent Control Center has started
 MAX_WAIT=300
