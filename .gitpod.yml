@@ -14,6 +14,7 @@ github:
 tasks:
   - name: cp-demo
     before: |
+      curl -L --http1.1 https://cnfl.io/ccloud-cli | sudo sh -s -- -b /usr/local/bin
       if [[ "$AUTOSTART" =~ "false" ]]; then
         echo "ℹ️ AUTOSTART environment variable is set to false, so use ./scripts/start.sh to start cp-demo"
       else
@@ -21,7 +22,6 @@ tasks:
         CLEAN=true ./scripts/start.sh
         echo "🚀 You can now follow steps in https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/on-prem.html#guided-tutorial"
       fi
-    command: curl -L --http1.1 https://cnfl.io/ccloud-cli | sudo sh -s -- -b /usr/local/bin; exit
 
 
 vscode:

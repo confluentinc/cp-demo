@@ -207,7 +207,7 @@ EOF
 if [[ "$VIZ" == "true" ]]; then
 cat << EOF
   Kibana
-     http://localhost:5601/app/dashboards#/view/Overview
+     $kibanaURL
 
 EOF
 fi
