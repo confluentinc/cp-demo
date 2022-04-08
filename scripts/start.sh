@@ -118,6 +118,10 @@ echo
 docker-compose up -d ksqldb-server ksqldb-cli restproxy
 echo "..."
 
+if [[ "$VIZ" == "true" ]]; then
+  build_viz || exit 1
+fi
+
 # Verify Docker containers started
 if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
   echo -e "\nERROR: At least one Docker container did not start properly, see 'docker-compose ps'. Did you increase the memory available to Docker to at least 8 GB (default is 2 GB)?\n"
@@ -161,6 +165,7 @@ echo
 MAX_WAIT=120
 echo -e "\nWaiting up to $MAX_WAIT seconds for ksqlDB server to start"
 retry $MAX_WAIT host_check_ksqlDBserver_up || exit 1
+
 echo -e "\nRun ksqlDB queries:"
 ${DIR}/ksqlDB/run_ksqlDB.sh
 
@@ -176,9 +181,6 @@ echo "..."
 
 #-------------------------------------------------------------------------------
 
-if [[ "$VIZ" == "true" ]]; then
-  build_viz || exit 1
-fi
 
 echo
 echo -e "\nAvailable LDAP users:"
@@ -186,11 +188,11 @@ echo -e "\nAvailable LDAP users:"
 curl -u mds:mds -X POST "https://localhost:8091/security/1.0/principals/User%3Amds/roles/UserAdmin" \
   -H "accept: application/json" -H "Content-Type: application/json" \
   -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}" \
-  --cacert scripts/security/snakeoil-ca-1.crt --tlsv1.2
+  --cacert ${DIR}/security/snakeoil-ca-1.crt --tlsv1.2
 curl -u mds:mds -X POST "https://localhost:8091/security/1.0/rbac/principals" --silent \
   -H "accept: application/json"  -H "Content-Type: application/json" \
   -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}" \
-  --cacert scripts/security/snakeoil-ca-1.crt --tlsv1.2 | jq '.[]'
+  --cacert ${DIR}/security/snakeoil-ca-1.crt --tlsv1.2 | jq '.[]'
 
 # Do poststart_checks
 poststart_checks
