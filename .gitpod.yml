@@ -16,9 +16,7 @@ github:
 tasks:
   - name: prebuild
     init: |
-      cd .. && git clone https://github.com/confluentinc/jmx-monitoring-stacks && cd cp-demo/. && \
-        ./scripts/start.sh && ./scripts/stop.sh && \
-        gp sync-done prebuild
+      ./scripts/start.sh && ./scripts/stop.sh && gp sync-done prebuild
     command: |
       curl -L --http1.1 https://cnfl.io/ccloud-cli | \
         sudo sh -s -- -b /usr/local/bin; exit
@@ -30,11 +28,12 @@ tasks:
         echo "🚀 Starting up cp-demo (you can disable autostart by exporting DISABLE_AUTOSTART environment variable, see https://www.gitpod.io/docs/environment-variables)";
         if [ -z "$MONITORING_STACK" ]; then
           echo "cp-demo is not including any JMX monitoring stack (you can enable them by exporting MONITORING_STACK environment variable, see https://github.com/confluentinc/jmx-monitoring-stacks)."
-          ./scripts/start.sh;
+          CLEAN=true ./scripts/start.sh
         else
           echo "cp-demo includes JMX monitoring stack $MONITORING_STACK"
-          cd ../jmx-monitoring-stacks
-          ./$MONITORING_STACK/start.sh;
+          cd .. && git clone https://github.com/confluentinc/jmx-monitoring-stacks 
+          cd ./jmx-monitoring-stacks
+          CLEAN=true ./$MONITORING_STACK/start.sh;
         fi
         echo "🚀 You can now follow steps in https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/on-prem.html#guided-tutorial";
       else
