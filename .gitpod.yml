@@ -15,11 +15,8 @@ github:
 
 tasks:
   - name: prebuild
-    init: |
-      ./scripts/start.sh && ./scripts/stop.sh && gp sync-done prebuild
-    command: |
-      curl -L --http1.1 https://cnfl.io/ccloud-cli | \
-        sudo sh -s -- -b /usr/local/bin; exit
+    init: ./scripts/start.sh && ./scripts/stop.sh && gp sync-done prebuild
+    command: curl -L --http1.1 https://cnfl.io/ccloud-cli | sudo sh -s -- -b /usr/local/bin; exit
 
   - name: cp-demo
     init: gp sync-await prebuild
