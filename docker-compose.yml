@@ -158,6 +158,16 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
       KAFKA_DEFAULT_REPLICATION_FACTOR: 2
 
+      # Confluent Health+
+      # We recommend using Confluent Health+ to set up fully managed monitoring and alerting for your CP deployment.
+      # See https://docs.confluent.io/platform/current/health-plus
+      # Uncomment the four lines below and provide your credentials as a part of your Health+ sign-up process
+      # KAFKA_METRIC_REPORTERS: io.confluent.telemetry.reporter.TelemetryReporter
+      # KAFKA_CONFLUENT_TELEMETRY_ENABLED: 'true'
+      # KAFKA_CONFLUENT_TELEMETRY_API_KEY: <your Confluent Health+ api key>
+      # KAFKA_CONFLUENT_TELEMETRY_API_SECRET: <your Confluent Health+ api key secret>
+      # Now you can now remove the "Confluent Metrics Reporter" section
+
       # Confluent Metrics Reporter
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 2
@@ -642,8 +652,16 @@ services:
     environment:
       CUB_CLASSPATH: '/usr/share/java/confluent-control-center/*:/usr/share/java/rest-utils/*:/usr/share/java/confluent-common/*:/usr/share/java/confluent-security/kafka-rest/*:/usr/share/java/kafka-rest/:/usr/share/java/cp-base-new/*'
 
+      # If using Confluent Health+ for monitoring and alerting, uncomment the line below to run in management mode.
+      # CONTROL_CENTER_MODE_ENABLE: "management"
+      # You can now remove all Control Center "STREAMS", "MONITORING", and "METRICS" configurations
+      
       # general settings
       CONTROL_CENTER_BOOTSTRAP_SERVERS: SASL_SSL://kafka1:10091,SASL_SSL://kafka2:10092
+      CONTROL_CENTER_REPLICATION_FACTOR: 2
+      CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
+
+      # Control Center uses Kafka Streams to process metrics
       CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SSL
       CONTROL_CENTER_STREAMS_SASL_MECHANISM: OAUTHBEARER
       CONTROL_CENTER_STREAMS_SASL_LOGIN_CALLBACK_HANDLER_CLASS: io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler
@@ -654,8 +672,6 @@ services:
               metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
       CONTROL_CENTER_STREAMS_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
 
-      CONTROL_CENTER_REPLICATION_FACTOR: 2
-      CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_REPLICATION: 2
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
       CONTROL_CENTER_METRICS_TOPIC_REPLICATION: 2
