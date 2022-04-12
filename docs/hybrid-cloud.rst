@@ -239,8 +239,8 @@ Metrics API
 
    .. code-block:: text
 
-      CURRENT_TIME_MINUS_1HR=$(docker-compose exec --no-TTY tools date -Is -d '-1 hour' | tr -d '\r')
-      CURRENT_TIME_PLUS_1HR=$(docker-compose exec --no-TTY tools date -Is -d '+1 hour' | tr -d '\r')
+      CURRENT_TIME_MINUS_1HR=$(docker exec tools date -Is -d '-1 hour' | tr -d '\r')
+      CURRENT_TIME_PLUS_1HR=$(docker exec tools date -Is -d '+1 hour' | tr -d '\r')
 
 #. For the on-prem metrics: view the :devx-cp-demo:`metrics query file|scripts/ccloud/metrics_query_onprem.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed`` in the on-prem cluster (for all queryable metrics examples, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
 
