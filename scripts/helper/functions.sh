@@ -238,7 +238,7 @@ host_check_ksqlDBserver_up()
 host_check_connect_up()
 {
   containerName=$1
-  FOUND=$(docker-compose logs $containerName | grep "Herder started")
+  FOUND=$(docker-compose logs $containerName | grep "Kafka Connect started")
   if [ -z "$FOUND" ]; then
     return 1
   fi

@@ -50,18 +50,27 @@ if [[ $(docker-compose ps openldap | grep Exit) =~ "Exit" ]] ; then
   exit 1
 fi
 
-# Bring up base cluster and Confluent CLI
+# Build custom tools image and connect image
 build_tools_image
-docker-compose up -d zookeeper kafka1 kafka2 tools
+if [[ "$CLEAN" == "true" ]] ; then
+  build_connect_image || exit 1
+fi
 
-# Verify MDS has started
-MAX_WAIT=120
-echo "Waiting up to $MAX_WAIT seconds for MDS to start"
-retry $MAX_WAIT host_check_mds_up || exit 1
-sleep 5
+# Bring up tools
+docker-compose up -d tools
 
 # Add root CA to container (obviates need for supplying it at CLI login '--ca-cert-path')
 docker-compose exec tools bash -c "cp /etc/kafka/secrets/snakeoil-ca-1.crt /usr/local/share/ca-certificates && /usr/sbin/update-ca-certificates"
+
+
+# Bring up base kafka cluster
+docker-compose up -d zookeeper kafka1 kafka2
+
+# Verify MDS has started
+MAX_WAIT=150
+echo "Waiting up to $MAX_WAIT seconds for MDS to start"
+retry $MAX_WAIT host_check_mds_up || exit 1
+sleep 5
 
 echo "Creating role bindings for principals"
 docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh" || exit 1
@@ -76,10 +85,6 @@ docker-compose exec kafka1 kafka-configs \
 
 #-------------------------------------------------------------------------------
 
-# Build custom Kafka Connect image with required jars
-if [[ "$CLEAN" == "true" ]] ; then
-  build_connect_image || exit 1
-fi
 
 # Bring up more containers
 docker-compose up -d schemaregistry connect control-center
@@ -87,6 +92,11 @@ docker-compose up -d schemaregistry connect control-center
 echo
 echo -e "Create topics in Kafka cluster:"
 docker-compose exec tools bash -c "/tmp/helper/create-topics.sh" || exit 1
+
+# Verify Kafka Connect Worker has started
+MAX_WAIT=240
+echo -e "\nWaiting up to $MAX_WAIT seconds for Connect to start"
+retry $MAX_WAIT host_check_connect_up "connect" || exit 1
 
 # Verify Confluent Control Center has started
 MAX_WAIT=300
@@ -98,12 +108,6 @@ echo -e "\nConfluent Control Center modifications:"
 ${DIR}/helper/control-center-modifications.sh
 echo
 
-# Verify Kafka Connect Worker has started
-MAX_WAIT=240
-echo -e "\nWaiting up to $MAX_WAIT seconds for Connect to start"
-retry $MAX_WAIT host_check_connect_up "connect" || exit 1
-sleep 2 # give connect an exta moment to fully mature
-
 NUM_CERTS=$(docker-compose exec connect keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
 if [[ "$NUM_CERTS" -eq "1" ]]; then
   echo -e "\nERROR: Connect image did not build properly.  Expected ~147 trusted certificates but got $NUM_CERTS. Please troubleshoot and try again."
@@ -113,6 +117,10 @@ fi
 echo
 docker-compose up -d ksqldb-server ksqldb-cli restproxy
 echo "..."
+
+if [[ "$VIZ" == "true" ]]; then
+  build_viz || exit 1
+fi
 
 # Verify Docker containers started
 if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
@@ -157,6 +165,7 @@ echo
 MAX_WAIT=120
 echo -e "\nWaiting up to $MAX_WAIT seconds for ksqlDB server to start"
 retry $MAX_WAIT host_check_ksqlDBserver_up || exit 1
+
 echo -e "\nRun ksqlDB queries:"
 ${DIR}/ksqlDB/run_ksqlDB.sh
 
@@ -172,9 +181,6 @@ echo "..."
 
 #-------------------------------------------------------------------------------
 
-if [[ "$VIZ" == "true" ]]; then
-  build_viz || exit 1
-fi
 
 echo
 echo -e "\nAvailable LDAP users:"
@@ -182,11 +188,11 @@ echo -e "\nAvailable LDAP users:"
 curl -u mds:mds -X POST "https://localhost:8091/security/1.0/principals/User%3Amds/roles/UserAdmin" \
   -H "accept: application/json" -H "Content-Type: application/json" \
   -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}" \
-  --cacert scripts/security/snakeoil-ca-1.crt --tlsv1.2
+  --cacert ${DIR}/security/snakeoil-ca-1.crt --tlsv1.2
 curl -u mds:mds -X POST "https://localhost:8091/security/1.0/rbac/principals" --silent \
   -H "accept: application/json"  -H "Content-Type: application/json" \
   -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}" \
-  --cacert scripts/security/snakeoil-ca-1.crt --tlsv1.2 | jq '.[]'
+  --cacert ${DIR}/security/snakeoil-ca-1.crt --tlsv1.2 | jq '.[]'
 
 # Do poststart_checks
 poststart_checks
@@ -205,7 +211,7 @@ EOF
 if [[ "$VIZ" == "true" ]]; then
 cat << EOF
   Kibana
-     http://localhost:5601/app/dashboards#/view/Overview
+     $kibanaURL
 
 EOF
 fi
