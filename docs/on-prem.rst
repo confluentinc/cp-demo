@@ -755,7 +755,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. code-block:: text
 
-       docker-compose exec --no-TTY schemaregistry curl -s -X GET \
+       docker exec schemaregistry curl -s -X GET \
           --tlsv1.2 \
           --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
           -u superUser:superUser \
@@ -858,7 +858,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. code-block:: text
 
-       docker-compose exec --no-TTY schemaregistry curl -s -X GET \
+       docker exec schemaregistry curl -s -X GET \
           --tlsv1.2 \
           --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
           -u appSA:appSA \
@@ -1203,7 +1203,7 @@ For the next few steps, use the |crest| that is embedded on the |ak| brokers. On
 
    .. code-block:: text
 
-      docker-compose exec --no-TTY restproxy curl -s -X POST \
+      docker exec restproxy curl -s -X POST \
          -H "Content-Type: application/json" \
          -H "accept: application/json" \
          -d "{\"topic_name\":\"dev_users\",\"partitions_count\":64,\"replication_factor\":2,\"configs\":[{\"name\":\"cleanup.policy\",\"value\":\"compact\"},{\"name\":\"compression.type\",\"value\":\"gzip\"}]}" \
@@ -1224,7 +1224,7 @@ For the next few steps, use the |crest| that is embedded on the |ak| brokers. On
 
    .. code-block:: text
 
-      docker-compose exec --no-TTY restproxy curl -s -X GET \
+      docker exec restproxy curl -s -X GET \
          -H "Content-Type: application/json" \
          -H "accept: application/json" \
          --cert /etc/kafka/secrets/mds.certificate.pem \
