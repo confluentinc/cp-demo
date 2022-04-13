@@ -87,7 +87,7 @@ docker-compose exec kafka1 kafka-configs \
 
 
 # Bring up more containers
-docker-compose up -d schemaregistry connect control-center
+docker-compose up -d schemaregistry connect control-center ksqldb-server ksqldb-cli restproxy
 
 echo
 echo -e "Create topics in Kafka cluster:"
@@ -132,10 +132,6 @@ if [[ "$NUM_CERTS" -eq "1" ]]; then
   echo -e "\nERROR: Connect image did not build properly.  Expected ~147 trusted certificates but got $NUM_CERTS. Please troubleshoot and try again."
   exit 1
 fi
-
-echo
-docker-compose up -d ksqldb-server ksqldb-cli restproxy
-echo "..."
 
 # Verify Docker containers started
 if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
