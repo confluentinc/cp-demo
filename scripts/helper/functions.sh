@@ -2,12 +2,13 @@
 
 retry() {
     local -r -i max_wait="$1"; shift
-    local -r cmd="$@"
+    local -r cmd="$1"; shift
+    local -r args="$@"
 
     local -i sleep_interval=5
     local -i curr_wait=0
 
-    until $cmd
+    until $cmd $args
     do
         if (( curr_wait >= max_wait ))
         then
@@ -186,7 +187,7 @@ build_viz()
   MAX_WAIT=240
   echo
   echo -e "\nWaiting up to $MAX_WAIT seconds for Elasticsearch to be ready"
-  retry $MAX_WAIT host_check_elasticsearch_ready || exit 1
+  retry $MAX_WAIT host_check_up elasticsearch || exit 1
   echo -e "\nProvide data mapping to Elasticsearch:"
   ${DIR}/../dashboard/set_elasticsearch_mapping_bot.sh
   ${DIR}/../dashboard/set_elasticsearch_mapping_count.sh
@@ -200,7 +201,7 @@ build_viz()
   MAX_WAIT=120
   echo
   echo -e "\nWaiting up to $MAX_WAIT seconds for Kibana to be ready"
-  retry $MAX_WAIT host_check_kibana_ready || exit 1
+  retry $MAX_WAIT host_check_up kibana || exit 1
   echo -e "\nConfigure Kibana dashboard:"
   ${DIR}/../dashboard/configure_kibana_dashboard.sh
   echo
@@ -208,41 +209,14 @@ build_viz()
   return 0
 }
 
-host_check_control_center_up()
-{
-  FOUND=$(docker-compose logs control-center | grep "Started NetworkTrafficServerConnector")
-  if [ -z "$FOUND" ]; then
-    return 1
-  fi
-  return 0
-}
 
-host_check_mds_up()
+host_check_up()
 {
-  FOUND=$(docker-compose logs kafka1 | grep "Started NetworkTrafficServerConnector")
-  if [ -z "$FOUND" ]; then
-    return 1
-  fi
-  return 0
-}
-
-host_check_ksqlDBserver_up()
-{
-  KSQLDB_CLUSTER_ID=$(curl -s -u ksqlDBUser:ksqlDBUser http://localhost:8088/info | jq -r ".KsqlServerInfo.ksqlServiceId")
-  if [ "$KSQLDB_CLUSTER_ID" == "ksql-cluster" ]; then
+  containerName=$1
+  if [[ $(docker inspect --format '{{json .State.Health.Status }}' $containerName) == "\"healthy\"" ]]; then
     return 0
   fi
   return 1
-}
-
-host_check_connect_up()
-{
-  containerName=$1
-  FOUND=$(docker-compose logs $containerName | grep "Kafka Connect started")
-  if [ -z "$FOUND" ]; then
-    return 1
-  fi
-  return 0
 }
 
 host_check_schema_registered()
@@ -254,23 +228,6 @@ host_check_schema_registered()
   return 0
 }
 
-host_check_elasticsearch_ready()
-{
-  ES_NAME=$(curl -s -XGET http://localhost:9200/_cluster/health | jq -r ".cluster_name")
-  if [ "$ES_NAME" == "elasticsearch-cp-demo" ]; then
-    return 0
-  fi
-  return 1
-}
-
-host_check_kibana_ready()
-{
-  KIBANA_STATUS=$(curl -s -XGET http://localhost:5601/api/status | jq -r ".status.overall.state")
-  if [ "$KIBANA_STATUS" == "green" ]; then
-    return 0
-  fi
-  return 1
-}
 
 mds_login()
 {
