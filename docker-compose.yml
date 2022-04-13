@@ -11,7 +11,6 @@
 # you can execute the `docker-compose config` command.  Take note that some demos provide additional 
 # environment variable values by exporting them in a script prior to running `docker-compose up`.
 ---
-version: "2.3"
 services:
 
   zookeeper:
@@ -55,10 +54,6 @@ services:
     build:
       context: .
       dockerfile: tools/Dockerfile
-    depends_on:
-      - zookeeper
-      - kafka1
-      - kafka2
     volumes:
       - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets
@@ -83,9 +78,16 @@ services:
     image: ${REPOSITORY}/cp-server:${CONFLUENT_DOCKER_TAG}
     hostname: kafka1
     container_name: kafka1
+    healthcheck:
+      test: curl --user superUser:superUser -fail --silent --insecure https://kafka1:8091/kafka/v3/clusters/ --output /dev/null || exit 1
+      interval: 5s
+      retries: 25
+      start_period: 10s
     depends_on:
-      - zookeeper
-      - openldap
+      zookeeper:
+        condition: service_started
+      openldap:
+        condition: service_started
     volumes:
       - ./scripts/security/keypair:/tmp/conf
       - ./scripts/helper:/tmp/helper
@@ -256,6 +258,11 @@ services:
     image: ${REPOSITORY}/cp-server:${CONFLUENT_DOCKER_TAG}
     hostname: kafka2
     container_name: kafka2
+    healthcheck:
+      test: curl -u superUser:superUser -fail --silent --insecure https://kafka2:8091/kafka/v3/clusters/ --output /dev/null || exit 1
+      interval: 5s
+      retries: 25
+      start_period: 10s
     depends_on:
       - zookeeper
       - openldap
@@ -432,10 +439,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    healthcheck:
+      interval: 10s
+      retries: 20
+      test: curl -f http://localhost:8083 || exit 1
     depends_on:
-      - kafka1
-      - kafka2
-      - schemaregistry
+      schemaregistry:
+        condition: service_healthy
     volumes:
       - ./scripts/security:/etc/kafka/secrets
       - ./scripts/security/keypair:/tmp/conf
@@ -714,8 +724,10 @@ services:
     container_name: schemaregistry
     restart: always
     depends_on:
-      - kafka1
-      - kafka2
+      kafka1:
+        condition: service_healthy
+      kafka2:
+        condition: service_healthy
     volumes:
       - ./scripts/security:/etc/kafka/secrets
       - ./scripts/security/keypair:/tmp/conf
@@ -778,9 +790,8 @@ services:
       # healthcheck is currently incompatible with RBAC
       disable: true
     depends_on:
-      - kafka1
-      - kafka2
-      - connect
+      schemaregistry:
+        condition: service_healthy
     volumes:
       - ./scripts/security/keypair:/tmp/conf
       - ./scripts/helper:/tmp/helper
@@ -873,10 +884,8 @@ services:
     image: ${REPOSITORY}/cp-ksqldb-cli:${CONFLUENT_DOCKER_TAG}
     container_name: ksqldb-cli
     depends_on:
-      - kafka1
-      - kafka2
-      - connect
-      - ksqldb-server
+      ksqldb-server:
+        condition: service_healthy
     volumes:
       - ./scripts/ksqlDB/statements.sql:/tmp/statements.sql
     entrypoint: /bin/sh
@@ -886,9 +895,8 @@ services:
     image: ${REPOSITORY}/cp-kafka-rest:${CONFLUENT_DOCKER_TAG}
     restart: always
     depends_on:
-      - kafka1
-      - kafka2
-      - schemaregistry
+      schemaregistry:
+        condition: service_healthy
     hostname: restproxy
     container_name: restproxy
     volumes:
@@ -950,10 +958,8 @@ services:
     image: cnfldemos/cp-demo-kstreams:0.0.10
     restart: always
     depends_on:
-      - kafka1
-      - kafka2
-      - schemaregistry
-      - connect
+      schemaregistry:
+        condition: service_healthy
     hostname: streams-demo
     container_name: streams-demo
     volumes:
