@@ -18,6 +18,10 @@ services:
     restart: always
     hostname: zookeeper
     container_name: zookeeper
+    healthcheck:
+      test: echo srvr | nc zookeeper 2181 || exit 1
+      retries: 20
+      interval: 10s
     ports:
       - 2181:2181
       - 2182:2182
@@ -85,7 +89,7 @@ services:
       start_period: 20s
     depends_on:
       zookeeper:
-        condition: service_started
+        condition: service_healthy
       openldap:
         condition: service_started
     volumes:
