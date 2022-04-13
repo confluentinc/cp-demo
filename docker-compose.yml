@@ -448,7 +448,7 @@ services:
     healthcheck:
       interval: 10s
       retries: 20
-      test: curl --user superUser:superUser --fail --silent --insecure https://connect:8083/ --output /dev/null || exit 1
+      test: curl --user connectAdmin:connectAdmin --fail --silent --insecure https://connect:8083/ --output /dev/null || exit 1
     depends_on:
       schemaregistry:
         condition: service_healthy
