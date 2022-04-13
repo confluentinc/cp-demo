@@ -82,6 +82,7 @@ services:
     image: ${REPOSITORY}/cp-server:${CONFLUENT_DOCKER_TAG}
     hostname: kafka1
     container_name: kafka1
+    restart: always
     healthcheck:
       test: curl --user superUser:superUser -fail --silent --insecure https://kafka1:8091/kafka/v3/clusters/ --output /dev/null || exit 1
       interval: 5s
@@ -262,6 +263,7 @@ services:
     image: ${REPOSITORY}/cp-server:${CONFLUENT_DOCKER_TAG}
     hostname: kafka2
     container_name: kafka2
+    restart: always
     healthcheck:
       test: curl -u superUser:superUser -fail --silent --insecure https://kafka2:8092/kafka/v3/clusters/ --output /dev/null || exit 1
       interval: 5s
