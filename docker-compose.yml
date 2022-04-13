@@ -264,8 +264,10 @@ services:
       retries: 25
       start_period: 10s
     depends_on:
-      - zookeeper
-      - openldap
+      zookeeper:
+        condition: service_started
+      openldap:
+        condition: service_started
     volumes:
       - ./scripts/security/keypair:/tmp/conf
       - ./scripts/helper:/tmp/helper
@@ -723,6 +725,11 @@ services:
     image: ${REPOSITORY}/cp-schema-registry:${CONFLUENT_DOCKER_TAG}
     container_name: schemaregistry
     restart: always
+    healthcheck:
+      start_period: 10s
+      interval: 5s
+      retries: 20
+      test: curl --user superUser:superUser -fail --silent --insecure https://schemaregistry:8081/kafka/v3/clusters/ --output /dev/null || exit 1
     depends_on:
       kafka1:
         condition: service_healthy
@@ -787,8 +794,10 @@ services:
     container_name: ksqldb-server
     restart: always
     healthcheck:
-      # healthcheck is currently incompatible with RBAC
-      disable: true
+      start_period: 10s
+      interval: 5s
+      retries: 20
+      test: curl --user superUser:superUser -fail --silent --insecure http://ksqldb-server:8088 --output /dev/null || exit 1
     depends_on:
       schemaregistry:
         condition: service_healthy
