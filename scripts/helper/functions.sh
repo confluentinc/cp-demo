@@ -181,7 +181,7 @@ build_viz()
   echo
   echo "VIZ=true: running Elasticsearch, Elasticsearch sink connector, and Kibana"
 
-  docker-compose up -d elasticsearch kibana
+  docker-compose up --no-recreate -d elasticsearch kibana
 
   # Verify Elasticsearch is ready
   MAX_WAIT=240
