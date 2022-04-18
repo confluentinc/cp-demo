@@ -56,6 +56,13 @@ if [[ "$CLEAN" == "true" ]] ; then
   build_connect_image || exit 1
 fi
 
+# Check number of certificates
+NUM_CERTS=$(docker-compose exec connect keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
+if [[ "$NUM_CERTS" -eq "1" ]]; then
+  echo -e "\nERROR: Connect image did not build properly.  Expected ~147 trusted certificates but got $NUM_CERTS. Please troubleshoot and try again."
+  exit 1
+fi
+
 # Bring up tools
 docker-compose up --no-recreate -d tools
 
@@ -87,7 +94,7 @@ docker-compose exec kafka1 kafka-configs \
 
 
 # Bring up more containers
-docker-compose up --no-recreate -d schemaregistry connect control-center ksqldb-server ksqldb-cli restproxy
+docker-compose up --no-recreate -d schemaregistry connect control-center
 
 echo
 echo -e "Create topics in Kafka cluster:"
@@ -127,17 +134,6 @@ echo -e "\nConfluent Control Center modifications:"
 ${DIR}/helper/control-center-modifications.sh
 echo
 
-NUM_CERTS=$(docker-compose exec connect keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
-if [[ "$NUM_CERTS" -eq "1" ]]; then
-  echo -e "\nERROR: Connect image did not build properly.  Expected ~147 trusted certificates but got $NUM_CERTS. Please troubleshoot and try again."
-  exit 1
-fi
-
-# Verify Docker containers started
-if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
-  echo -e "\nERROR: At least one Docker container did not start properly, see 'docker-compose ps'. Did you increase the memory available to Docker to at least 8 GB (default is 2 GB)?\n"
-  exit 1
-fi
 
 # Register the same schema for the replicated topic wikipedia.parsed.replica as was created for the original topic wikipedia.parsed
 # In this case the replicated topic will register with the same schema ID as the original topic
@@ -151,6 +147,9 @@ ${DIR}/connectors/submit_replicator_config.sh || exit 1
 
 #-------------------------------------------------------------------------------
 
+# Start more containers
+docker-compose up --no-recreate -d ksqldb-server ksqldb-cli restproxy
+
 # Verify ksqlDB server has started
 echo
 echo
@@ -160,6 +159,10 @@ retry $MAX_WAIT host_check_up ksqldb-server || exit 1
 
 echo -e "\nRun ksqlDB queries:"
 ${DIR}/ksqlDB/run_ksqlDB.sh
+
+if [[ "$VIZ" == "true" ]]; then
+  build_viz || exit 1
+fi
 
 echo -e "\nStart additional consumers to read from topics WIKIPEDIANOBOT, WIKIPEDIA_COUNT_GT_1"
 ${DIR}/consumers/listen_WIKIPEDIANOBOT.sh
@@ -172,11 +175,14 @@ docker-compose up --no-recreate -d streams-demo
 echo "..."
 
 
-if [[ "$VIZ" == "true" ]]; then
-  build_viz || exit 1
-fi
 #-------------------------------------------------------------------------------
 
+
+# Verify Docker containers started
+if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
+  echo -e "\nERROR: At least one Docker container did not start properly, see 'docker-compose ps'. Did you increase the memory available to Docker to at least 8 GB (default is 2 GB)?\n"
+  exit 1
+fi
 
 echo
 echo -e "\nAvailable LDAP users:"
