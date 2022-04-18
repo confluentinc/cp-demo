@@ -11,7 +11,6 @@ github:
     # configure whether Gitpod registers itself as a status check to pull requests
     addCheck: true
 
-image: gitpod/workspace-full:2022-04-14-00-27-06
 
 tasks:
   - name: cp-demo
