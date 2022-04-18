@@ -11,7 +11,6 @@
 # you can execute the `docker-compose config` command.  Take note that some demos provide additional 
 # environment variable values by exporting them in a script prior to running `docker-compose up`.
 ---
-version: "2.3"
 services:
 
   zookeeper:
@@ -19,6 +18,10 @@ services:
     restart: always
     hostname: zookeeper
     container_name: zookeeper
+    healthcheck:
+      test: echo srvr | nc zookeeper 2181 || exit 1
+      retries: 20
+      interval: 10s
     ports:
       - 2181:2181
       - 2182:2182
@@ -55,10 +58,6 @@ services:
     build:
       context: .
       dockerfile: tools/Dockerfile
-    depends_on:
-      - zookeeper
-      - kafka1
-      - kafka2
     volumes:
       - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets
@@ -83,9 +82,16 @@ services:
     image: ${REPOSITORY}/cp-server:${CONFLUENT_DOCKER_TAG}
     hostname: kafka1
     container_name: kafka1
+    healthcheck:
+      test: curl --user superUser:superUser -fail --silent --insecure https://kafka1:8091/kafka/v3/clusters/ --output /dev/null || exit 1
+      interval: 10s
+      retries: 25
+      start_period: 20s
     depends_on:
-      - zookeeper
-      - openldap
+      zookeeper:
+        condition: service_healthy
+      openldap:
+        condition: service_started
     volumes:
       - ./scripts/security/keypair:/tmp/conf
       - ./scripts/helper:/tmp/helper
@@ -256,9 +262,16 @@ services:
     image: ${REPOSITORY}/cp-server:${CONFLUENT_DOCKER_TAG}
     hostname: kafka2
     container_name: kafka2
+    healthcheck:
+      test: curl -u superUser:superUser -fail --silent --insecure https://kafka2:8092/kafka/v3/clusters/ --output /dev/null || exit 1
+      interval: 10s
+      retries: 25
+      start_period: 20s
     depends_on:
-      - zookeeper
-      - openldap
+      zookeeper:
+        condition: service_started
+      openldap:
+        condition: service_started
     volumes:
       - ./scripts/security/keypair:/tmp/conf
       - ./scripts/helper:/tmp/helper
@@ -432,10 +445,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    healthcheck:
+      interval: 10s
+      retries: 20
+      test: curl --user connectAdmin:connectAdmin --fail --silent --insecure https://connect:8083/ --output /dev/null || exit 1
     depends_on:
-      - kafka1
-      - kafka2
-      - schemaregistry
+      schemaregistry:
+        condition: service_healthy
     volumes:
       - ./scripts/security:/etc/kafka/secrets
       - ./scripts/security/keypair:/tmp/conf
@@ -600,6 +616,11 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.0
     container_name: elasticsearch
     #restart: always
+    healthcheck:
+      start_period: 10s
+      interval: 10s
+      retries: 20
+      test: curl -s http://localhost:9200/_cluster/health | grep -vq '"status":"red"'
     ports:
       - 9200:9200
       - 9300:9300
@@ -612,8 +633,13 @@ services:
     image: docker.elastic.co/kibana/kibana-oss:7.10.0
     container_name: kibana
     restart: always
+    healthcheck:
+      interval: 10s
+      retries: 20
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://kibana:5601/api/status || exit 1
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     ports:
       - 5601:5601
     environment:
@@ -628,11 +654,14 @@ services:
     image: ${REPOSITORY}/cp-enterprise-control-center:${CONFLUENT_DOCKER_TAG}
     hostname: control-center
     container_name: control-center
+    healthcheck:
+      start_period: 10s
+      interval: 10s
+      retries: 20
+      test: curl --fail --silent http://control-center:9021 --output /dev/null || exit 1
     depends_on:
-      - kafka1
-      - kafka2
-      - schemaregistry
-      - connect
+      schemaregistry:
+        condition: service_healthy
     volumes:
       - ./scripts/security/keypair:/tmp/conf
       - ./scripts/security:/etc/kafka/secrets
@@ -713,9 +742,16 @@ services:
     image: ${REPOSITORY}/cp-schema-registry:${CONFLUENT_DOCKER_TAG}
     container_name: schemaregistry
     restart: always
+    healthcheck:
+      start_period: 10s
+      interval: 10s
+      retries: 20
+      test: curl --user superUser:superUser --fail --silent --insecure https://schemaregistry:8085/subjects --output /dev/null || exit 1
     depends_on:
-      - kafka1
-      - kafka2
+      kafka1:
+        condition: service_healthy
+      kafka2:
+        condition: service_healthy
     volumes:
       - ./scripts/security:/etc/kafka/secrets
       - ./scripts/security/keypair:/tmp/conf
@@ -775,12 +811,13 @@ services:
     container_name: ksqldb-server
     restart: always
     healthcheck:
-      # healthcheck is currently incompatible with RBAC
-      disable: true
+      start_period: 10s
+      interval: 10s
+      retries: 20
+      test: curl --user ksqlDBUser:ksqlDBUser -fail --silent http://ksqldb-server:8088/info | grep RUNNING 1>/dev/null || exit 1
     depends_on:
-      - kafka1
-      - kafka2
-      - connect
+      schemaregistry:
+        condition: service_healthy
     volumes:
       - ./scripts/security/keypair:/tmp/conf
       - ./scripts/helper:/tmp/helper
@@ -873,10 +910,8 @@ services:
     image: ${REPOSITORY}/cp-ksqldb-cli:${CONFLUENT_DOCKER_TAG}
     container_name: ksqldb-cli
     depends_on:
-      - kafka1
-      - kafka2
-      - connect
-      - ksqldb-server
+      ksqldb-server:
+        condition: service_healthy
     volumes:
       - ./scripts/ksqlDB/statements.sql:/tmp/statements.sql
     entrypoint: /bin/sh
@@ -886,9 +921,8 @@ services:
     image: ${REPOSITORY}/cp-kafka-rest:${CONFLUENT_DOCKER_TAG}
     restart: always
     depends_on:
-      - kafka1
-      - kafka2
-      - schemaregistry
+      schemaregistry:
+        condition: service_healthy
     hostname: restproxy
     container_name: restproxy
     volumes:
@@ -950,10 +984,8 @@ services:
     image: cnfldemos/cp-demo-kstreams:0.0.10
     restart: always
     depends_on:
-      - kafka1
-      - kafka2
-      - schemaregistry
-      - connect
+      schemaregistry:
+        condition: service_healthy
     hostname: streams-demo
     container_name: streams-demo
     volumes:
