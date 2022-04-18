@@ -43,7 +43,7 @@ fi
 #-------------------------------------------------------------------------------
 
 # Bring up openldap
-docker-compose up -d openldap
+docker-compose up --no-recreate -d openldap
 sleep 5
 if [[ $(docker-compose ps openldap | grep Exit) =~ "Exit" ]] ; then
   echo "ERROR: openldap container could not start. Troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/troubleshooting.html"
@@ -56,21 +56,28 @@ if [[ "$CLEAN" == "true" ]] ; then
   build_connect_image || exit 1
 fi
 
+# Check number of certificates
+NUM_CERTS=$(docker-compose exec connect keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
+if [[ "$NUM_CERTS" -eq "1" ]]; then
+  echo -e "\nERROR: Connect image did not build properly.  Expected ~147 trusted certificates but got $NUM_CERTS. Please troubleshoot and try again."
+  exit 1
+fi
+
 # Bring up tools
-docker-compose up -d tools
+docker-compose up --no-recreate -d tools
 
 # Add root CA to container (obviates need for supplying it at CLI login '--ca-cert-path')
 docker-compose exec tools bash -c "cp /etc/kafka/secrets/snakeoil-ca-1.crt /usr/local/share/ca-certificates && /usr/sbin/update-ca-certificates"
 
 
 # Bring up base kafka cluster
-docker-compose up -d zookeeper kafka1 kafka2
+docker-compose up --no-recreate -d zookeeper kafka1 kafka2
 
 # Verify MDS has started
 MAX_WAIT=150
 echo "Waiting up to $MAX_WAIT seconds for MDS to start"
-retry $MAX_WAIT host_check_mds_up || exit 1
-sleep 5
+retry $MAX_WAIT host_check_up kafka1 || exit 1
+retry $MAX_WAIT host_check_up kafka2 || exit 1
 
 echo "Creating role bindings for principals"
 docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh" || exit 1
@@ -87,7 +94,7 @@ docker-compose exec kafka1 kafka-configs \
 
 
 # Bring up more containers
-docker-compose up -d schemaregistry connect control-center
+docker-compose up --no-recreate -d schemaregistry connect control-center
 
 echo
 echo -e "Create topics in Kafka cluster:"
@@ -96,37 +103,7 @@ docker-compose exec tools bash -c "/tmp/helper/create-topics.sh" || exit 1
 # Verify Kafka Connect Worker has started
 MAX_WAIT=240
 echo -e "\nWaiting up to $MAX_WAIT seconds for Connect to start"
-retry $MAX_WAIT host_check_connect_up "connect" || exit 1
-
-# Verify Confluent Control Center has started
-MAX_WAIT=300
-echo
-echo "Waiting up to $MAX_WAIT seconds for Confluent Control Center to start"
-retry $MAX_WAIT host_check_control_center_up || exit 1
-
-echo -e "\nConfluent Control Center modifications:"
-${DIR}/helper/control-center-modifications.sh
-echo
-
-NUM_CERTS=$(docker-compose exec connect keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
-if [[ "$NUM_CERTS" -eq "1" ]]; then
-  echo -e "\nERROR: Connect image did not build properly.  Expected ~147 trusted certificates but got $NUM_CERTS. Please troubleshoot and try again."
-  exit 1
-fi
-
-echo
-docker-compose up -d ksqldb-server ksqldb-cli restproxy
-echo "..."
-
-if [[ "$VIZ" == "true" ]]; then
-  build_viz || exit 1
-fi
-
-# Verify Docker containers started
-if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
-  echo -e "\nERROR: At least one Docker container did not start properly, see 'docker-compose ps'. Did you increase the memory available to Docker to at least 8 GB (default is 2 GB)?\n"
-  exit 1
-fi
+retry $MAX_WAIT host_check_up connect || exit 1
 
 #-------------------------------------------------------------------------------
 
@@ -147,6 +124,17 @@ retry $MAX_WAIT host_check_schema_registered || exit 1
 
 #-------------------------------------------------------------------------------
 
+# Verify Confluent Control Center has started
+MAX_WAIT=300
+echo
+echo "Waiting up to $MAX_WAIT seconds for Confluent Control Center to start"
+retry $MAX_WAIT host_check_up control-center || exit 1
+
+echo -e "\nConfluent Control Center modifications:"
+${DIR}/helper/control-center-modifications.sh
+echo
+
+
 # Register the same schema for the replicated topic wikipedia.parsed.replica as was created for the original topic wikipedia.parsed
 # In this case the replicated topic will register with the same schema ID as the original topic
 echo -e "\nRegister subject wikipedia.parsed.replica-value in Schema Registry"
@@ -159,15 +147,22 @@ ${DIR}/connectors/submit_replicator_config.sh || exit 1
 
 #-------------------------------------------------------------------------------
 
+# Start more containers
+docker-compose up --no-recreate -d ksqldb-server ksqldb-cli restproxy
+
 # Verify ksqlDB server has started
 echo
 echo
 MAX_WAIT=120
 echo -e "\nWaiting up to $MAX_WAIT seconds for ksqlDB server to start"
-retry $MAX_WAIT host_check_ksqlDBserver_up || exit 1
+retry $MAX_WAIT host_check_up ksqldb-server || exit 1
 
 echo -e "\nRun ksqlDB queries:"
 ${DIR}/ksqlDB/run_ksqlDB.sh
+
+if [[ "$VIZ" == "true" ]]; then
+  build_viz || exit 1
+fi
 
 echo -e "\nStart additional consumers to read from topics WIKIPEDIANOBOT, WIKIPEDIA_COUNT_GT_1"
 ${DIR}/consumers/listen_WIKIPEDIANOBOT.sh
@@ -176,11 +171,18 @@ ${DIR}/consumers/listen_WIKIPEDIA_COUNT_GT_1.sh
 echo
 echo
 echo "Start the Kafka Streams application wikipedia-activity-monitor"
-docker-compose up -d streams-demo
+docker-compose up --no-recreate -d streams-demo
 echo "..."
+
 
 #-------------------------------------------------------------------------------
 
+
+# Verify Docker containers started
+if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
+  echo -e "\nERROR: At least one Docker container did not start properly, see 'docker-compose ps'. Did you increase the memory available to Docker to at least 8 GB (default is 2 GB)?\n"
+  exit 1
+fi
 
 echo
 echo -e "\nAvailable LDAP users:"

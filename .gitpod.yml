@@ -11,6 +11,7 @@ github:
     # configure whether Gitpod registers itself as a status check to pull requests
     addCheck: true
 
+
 tasks:
   - name: cp-demo
     before: |
