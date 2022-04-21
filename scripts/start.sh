@@ -63,14 +63,6 @@ if [[ "$CLEAN" == "true" ]] ; then
         -deststorepass confluent -keypass confluent 
 fi
 
-# Add 
-
-# Check number of certificates
-NUM_CERTS=$(docker-compose exec connect keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
-if [[ "$NUM_CERTS" -eq "1" ]]; then
-  echo -e "\nERROR: Connect image did not build properly.  Expected ~147 trusted certificates but got $NUM_CERTS. Please troubleshoot and try again."
-  exit 1
-fi
 
 # Bring up tools
 docker-compose up --no-recreate -d tools
@@ -114,6 +106,12 @@ MAX_WAIT=240
 echo -e "\nWaiting up to $MAX_WAIT seconds for Connect to start"
 retry $MAX_WAIT host_check_up connect || exit 1
 
+# Check number of certificates
+NUM_CERTS=$(docker-compose exec connect keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
+if [[ "$NUM_CERTS" -eq "1" ]]; then
+  echo -e "\nERROR: Connect image did not build properly.  Expected ~147 trusted certificates but got $NUM_CERTS. Please troubleshoot and try again."
+  exit 1
+fi
 #-------------------------------------------------------------------------------
 
 echo -e "\nStart streaming from the Wikipedia SSE source connector:"
