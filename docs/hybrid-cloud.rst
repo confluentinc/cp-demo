@@ -178,6 +178,7 @@ Enable :ref:`telemetry_reporter` on the on-prem cluster, and configure it to sen
    .. figure:: images/hosted-monitoring.png
 
 
+## TODO Replace with cluster link
 .. _cp-demo-replicator-to-ccloud:
 
 |crep| to |ccloud|

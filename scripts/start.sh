@@ -52,9 +52,18 @@ fi
 
 # Build custom tools image and connect image
 build_tools_image
+build_connect_image
+
 if [[ "$CLEAN" == "true" ]] ; then
-  build_connect_image || exit 1
+  # Add default java certificates to kafka.connect.truststore.jks
+  docker run --rm --name cert-runner -u root -v $PWD:/data  \
+    localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} \
+      keytool -importkeystore -srckeystore /usr/lib/jvm/zulu11-ca/lib/security/cacerts \
+        -srcstorepass changeit -destkeystore /data/scripts/security/kafka.connect.truststore.jks \
+        -deststorepass confluent -keypass confluent 
 fi
+
+# Add 
 
 # Check number of certificates
 NUM_CERTS=$(docker-compose exec connect keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
@@ -141,9 +150,6 @@ echo -e "\nRegister subject wikipedia.parsed.replica-value in Schema Registry"
 SCHEMA=$(docker exec schemaregistry curl -s -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed-value/versions/latest | jq .schema)
 docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -H "Content-Type: application/vnd.schemaregistry.v1+json" --data "{\"schema\": $SCHEMA}" -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed.replica-value/versions
 
-echo
-echo -e "\nStart Confluent Replicator to loopback to on-prem cluster:"
-${DIR}/connectors/submit_replicator_config.sh || exit 1
 
 #-------------------------------------------------------------------------------
 

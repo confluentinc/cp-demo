@@ -167,10 +167,6 @@ build_connect_image()
     exit 1
   }
 
-  # Copy the updated kafka.connect.truststore.jks back to the host
-  docker create --name cp-demo-tmp-connect localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}
-  docker cp cp-demo-tmp-connect:/tmp/kafka.connect.truststore.jks ${DIR}/../security/kafka.connect.truststore.jks
-  docker rm cp-demo-tmp-connect
 }
 
 build_viz()

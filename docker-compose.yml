@@ -492,7 +492,7 @@ services:
       CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CLASSPATH: "/usr/share/java/kafka-connect-replicator/replicator-rest-extension-${CONNECTOR_VERSION}.jar:/usr/share/java/monitoring-interceptors/*"
+      CLASSPATH: "/usr/share/java/monitoring-interceptors/*"
 
       # Connect Worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
@@ -576,10 +576,8 @@ services:
       CONNECT_ADMIN_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_ADMIN_SSL_KEY_PASSWORD: confluent
 
-      # io.confluent.connect.replicator.monitoring.ReplicatorMonitoringExtension - Confluent Replicator
       # io.confluent.connect.security.ConnectSecurityExtension - RBAC
       # io.confluent.connect.secretregistry.ConnectSecretRegistryExtension - Secret Registry
-      CONNECT_REST_EXTENSION_CLASSES: io.confluent.connect.replicator.monitoring.ReplicatorMonitoringExtension,io.confluent.connect.security.ConnectSecurityExtension,io.confluent.connect.secretregistry.ConnectSecretRegistryExtension
       CONNECT_REST_SERVLET_INITIALIZOR_CLASSES: 'io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler'
       CONNECT_PUBLIC_KEY_PATH: /tmp/conf/public.pem
 
@@ -608,11 +606,6 @@ services:
               password="connectAdmin" \
               metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
 
-      # KAFKA_OPTS required for ReplicatorMonitoringExtension
-      KAFKA_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.connect.truststore.jks
-                  -Djavax.net.ssl.trustStorePassword=confluent
-                  -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.connect.keystore.jks
-                  -Djavax.net.ssl.keyStorePassword=confluent
       CONNECT_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
 
       # Reduce Connect memory utilization

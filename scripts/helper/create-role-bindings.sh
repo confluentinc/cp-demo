@@ -165,11 +165,6 @@ confluent iam rbac role-binding create \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rbac role-binding create \
-    --principal $CONNECTOR_PRINCIPAL \
-    --role ResourceOwner \
-    --resource Group:connect-replicator \
-    --kafka-cluster-id $KAFKA_CLUSTER_ID \
 
 echo "Creating role bindings for elasticsearch-ksqldb connector"
 

@@ -36,26 +36,27 @@ echo
 echo "Sleep an additional 90s to wait for all Confluent Cloud metadata to propagate"
 sleep 90
 
-echo -e "\nStart Confluent Replicator to Confluent Cloud:"
-CONNECTOR_SUBMITTER="User:connectorSubmitter"
-KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${VALIDATE_DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
-CONNECT=connect-cluster
-${VALIDATE_DIR}/../helper/refresh_mds_login.sh
-docker-compose exec tools bash -c "confluent iam rbac role-binding create \
-    --principal $CONNECTOR_SUBMITTER \
-    --role ResourceOwner \
-    --resource Connector:replicate-topic-to-ccloud \
-    --kafka-cluster-id $KAFKA_CLUSTER_ID \
-    --connect-cluster-id $CONNECT"
-${VALIDATE_DIR}/../connectors/submit_replicator_to_ccloud_config.sh
+## TODO: Replace with cluster link
+# echo -e "\nStart Confluent Replicator to Confluent Cloud:"
+# CONNECTOR_SUBMITTER="User:connectorSubmitter"
+# KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${VALIDATE_DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
+# CONNECT=connect-cluster
+# ${VALIDATE_DIR}/../helper/refresh_mds_login.sh
+# docker-compose exec tools bash -c "confluent iam rbac role-binding create \
+#     --principal $CONNECTOR_SUBMITTER \
+#     --role ResourceOwner \
+#     --resource Connector:replicate-topic-to-ccloud \
+#     --kafka-cluster-id $KAFKA_CLUSTER_ID \
+#     --connect-cluster-id $CONNECT"
+# ${VALIDATE_DIR}/../connectors/submit_replicator_to_ccloud_config.sh
 
-# Verify Replicator to Confluent Cloud has started
-echo
-echo
-MAX_WAIT=120
-echo "Waiting up to $MAX_WAIT seconds for Replicator to Confluent Cloud to start"
-retry $MAX_WAIT check_connector_status_running replicate-topic-to-ccloud || exit 1
-echo "Replicator started!"
+# # Verify Replicator to Confluent Cloud has started
+# echo
+# echo
+# MAX_WAIT=120
+# echo "Waiting up to $MAX_WAIT seconds for Replicator to Confluent Cloud to start"
+# retry $MAX_WAIT check_connector_status_running replicate-topic-to-ccloud || exit 1
+# echo "Replicator started!"
 
 # Create credentials for the cloud resource
 echo

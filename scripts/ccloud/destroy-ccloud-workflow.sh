@@ -24,20 +24,21 @@ confluent login --save || exit 1
 
 #### Teardown ####
 
-echo
-read -p "This script will remove Replicator and destroy the Confluent Cloud environment for service account ID $SERVICE_ACCOUNT_ID.  Do you want to proceed? [y/n] " -n 1 -r
-echo
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
-  echo
-  echo "--> Don't forget to destroy your Confluent Cloud environment, which may accrue hourly charges even if you are not actively using it."
-  echo
-  exit 1
-fi
+## TODO replace replicator with cluster link
+# echo
+# read -p "This script will remove Replicator and destroy the Confluent Cloud environment for service account ID $SERVICE_ACCOUNT_ID.  Do you want to proceed? [y/n] " -n 1 -r
+# echo
+# if [[ ! $REPLY =~ ^[Yy]$ ]]
+# then
+#   echo
+#   echo "--> Don't forget to destroy your Confluent Cloud environment, which may accrue hourly charges even if you are not actively using it."
+#   echo
+#   exit 1
+# fi
 
 
-echo "Deleting Replicator to Confluent Cloud"
-docker-compose exec connect curl -XDELETE --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectorSubmitter:connectorSubmitter https://connect:8083/connectors/replicate-topic-to-ccloud
+# echo "Deleting Replicator to Confluent Cloud"
+# docker-compose exec connect curl -XDELETE --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectorSubmitter:connectorSubmitter https://connect:8083/connectors/replicate-topic-to-ccloud
 
 echo "Unconfiguring Telemetry Reporter"
 docker-compose exec kafka1 kafka-configs \
