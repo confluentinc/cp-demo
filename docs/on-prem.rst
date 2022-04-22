@@ -271,16 +271,15 @@ Topics
 |kconnect-long|
 ---------------
 
-This example runs three connectors:
+This example runs two connectors:
 
 - SSE source connector
 - Elasticsearch sink connector
-- |crep-full|
 
 They are running on a |kconnect| worker that is configured with |cp| security features.
 The |kconnect| worker's embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
 
-#. The |kconnect-long| Docker container is running a custom image. Its base image is ``cp-enterprise-replicator``, which bundles |kconnect| and |crep|, and on top of that, it has a specific set of connectors and transformations needed by ``cp-demo``. See :devx-cp-demo:`this Dockerfile|Dockerfile` for more details.
+#. The |kconnect-long| Docker container is running a custom image which has a specific set of connectors and transformations needed by ``cp-demo``. See :devx-cp-demo:`this Dockerfile|Dockerfile` for more details.
 
 #. |c3| uses the |kconnect-long| API to manage multiple :ref:`connect clusters <kafka_connect>`.  Click on "Connect".
 
@@ -291,14 +290,11 @@ The |kconnect| worker's embedded producer is configured to be idempotent, exactl
 #. Verify the connectors running in this example:
 
    - source connector ``wikipedia-sse``: view the example's SSE source connector :devx-cp-demo:`configuration file|scripts/connectors/submit_wikipedia_sse_config.sh`.
-   - source connector ``replicate-topic``: view the example's |crep| connector :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_config.sh`.
    - sink connector ``elasticsearch-ksqldb`` consuming from the Kafka topic ``WIKIPEDIABOT``: view the example's Elasticsearch sink connector :devx-cp-demo:`configuration file|scripts/connectors/submit_elastic_sink_config.sh`.
 
    .. figure:: images/connector_list.png
 
 #. Click any connector name to view or modify any details of the connector configuration and custom transforms.
-
-   .. figure:: images/connect_replicator_settings.png
 
 
 .. _ksql-demo-3:
@@ -433,57 +429,58 @@ Consumers
       :alt: image
 
 
-|crep-full|
------------
+.. TODO: replace replicator with a different connector 
+.. |crep-full|
+.. -----------
 
-|crep-full| copies data from a source Kafka cluster to a
-destination Kafka cluster. The source and destination clusters are
-typically different clusters, but in this example, |crep| is doing
-intra-cluster replication, *i.e.*, the source and destination Kafka
-clusters are the same. As with the rest of the components in the
-solution, |crep-full| is also configured with security.
+.. |crep-full| copies data from a source Kafka cluster to a
+.. destination Kafka cluster. The source and destination clusters are
+.. typically different clusters, but in this example, |crep| is doing
+.. intra-cluster replication, *i.e.*, the source and destination Kafka
+.. clusters are the same. As with the rest of the components in the
+.. solution, |crep-full| is also configured with security.
 
-#. View |crep| status and throughput in a dedicated view in |c3|.
+.. #. View |crep| status and throughput in a dedicated view in |c3|.
 
-   .. figure:: images/replicator_c3_view.png
-      :alt: image
+..    .. figure:: images/replicator_c3_view.png
+..       :alt: image
 
-#. **Consumers**: monitor throughput and latency of |crep-full|.
-   |crep| is a |kconnect-long| source connector and has a corresponding consumer group ``connect-replicator``.
+.. #. **Consumers**: monitor throughput and latency of |crep-full|.
+..    |crep| is a |kconnect-long| source connector and has a corresponding consumer group ``connect-replicator``.
 
-   .. figure:: images/replicator_consumer_group_list.png
-      :alt: image
+..    .. figure:: images/replicator_consumer_group_list.png
+..       :alt: image
 
-#. View |crep| Consumer Lag.
+.. #. View |crep| Consumer Lag.
 
-   .. figure:: images/replicator_consumer_lag.png
-      :alt: image
+..    .. figure:: images/replicator_consumer_lag.png
+..       :alt: image
 
-#. View |crep| Consumption metrics.
+.. #. View |crep| Consumption metrics.
 
-   .. figure:: images/replicator_consumption.png
-      :alt: image
+..    .. figure:: images/replicator_consumption.png
+..       :alt: image
 
-#. **Connect**: pause the |crep| connector in **Settings**
-   by pressing the pause icon in the top right and wait for 10 seconds until it takes effect.  This stops
-   consumption for the related consumer group.
+.. #. **Connect**: pause the |crep| connector in **Settings**
+..    by pressing the pause icon in the top right and wait for 10 seconds until it takes effect.  This stops
+..    consumption for the related consumer group.
 
-   .. figure:: images/pause_connector_replicator.png
-      :alt: image
+..    .. figure:: images/pause_connector_replicator.png
+..       :alt: image
 
-#. Observe that the ``connect-replicator`` consumer group has stopped
-   consumption.
+.. #. Observe that the ``connect-replicator`` consumer group has stopped
+..    consumption.
 
-   .. figure:: images/replicator_stopped.png
+..    .. figure:: images/replicator_stopped.png
 
-#. Restart the |crep| connector.
+.. #. Restart the |crep| connector.
 
-#. Observe that the ``connect-replicator`` consumer group has resumed consumption. Notice several things:
+.. #. Observe that the ``connect-replicator`` consumer group has resumed consumption. Notice several things:
 
-   * Even though the consumer group `connect-replicator` was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
-   * The latency peaks and then gradually decreases, because this is also relative to the produce timestamp.
+..    * Even though the consumer group `connect-replicator` was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
+..    * The latency peaks and then gradually decreases, because this is also relative to the produce timestamp.
 
-#. Next step: Learn more about |crep| with the :ref:`Replicator Tutorial <replicator>`.
+.. #. Next step: Learn more about |crep| with the :ref:`Replicator Tutorial <replicator>`.
 
 
 Security
@@ -924,16 +921,6 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
       docker-compose exec kafka1 kafka-topics \
          --describe \
          --topic wikipedia.parsed \
-         --bootstrap-server kafka1:9091 \
-         --command-config /etc/kafka/secrets/client_sasl_plain.config
-
-#. Describe the topic ``wikipedia.parsed.replica``, which is the topic that |crep| has replicated from ``wikipedia.parsed``. Notice that it also has enabled |sv|, because |crep| default is ``topic.config.sync=true`` (see |crep| `Destination Topics <https://docs.confluent.io/kafka-connect-replicator/current/configuration_options.html#destination-topics>`__).
-
-   .. sourcecode:: bash
-
-      docker-compose exec kafka1 kafka-topics \
-         --describe \
-         --topic wikipedia.parsed.replica \
          --bootstrap-server kafka1:9091 \
          --command-config /etc/kafka/secrets/client_sasl_plain.config
 
