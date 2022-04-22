@@ -14,8 +14,15 @@ ${DIR}/stop.sh
 
 CLEAN=${CLEAN:-false}
 
+# Build Kafka Connect image with connector plugins
+build_connect_image
+
+NUM_CERTS=$(
+docker run --rm -v $DIR/security:/etc/kafka/secrets localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} \
+    keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
+
 # Set the CLEAN variable to true if cert doesn't exist
-if ! [[ -f "${DIR}/security/controlCenterAndKsqlDBServer-ca1-signed.crt" ]]; then
+if ! [[ -f "${DIR}/security/controlCenterAndKsqlDBServer-ca1-signed.crt" ]] || [[ "$NUM_CERTS" -eq "1" ]]; then
   echo "INFO: Running with CLEAN=true because instructed or certificates don't yet exist."
   clean_demo_env
   CLEAN=true
@@ -31,15 +38,11 @@ echo "  VIZ=$VIZ"
 echo "  C3_KSQLDB_HTTPS=$C3_KSQLDB_HTTPS"
 echo
 
+
 if [[ "$CLEAN" == "true" ]] ; then
-  create_certificates
+  create_certificates || exit 1
 fi
 
-# Fail fast if cert doesn't exist at this point
-if ! [[ -f "${DIR}/security/controlCenterAndKsqlDBServer-ca1-signed.crt" ]]; then
-  echo "ERROR: Certificates were not successfully created"
-  exit 1
-fi
 
 #-------------------------------------------------------------------------------
 
@@ -51,18 +54,6 @@ if [[ $(docker-compose ps openldap | grep Exit) =~ "Exit" ]] ; then
   exit 1
 fi
 
-# Build custom tools image and connect image
-# build_tools_image
-build_connect_image
-
-if [[ "$CLEAN" == "true" ]] ; then
-  # Add default java certificates to kafka.connect.truststore.jks
-  docker run --rm --name cert-runner -u root -v $PWD:/data  \
-    localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} \
-      keytool -importkeystore -srckeystore /usr/lib/jvm/zulu11-ca/lib/security/cacerts \
-        -srcstorepass changeit -destkeystore /data/scripts/security/kafka.connect.truststore.jks \
-        -deststorepass confluent -keypass confluent 
-fi
 
 
 # Bring up tools
@@ -107,12 +98,6 @@ MAX_WAIT=240
 echo -e "\nWaiting up to $MAX_WAIT seconds for Connect to start"
 retry $MAX_WAIT host_check_up connect || exit 1
 
-# Check number of certificates
-NUM_CERTS=$(docker-compose exec connect keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
-if [[ "$NUM_CERTS" -eq "1" ]]; then
-  echo -e "\nERROR: Connect image did not build properly.  Expected ~147 trusted certificates but got $NUM_CERTS. Please troubleshoot and try again."
-  exit 1
-fi
 #-------------------------------------------------------------------------------
 
 echo -e "\nStart streaming from the Wikipedia SSE source connector:"

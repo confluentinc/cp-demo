@@ -129,6 +129,18 @@ create_certificates()
   echo -e "Setting insecure permissions on some files in ${DIR}/../security for demo purposes\n"
   chmod 644 ${DIR}/../security/keypair/keypair.pem
   chmod 644 ${DIR}/../security/*.key
+
+  echo "\nINFO: Adding default java certificates to kafka.connect.truststore.jks to reach to Wikipedia over HTTPS"
+  NUM_CERTS=$(docker run --rm --name cert-runner -u root -v $DIR/security:/etc/kafka/secrets  \
+    localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} \
+      keytool -importkeystore -srckeystore /usr/lib/jvm/zulu11-ca/lib/security/cacerts \
+        -srcstorepass changeit -destkeystore /etc/kafka/secrets/kafka.connect.truststore.jks \
+        -deststorepass confluent -keypass confluent && \
+      keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
+  if [[ "$NUM_CERTS" -eq "1" ]]; then
+    echo -e "\nERROR: Expected ~147 trusted certificates on the Kafka Connect server but got $NUM_CERTS. Please troubleshoot and try again."
+    exit 1
+  fi
 }
 
 build_tools_image()
