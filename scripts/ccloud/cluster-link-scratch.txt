@@ -1,0 +1,29 @@
+CP_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert scripts/security/snakeoil-ca-1.crt | jq -r ".id")
+
+confluent login --save
+
+confluent environment list -o json | jq -r '.[] | select(.name=="chuck") | .id' | xargs confluent environment use
+
+confluent kafka cluster list -o json | jq -r '.[] | select(.name | contains "cp-demo") | .id' | xargs confluent kafka cluster use
+
+export CC_CLUSTER_ID=$(confluent kafka cluster describe -o json | jq -r '.id')
+
+confluent iam service-account create cp-demo-cluster-link --description "service accound for cp demo cluster link"
+
+export CC_SERVICE_ACCOUNT=$(confluent iam service-account list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
+
+confluent api-key create --resource $CC_CLUSTER_ID --service-account $CC_SERVICE_ACCOUNT --description "cp demo cluster link"
+
+confluent kafka acl create --allow --service-account $CC_SERVICE_ACCOUNT --operation ALTER --cluster-scope  --cluster $CC_CLUSTER_ID
+
+# Create cc half of link
+confluent kafka link create cp-cc-cluster-link --cluster $CC_CLUSTER_ID \
+  --source-cluster-id $CP_CLUSTER_ID \
+  --config-file ./scripts/ccloud/cluster-link-ccloud.config \
+  --source-bootstrap-server 0.0.0.0
+
+confluent kafka link list --cluster $CC_CLUSTER_ID
+
+confluent kafka link describe cp-cc-cluster-link --cluster $CC_CLUSTER_ID
+
+export CC_BOOTSTRAP_ENDPOINT=$(confluent kafka cluster describe -o json | jq -r .endpoint)
