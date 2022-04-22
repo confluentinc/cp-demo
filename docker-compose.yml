@@ -52,12 +52,9 @@ services:
       - ./scripts/security:/etc/kafka/secrets
 
   tools:
-    image: localbuild/tools:${CONFLUENT_DOCKER_TAG}
+    image: cnfldemos/tools:0.3
     hostname: tools
     container_name: tools
-    build:
-      context: .
-      dockerfile: tools/Dockerfile
     volumes:
       - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets

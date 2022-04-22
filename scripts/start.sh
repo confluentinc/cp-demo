@@ -12,20 +12,15 @@ preflight_checks || exit
 # Stop existing Docker containers
 ${DIR}/stop.sh
 
-# Regenerate certificates and the Connect or tools Docker image if any of the following conditions are true
-if [[ "$CLEAN" == "true" ]] || \
- ! [[ -f "${DIR}/security/controlCenterAndKsqlDBServer-ca1-signed.crt" ]] || \
- ! [[ $(docker images --format "{{.Repository}}:{{.Tag}}" localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}) =~ localbuild ]] || \
- ! [[ $(docker images --format "{{.Repository}}:{{.Tag}}" localbuild/tools:${CONFLUENT_DOCKER_TAG}) =~ localbuild ]] ;
-then
-  if [[ -z $CLEAN ]] || [[ "$CLEAN" == "false" ]] ; then
-    echo "INFO: Setting CLEAN=true because minimum conditions not met (existing certificates, Connect Docker image localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}), tools Docker image localbuild/tools:${CONFLUENT_DOCKER_TAG})"
-  fi
-  CLEAN=true
+CLEAN=${CLEAN:-false}
+
+# Set the CLEAN variable to true if cert doesn't exist
+if ! [[ -f "${DIR}/security/controlCenterAndKsqlDBServer-ca1-signed.crt" ]]; then
+  echo "INFO: Running with CLEAN=true because instructed or certificates don't yet exist."
   clean_demo_env
-else
-  CLEAN=false
+  CLEAN=true
 fi
+
 
 echo
 echo "Environment parameters"
@@ -40,6 +35,12 @@ if [[ "$CLEAN" == "true" ]] ; then
   create_certificates
 fi
 
+# Fail fast if cert doesn't exist at this point
+if ! [[ -f "${DIR}/security/controlCenterAndKsqlDBServer-ca1-signed.crt" ]]; then
+  echo "ERROR: Certificates were not successfully created"
+  exit 1
+fi
+
 #-------------------------------------------------------------------------------
 
 # Bring up openldap
@@ -51,7 +52,7 @@ if [[ $(docker-compose ps openldap | grep Exit) =~ "Exit" ]] ; then
 fi
 
 # Build custom tools image and connect image
-build_tools_image
+# build_tools_image
 build_connect_image
 
 if [[ "$CLEAN" == "true" ]] ; then
