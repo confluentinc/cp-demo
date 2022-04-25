@@ -112,6 +112,16 @@ clean_demo_env()
 
 }
 
+check_num_certs() {
+  local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+  NUM_CERTS=$(docker run --rm -v $DIR/../security:/etc/kafka/secrets localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} \
+    keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
+  if [[ "$NUM_CERTS" -eq "1" ]]; then
+    return 1
+  fi
+  return 0
+}
+
 create_certificates()
 {
   local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
@@ -130,17 +140,15 @@ create_certificates()
   chmod 644 ${DIR}/../security/keypair/keypair.pem
   chmod 644 ${DIR}/../security/*.key
 
-  echo "\nINFO: Adding default java certificates to kafka.connect.truststore.jks to reach to Wikipedia over HTTPS"
-  NUM_CERTS=$(docker run --rm --name cert-runner -u root -v $DIR/security:/etc/kafka/secrets  \
+  echo -e "INFO: Adding default java certificates to kafka.connect.truststore.jks to reach to Wikipedia over HTTPS"
+  docker run --name cert-runner -u root -v $DIR/../security:/etc/kafka/secrets  \
     localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} \
       keytool -importkeystore -srckeystore /usr/lib/jvm/zulu11-ca/lib/security/cacerts \
         -srcstorepass changeit -destkeystore /etc/kafka/secrets/kafka.connect.truststore.jks \
-        -deststorepass confluent -keypass confluent && \
-      keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
-  if [[ "$NUM_CERTS" -eq "1" ]]; then
-    echo -e "\nERROR: Expected ~147 trusted certificates on the Kafka Connect server but got $NUM_CERTS. Please troubleshoot and try again."
-    exit 1
-  fi
+        -deststorepass confluent -keypass confluent
+  
+  docker cp cert-runner:/etc/kafka/secrets/kafka.connect.truststore.jks ${DIR}/../security/kafka.connect.truststore.jks
+  docker rm cert-runner
 }
 
 build_tools_image()

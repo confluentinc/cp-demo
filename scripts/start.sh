@@ -17,17 +17,12 @@ CLEAN=${CLEAN:-false}
 # Build Kafka Connect image with connector plugins
 build_connect_image
 
-NUM_CERTS=$(
-docker run --rm -v $DIR/security:/etc/kafka/secrets localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} \
-    keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
-
 # Set the CLEAN variable to true if cert doesn't exist
-if ! [[ -f "${DIR}/security/controlCenterAndKsqlDBServer-ca1-signed.crt" ]] || [[ "$NUM_CERTS" -eq "1" ]]; then
+if ! [[ -f "${DIR}/security/controlCenterAndKsqlDBServer-ca1-signed.crt" ]] || ! check_num_certs; then
   echo "INFO: Running with CLEAN=true because instructed or certificates don't yet exist."
   clean_demo_env
   CLEAN=true
 fi
-
 
 echo
 echo "Environment parameters"
@@ -41,6 +36,10 @@ echo
 
 if [[ "$CLEAN" == "true" ]] ; then
   create_certificates || exit 1
+  if [[ ! check_num_certs ]]; then
+    echo -e "\nERROR: Expected ~147 trusted certificates on the Kafka Connect server but got 1. Please troubleshoot and try again."
+    exit 1
+  fi
 fi
 
 
