@@ -22,3 +22,4 @@ ui/expanded
 **/ccloud_library.sh
 **/ccloud-generate-cp-configs.sh
 kstreams-app/bin
+scripts/ccloud/cluster-link-cp.properties
