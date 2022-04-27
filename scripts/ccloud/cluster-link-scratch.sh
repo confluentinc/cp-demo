@@ -2,7 +2,7 @@
 docker-compose exec tools /bin/bash
 
 # Get CP Cluster ID
-export CP_CLUSTER_ID=$(curl -s https://kafka1:8091/v1/metadata/id --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt | jq -r ".id")
+export CP_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ./scripts/security/snakeoil-ca-1.crt | jq -r ".id")
 
 # log in to confluent cloud
 confluent login --save
@@ -32,7 +32,7 @@ confluent kafka acl list
 
 export CLUSTER_LINK_NAME=cp-cc-cluster-link
 
-# Create cc half of link
+# Create cc half of link, must re-create with each new run of cp demo
 confluent kafka link create $CLUSTER_LINK_NAME \
   --cluster $CC_CLUSTER_ID \
   --source-cluster-id $CP_CLUSTER_ID \
@@ -45,9 +45,21 @@ confluent kafka link describe $CLUSTER_LINK_NAME --cluster $CC_CLUSTER_ID
 
 export CC_BOOTSTRAP_ENDPOINT=$(confluent kafka cluster describe -o json | jq -r .endpoint)
 
+# Create ccloud context for easy switching
+confluent context update --name ccloud
+
+# log in as superUser
+confluent login --url https://localhost:8091
+
+# Create cp context for easy switching
+confluent context update --name cp
+
 # Create the cp half of link
-kafka-cluster-links --bootstrap-server localhost:10091,localhost:10092 \
-     --create --link $CLUSTER_LINK_NAME \
-     --config-file ./scripts/ccloud/cluster-link-cp.properties \
-     --cluster-id $CC_CLUSTER_ID \
-     --command-config ./scripts/ccloud/cluster-link-cp-submitter.properties
+confluent kafka link create $CLUSTER_LINK_NAME \
+  --destination-bootstrap-server SASL_SSL://pkc-vnxq5.us-west1.gcp.confluent.cloud:9092 \
+  --destination-cluster-id $CC_CLUSTER_ID \
+  --config-file ./scripts/ccloud/cluster-link-cp.properties \
+  --url https://localhost:8091/kafka
+
+
+confluent kafka mirror create wikipedia.parsed.count-by-domain --link $CLUSTER_LINK_NAME
