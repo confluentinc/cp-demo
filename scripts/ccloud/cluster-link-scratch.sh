@@ -32,6 +32,9 @@ confluent kafka acl list
 
 export CLUSTER_LINK_NAME=cp-cc-cluster-link
 
+# If you are re-running CP demo with a new cp cluster id
+confluent kafka link delete $CLUSTER_LINK_NAME
+
 # Create cc half of link, must re-create with each new run of cp demo
 confluent kafka link create $CLUSTER_LINK_NAME \
   --cluster $CC_CLUSTER_ID \
@@ -59,7 +62,7 @@ confluent kafka link create $CLUSTER_LINK_NAME \
   --destination-bootstrap-server SASL_SSL://pkc-vnxq5.us-west1.gcp.confluent.cloud:9092 \
   --destination-cluster-id $CC_CLUSTER_ID \
   --config-file ./scripts/ccloud/cluster-link-cp.properties \
-  --url https://localhost:8091/kafka
+  --url https://localhost:8091/kafka --ca-cert-path scripts/security/snakeoil-ca-1.crt
 
 
 confluent kafka mirror create wikipedia.parsed.count-by-domain --link $CLUSTER_LINK_NAME
