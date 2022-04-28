@@ -52,17 +52,26 @@ export CC_BOOTSTRAP_ENDPOINT=$(confluent kafka cluster describe -o json | jq -r 
 confluent context update --name ccloud
 
 # log in as superUser
-confluent login --url https://localhost:8091
+confluent login --url https://localhost:8091 --ca-cert-path scripts/security/snakeoil-ca-1.crt
 
 # Create cp context for easy switching
 confluent context update --name cp
 
+## TODO - need to give connectorSA (or new cluster-link-SA) principal ClusterAdmin (lower?)
+## permission on CP cluster to successfully describeTopics.
+
+
 # Create the cp half of link
 confluent kafka link create $CLUSTER_LINK_NAME \
-  --destination-bootstrap-server SASL_SSL://pkc-vnxq5.us-west1.gcp.confluent.cloud:9092 \
+  --destination-bootstrap-server $CC_BOOTSTRAP_ENDPOINT \
   --destination-cluster-id $CC_CLUSTER_ID \
-  --config-file ./scripts/ccloud/cluster-link-cp.properties \
+  --config-file ./scripts/ccloud/cluster-link-cp.config \
   --url https://localhost:8091/kafka --ca-cert-path scripts/security/snakeoil-ca-1.crt
 
+confluent kafka link list --url https://localhost:8091/kafka --ca-cert-path scripts/security/snakeoil-ca-1.crt
+
+confluent context use ccloud
 
 confluent kafka mirror create wikipedia.parsed.count-by-domain --link $CLUSTER_LINK_NAME
+
+# TODO what about schemas? they aren't coming along for the ride.
