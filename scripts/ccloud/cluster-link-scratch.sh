@@ -2,16 +2,15 @@
 confluent login --save
 
 # use ccloud environment
-confluent environment list -o json | jq -r '.[] | select(.name=="chuck") | .id' | xargs confluent environment use
+export CC_ENV=$(confluent environment list -o json | jq -r '.[] | select(.name=="chuck") | .id')
+confluent environment use $CC_ENV
 
 # use dedicated kafka cluster
-confluent kafka cluster list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id' | xargs confluent kafka cluster use
+export CC_CLUSTER_ID=$(confluent kafka cluster list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
+confluent kafka cluster use $CC_CLUSTER_ID
 
 # Get CP Cluster ID
 export CP_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ./scripts/security/snakeoil-ca-1.crt | jq -r ".id")
-
-# export ccloud cluster id
-export CC_CLUSTER_ID=$(confluent kafka cluster describe -o json | jq -r '.id')
 
 # Name the cluster link
 export CLUSTER_LINK_NAME=cp-cc-cluster-link
@@ -26,6 +25,13 @@ confluent api-key create --resource $CC_CLUSTER_ID --service-account $CC_SERVICE
 # give service account alter acl on cluster
 confluent kafka acl create --allow --service-account $CC_SERVICE_ACCOUNT --operation ALTER --cluster-scope  --cluster $CC_CLUSTER_ID
 confluent kafka acl list
+# Or CloudClusterAdmin role instead
+confluent iam rbac role-binding create \
+  --principal User:$CC_SERVICE_ACCOUNT \
+  --role CloudClusterAdmin \
+  --cloud-cluster $CC_CLUSTER_ID --environment $CC_ENV
+confluent iam rbac role-binding list --principal User:$CC_SERVICE_ACCOUNT
+
 
 # get service account id
 export CC_SERVICE_ACCOUNT=$(confluent iam service-account list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
@@ -77,6 +83,10 @@ confluent kafka mirror create wikipedia.parsed.count-by-domain --link $CLUSTER_L
 
 # TODO what about schemas? they aren't coming along for the ride.
 # Use schema linking: https://docs.confluent.io/cloud/current/sr/schema-linking.html
+# Create SR API key
+export CC_SR_CLUSTER_ID=$(confluent sr cluster describe -o json | jq -r .cluster_id)
+confluent api-key create --service-account $CC_SERVICE_ACCOUNT --resource $CC_SR_CLUSTER_ID --description "SR key for cp-demo schema link"
+
 
 
 # teardown
@@ -86,7 +96,16 @@ confluent kafka topic delete wikipedia.failed
 confluent kafka topic delete wikipedia.parsed
 confluent kafka topic delete wikipedia.parsed.count-by-domain
 
+# delete service account ACL
+confluent kafka acl delete --allow --operation ALTER  --service-account $CC_SERVICE_ACCOUNT --cluster-scope
+# Or, delete rolebinding
+confluent iam rbac role-binding delete \
+  --principal User:$CC_SERVICE_ACCOUNT \
+  --role CloudClusterAdmin \
+  --cloud-cluster $CC_CLUSTER_ID --environment $CC_ENV
+
+
 # Delete cluster link
 confluent kafka link delete $CLUSTER_LINK_NAME
 
-# Destroy CP cluster with stop.sh scrip
+# Destroy CP cluster with stop.sh script
