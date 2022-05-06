@@ -771,10 +771,11 @@ services:
     volumes:
       - ./scripts/security:/etc/kafka/secrets
       - ./scripts/security/keypair:/tmp/conf
+      - ./scripts/ccloud/schema-link.properties:/tmp/schema-link.properties
     ports:
       - 8085:8085
     environment:
-      CUB_CLASSPATH: '/usr/share/java/confluent-security/schema-registry/*:/usr/share/java/schema-registry/*:/usr/share/java/cp-base-new/*'
+      CUB_CLASSPATH: '/usr/share/java/confluent-security/schema-registry/*:/usr/share/java/schema-registry/*:/usr/share/java/schema-registry-plugins/*:/usr/share/java/cp-base-new/*'
 
       SCHEMA_REGISTRY_HOST_NAME: schemaregistry
 
@@ -810,8 +811,9 @@ services:
 
       SCHEMA_REGISTRY_DEBUG: 'true'
 
+      # Enable security extension for RBAC and exporter extension for schema linking
+      SCHEMA_REGISTRY_SCHEMA_REGISTRY_RESOURCE_EXTENSION_CLASS: io.confluent.kafka.schemaregistry.security.SchemaRegistrySecurityResourceExtension,io.confluent.schema.exporter.SchemaExporterResourceExtension
       # Enable bearer token authentication which allows the identity of the Schema Registry end user to be propagated to Kafka for authorization
-      SCHEMA_REGISTRY_SCHEMA_REGISTRY_RESOURCE_EXTENSION_CLASS: io.confluent.kafka.schemaregistry.security.SchemaRegistrySecurityResourceExtension
       SCHEMA_REGISTRY_CONFLUENT_SCHEMA_REGISTRY_AUTHORIZER_CLASS: io.confluent.kafka.schemaregistry.security.authorizer.rbac.RbacAuthorizer
       SCHEMA_REGISTRY_REST_SERVLET_INITIALIZOR_CLASSES: io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler
       SCHEMA_REGISTRY_PUBLIC_KEY_PATH: /tmp/conf/public.pem
@@ -821,10 +823,11 @@ services:
       SCHEMA_REGISTRY_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
       SCHEMA_REGISTRY_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: schemaregistryUser:schemaregistryUser
 
-      # # Enable Schema Linking
-      # SCHEMA_REGISTRY_PASSWORD_ENCODER_SECRET: encoder-secret
+      # Enable Schema Linking
+      SCHEMA_REGISTRY_PASSWORD_ENCODER_SECRET: encoder-secret
+      # Already included above, but including comment here for emphasis
       # SCHEMA_REGISTRY_RESOURCE_EXTENSION_CLASS: io.confluent.schema.exporter.SchemaExporterResourceExtension
-      # SCHEMA_REGISTRY_KAFKASTORE_UPDATE_HANDLERS: io.confluent.schema.exporter.storage.SchemaExporterUpdateHandler
+      SCHEMA_REGISTRY_KAFKASTORE_UPDATE_HANDLERS: io.confluent.schema.exporter.storage.SchemaExporterUpdateHandler
 
   ksqldb-server:
     image: ${REPOSITORY}/cp-ksqldb-server:${CONFLUENT_DOCKER_TAG}

@@ -18,8 +18,11 @@ export CLUSTER_LINK_NAME=cp-cc-cluster-link
 # Get bootstrap server endpoint
 export CC_BOOTSTRAP_ENDPOINT=$(confluent kafka cluster describe -o json | jq -r .endpoint)
 
+
 # create service account for the link
 confluent iam service-account create cp-demo-cluster-link --description "service account for cp demo cluster link"
+# get service account id
+export CC_SERVICE_ACCOUNT=$(confluent iam service-account list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
 # create api key for cluster link service account
 confluent api-key create --resource $CC_CLUSTER_ID --service-account $CC_SERVICE_ACCOUNT --description "cp demo cluster link"
 # give service account alter acl on cluster
@@ -32,9 +35,6 @@ confluent iam rbac role-binding create \
   --cloud-cluster $CC_CLUSTER_ID --environment $CC_ENV
 confluent iam rbac role-binding list --principal User:$CC_SERVICE_ACCOUNT
 
-
-# get service account id
-export CC_SERVICE_ACCOUNT=$(confluent iam service-account list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
 
 
 # Create cc half of link, must re-create with each new run of cp demo
@@ -58,14 +58,12 @@ confluent login --save --url https://localhost:8091 --ca-cert-path scripts/secur
 # Create cp context for easy switching
 confluent context update --name cp
 
-## TODO - need to give connectorSA (or new cluster-link-SA) principal ClusterAdmin
-## (lower? DeveloperRead and DeveloperManage on topic?)
-## permission on CP cluster to successfully describeTopics.
+## Give connectorSA principal ClusterAdmin permission
+## on CP cluster to successfully describe topic configurations.
 confluent iam rbac role-binding create \
   --principal User:connectorSA \
-  --role DeveloperManage \
-  --kafka-cluster-id $CP_CLUSTER_ID \
-  --resource Topic:wikipedia --prefix
+  --role ClusterAdmin \
+  --kafka-cluster-id $CP_CLUSTER_ID
 
 
 # Create the cp half of link
@@ -87,7 +85,13 @@ confluent kafka mirror create wikipedia.parsed.count-by-domain --link $CLUSTER_L
 export CC_SR_CLUSTER_ID=$(confluent sr cluster describe -o json | jq -r .cluster_id)
 confluent api-key create --service-account $CC_SERVICE_ACCOUNT --resource $CC_SR_CLUSTER_ID --description "SR key for cp-demo schema link"
 
-
+# Create schema exporter aka schema link on the CP side
+# schema linking with confluent CLI not supported for CP
+# confluent schema-registry exporter create <exporter-name> --subjects ":*:" --config-file ~/config.txt
+docker-compose exec schemaregistry \
+  schema-exporter --create --name cp-cc-schema-exporter --subjects ":wikipedia*:" \
+    --config-file /tmp/schema-link.properties \
+    --schema.registry.url  https://schemaregistry:8085/
 
 # teardown
 

@@ -70,7 +70,7 @@ confluent iam rbac role-binding create \
     --schema-registry-cluster-id $SR
 
 # ResourceOwner for groups and topics on broker
-for resource in Topic:_schemas Group:schema-registry
+for resource in Topic:_schemas Topic:_exporter_configs Topic:_exporter_states Group:schema-registry
 do
     confluent iam rbac role-binding create \
         --principal $SR_PRINCIPAL \
