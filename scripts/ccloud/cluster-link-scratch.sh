@@ -86,12 +86,28 @@ export CC_SR_CLUSTER_ID=$(confluent sr cluster describe -o json | jq -r .cluster
 confluent api-key create --service-account $CC_SERVICE_ACCOUNT --resource $CC_SR_CLUSTER_ID --description "SR key for cp-demo schema link"
 
 # Create schema exporter aka schema link on the CP side
-# schema linking with confluent CLI not supported for CP
+# schema linking with confluent CLI not supported for CP yet
 # confluent schema-registry exporter create <exporter-name> --subjects ":*:" --config-file ~/config.txt
 docker-compose exec schemaregistry \
   schema-exporter --create --name cp-cc-schema-exporter --subjects ":wikipedia*:" \
     --config-file /tmp/schema-link.properties \
     --schema.registry.url  https://schemaregistry:8085/
+# Or with curl
+curl -X POST -H "Content-Type: application/json" \
+  -d '{
+    "name": "cp-cc-schema-exporter",
+    "contextType": "CUSTOM",
+    "context": "cp-demo",
+    "subjects": ["wikipedia.parsed*"],
+    "config": {
+        "schema.registry.url": "<ccloud sr endpoint>",
+        "basic.auth.credentials.source": "USER_INFO",
+        "basic.auth.user.info": "<ccloud sr api key:secret>"
+    }
+  }' \
+  --cacert scripts/security/snakeoil-ca-1.crt \
+  -u superUser:superUser \
+  https://localhost:8085/exporters
 
 # teardown
 
@@ -111,5 +127,9 @@ confluent iam rbac role-binding delete \
 
 # Delete cluster link
 confluent kafka link delete $CLUSTER_LINK_NAME
+
+# delete schemas
+confluent sr schema delete --subject :.cp-demo:wikipedia.parsed-value --version all
+confluent sr schema delete --subject :.cp-demo:wikipedia.parsed.count-by-domain-value --version all
 
 # Destroy CP cluster with stop.sh script

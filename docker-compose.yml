@@ -771,7 +771,6 @@ services:
     volumes:
       - ./scripts/security:/etc/kafka/secrets
       - ./scripts/security/keypair:/tmp/conf
-      - ./scripts/ccloud/schema-link.properties:/tmp/schema-link.properties
     ports:
       - 8085:8085
     environment:
