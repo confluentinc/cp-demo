@@ -489,12 +489,12 @@ Security
 Overview
 ~~~~~~~~
 
-All the |cp| components and clients in this example are enabled with many :ref:`security features <security>`.
+All components and clients in ``cp-demo`` make full use of |cp|'s extensive :ref:`security features <security>`.
 
--  :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization. It is configured with the |csa| and talks to LDAP to authenticate clients.
--  :ref:`SSL <kafka_ssl_authentication>` for encryption and mTLS. The example :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password. 
--  :ref:`Role-Based Access Control (RBAC) <rbac-overview>` for authorization. If a resource has no associated ACLs, then users are not allowed to access the resource, except super users.
--  |zk| is configured for :ref:`SSL <zk-mtls>` AND :ref:`SASL/DIGEST-MD5 <zk-auth-sasl>` (Note: no |crest| and |sr| TLS support with `trial licenses <https://docs.confluent.io/5.5.0/release-notes/index.html#schema-registry>`__).
+-  :ref:`Role-Based Access Control (RBAC) <rbac-overview>` for authorization. Give principals access to resources using role-bindings.
+  -  RBAC is powered by the :ref:`Metadata Service (MDS) <rbac-mds-config>` which uses |csa| to connect to an OpenLDAP directory service over LDAP. This enables group-based authorization for scalable access management.
+-  :ref:`SSL <kafka_ssl_authentication>` for encryption and mTLS for authentication. The example :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password. 
+-  |zk| is configured with :ref:`mTLS <zk-mtls>` and :ref:`SASL/DIGEST-MD5 <zk-auth-sasl>` authentication.
 -  :ref:`HTTPS for Control Center <https_settings>`.
 -  :ref:`HTTPS for Schema Registry <schemaregistry_security>`.
 -  :ref:`HTTPS for Connect <connect_security>`.
@@ -508,7 +508,6 @@ You can see each component's security configuration in the example's :devx-cp-de
     * If the ``PLAINTEXT`` security protocol is used, these ``ANONYMOUS`` usernames should not be configured as super users
     * Consider not even opening the ``PLAINTEXT`` port if ``SSL`` or ``SASL_SSL`` are configured
 
-There is an OpenLDAP server running in the example, and each Kafka broker in the demo is configured with |mds-long| and can talk to LDAP so that it can authenticate clients and |cp| services and clients.
 
 |zk| has two listener ports:
 
@@ -543,7 +542,8 @@ End clients (non-CP clients):
 - Authenticate using mTLS via the broker SSL listener.
 - If they are also using |sr|, authenticate to |sr| via LDAP.
 - If they are also using Confluent Monitoring interceptors, authenticate using mTLS via the broker SSL listener.
-- Should never use the TOKEN listener which is meant only for internal communication between Confluent components.
+-   Should never use the TOKEN listener which is meant only for internal communication between Confluent components.
+  - If you wish to authenticate clients with username and password via LDAP, you would create a new SASL PLAIN client listener with Confluent's `LdapAuthenticateCallbackHandler <https://docs.confluent.io/platform/current/kafka/authentication_sasl/client-authentication-ldap.html>`__. This is omitted from the demo for simplicity.
 - See :devx-cp-demo:`client configuration|env_files/streams-demo.env/` used in the example by the ``streams-demo`` container running the |kstreams| application ``wikipedia-activity-monitor``.
 
 Broker Listeners
@@ -1439,7 +1439,7 @@ Metrics API
 
 .. include:: includes/metrics-api-intro.rst
 
-See :ref:`cp-demo-hybrid` for more information.
+See :ref:`cp-demo-hybrid` to play hands-on with the Metrics API.
 
 JMX
 ---

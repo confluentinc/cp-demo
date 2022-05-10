@@ -14,7 +14,7 @@ Use Case
 
 The use case is an |ak-tm| event streaming application that processes real-time edits to real Wikipedia pages.
 
-.. figure:: images/cp-demo-overview.jpg
+.. figure:: images/cp-demo-overview-with-ccloud.svg
     :alt: image
 
 The full event streaming platform based on |cp| is described as follows.
@@ -39,8 +39,6 @@ Data pattern is as follows:
 +-------------------------------------+--------------------------------+---------------------------------------+
 | Kafka Streams application           | ``wikipedia.parsed``           | ``wikipedia.parsed.count-by-domain``  |
 +-------------------------------------+--------------------------------+---------------------------------------+
-| Confluent Replicator                | ``wikipedia.parsed``           | ``wikipedia.parsed.replica``          |
-+-------------------------------------+--------------------------------+---------------------------------------+
 | Elasticsearch sink connector        | ``WIKIPEDIABOT`` (from ksqlDB) | Elasticsearch/Kibana                  |
 +-------------------------------------+--------------------------------+---------------------------------------+
 
@@ -51,6 +49,6 @@ We suggest following the ``cp-demo`` tutorial in order:
 
 #. :ref:`cp-demo-on-prem-tutorial`: bring up the on-prem |ak| cluster and explore the different technical areas of |cp|
 
-#. :ref:`cp-demo-hybrid`: run |crep| to copy data from a local on-prem |ak| cluster to |ccloud|, and use the Metrics API to monitor both
+#. :ref:`cp-demo-hybrid`: create a cluster link to copy data from a local on-prem |ak| cluster to |ccloud|, and use the Metrics API to monitor both
 
 #. :ref:`cp-demo-teardown`: clean up your on-prem and |ccloud| environment

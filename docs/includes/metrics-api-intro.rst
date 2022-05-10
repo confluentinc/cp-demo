@@ -5,4 +5,6 @@ It can be used for observing both:
 - On-prem metrics (enabled by Telemetry Reporter) using the endpoint https://api.telemetry.confluent.cloud/v2/metrics/hosted-monitoring/query (this is in preview and the API may change)
 - |ccloud| metrics using the endpoint https://api.telemetry.confluent.cloud/v2/metrics/cloud/query
 
+See the `Confluent Cloud Metrics API Reference <https://api.telemetry.confluent.cloud/docs>`__ for more information.
+
 .. figure:: images/metrics-api.jpg

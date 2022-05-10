@@ -7,8 +7,11 @@ Module 2: Hybrid Deployment to |ccloud| Tutorial
 Hybrid Deployment to |ccloud|
 =============================
 
-In a hybrid |ak-tm| deployment scenario, you can have both an on-prem and `Confluent Cloud <https://confluent.cloud>`__ deployment.
-This part of the tutorial runs |crep| to send |ak| data to |ccloud|, and uses a common method, the `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__, for collecting metrics for both.
+In a hybrid |ak-tm| deployment scenario, you can have both an on-prem Confluent Platform deployment as well as a
+`Confluent Cloud <https://confluent.cloud>`__ deployment.
+In this module, you will use `Cluster Linking <https://docs.confluent.io/cloud/current/multi-cloud/cluster-linking/index.html>`__
+and `Schema Linking <https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html>`__ to send data and schemas to
+|ccloud|, and monitor both deployments with the `Confluent Cloud Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__.
 
 .. figure:: images/cp-demo-overview-with-ccloud.svg
     :alt: image
