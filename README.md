@@ -18,7 +18,7 @@ Then a Kafka sink connector `kafka-connect-elasticsearch` streams the data out o
 All data is using Confluent Schema Registry and Avro.
 Confluent Control Center is managing and monitoring the deployment.
 
-![image](docs/images/cp-demo-overview.jpg)
+![image](docs/images/cp-demo-overview-with-ccloud.svg)
 
 ## Documentation
 

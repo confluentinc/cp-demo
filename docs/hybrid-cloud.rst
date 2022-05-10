@@ -10,7 +10,7 @@ Hybrid Deployment to |ccloud|
 In a hybrid |ak-tm| deployment scenario, you can have both an on-prem and `Confluent Cloud <https://confluent.cloud>`__ deployment.
 This part of the tutorial runs |crep| to send |ak| data to |ccloud|, and uses a common method, the `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__, for collecting metrics for both.
 
-.. figure:: images/cp-demo-overview-with-ccloud.jpg
+.. figure:: images/cp-demo-overview-with-ccloud.svg
     :alt: image
 
 Run this part of the tutorial only after you have completed the cp-demo :ref:`initial bring-up <cp-demo-run>`, because the initial bring-up deploys the on-prem cluster.
