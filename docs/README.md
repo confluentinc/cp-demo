@@ -27,6 +27,13 @@ Procedure:
     ```
     **Tip:** If you are using `zsh` run `autoload bashcompinit; bashcompinit` so that you can source the `settings.sh` file.
 
+1. Update `pip` setup tools and pip itself if necessary.
+
+    ```
+    pip install --upgrade setuptools
+    pip install --upgrade pip
+    ```
+
 1.  Use `pip install` to install the local `requirements.txt`.
 
     ```
