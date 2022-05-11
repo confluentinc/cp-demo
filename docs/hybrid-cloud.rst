@@ -16,8 +16,8 @@ and `Schema Linking <https://docs.confluent.io/platform/current/schema-registry/
 .. figure:: images/cp-demo-overview-with-ccloud.svg
     :alt: image
 
-Run this part of the tutorial only after you have completed the cp-demo :ref:`initial bring-up <cp-demo-run>`, because the initial bring-up deploys the on-prem cluster.
-The steps in this section bring up the |ccloud| instance and interconnects it to your on-prem cluster.
+Before you begin this module, make sure the cp-demo ``start.sh`` script successfully completed with Confluent Platform already running :ref:`(see the on-prem module) <cp-demo-run>`.
+
 
 Cost to Run
 -----------
@@ -30,7 +30,7 @@ Caution
 |ccloud| Promo Code
 ~~~~~~~~~~~~~~~~~~~
 
-To receive an additional $50 free usage in |ccloud|, enter promo code ``CPDEMO50`` in the |ccloud| UI `Billing and payment` section (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
+To receive an additional $50 free usage in |ccloud|, enter promo code ``CPDEMO50`` in the |ccloud| Console's `Billing and payment` section (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
 This promo code should sufficiently cover up to one day of running this |ccloud| example, beyond which you may be billed for the services that have an hourly charge until you destroy the |ccloud| resources created by this example.
 
 
@@ -41,9 +41,11 @@ Setup |ccloud| and CLI
 
 #. Create a |ccloud| account at https://confluent.cloud.
 
-#. Setup a payment method for your |ccloud| account and optionally enter the promo code ``CPDEMO50`` in the |ccloud| UI `Billing and payment` section to receive an additional $50 free usage.
+#. Enter the promo code ``CPDEMO50`` in the |ccloud| UI `Billing and payment` section to receive an additional $50 free usage.
 
-#. Install `Confluent CLI <https://docs.confluent.io/confluent-cli/current/install.html>`__ v2.3.1 or later.
+#. Create a "Dedicated" |ccloud| cluster (cluster linking requires a dedicated cluster).
+
+#. Install `Confluent CLI <https://docs.confluent.io/confluent-cli/current/install.html>`__ v2.13.3 or later.
 
 #. Using the CLI, log in to |ccloud| with the command ``confluent login``, and use your |ccloud| username and password. The ``--save`` argument saves your |ccloud| user login credentials or refresh token (in the case of SSO) to the local ``netrc`` file.
 
@@ -51,76 +53,93 @@ Setup |ccloud| and CLI
 
       confluent login --save
 
-#. The remainder of the |ccloud| portion of this tutorial must be completed sequentially. We recommend that you manually complete all the steps in the following sections. However, you may also run the script :devx-cp-demo:`scripts/ccloud/create-ccloud-workflow.sh|scripts/ccloud/create-ccloud-workflow.sh` which automates those steps. This option is recommended for users who have run this tutorial before and want to quickly bring it up.
+.. #. The remainder of the |ccloud| portion of this tutorial must be completed sequentially. We recommend that you manually complete all the steps in the following sections. However, you may also run the script :devx-cp-demo:`scripts/ccloud/create-ccloud-workflow.sh|scripts/ccloud/create-ccloud-workflow.sh` which automates those steps. This option is recommended for users who have run this tutorial before and want to quickly bring it up.
 
-   .. code-block:: text
+..    .. code-block:: text
 
-      ./scripts/ccloud/create-ccloud-workflow.sh
+..       ./scripts/ccloud/create-ccloud-workflow.sh
 
 .. _cp-demo-ccloud-stack:
 
-ccloud-stack
-------------
 
-Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |ccloud|.  Executed with a single command, it uses the |ccloud| CLI to:
+.. ccloud-stack
+.. ------------
 
--  Create a new environment.
--  Create a new service account.
--  Create a new Kafka cluster and associated credentials.
--  Enable |sr-ccloud| and associated credentials.
--  Create ACLs with a wildcard for the service account.
--  Create a new ksqlDB app and associated credentials
--  Generate a local configuration file with all above connection information.
+.. Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |ccloud|.  Executed with a single command, it uses the |ccloud| CLI to:
 
-#. Get a bash library of useful functions for interacting with |ccloud| (one of which is ``cloud-stack``). This library is community-supported and not supported by Confluent.
+.. -  Create a new environment.
+.. -  Create a new service account.
+.. -  Create a new Kafka cluster and associated credentials.
+.. -  Enable |sr-ccloud| and associated credentials.
+.. -  Create ACLs with a wildcard for the service account.
+.. -  Create a new ksqlDB app and associated credentials
+.. -  Generate a local configuration file with all above connection information.
 
-   .. code-block:: text
+.. #. Get a bash library of useful functions for interacting with |ccloud| (one of which is ``cloud-stack``). This library is community-supported and not supported by Confluent.
 
-      curl -sS -o ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
+..    .. code-block:: text
 
-#. Using ``ccloud_library.sh`` which you downloaded in the previous step, create a new ``ccloud-stack`` (see :ref:`ccloud-stack` for advanced options). It creates real resources in |ccloud| and takes a few minutes to complete.
+..       curl -sS -o ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
 
-   .. note:: The ``true`` flag adds creation of a ksqlDB application in |ccloud|, which has hourly charges even if you are not actively using it.
+.. #. Using ``ccloud_library.sh`` which you downloaded in the previous step, create a new ``ccloud-stack`` (see :ref:`ccloud-stack` for advanced options). It creates real resources in |ccloud| and takes a few minutes to complete.
 
-   .. code-block:: text
+..    .. note:: The ``true`` flag adds creation of a ksqlDB application in |ccloud|, which has hourly charges even if you are not actively using it.
 
-      source ./ccloud_library.sh
-      export EXAMPLE="cp-demo" && ccloud::create_ccloud_stack true
+..    .. code-block:: text
+
+..       source ./ccloud_library.sh
+..       export EXAMPLE="cp-demo" && ccloud::create_ccloud_stack true
  
-#. When ``ccloud-stack`` completes, view the local configuration file at ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` that was auto-generated. It contains connection information for connecting to your newly created |ccloud| environment.
+.. #. When ``ccloud-stack`` completes, view the local configuration file at ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` that was auto-generated. It contains connection information for connecting to your newly created |ccloud| environment.
 
-   .. code-block:: text
+..    .. code-block:: text
 
-      cat stack-configs/java-service-account-*.config
+..       cat stack-configs/java-service-account-*.config
 
-#. In the current shell, set the environment variable ``SERVICE_ACCOUNT_ID`` to the <SERVICE_ACCOUNT_ID> in the filename. For example, if the filename is called ``stack-configs/java-service-account-154143.config``, then set ``SERVICE_ACCOUNT_ID=154143``. This environment variable is used later in the tutorial.
+.. #. In the current shell, set the environment variable ``SERVICE_ACCOUNT_ID`` to the <SERVICE_ACCOUNT_ID> in the filename. For example, if the filename is called ``stack-configs/java-service-account-154143.config``, then set ``SERVICE_ACCOUNT_ID=154143``. This environment variable is used later in the tutorial.
 
-   .. code-block:: text
+..    .. code-block:: text
 
-      SERVICE_ACCOUNT_ID=<fill in>
+..       SERVICE_ACCOUNT_ID=<fill in>
 
-#. The |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh` has parameters that specify how to connect to |ccloud|.  You could set these parameters manually, but to do this in an automated fashion, use another function to set env parameters customized for the |ccloud| instance created above. It reads your local |ccloud| configuration file, i.e., the auto-generated ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config``, and creates files useful for |cp| components and clients connecting to |ccloud|.  Using ``ccloud_library.sh`` which you downloaded in an earlier step, run the ``generate_configs`` function against your auto-generated configuration file (the file created by ``ccloud-stack``).
+.. #. The |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh` has parameters that specify how to connect to |ccloud|.  You could set these parameters manually, but to do this in an automated fashion, use another function to set env parameters customized for the |ccloud| instance created above. It reads your local |ccloud| configuration file, i.e., the auto-generated ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config``, and creates files useful for |cp| components and clients connecting to |ccloud|.  Using ``ccloud_library.sh`` which you downloaded in an earlier step, run the ``generate_configs`` function against your auto-generated configuration file (the file created by ``ccloud-stack``).
 
-   .. code-block:: text
+..    .. code-block:: text
 
-      ccloud::generate_configs stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
+..       ccloud::generate_configs stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
 
-#. The output of the script is a folder called ``delta_configs`` with sample configurations for all components and clients, which you can easily apply to any |ak| client or |cp| component. View the ``delta_configs/env.delta`` file.
+.. #. The output of the script is a folder called ``delta_configs`` with sample configurations for all components and clients, which you can easily apply to any |ak| client or |cp| component. View the ``delta_configs/env.delta`` file.
 
-   .. code-block:: text
+..    .. code-block:: text
 
-      cat delta_configs/env.delta
+..       cat delta_configs/env.delta
 
-#. Source the ``delta_configs/env.delta`` file into your environment. These environment variables will be used in a few sections when you run |crep| to copy data from your on-prem cluster to your |ccloud| cluster.
+.. #. Source the ``delta_configs/env.delta`` file into your environment. These environment variables will be used in a few sections when you run |crep| to copy data from your on-prem cluster to your |ccloud| cluster.
 
-   .. code-block:: text
+..    .. code-block:: text
 
-      source delta_configs/env.delta
+..       source delta_configs/env.delta
+
+
+
+
+Export Schemas to |ccloud| with Schema Linking
+----------------------------------------------
+
+Send Data to |ccloud| with Cluster Linking
+------------------------------------------
+
+.. _cp-demo-metrics-api:
+
+Metrics API
+-----------
+
+.. include:: includes/metrics-api-intro.rst
 
 .. _cp-demo-telemetry-reporter:
 
-Telemetry Reporter
-------------------
+Configure Confluent Health+ with the Telemetry Reporter
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Enable :ref:`telemetry_reporter` on the on-prem cluster, and configure it to send metrics to the |ccloud| instance created above..
 
@@ -181,63 +200,10 @@ Enable :ref:`telemetry_reporter` on the on-prem cluster, and configure it to sen
    .. figure:: images/hosted-monitoring.png
 
 
-## TODO Replace with cluster link
-.. _cp-demo-replicator-to-ccloud:
+.. _cp-demo-query-metrics:
 
-|crep| to |ccloud|
-------------------
-
-Deploy |crep| to copy data from the on-prem cluster to the |ak| cluster running in |ccloud|.
-It is configured to copy from the |ak| topic ``wikipedia.parsed`` (on-prem) to the cloud topic ``wikipedia.parsed.ccloud.replica`` in |ccloud|. 
-The Replicator instance is running on the existing Connect worker in the on-prem cluster.
-
-#. If you have been running ``cp-demo`` for a long time, you may need to refresh your local token to log back into MDS:
-
-   .. sourcecode:: bash
-
-      ./scripts/helper/refresh_mds_login.sh
-
-#. Create a role binding to permit a new instance of |crep| to be submitted to the local connect cluster with id ``connect-cluster``.
-
-   Get the |ak| cluster ID:
-
-   .. literalinclude:: includes/get_kafka_cluster_id_from_host.sh
-
-   Create the role bindings:
-
-   .. code-block:: text
-
-      docker-compose exec tools bash -c "confluent iam rbac role-binding create \
-          --principal User:connectorSubmitter \
-          --role ResourceOwner \
-          --resource Connector:replicate-topic-to-ccloud \
-          --kafka-cluster-id $KAFKA_CLUSTER_ID \
-          --connect-cluster-id connect-cluster"
-
-#. View the |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`. Note that it uses the local connect cluster (the origin site), so the |crep| configuration has overrides for the producer. The configuration parameters that use variables are read from the environment variables you sourced in an earlier step.
-
-#. Submit the |crep| connector to the local connect cluster.
-
-   .. code-block:: text
-
-      ./scripts/connectors/submit_replicator_to_ccloud_config.sh
-
-#. It takes about 1 minute to show up in the Connectors view in |c3|.  When it does, verify |crep| to |ccloud| has started properly, and there are now 4 connectors:
-
-   .. figure:: images/connectors-with-rep-to-ccloud.png
-
-#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify you see the topic ``wikipedia.parsed.ccloud.replica`` and its messages.
-
-#. View the schema for this topic that is already registered in |ccloud| |sr|. In ``cp-demo``, in the :devx-cp-demo:`Replicator configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh`, ``value.converter`` is configured to use ``io.confluent.connect.avro.AvroConverter``, therefore it automatically registers new schemas, as needed, while copying data. The schema ID in the on-prem |sr| will not match the schema ID in the |ccloud| |sr|. (See documentation for other :ref:`schema migration options <schemaregistry_migrate>`)
-
-   .. figure:: images/ccloud-schema.png
-
-.. _cp-demo-metrics-api:
-
-Metrics API
------------
-
-.. include:: includes/metrics-api-intro.rst
+Query Metrics
+~~~~~~~~~~~~~
 
 #. To define the time interval when querying the Metrics API, get the current time minus 1 hour and current time plus 1 hour. The ``date`` utility varies between operating systems, so use the ``tools`` Docker container to get consistent and reliable dates.
 
@@ -301,11 +267,6 @@ Metrics API
 
    .. literalinclude:: ../scripts/ccloud/metrics_query_ccloud.json
 
-#. Get the |ak| cluster ID in |ccloud|, derived from the ``$SERVICE_ACCOUNT_ID``.
-
-   .. code-block:: text
-
-      CCLOUD_CLUSTER_ID=$(confluent kafka cluster list -o json | jq -c -r '.[] | select (.name == "'"demo-kafka-cluster-${SERVICE_ACCOUNT_ID}"'")' | jq -r .id)
 
 #. Substitute values into the query json file. For this substitution to work, you must have set the following parameters in your environment:
 
@@ -336,7 +297,7 @@ Metrics API
            https://api.telemetry.confluent.cloud/v2/metrics/cloud/query \
               | jq .
 
-#. Your output should resemble the output below, showing metrics for the |ccloud| topic ``wikipedia.parsed.ccloud.replica``:
+#. Your output should resemble the output below, showing metrics for the |ccloud| mirror topic ``wikipedia.parsed``:
 
    .. code-block:: text
 
@@ -345,7 +306,7 @@ Metrics API
           {
             "timestamp": "2020-12-14T20:00:00Z",
             "value": 1690522,
-            "metric.topic": "wikipedia.parsed.ccloud.replica"
+            "metric.topic": "wikipedia.parsed"
           }
         ]
       }
@@ -355,26 +316,39 @@ Metrics API
 |ccloud| ksqlDB
 ---------------
 
-This section shows how to create queries in the |ccloud| ksqlDB application that processes data from the ``wikipedia.parsed.ccloud.replica`` topic that |crep| copied from the on-prem cluster.
-You must have completed :ref:`cp-demo-ccloud-stack` before proceeding.
+This section shows how to create queries in the |ccloud| ksqlDB application that processes data from the ``wikipedia.parsed`` topic that the cluster link is mirroring from the on-prem cluster.
 
-#. Get the |ccloud| ksqlDB application ID and save it to the parameter ``ksqlDBAppId``.
+#. Create a ksqlDB cluster in your Confluent Cloud cluster. You can use the same "cloud" API key we used earlier to access the Metrics API. This will create a ksqlDB cluster with 1 CSU of processing power.
 
    .. code-block:: text
 
-      ksqlDBAppId=$(confluent ksql app list | grep "$KSQLDB_ENDPOINT" | awk '{print $1}')
+      confluent ksql cluster create \
+         my-demo-ksql \
+         --api-key $METRICS_API_KEY \
+         --api-secret $METRICS_API_SECRET \
+         --cluster $CCLOUD_CLUSTER_ID \
+         --csu 1
+
+
+#. Get the |ccloud| ksqlDB cluster ID and endpoint and save them to the parameters ``ksqlDBAppId`` and ``KSQLDB_ENDPOINT``.
+
+   .. code-block:: text
+
+      KSQL_INFO=$(confluent ksql cluster list -o json | jq '.[] | select(.name=="my-demo-ksql")')
+      ksqlDBAppId=$(echo $KSQL_INFO | jq -r '.id')
+      KSQLDB_ENDPOINT=$(echo $KSQL_INFO | jq -r '.endpoint')
 
 #. Verify the |ccloud| ksqlDB application has transitioned from ``PROVISIONING`` to ``UP`` state. This may take a few minutes.
 
    .. code-block:: text
 
-      confluent ksql app describe $ksqlDBAppId -o json
+      confluent ksql cluster describe $ksqlDBAppId -o json
 
-#. Configure ksqlDB ACLs to permit the ksqlDB application to read from ``wikipedia.parsed.ccloud.replica``.
+#. Configure ksqlDB ACLs to permit the ksqlDB application to read from ``wikipedia.parsed``.
 
    .. code-block:: text
 
-      confluent ksql app configure-acls $ksqlDBAppId wikipedia.parsed.ccloud.replica
+      confluent ksql cluster configure-acls $ksqlDBAppId wikipedia.parsed
 
 #. Create new ksqlDB queries in |ccloud| from the :devx-cp-demo:`scripts/ccloud/statements.sql|scripts/ccloud/statements.sql` file. Note: depending on which folder you are in, you may need to modify the relative path to the ``statements.sql`` file.
 
@@ -384,7 +358,7 @@ You must have completed :ref:`cp-demo-ccloud-stack` before proceeding.
          echo -e "\n$ksqlCmd\n"
          curl -X POST $KSQLDB_ENDPOINT/ksql \
               -H "Content-Type: application/vnd.ksql.v1+json; charset=utf-8" \
-              -u $KSQLDB_BASIC_AUTH_USER_INFO \
+              -u $METRICS_API_KEY:$METRICS_API_SECRET \
               --silent \
               -d @<(cat <<EOF
        {

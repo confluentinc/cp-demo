@@ -6,8 +6,8 @@ export CC_ENV=$(confluent environment list -o json | jq -r '.[] | select(.name==
 confluent environment use $CC_ENV
 
 # use dedicated kafka cluster
-export CC_CLUSTER_ID=$(confluent kafka cluster list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
-confluent kafka cluster use $CC_CLUSTER_ID
+export CCLOUD_CLUSTER_ID=$(confluent kafka cluster list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
+confluent kafka cluster use $CCLOUD_CLUSTER_ID
 
 # Get CP Cluster ID
 export CP_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ./scripts/security/snakeoil-ca-1.crt | jq -r ".id")
@@ -24,29 +24,29 @@ confluent iam service-account create cp-demo-cluster-link --description "service
 # get service account id
 export CC_SERVICE_ACCOUNT=$(confluent iam service-account list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
 # create api key for cluster link service account
-confluent api-key create --resource $CC_CLUSTER_ID --service-account $CC_SERVICE_ACCOUNT --description "cp demo cluster link"
+confluent api-key create --resource $CCLOUD_CLUSTER_ID --service-account $CC_SERVICE_ACCOUNT --description "cp demo cluster link"
 # give service account alter acl on cluster
-confluent kafka acl create --allow --service-account $CC_SERVICE_ACCOUNT --operation ALTER --cluster-scope  --cluster $CC_CLUSTER_ID
+confluent kafka acl create --allow --service-account $CC_SERVICE_ACCOUNT --operation ALTER --cluster-scope  --cluster $CCLOUD_CLUSTER_ID
 confluent kafka acl list
 # Or CloudClusterAdmin role instead
 confluent iam rbac role-binding create \
   --principal User:$CC_SERVICE_ACCOUNT \
   --role CloudClusterAdmin \
-  --cloud-cluster $CC_CLUSTER_ID --environment $CC_ENV
+  --cloud-cluster $CCLOUD_CLUSTER_ID --environment $CC_ENV
 confluent iam rbac role-binding list --principal User:$CC_SERVICE_ACCOUNT
 
 
 
 # Create cc half of link, must re-create with each new run of cp demo
 confluent kafka link create $CLUSTER_LINK_NAME \
-  --cluster $CC_CLUSTER_ID \
+  --cluster $CCLOUD_CLUSTER_ID \
   --source-cluster-id $CP_CLUSTER_ID \
   --config-file ./scripts/ccloud/cluster-link-ccloud.properties \
   --source-bootstrap-server 0.0.0.0
 
-confluent kafka link list --cluster $CC_CLUSTER_ID
+confluent kafka link list --cluster $CCLOUD_CLUSTER_ID
 
-confluent kafka link describe $CLUSTER_LINK_NAME --cluster $CC_CLUSTER_ID
+confluent kafka link describe $CLUSTER_LINK_NAME --cluster $CCLOUD_CLUSTER_ID
 
 
 # Create ccloud context for easy switching
@@ -69,7 +69,7 @@ confluent iam rbac role-binding create \
 # Create the cp half of link
 confluent kafka link create $CLUSTER_LINK_NAME \
   --destination-bootstrap-server $CC_BOOTSTRAP_ENDPOINT \
-  --destination-cluster-id $CC_CLUSTER_ID \
+  --destination-cluster-id $CCLOUD_CLUSTER_ID \
   --config-file ./scripts/ccloud/cluster-link-cp.properties \
   --url https://localhost:8091/kafka --ca-cert-path scripts/security/snakeoil-ca-1.crt
 
@@ -122,7 +122,7 @@ confluent kafka acl delete --allow --operation ALTER  --service-account $CC_SERV
 confluent iam rbac role-binding delete \
   --principal User:$CC_SERVICE_ACCOUNT \
   --role CloudClusterAdmin \
-  --cloud-cluster $CC_CLUSTER_ID --environment $CC_ENV
+  --cloud-cluster $CCLOUD_CLUSTER_ID --environment $CC_ENV
 
 
 # Delete cluster link

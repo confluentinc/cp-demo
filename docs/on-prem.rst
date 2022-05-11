@@ -6,14 +6,15 @@ Module 1: On-Prem Tutorial
 .. _cp-demo-run:
 
 ====================
-Run on-prem cluster
+Run on-prem Confluent Platform cluster
 ====================
 
 ``cp-demo`` is a Docker environment and has all services running on one host.
 It is meant exclusively to easily demo |CP|, but in production, do not deploy all |cp| services on a single host.
 
-Also, in production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production data.
-Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
+Also, in production, |c3| should be deployed with a valid license in
+`management mode <https://docs.confluent.io/platform/current/control-center/installation/configuration.html#mode>`__ in conjunction with
+`Confluent Health+ <https://docs.confluent.io/platform/current/health-plus/index.html#confluent-health>`__ for monitoring.
 
 If you prefer non-Docker examples, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
 
@@ -28,10 +29,10 @@ Prerequisites
 This example has been validated with:
 
 -  Docker engine version 20.10.12
--  Docker Compose version 2.2.3 with Docker Compose file format 2.3
--  Java version 1.8.0_92
--  MacOS 12.2.1 (note for `Ubuntu environments <https://github.com/confluentinc/cp-demo/issues/53>`__)
--  OpenSSL 1.1.1d
+-  Docker Compose version 2.4.1
+-  Java version 11.0.8
+-  Ubuntu 18.04
+-  OpenSSL 1.1.1
 -  git
 -  curl
 -  jq
@@ -66,9 +67,9 @@ Gitpod
 ~~~~~~
 
 This demo is enabled to run with Gitpod, but support for the Gitpod workflow is best effort from the `community <https://github.com/confluentinc/cp-demo/issues>`__.
-If you are using :gitpod_link:`Gitpod|`, the demo will automatically start after the Gitpod workspace is ready.
+If you are using :gitpod_link:`Gitpod|`, the demo will automatically start after the Gitpod workspace is ready. ``VIZ=false`` is used to save system resources.
 
-Login into |c3| (port ``9021``) or the Kibana dashboard (port ``5601``) by clicking on ``Open Browser`` option in the pop-up:
+Login into |c3| (port ``9021``) by clicking on ``Open Browser`` option in the pop-up:
 
 .. figure:: images/gitpod_port_popup.png
 
@@ -492,7 +493,7 @@ Overview
 All components and clients in ``cp-demo`` make full use of |cp|'s extensive :ref:`security features <security>`.
 
 -  :ref:`Role-Based Access Control (RBAC) <rbac-overview>` for authorization. Give principals access to resources using role-bindings.
-  -  RBAC is powered by the :ref:`Metadata Service (MDS) <rbac-mds-config>` which uses |csa| to connect to an OpenLDAP directory service over LDAP. This enables group-based authorization for scalable access management.
+  -  RBAC is powered by the :ref:`Metadata Service (MDS) <rbac-mds-config>` which uses |csa| to connect to an OpenLDAP directory service. This enables group-based authorization for scalable access management.
 -  :ref:`SSL <kafka_ssl_authentication>` for encryption and mTLS for authentication. The example :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password. 
 -  |zk| is configured with :ref:`mTLS <zk-mtls>` and :ref:`SASL/DIGEST-MD5 <zk-auth-sasl>` authentication.
 -  :ref:`HTTPS for Control Center <https_settings>`.

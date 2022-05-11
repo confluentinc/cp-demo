@@ -36,7 +36,7 @@ echo
 echo "Sleep an additional 90s to wait for all Confluent Cloud metadata to propagate"
 sleep 90
 
-## TODO: Replace with cluster link
+## TODO: Replace with cluster linking and schema linking
 # echo -e "\nStart Confluent Replicator to Confluent Cloud:"
 # CONNECTOR_SUBMITTER="User:connectorSubmitter"
 # KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${VALIDATE_DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
@@ -120,7 +120,7 @@ echo
 echo "Writing ksqlDB queries in Confluent Cloud"
 ksqlDBAppId=$(confluent ksql app list | grep "$KSQLDB_ENDPOINT" | awk '{print $1}')
 confluent ksql app describe $ksqlDBAppId -o json
-confluent ksql app configure-acls $ksqlDBAppId wikipedia.parsed.ccloud.replica
+confluent ksql app configure-acls $ksqlDBAppId wikipedia.parsed
 while read ksqlCmd; do
   echo -e "\n$ksqlCmd\n"
   curl -X POST $KSQLDB_ENDPOINT/ksql \

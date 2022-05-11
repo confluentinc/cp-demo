@@ -10,7 +10,7 @@
           {
                "field": "metric.topic",
                "op": "EQ",
-               "value": "wikipedia.parsed.ccloud.replica"
+               "value": "wikipedia.parsed"
           },
           {
               "field": "resource.kafka.id",
