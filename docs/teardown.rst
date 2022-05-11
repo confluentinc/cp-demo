@@ -32,17 +32,36 @@ If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included cr
 
 .. include:: ../../examples/ccloud/docs/includes/ccloud-examples-terminate.rst
 
-#. If the on-prem cluster is still running, remove the |crep| connector that was replicating data to |ccloud|.
+
+#. Delete the ``Cloud`` API key you created to access the Metrics API.
 
    .. code-block:: text
 
-      docker-compose exec connect curl -X DELETE \
-        --cert /etc/kafka/secrets/connect.certificate.pem \
-        --key /etc/kafka/secrets/connect.key \
-        --tlsv1.2 \
-        --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
-        -u connectorSubmitter:connectorSubmitter \
-        https://connect:8083/connectors/replicate-topic-to-ccloud
+      confluent api-key delete ${METRICS_API_KEY}
+
+#. Delete the |ccloud| service account you created for the cluster link.
+
+   .. code-block:: text
+
+      confluent iam service-account delete ${SERVICE_ACCOUNT_ID}
+
+#. Destroy your |ccloud| environment. Go to https://confluent.cloud/environments and delete the environment "cp-demo-env" that you created. This will destroy all clusters and resources associated with the environment.
+
+
+#. If the on-prem cluster is still running, remove the cluster link that is mirroring data to |ccloud|.
+
+   .. code-block:: text
+
+      confluent kafka link delete $CLUSTER_LINK_NAME \
+         --url https://localhost:8091/kafka --ca-cert-path scripts/security/snakeoil-ca-1.crt
+
+#. If the on-prem cluster is still running, remove the schema exporter that is mirroring schemas to |ccloud|.
+
+   .. code-block:: text
+
+      confluent schema-registry exporter delete $SCHEMA_LINK_NAME \
+         --url https://localhost:8091/kafka --ca-cert-path scripts/security/snakeoil-ca-1.crt
+
 
 #. If the on-prem cluster is still running, disable Telemetry Reporter in both |ak| brokers.
 
@@ -55,18 +74,6 @@ If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included cr
         --entity-default \
         --delete-config confluent.telemetry.enabled,confluent.telemetry.api.key,confluent.telemetry.api.secret
 
-#. Delete the ``Cloud`` API key.
-
-   .. code-block:: text
-
-      confluent api-key delete ${METRICS_API_KEY}
-
-#. Destroy your |ccloud| environment. Even if you stop ``cp-demo``, the resources in |ccloud| continue to incur charges until you destroy all the resources.
-
-   .. code-block:: text
-
-      source ./ccloud_library.sh
-      source delta_configs/env.delta
-      ccloud::destroy_ccloud_stack $SERVICE_ACCOUNT_ID
-
-#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify all your resources have been destroyed. Note that the ``Hosted monitoring`` cluster will be shown in the |ccloud| UI until it ages out.
+.. note::
+   
+   The Health+ cluster will be shown in the |ccloud| Console until it ages out.

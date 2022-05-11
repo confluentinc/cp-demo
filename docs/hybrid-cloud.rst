@@ -43,9 +43,13 @@ Setup |ccloud| and CLI
 
 #. Enter the promo code ``CPDEMO50`` in the |ccloud| UI `Billing and payment` section to receive an additional $50 free usage.
 
-#. Create a "Dedicated" |ccloud| cluster (cluster linking requires a dedicated cluster).
+#. Go to https://confluent.cloud/environments and click "+ Add cloud environment". Name the environment **cp-demo-env**.
 
-#. Install `Confluent CLI <https://docs.confluent.io/confluent-cli/current/install.html>`__ v2.13.3 or later.
+#. Inside the "cp-demo-env" environment, create a **Dedicated** |ccloud| cluster named **cp-demo-cluster** in the region of your choice. Cluster linking requires a dedicated cluster.
+
+#. Create a Schema Registry for the "cp-demo-env" environment in the same region as your cluster.
+
+#. Install `Confluent CLI <https://docs.confluent.io/confluent-cli/current/install.html>`__ locally, v2.13.3 or later.
 
 #. Using the CLI, log in to |ccloud| with the command ``confluent login``, and use your |ccloud| username and password. The ``--save`` argument saves your |ccloud| user login credentials or refresh token (in the case of SSO) to the local ``netrc`` file.
 
@@ -121,13 +125,53 @@ Setup |ccloud| and CLI
 ..       source delta_configs/env.delta
 
 
-
+.. _cp-demo-schema-linking:
 
 Export Schemas to |ccloud| with Schema Linking
 ----------------------------------------------
 
-Send Data to |ccloud| with Cluster Linking
-------------------------------------------
+.. _cp-demo-cluster-linking:
+
+Mirror Data to |ccloud| with Cluster Linking
+--------------------------------------------
+
+
+.. _cp-demo-ccloud-ksqldb:
+
+|ccloud| ksqlDB
+---------------
+
+In this section, you will create a |ccloud| ksqlDB cluster to processes data from the ``wikipedia.parsed`` mirror topic.
+
+#. Log into the Confluent Cloud Console at https://confluent.cloud and navigate to the **cp-demo-env** environment and then to the **cp-demo-cluster** cluster within that environment.
+
+#. Select "ksqlDB" from the left side menu, click "Create cluster myself". Select "Global access". Name the cluster **cp-demo-ksql** and choose a cluster size of 1 CSU. It will take a minute or so to provision.
+
+#. Once the ksqlDB cluster is provisioned, click into it and enter these query statements into the editor:
+
+   .. code:: sql
+
+      CREATE STREAM wikipedia WITH (kafka_topic='wikipedia.parsed', value_format='AVRO');
+      CREATE STREAM wikipedianobot AS
+         SELECT *, (length->new - length->old) AS BYTECHANGE
+         FROM wikipedia
+            WHERE bot = false
+               AND length IS NOT NULL
+               AND length->new IS NOT NULL
+               AND length->old IS NOT NULL;
+
+#. Click the "Flow" tab to see the stream processing topology.
+
+   .. figure:: images/ccloud_ksqldb_flow.png
+
+#. View the events in the ksqlDB streams in |ccloud| by pasting in ``SELECT * FROM WIKIPEDIANOBOT EMIT CHANGES;`` and clicking "Run query". Stop the query when you are finished.
+
+   .. figure:: images/ccloud_ksqldb_stream.png
+
+#. Go to :ref:`cp-demo-ccloud-cleanup` and destroy the demo resources used. Important: 
+
+.. important:: The ksqlDB cluster in |ccloud| has hourly charges even if you are not actively using it. Make sure to go to :ref:`cp-demo-ccloud-cleanup`
+   in the Teardown module to destroy all cloud resources when you are finished.
 
 .. _cp-demo-metrics-api:
 
@@ -140,8 +184,6 @@ Metrics API
 
 Configure Confluent Health+ with the Telemetry Reporter
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Enable :ref:`telemetry_reporter` on the on-prem cluster, and configure it to send metrics to the |ccloud| instance created above..
 
 #. Create a new ``Cloud`` API key and secret to authenticate to |ccloud|. These credentials will be used to configure the Telemetry Reporter and used by the Metrics API.
 
@@ -195,7 +237,7 @@ Enable :ref:`telemetry_reporter` on the on-prem cluster, and configure it to sen
       kafka1            | 	confluent.telemetry.api.secret = [hidden]
       ...
 
-#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and verify you see this cluster dashboard in the ``Hosted monitoring`` section under ``Confluent Platform``.
+#. Navigate to the Health+ section of the |ccloud| Console at https://confluent.cloud/health-plus and verify you see this cluster dashboard.
 
    .. figure:: images/hosted-monitoring.png
 
@@ -310,74 +352,6 @@ Query Metrics
           }
         ]
       }
-
-.. _cp-demo-ccloud-ksqldb:
-
-|ccloud| ksqlDB
----------------
-
-This section shows how to create queries in the |ccloud| ksqlDB application that processes data from the ``wikipedia.parsed`` topic that the cluster link is mirroring from the on-prem cluster.
-
-#. Create a ksqlDB cluster in your Confluent Cloud cluster. You can use the same "cloud" API key we used earlier to access the Metrics API. This will create a ksqlDB cluster with 1 CSU of processing power.
-
-   .. code-block:: text
-
-      confluent ksql cluster create \
-         my-demo-ksql \
-         --api-key $METRICS_API_KEY \
-         --api-secret $METRICS_API_SECRET \
-         --cluster $CCLOUD_CLUSTER_ID \
-         --csu 1
-
-
-#. Get the |ccloud| ksqlDB cluster ID and endpoint and save them to the parameters ``ksqlDBAppId`` and ``KSQLDB_ENDPOINT``.
-
-   .. code-block:: text
-
-      KSQL_INFO=$(confluent ksql cluster list -o json | jq '.[] | select(.name=="my-demo-ksql")')
-      ksqlDBAppId=$(echo $KSQL_INFO | jq -r '.id')
-      KSQLDB_ENDPOINT=$(echo $KSQL_INFO | jq -r '.endpoint')
-
-#. Verify the |ccloud| ksqlDB application has transitioned from ``PROVISIONING`` to ``UP`` state. This may take a few minutes.
-
-   .. code-block:: text
-
-      confluent ksql cluster describe $ksqlDBAppId -o json
-
-#. Configure ksqlDB ACLs to permit the ksqlDB application to read from ``wikipedia.parsed``.
-
-   .. code-block:: text
-
-      confluent ksql cluster configure-acls $ksqlDBAppId wikipedia.parsed
-
-#. Create new ksqlDB queries in |ccloud| from the :devx-cp-demo:`scripts/ccloud/statements.sql|scripts/ccloud/statements.sql` file. Note: depending on which folder you are in, you may need to modify the relative path to the ``statements.sql`` file.
-
-   .. code-block:: text
-
-       while read ksqlCmd; do
-         echo -e "\n$ksqlCmd\n"
-         curl -X POST $KSQLDB_ENDPOINT/ksql \
-              -H "Content-Type: application/vnd.ksql.v1+json; charset=utf-8" \
-              -u $METRICS_API_KEY:$METRICS_API_SECRET \
-              --silent \
-              -d @<(cat <<EOF
-       {
-         "ksql": "$ksqlCmd",
-         "streamsProperties": {}
-       }
-       EOF
-       )
-       done <scripts/ccloud/statements.sql
-
-#. Log into `Confluent Cloud <https://confluent.cloud>`__ UI and view the ksqlDB application Flow.
-
-   .. figure:: images/ccloud_ksqldb_flow.png
-
-#. View the events in the ksqlDB streams in |ccloud|.
-
-   .. figure:: images/ccloud_ksqldb_stream.png
-
-#. Go to :ref:`cp-demo-ccloud-cleanup` and destroy the demo resources used. Important: The ksqlDB application in |ccloud| has hourly charges even if you are not actively using it.
 
 
 Cleanup

@@ -2,7 +2,7 @@
 confluent login --save
 
 # use ccloud environment
-export CC_ENV=$(confluent environment list -o json | jq -r '.[] | select(.name=="chuck") | .id')
+export CC_ENV=$(confluent environment list -o json | jq -r '.[] | select(.name | contains("chuck")) | .id')
 confluent environment use $CC_ENV
 
 # use dedicated kafka cluster
@@ -124,9 +124,15 @@ confluent iam rbac role-binding delete \
   --role CloudClusterAdmin \
   --cloud-cluster $CCLOUD_CLUSTER_ID --environment $CC_ENV
 
+# Delete service account
+confluent iam service-account delete $SERVICE_ACCOUNT_ID
 
 # Delete cluster link
 confluent kafka link delete $CLUSTER_LINK_NAME
+
+## Delete CP half of cluster link
+confluent kafka link delete $CLUSTER_LINK_NAME \
+  --url https://localhost:8091/kafka --ca-cert-path scripts/security/snakeoil-ca-1.crt
 
 # delete schemas
 confluent sr schema delete --subject :.cp-demo:wikipedia.parsed-value --version all
