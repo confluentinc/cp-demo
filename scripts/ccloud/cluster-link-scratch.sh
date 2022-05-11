@@ -23,7 +23,7 @@ export CC_BOOTSTRAP_ENDPOINT=$(confluent kafka cluster describe -o json | jq -r 
 confluent iam service-account create cp-demo-cluster-link --description "service account for cp demo cluster link"
 # get service account id
 export CC_SERVICE_ACCOUNT=$(confluent iam service-account list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
-# create api key for cluster link service account
+# create kafka api key for cluster link service account
 confluent api-key create --resource $CCLOUD_CLUSTER_ID --service-account $CC_SERVICE_ACCOUNT --description "cp demo cluster link"
 # give service account alter acl on cluster
 confluent kafka acl create --allow --service-account $CC_SERVICE_ACCOUNT --operation ALTER --cluster-scope  --cluster $CCLOUD_CLUSTER_ID

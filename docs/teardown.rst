@@ -3,7 +3,7 @@
 Teardown
 ========
 
-Module 1: On-prem
+Tear Down On-prem
 -----------------
 
 #. Stop the consumer group ``app`` to stop consuming from topic
@@ -25,7 +25,7 @@ Module 1: On-prem
 
 .. _cp-demo-ccloud-cleanup:
 
-Module 2: |ccloud|
+Tear Down |ccloud|
 ------------------
 
 If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included creating resources in |ccloud|, follow the clean up procedure below to avoid unexpected |ccloud| charges.
@@ -46,7 +46,6 @@ If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included cr
       confluent iam service-account delete ${SERVICE_ACCOUNT_ID}
 
 #. Destroy your |ccloud| environment. Go to https://confluent.cloud/environments and delete the environment "cp-demo-env" that you created. This will destroy all clusters and resources associated with the environment.
-
 
 #. If the on-prem cluster is still running, remove the cluster link that is mirroring data to |ccloud|.
 

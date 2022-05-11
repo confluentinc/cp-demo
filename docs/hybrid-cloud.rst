@@ -36,7 +36,7 @@ This promo code should sufficiently cover up to one day of running this |ccloud|
 
 .. _cp-demo-setup-ccloud:
 
-Setup |ccloud| and CLI
+Set Up |ccloud|
 ----------------------
 
 #. Create a |ccloud| account at https://confluent.cloud.
@@ -49,6 +49,9 @@ Setup |ccloud| and CLI
 
 #. Create a Schema Registry for the "cp-demo-env" environment in the same region as your cluster.
 
+Set Up Confluent CLI and variables
+----------------------------------
+
 #. Install `Confluent CLI <https://docs.confluent.io/confluent-cli/current/install.html>`__ locally, v2.13.3 or later.
 
 #. Using the CLI, log in to |ccloud| with the command ``confluent login``, and use your |ccloud| username and password. The ``--save`` argument saves your |ccloud| user login credentials or refresh token (in the case of SSO) to the local ``netrc`` file.
@@ -56,6 +59,34 @@ Setup |ccloud| and CLI
    .. code:: shell
 
       confluent login --save
+
+#. Use the demo environment.
+
+   .. code:: shell
+
+      CC_ENV=$(confluent environment list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
+      confluent environment use $CC_ENV
+
+#. Get the cluster ID and use the cluster.
+
+   .. code:: shell
+
+      CCLOUD_CLUSTER_ID=$(confluent kafka cluster list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
+      confluent kafka cluster use $CCLOUD_CLUSTER_ID
+
+#. Get the bootstrap endpoint.
+
+   .. code:: shell
+
+      CC_BOOTSTRAP_ENDPOINT=$(confluent kafka cluster describe -o json | jq -r .endpoint)
+
+#. Create a |ccloud| service account for CP Demo and get its ID.
+
+   .. code:: shell
+
+      confluent iam service-account create cp-demo-sa --description "service account for cp demo"
+      CC_SERVICE_ACCOUNT=$(confluent iam service-account list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
+
 
 .. #. The remainder of the |ccloud| portion of this tutorial must be completed sequentially. We recommend that you manually complete all the steps in the following sections. However, you may also run the script :devx-cp-demo:`scripts/ccloud/create-ccloud-workflow.sh|scripts/ccloud/create-ccloud-workflow.sh` which automates those steps. This option is recommended for users who have run this tutorial before and want to quickly bring it up.
 
