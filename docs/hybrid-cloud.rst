@@ -86,7 +86,7 @@ Set Up Confluent CLI and variables
 
    .. code:: shell
 
-      confluent iam service-account create cp-demo-sa --description "service account for cp demo"
+      confluent iam service-account create cp-demo-sa --description "service account for cp-demo"
       SERVICE_ACCOUNT_ID=$(confluent iam service-account list -o json \
                            | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
 
@@ -98,7 +98,7 @@ Set Up Confluent CLI and variables
       CC_SR_ENDPOINT=$(confluent sr cluster describe -o json | jq -r .endpoint_url)
 
 
-#. Create a Schema Registry API key for the cp-demo service account we created earlier.
+#. Create a Schema Registry API key for the cp-demo service account.
 
    .. code:: shell
 
@@ -107,7 +107,7 @@ Set Up Confluent CLI and variables
          --resource $CC_SR_CLUSTER_ID \
          --description "SR key for cp-demo schema link"
 
-#. Verify your putput will resembles
+   Verify your output resembles
 
    .. code:: text
 
@@ -118,12 +118,47 @@ Set Up Confluent CLI and variables
       | Secret  | NTqs/A3Mt0Ohkk4fkaIsC0oLQ5Q/F0lLowYo/UrsTrEAM5ozxY7fjqxDdVwMJz99 |
       +---------+------------------------------------------------------------------+
 
-#. Set variables to reference the Schema Registry credentials returned in the previous step.
+   Set variables to reference the Schema Registry credentials returned in the previous step.
 
    .. code:: shell
 
       SR_API_KEY=SZBKJLD67XK5NZNZ
       SR_API_SECRET=NTqs/A3Mt0Ohkk4fkaIsC0oLQ5Q/F0lLowYo/UrsTrEAM5ozxY7fjqxDdVwMJz99
+
+#. Create a Kafka cluster API key for the cp-demo service account.
+
+   .. code:: shell
+
+      confluent api-key create \
+         --service-account $SERVICE_ACCOUNT_ID \
+         --resource $CCLOUD_CLUSTER_ID \
+         --description "Kafka key for cp-demo cluster link"
+
+   Verify your output resembles
+
+   .. code:: text
+
+      It may take a couple of minutes for the API key to be ready.
+      Save the API key and secret. The secret is not retrievable later.
+      +---------+------------------------------------------------------------------+
+      | API Key | SZBKLMG61XK9NZAB                                                 |
+      | Secret  | QTpi/A3Mt0Ohkk4fkaIsGR3ATQ5Q/F0lLowYo/UrsTr3AMsozxY7fjqxDdVwMJz02 |
+      +---------+------------------------------------------------------------------+
+
+   Set variables to reference the Kafka credentials returned in the previous step.
+
+   .. code:: shell
+
+      CCLOUD_CLUSTER_API_KEY=SZBKLMG61XK9NZAB
+      CCLOUD_CLUSTER_API_SECRET=QTpi/A3Mt0Ohkk4fkaIsGR3ATQ5Q/F0lLowYo/UrsTr3AMsozxY7fjqxDdVwMJz02
+
+#. We will also need the cluster ID for the on-prem Confluent Platform cluster.
+
+   .. code:: shell
+
+      CP_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id \
+                     --tlsv1.2 --cacert ./scripts/security/snakeoil-ca-1.crt \
+                     | jq -r ".id")
 
 
 .. _cp-demo-schema-linking:
@@ -139,7 +174,7 @@ from Confluent Platform to Confluent Cloud with schema linking.
 These schema subjects will be exported to a new `schema context <https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html#what-is-a-schema-context>`__
 called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-demo:wikipedia.parsed-value`` and ``:.cp-demo:wikipedia.parsed.count-by-domain-value``.
 
-#. Use the Confluent Server REST API to create a schema exporter for the on-prem Schema Registry.
+#. Use the Confluent Server REST API to create a schema exporter called "cp-cc-schema-exporter" for the on-prem Schema Registry.
 
    .. code:: shell
 
@@ -187,15 +222,144 @@ called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-de
       ----------------------------------------------------
       :.cp-demo:wikipedia.parsed-value                  
       :.cp-demo:wikipedia.parsed.count-by-domain-value
-#. 
 
-   .. code:: shell
+Schema subjects have been successfully exported from Confluent Platform to 
+|ccloud| with schema linking! As schemas evolve on-prem, those changes will
+automatically propagate to |ccloud| as long as the exporter is running.
 
 .. _cp-demo-cluster-linking:
 
 Mirror Data to |ccloud| with Cluster Linking
 --------------------------------------------
 
+In this section, you will create a source-initiated cluster link
+to mirror the topic ``wikipedia.parsed`` from Confluent Platform to |ccloud|. Most on-prem datacenters don't
+allow connections initiated from the outside for security reasons,
+so Confluent recommends source-initiated cluster linking to easily and securely
+mirror Kafka topics from your on-prem cluster to |ccloud|.
+
+#. Give the cp-demo service account the ``CloudClusterAdmin`` role
+   to authorize it to create cluster links and mirror topics in |ccloud|.
+
+   .. code:: shell
+
+      confluent iam rbac role-binding create \
+         --principal User:$SERVICE_ACCOUNT_ID \
+         --role CloudClusterAdmin \
+         --cloud-cluster $CCLOUD_CLUSTER_ID --environment $CC_ENV
+   
+   Verify that the role-binding was created. The output should show the role has been created.
+
+   .. code:: shell
+
+      confluent iam rbac role-binding list \
+         --principal User:$SERVICE_ACCOUNT_ID
+
+
+#. Inspect the file ``scripts/ccloud/cluster-link-ccloud.properties``
+   and use it to create the |ccloud| half of the cluster link with the name **cp-cc-cluster-link**.
+
+   .. code:: shell
+
+      confluent kafka link create cp-cc-cluster-link \
+         --cluster $CCLOUD_CLUSTER_ID \
+         --source-cluster-id $CP_CLUSTER_ID \
+         --config-file ./scripts/ccloud/cluster-link-ccloud.properties \
+         --source-bootstrap-server 0.0.0.0
+
+   .. note::
+      The source bootstrap server is ``0.0.0.0`` because it is not needed
+      for a source-initiated cluster link.
+
+#. Inspect the file ``scripts/ccloud/cluster-link-cp-example.properties``.
+   Copy the file to ``scripts/ccloud/cluster-link-cp.properties``
+   with credentials and bootstrap endpoint for your own |ccloud| cluster.
+
+   .. code:: shell
+
+      sed -e "s|<confluent cloud cluster link api key>|${CCLOUD_CLUSTER_API_KEY}|g" \
+         -e "s|<confluent cloud cluster link api secret>|${CCLOUD_CLUSTER_API_SECRET}|g" \
+         -e "s|<confluent cloud bootstrap endpoint>|${CC_BOOTSTRAP_ENDPOINT}|g" \
+            scripts/ccloud/cluster-link-cp-example.properties > scripts/ccloud/cluster-link-cp.properties
+
+
+#. From here, we will switch back and forth between using |ccloud|
+   and Confluent Platform. We can streamline this "context switching"
+   with the ``confluent context`` CLI subcommand.
+   Here let's create a context called "ccloud" from the current context.
+
+   .. code:: shell
+
+      confluent context update --name ccloud
+
+
+#. Next, log into Confluent Platform and create a context called "cp".
+   To create a cluster link, the CLI user must have ``ClusterAdmin``
+   privileges. For simplicity, sign in as a super user using the username **superUser**
+   and password **superUser**
+
+   .. code:: shell
+
+      confluent login --save --url https://localhost:8091 \
+         --ca-cert-path scripts/security/snakeoil-ca-1.crt
+   
+   and create a CLI context called "cp".
+
+   .. code:: shell
+
+      confluent context update --name cp
+
+
+#. The cluster link itself needs the ``DeveloperRead`` and ``DeveloperManage``
+   roles for any topics it plans to mirror, as well as the ``ClusterAdmin`` role for the Kafka cluster.
+   Our cluster link uses the ``connectorSA`` principal, which already has 
+   ``ResourceOwner`` permissions on the ``wikipedia.parsed`` topic, so we just
+   need to add the ``ClusterAdmin`` role.
+
+   .. code:: shell
+
+      confluent iam rbac role-binding create \
+         --principal User:connectorSA \
+         --role ClusterAdmin \
+         --kafka-cluster-id $CP_CLUSTER_ID
+
+
+#. Create the Confluent Platform half of the cluster link, still called **cp-cc-cluster-link**.
+
+   .. code:: shell
+
+      confluent kafka link create cp-cc-cluster-link \
+         --destination-bootstrap-server $CC_BOOTSTRAP_ENDPOINT \
+         --destination-cluster-id $CCLOUD_CLUSTER_ID \
+         --config-file ./scripts/ccloud/cluster-link-cp.properties \
+         --url https://localhost:8091/kafka --ca-cert-path scripts/security/snakeoil-ca-1.crt 
+
+
+#. Switch contexts back to "ccloud" and create the mirror topic for ``wikipedia.parsed`` in |ccloud|.
+
+   .. code:: shell
+
+      confluent context use ccloud
+      confluent kafka mirror create wikipedia.parsed --link cp-cc-cluster-link
+
+#. Consume records from the mirror topic using the schema context "cp-demo".
+   Press ``Ctrl+C`` to stop the consumer when you are ready.
+
+   .. code:: shell
+
+      confluent kafka topic consume \
+         --api-key $CCLOUD_CLUSTER_API_KEY \
+         --api-secret $CCLOUD_CLUSTER_API_SECRET \
+         --sr-endpoint $CC_SR_ENDPOINT/contexts/:.cp-demo: \
+         --sr-api-key $SR_API_KEY --sr-api-secret $SR_API_SECRET \
+         --value-format avro \
+            wikipedia.parsed | jq
+
+You successfully created a source-initiated cluster link to seamlessly
+move data from on-prem to cloud in real time. Cluster linking opens up
+real-time hybrid cloud, multi-cloud, and disaster recovery use cases.
+See the `Cluster Linking documentation <https://docs.confluent.io/cloud/current/multi-cloud/overview.html>`__
+for more information.
 
 .. _cp-demo-ccloud-ksqldb:
 
@@ -229,7 +393,6 @@ In this section, you will create a |ccloud| ksqlDB cluster to processes data fro
 
    .. figure:: images/ccloud_ksqldb_stream.png
 
-#. Go to :ref:`cp-demo-ccloud-cleanup` and destroy the demo resources used. Important: 
 
 .. important:: The ksqlDB cluster in |ccloud| has hourly charges even if you are not actively using it. Make sure to go to :ref:`cp-demo-ccloud-cleanup`
    in the Teardown module to destroy all cloud resources when you are finished.
@@ -250,7 +413,8 @@ Configure Confluent Health+ with the Telemetry Reporter
 
    .. code:: shell
 
-      confluent api-key create --resource cloud -o json
+      confluent api-key create --resource cloud -o json \
+         --description "cloud api key for cp-demo"
 
 #. Verify your output resembles:
 
@@ -287,7 +451,7 @@ Configure Confluent Health+ with the Telemetry Reporter
 
    .. sourcecode:: bash
 
-      docker-compose logs kafka1 | grep confluent.telemetry.api
+      docker logs --since=5m kafka1 | grep confluent.telemetry.api
 
    Your output should resemble the following, but the ``confluent.telemetry.api.key`` value will be different in your environment.
 
@@ -298,7 +462,7 @@ Configure Confluent Health+ with the Telemetry Reporter
       kafka1            | 	confluent.telemetry.api.secret = [hidden]
       ...
 
-#. Navigate to the Health+ section of the |ccloud| Console at https://confluent.cloud/health-plus and verify you see this cluster dashboard.
+#. Navigate to the Health+ section of the |ccloud| Console at https://confluent.cloud/health-plus and verify you see your cluster's Health+ dashboard.
 
    .. figure:: images/hosted-monitoring.png
 
@@ -366,7 +530,7 @@ Query Metrics
         ]
       }
 
-#. For the |ccloud| metrics: view the :devx-cp-demo:`metrics query file|scripts/ccloud/metrics_query_ccloud.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed.ccloud.replica`` in |ccloud| (for all queryable metrics examples, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
+#. For the |ccloud| metrics: view the :devx-cp-demo:`metrics query file|scripts/ccloud/metrics_query_ccloud.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed`` in |ccloud| (for all queryable metrics examples, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
 
    .. literalinclude:: ../scripts/ccloud/metrics_query_ccloud.json
 

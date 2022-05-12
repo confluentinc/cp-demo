@@ -24,7 +24,7 @@ confluent iam service-account create cp-demo-cluster-link --description "service
 # get service account id
 export SERVICE_ACCOUNT_ID=$(confluent iam service-account list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
 # create kafka api key for cluster link service account
-confluent api-key create --resource $CCLOUD_CLUSTER_ID --service-account $SERVICE_ACCOUNT_ID --description "cp demo cluster link"
+confluent api-key create --resource $CCLOUD_CLUSTER_ID --service-account $SERVICE_ACCOUNT_ID --description "for cp-demo cluster link"
 # give service account alter acl on cluster
 confluent kafka acl create --allow --service-account $SERVICE_ACCOUNT_ID --operation ALTER --cluster-scope  --cluster $CCLOUD_CLUSTER_ID
 confluent kafka acl list
@@ -77,7 +77,7 @@ confluent kafka link list --url https://localhost:8091/kafka --ca-cert-path scri
 
 confluent context use ccloud
 
-confluent kafka mirror create wikipedia.parsed.count-by-domain --link $CLUSTER_LINK_NAME
+confluent kafka mirror create wikipedia.parsed --link cp-cc-cluster-link
 
 # TODO what about schemas? they aren't coming along for the ride.
 # Use schema linking: https://docs.confluent.io/cloud/current/sr/schema-linking.html
