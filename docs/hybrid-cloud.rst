@@ -11,12 +11,12 @@ In a hybrid |ak-tm| deployment scenario, you can have both an on-prem Confluent 
 `Confluent Cloud <https://confluent.cloud>`__ deployment.
 In this module, you will use `Cluster Linking <https://docs.confluent.io/cloud/current/multi-cloud/cluster-linking/index.html>`__
 and `Schema Linking <https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html>`__ to send data and schemas to
-|ccloud|, and monitor both deployments with the `Confluent Cloud Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__.
+|ccloud|, and monitor both deployments with `Confluent Health+ <https://docs.confluent.io/platform/current/health-plus/index.html#confluent-health>`__ and the `Confluent Cloud Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__.
 
 .. figure:: images/cp-demo-overview-with-ccloud.svg
     :alt: image
 
-Before you begin this module, make sure the cp-demo ``start.sh`` script successfully completed with Confluent Platform already running :ref:`(see the on-prem module) <cp-demo-run>`.
+Before you begin this module, make sure the cp-demo ``start.sh`` script successfully completed and Confluent Platform is already running :ref:`(see the on-prem module) <cp-demo-run>`.
 
 
 Cost to Run
@@ -54,7 +54,7 @@ Set Up Confluent CLI and variables
 
 #. Install `Confluent CLI <https://docs.confluent.io/confluent-cli/current/install.html>`__ locally, v2.13.3 or later.
 
-#. Using the CLI, log in to |ccloud| with the command ``confluent login``, and use your |ccloud| username and password. The ``--save`` argument saves your |ccloud| user login credentials or refresh token (in the case of SSO) to the local ``netrc`` file.
+#. Using the CLI, log in to |ccloud| with the command ``confluent login``, and use your |ccloud| username and password. The ``--save`` argument saves your |ccloud| user login credentials to the local ``~/.netrc`` file.
 
    .. code:: shell
 
@@ -64,14 +64,16 @@ Set Up Confluent CLI and variables
 
    .. code:: shell
 
-      CC_ENV=$(confluent environment list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
+      CC_ENV=$(confluent environment list -o json \
+               | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
       confluent environment use $CC_ENV
 
 #. Get the cluster ID and use the cluster.
 
    .. code:: shell
 
-      CCLOUD_CLUSTER_ID=$(confluent kafka cluster list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
+      CCLOUD_CLUSTER_ID=$(confluent kafka cluster list -o json \
+                        | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
       confluent kafka cluster use $CCLOUD_CLUSTER_ID
 
 #. Get the bootstrap endpoint.
@@ -85,81 +87,109 @@ Set Up Confluent CLI and variables
    .. code:: shell
 
       confluent iam service-account create cp-demo-sa --description "service account for cp demo"
-      CC_SERVICE_ACCOUNT=$(confluent iam service-account list -o json | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
+      SERVICE_ACCOUNT_ID=$(confluent iam service-account list -o json \
+                           | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
+
+#. Get the cluster ID and endpoint URL for your Schema Registry
+
+   .. code:: shell
+
+      CC_SR_CLUSTER_ID=$(confluent sr cluster describe -o json | jq -r .cluster_id)
+      CC_SR_ENDPOINT=$(confluent sr cluster describe -o json | jq -r .endpoint_url)
 
 
-.. #. The remainder of the |ccloud| portion of this tutorial must be completed sequentially. We recommend that you manually complete all the steps in the following sections. However, you may also run the script :devx-cp-demo:`scripts/ccloud/create-ccloud-workflow.sh|scripts/ccloud/create-ccloud-workflow.sh` which automates those steps. This option is recommended for users who have run this tutorial before and want to quickly bring it up.
+#. Create a Schema Registry API key for the cp-demo service account we created earlier.
 
-..    .. code-block:: text
+   .. code:: shell
 
-..       ./scripts/ccloud/create-ccloud-workflow.sh
+      confluent api-key create \
+         --service-account $SERVICE_ACCOUNT_ID \
+         --resource $CC_SR_CLUSTER_ID \
+         --description "SR key for cp-demo schema link"
 
-.. _cp-demo-ccloud-stack:
+#. Verify your putput will resembles
 
+   .. code:: text
 
-.. ccloud-stack
-.. ------------
+      It may take a couple of minutes for the API key to be ready.
+      Save the API key and secret. The secret is not retrievable later.
+      +---------+------------------------------------------------------------------+
+      | API Key | SZBKJLD67XK5NZNZ                                                 |
+      | Secret  | NTqs/A3Mt0Ohkk4fkaIsC0oLQ5Q/F0lLowYo/UrsTrEAM5ozxY7fjqxDdVwMJz99 |
+      +---------+------------------------------------------------------------------+
 
-.. Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |ccloud|.  Executed with a single command, it uses the |ccloud| CLI to:
+#. Set variables to reference the Schema Registry credentials returned in the previous step.
 
-.. -  Create a new environment.
-.. -  Create a new service account.
-.. -  Create a new Kafka cluster and associated credentials.
-.. -  Enable |sr-ccloud| and associated credentials.
-.. -  Create ACLs with a wildcard for the service account.
-.. -  Create a new ksqlDB app and associated credentials
-.. -  Generate a local configuration file with all above connection information.
+   .. code:: shell
 
-.. #. Get a bash library of useful functions for interacting with |ccloud| (one of which is ``cloud-stack``). This library is community-supported and not supported by Confluent.
-
-..    .. code-block:: text
-
-..       curl -sS -o ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
-
-.. #. Using ``ccloud_library.sh`` which you downloaded in the previous step, create a new ``ccloud-stack`` (see :ref:`ccloud-stack` for advanced options). It creates real resources in |ccloud| and takes a few minutes to complete.
-
-..    .. note:: The ``true`` flag adds creation of a ksqlDB application in |ccloud|, which has hourly charges even if you are not actively using it.
-
-..    .. code-block:: text
-
-..       source ./ccloud_library.sh
-..       export EXAMPLE="cp-demo" && ccloud::create_ccloud_stack true
- 
-.. #. When ``ccloud-stack`` completes, view the local configuration file at ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config`` that was auto-generated. It contains connection information for connecting to your newly created |ccloud| environment.
-
-..    .. code-block:: text
-
-..       cat stack-configs/java-service-account-*.config
-
-.. #. In the current shell, set the environment variable ``SERVICE_ACCOUNT_ID`` to the <SERVICE_ACCOUNT_ID> in the filename. For example, if the filename is called ``stack-configs/java-service-account-154143.config``, then set ``SERVICE_ACCOUNT_ID=154143``. This environment variable is used later in the tutorial.
-
-..    .. code-block:: text
-
-..       SERVICE_ACCOUNT_ID=<fill in>
-
-.. #. The |crep| :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_to_ccloud_config.sh` has parameters that specify how to connect to |ccloud|.  You could set these parameters manually, but to do this in an automated fashion, use another function to set env parameters customized for the |ccloud| instance created above. It reads your local |ccloud| configuration file, i.e., the auto-generated ``stack-configs/java-service-account-<SERVICE_ACCOUNT_ID>.config``, and creates files useful for |cp| components and clients connecting to |ccloud|.  Using ``ccloud_library.sh`` which you downloaded in an earlier step, run the ``generate_configs`` function against your auto-generated configuration file (the file created by ``ccloud-stack``).
-
-..    .. code-block:: text
-
-..       ccloud::generate_configs stack-configs/java-service-account-$SERVICE_ACCOUNT_ID.config
-
-.. #. The output of the script is a folder called ``delta_configs`` with sample configurations for all components and clients, which you can easily apply to any |ak| client or |cp| component. View the ``delta_configs/env.delta`` file.
-
-..    .. code-block:: text
-
-..       cat delta_configs/env.delta
-
-.. #. Source the ``delta_configs/env.delta`` file into your environment. These environment variables will be used in a few sections when you run |crep| to copy data from your on-prem cluster to your |ccloud| cluster.
-
-..    .. code-block:: text
-
-..       source delta_configs/env.delta
+      SR_API_KEY=SZBKJLD67XK5NZNZ
+      SR_API_SECRET=NTqs/A3Mt0Ohkk4fkaIsC0oLQ5Q/F0lLowYo/UrsTrEAM5ozxY7fjqxDdVwMJz99
 
 
 .. _cp-demo-schema-linking:
 
 Export Schemas to |ccloud| with Schema Linking
 ----------------------------------------------
+
+Confluent Schema Registry is critical for evolving schemas alongside your business needs and ensuring high data quality.
+With `Schema Linking <https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html>`__
+, you can easily export your schemas from your on-prem Schema Registry to |ccloud|.
+In this section, you will export the schema subjects ``wikipedia.parsed-value`` and ``wikipedia.parsed.count-by-domain-value``
+from Confluent Platform to Confluent Cloud with schema linking.
+These schema subjects will be exported to a new `schema context <https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html#what-is-a-schema-context>`__
+called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-demo:wikipedia.parsed-value`` and ``:.cp-demo:wikipedia.parsed.count-by-domain-value``.
+
+#. Use the Confluent Server REST API to create a schema exporter for the on-prem Schema Registry.
+
+   .. code:: shell
+
+      curl -X POST -H "Content-Type: application/json" \
+         -d @<(cat <<-EOF
+      {
+         "name": "cp-cc-schema-exporter",
+         "contextType": "CUSTOM",
+         "context": "cp-demo",
+         "subjects": ["wikipedia.parsed*"],
+         "config": {
+            "schema.registry.url": "${CC_SR_ENDPOINT}",
+            "basic.auth.credentials.source": "USER_INFO",
+            "basic.auth.user.info": "${SR_API_KEY}:${SR_API_SECRET}"
+         }
+      }
+      EOF
+      ) \
+         --user schemaregistryUser:schemaregistryUser \
+         --cacert scripts/security/snakeoil-ca-1.crt \
+         https://localhost:8085/exporters
+
+   Notice we can use a wildcard ``*`` to export multiple subjects. A successful response will show
+
+   .. code:: json
+
+      {"name":"cp-cc-schema-exporter"}
+
+   .. note::
+      TODO: replace curl with confluent CLI when functionality becomes available
+
+#. Verify that the schema subjects are being exported to |ccloud|.
+
+   .. code:: shell
+
+      confluent sr subject list \
+         --api-key $SR_API_KEY --api-secret $SR_API_SECRET \
+         --prefix ":.cp-demo:"
+
+   The output should resemble
+
+   .. code:: text
+
+                                 Subject                  
+      ----------------------------------------------------
+      :.cp-demo:wikipedia.parsed-value                  
+      :.cp-demo:wikipedia.parsed.count-by-domain-value
+#. 
+
+   .. code:: shell
 
 .. _cp-demo-cluster-linking:
 
@@ -235,7 +265,7 @@ Configure Confluent Health+ with the Telemetry Reporter
    in this case ``fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D``,
    will differ in your output.
 
-#. Set parameters to reference these credentials returned in the previous step.
+#. Set variables to reference these credentials returned in the previous step.
 
    .. code-block:: text
 
