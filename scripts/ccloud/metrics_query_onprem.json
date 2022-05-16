@@ -15,7 +15,7 @@
       ],
       "op": "AND"
   },
-  "intervals": ["${CURRENT_TIME_MINUS_1HR}/${CURRENT_TIME_PLUS_1HR}"],
+  "intervals": ["now-1h/now+1h"],
   "granularity": "PT1M",
   "group_by": [
       "metric.topic"

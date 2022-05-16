@@ -423,7 +423,7 @@ Metrics API
 Configure Confluent Health+ with the Telemetry Reporter
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#. Create a new ``Cloud`` API key and secret to authenticate to |ccloud|. These credentials will be used to configure the Telemetry Reporter and used by the Metrics API.
+#. Create a new ``Cloud`` API key and secret to authenticate to |ccloud|. These credentials will be used to configure the Telemetry Reporter in Confluent Platform for Health+, as well as to access the |ccloud| Metrics API directly.
 
    .. code:: shell
 
@@ -487,40 +487,18 @@ Configure Confluent Health+ with the Telemetry Reporter
 Query Metrics
 ~~~~~~~~~~~~~
 
-#. To define the time interval when querying the Metrics API, get the current time minus 1 hour and current time plus 1 hour. The ``date`` utility varies between operating systems, so use the ``tools`` Docker container to get consistent and reliable dates.
-
-   .. code-block:: text
-
-      CURRENT_TIME_MINUS_1HR=$(docker exec tools date -Is -d '-1 hour' | tr -d '\r')
-      CURRENT_TIME_PLUS_1HR=$(docker exec tools date -Is -d '+1 hour' | tr -d '\r')
-
 #. For the on-prem metrics: view the :devx-cp-demo:`metrics query file|scripts/ccloud/metrics_query_onprem.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed`` in the on-prem cluster (for all queryable metrics examples, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
 
    .. literalinclude:: ../scripts/ccloud/metrics_query_onprem.json
 
-#. Substitute values into the query json file. For this substitution to work, you must have set the following parameters in your environment:
-
-   - ``CURRENT_TIME_MINUS_1HR``
-   - ``CURRENT_TIME_PLUS_1HR``
-
-   .. code-block:: text
-
-      DATA=$(eval "cat <<EOF
-      $(<./scripts/ccloud/metrics_query_onprem.json)
-      EOF
-      ")
-
-      # View this parameter
-      echo $DATA
-
-#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v2/metrics/hosted-monitoring/query.
+#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v2/metrics/health-plus/query.
 
    .. code-block:: text
 
       curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
            --header 'content-type: application/json' \
-           --data "${DATA}" \
-           https://api.telemetry.confluent.cloud/v2/metrics/hosted-monitoring/query \
+           --data @scripts/ccloud/metrics_query_onprem.json \
+           https://api.telemetry.confluent.cloud/v2/metrics/health-plus/query \
               | jq .
 
 #. Your output should resemble the output below, showing metrics for the on-prem topic ``wikipedia.parsed``:
@@ -542,38 +520,23 @@ Query Metrics
         ]
       }
 
-#. For the |ccloud| metrics: view the :devx-cp-demo:`metrics query file|scripts/ccloud/metrics_query_ccloud.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed`` in |ccloud| (for all queryable metrics examples, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__).
+#. For the |ccloud| metrics: view the :devx-cp-demo:`metrics query file|scripts/ccloud/metrics_query_ccloud.json`, which requests ``io.confluent.kafka.server/cluster_link_mirror_topic_bytes`` for the cluster link ``cp-cc-cluster-link`` in |ccloud|, which includes metrics for the ``wikipedia.parsed`` mirror topic.
 
    .. literalinclude:: ../scripts/ccloud/metrics_query_ccloud.json
 
-
-#. Substitute values into the query json file. For this substitution to work, you must have set the following parameters in your environment:
-
-   - ``CURRENT_TIME_MINUS_1HR``
-   - ``CURRENT_TIME_PLUS_1HR``
-   - ``CCLOUD_CLUSTER_ID``
-
-   .. code-block:: text
-
-      DATA=$(eval "cat <<EOF
-      $(<./scripts/ccloud/metrics_query_ccloud.json)
-      EOF
-      ")
-
-      # View this parameter
-      echo $DATA
 
 #. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v2/metrics/cloud/query.
 
    .. code-block:: text
 
-      curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
+      sed "s/<CCLOUD_CLUSTER_ID>/${CCLOUD_CLUSTER_ID}/g" scripts/ccloud/metrics_query_ccloud.json \
+      | curl -s -u ${METRICS_API_KEY}:${METRICS_API_SECRET} \
            --header 'content-type: application/json' \
-           --data "${DATA}" \
+           --data @- \
            https://api.telemetry.confluent.cloud/v2/metrics/cloud/query \
               | jq .
 
-#. Your output should resemble the output below, showing metrics for the |ccloud| mirror topic ``wikipedia.parsed``:
+#. Your output should resemble the output below, showing metrics for the cluster link ``cp-cc-cluster-link``, including the |ccloud| mirror topic ``wikipedia.parsed``:
 
    .. code-block:: text
 
@@ -586,6 +549,11 @@ Query Metrics
           }
         ]
       }
+
+.. tip::
+
+   See `Metrics and Monitoring for Cluster Linking <https://docs.confluent.io/cloud/current/multi-cloud/cluster-linking/metrics-cc.html#metrics-and-monitoring-for-cluster-linking>`__
+   for more information about monitoring cluster links, including how to monitor mirror lag.
 
 
 Cleanup
