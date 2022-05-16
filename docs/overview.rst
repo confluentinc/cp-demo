@@ -2,8 +2,8 @@ Confluent Platform Demo (cp-demo)
 =================================
 
 The ``cp-demo`` example builds a full |cp| deployment with an |ak-tm| event streaming application using `ksqlDB <https://ksqldb.io>`__ and `Kafka Streams <https://docs.confluent.io/platform/current/streams/index.html>`__ for stream processing, and all the components have security enabled end-to-end.
-The tutorial includes a module to extend it into a hybrid deployment that runs |crep| to copy data from a local on-prem |ak| cluster to |ccloud|, a fully-managed service for |ak-tm|.
-Follow the accompanying guided tutorial, broken down step-by-step, to learn how |ak| and |ccloud| work with |kconnect|, |sr-long|, |c3|, |crep|, and security enabled end-to-end.
+The tutorial includes a module to extend it into a hybrid deployment that runs Cluster Linking and Schema Linking to copy data and schemas from a local on-prem |ak| cluster to |ccloud|, a fully-managed service for |ak-tm|.
+Follow the accompanying guided tutorial, broken down step-by-step, to learn how |ak| and |ccloud| work with |kconnect|, |sr-long|, |c3|, Cluster Linking, and security enabled end-to-end.
 
 ========
 Overview
@@ -22,7 +22,6 @@ Wikimedia's `EventStreams <https://wikitech.wikimedia.org/wiki/Event_Platform/Ev
 A Kafka source connector `kafka-connect-sse <https://www.confluent.io/hub/cjmatta/kafka-connect-sse>`__ streams the server-sent events (SSE) from https://stream.wikimedia.org/v2/stream/recentchange, and a custom |kconnect| transform `kafka-connect-json-schema <https://www.confluent.io/hub/jcustenborder/kafka-connect-json-schema>`__ extracts the JSON from these messages and then are written to a |ak| cluster.
 This example uses `ksqlDB <https://ksqldb.io>`__ and a :ref:`Kafka Streams <kafka_streams>` application for data processing.
 Then a Kafka sink connector `kafka-connect-elasticsearch <https://www.confluent.io/hub/confluentinc/kafka-connect-elasticsearch>`__ streams the data out of Kafka and is materialized into `Elasticsearch <https://www.elastic.co/products/elasticsearch>`__ for analysis by `Kibana <https://www.elastic.co/products/kibana>`__.
-|crep-full| is also copying messages from a topic to another topic in the same cluster.
 All data is using |sr-long| and Avro, and `Confluent Control Center <https://www.confluent.io/product/control-center/>`__ is managing and monitoring the deployment.
 
 Data Pattern

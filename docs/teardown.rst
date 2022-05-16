@@ -47,14 +47,14 @@ If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included cr
 
 #. Destroy your |ccloud| environment. Go to https://confluent.cloud/environments and delete the environment "cp-demo-env" that you created. This will destroy all clusters and resources associated with the environment.
 
-#. If the on-prem cluster is still running, remove the cluster link that is mirroring data to |ccloud|.
+#. If you'd like to keep the on-prem cluster running, remove the cluster link that is mirroring data to |ccloud|.
 
    .. code-block:: text
 
       confluent kafka link delete $CLUSTER_LINK_NAME \
          --url https://localhost:8091/kafka --ca-cert-path scripts/security/snakeoil-ca-1.crt
 
-#. If the on-prem cluster is still running, remove the schema exporter that is mirroring schemas to |ccloud|.
+#. If you'd like to keep the on-prem cluster running, remove the schema exporter that is mirroring schemas to |ccloud|.
 
    .. code-block:: text
 
@@ -62,7 +62,7 @@ If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included cr
          --url https://localhost:8091/kafka --ca-cert-path scripts/security/snakeoil-ca-1.crt
 
 
-#. If the on-prem cluster is still running, disable Telemetry Reporter in both |ak| brokers.
+#. If you'd like to keep the on-prem cluster running, disable Telemetry Reporter in both |ak| brokers.
 
    .. code-block:: text
 
