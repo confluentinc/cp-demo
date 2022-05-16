@@ -33,13 +33,7 @@ If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included cr
 .. include:: ../../examples/ccloud/docs/includes/ccloud-examples-terminate.rst
 
 
-#. Delete the ``Cloud`` API key you created to access the Metrics API.
-
-   .. code-block:: text
-
-      confluent api-key delete ${METRICS_API_KEY}
-
-#. Delete the |ccloud| service account you created for the cluster link.
+#. Delete the |ccloud| service account you created for the cluster link. This will also delete all API keys associated with the account.
 
    .. code-block:: text
 
@@ -58,7 +52,7 @@ If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included cr
 
    .. code-block:: text
 
-      confluent schema-registry exporter delete $SCHEMA_LINK_NAME \
+      confluent schema-registry exporter delete cp-cc-schema-exporter \
          --url https://localhost:8091/kafka --ca-cert-path scripts/security/snakeoil-ca-1.crt
 
 

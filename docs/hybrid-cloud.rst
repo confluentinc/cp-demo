@@ -52,7 +52,7 @@ Set Up |ccloud|
 Set Up Confluent CLI and variables
 ----------------------------------
 
-#. Install `Confluent CLI <https://docs.confluent.io/confluent-cli/current/install.html>`__ locally, v2.13.3 or later.
+#. Install `Confluent CLI <https://docs.confluent.io/confluent-cli/current/install.html>`__ locally, version 2.14.0 or later.
 
 #. Using the CLI, log in to |ccloud| with the command ``confluent login``, and use your |ccloud| username and password. The ``--save`` argument saves your |ccloud| user login credentials to the local ``~/.netrc`` file.
 
@@ -60,7 +60,7 @@ Set Up Confluent CLI and variables
 
       confluent login --save
 
-#. Use the demo environment.
+#. Use the demo |ccloud| environment.
 
    .. code:: shell
 
@@ -68,7 +68,7 @@ Set Up Confluent CLI and variables
                | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
       confluent environment use $CC_ENV
 
-#. Get the cluster ID and use the cluster.
+#. Get the |ccloud| cluster ID and use the cluster.
 
    .. code:: shell
 
@@ -76,7 +76,7 @@ Set Up Confluent CLI and variables
                         | jq -r '.[] | select(.name | contains("cp-demo")) | .id')
       confluent kafka cluster use $CCLOUD_CLUSTER_ID
 
-#. Get the bootstrap endpoint.
+#. Get the bootstrap endpoint for the |ccloud| cluster.
 
    .. code:: shell
 
@@ -174,7 +174,7 @@ from Confluent Platform to Confluent Cloud with schema linking.
 These schema subjects will be exported to a new `schema context <https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html#what-is-a-schema-context>`__
 called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-demo:wikipedia.parsed-value`` and ``:.cp-demo:wikipedia.parsed.count-by-domain-value``.
 
-#. Use the Confluent Server REST API to create a schema exporter called "cp-cc-schema-exporter" for the on-prem Schema Registry.
+#. Use Confluent Server's embedded REST API to create a schema exporter called "cp-cc-schema-exporter" for the on-prem Schema Registry.
 
    .. code:: shell
 
@@ -204,7 +204,20 @@ called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-de
       {"name":"cp-cc-schema-exporter"}
 
    .. note::
-      TODO: replace curl with confluent CLI when functionality becomes available
+      The ``cURL`` command is used for educational purposes to emphasize that schema exporters are managed via REST API,
+      but like usual, it is easier in practice to use the ``confluent`` CLI. Here is an equivallent command from the ``confluent`` CLI,
+      assuming the CLI user is logged into the source Confluent Platform and has proper authorization on the source Schema Registry cluster to create the exporter:
+
+      .. code:: shell
+
+         confluent schema-registry exporter create cp-cc-schema-exporter \
+            --subjects wikipedia* \
+            --context cp-demo \
+            --config-file scripts/ccloud/schema-link.properties
+      
+      The configuration file provided to ``--config-file`` just provides credentials to access the destination Schema Registry cluster.
+      See the :devx-cp-demo:`example configuration file|scripts/ccloud/schema-link-example.properties` for reference.
+      If the source were also a |ccloud| |sr|, then the CLI command would also require ``--api-key`` and ``--api-secret`` options to access it.
 
 #. Verify that the schema subjects are being exported to |ccloud|.
 
@@ -233,8 +246,9 @@ Mirror Data to |ccloud| with Cluster Linking
 --------------------------------------------
 
 In this section, you will create a source-initiated cluster link
-to mirror the topic ``wikipedia.parsed`` from Confluent Platform to |ccloud|. Most on-prem datacenters don't
-allow connections initiated from the outside for security reasons,
+to mirror the topic ``wikipedia.parsed`` from Confluent Platform to |ccloud|.
+For security reasons, most on-prem datacenters don't
+allow inbound connections,
 so Confluent recommends source-initiated cluster linking to easily and securely
 mirror Kafka topics from your on-prem cluster to |ccloud|.
 
@@ -271,7 +285,7 @@ mirror Kafka topics from your on-prem cluster to |ccloud|.
       The source bootstrap server is ``0.0.0.0`` because it is not needed
       for a source-initiated cluster link.
 
-#. Inspect the file ``scripts/ccloud/cluster-link-cp-example.properties``.
+#. Inspect the file ``scripts/ccloud/cluster-link-cp-example.properties`` and read the comments to understand what each property does.
    Copy the file to ``scripts/ccloud/cluster-link-cp.properties``
    with credentials and bootstrap endpoint for your own |ccloud| cluster.
 
@@ -414,9 +428,10 @@ Configure Confluent Health+ with the Telemetry Reporter
    .. code:: shell
 
       confluent api-key create --resource cloud -o json \
+         --service-account $SERVICE_ACCOUNT_ID \
          --description "cloud api key for cp-demo"
 
-#. Verify your output resembles:
+   Verify your output resembles:
 
    .. code-block:: text
 
@@ -433,8 +448,8 @@ Configure Confluent Health+ with the Telemetry Reporter
 
    .. code-block:: text
 
-      METRICS_API_KEY='QX7X4VA4DFJTTOIA'
-      METRICS_API_SECRET='fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D'
+      METRICS_API_KEY=QX7X4VA4DFJTTOIA
+      METRICS_API_SECRET=fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D
 
 #. :ref:`Dynamically configure <kafka-dynamic-configurations>` the ``cp-demo`` cluster to use the Telemetry Reporter, which sends metrics to |ccloud|. This requires setting 3 configuration parameters: ``confluent.telemetry.enabled=true``, ``confluent.telemetry.api.key``, and ``confluent.telemetry.api.secret``.
 
@@ -498,10 +513,7 @@ Query Metrics
       # View this parameter
       echo $DATA
 
-#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v2/metrics/hosted-monitoring/query. For this query to work, you must have set the following parameters in your environment:
-
-   - ``METRICS_API_KEY``
-   - ``METRICS_API_SECRET``
+#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v2/metrics/hosted-monitoring/query.
 
    .. code-block:: text
 
@@ -551,10 +563,7 @@ Query Metrics
       # View this parameter
       echo $DATA
 
-#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v2/metrics/cloud/query. For this query to work, you must have set the following parameters in your environment:
-
-   - ``METRICS_API_KEY``
-   - ``METRICS_API_SECRET`` 
+#. Send this query to the Metrics API endpoint at https://api.telemetry.confluent.cloud/v2/metrics/cloud/query.
 
    .. code-block:: text
 

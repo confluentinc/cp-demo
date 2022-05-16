@@ -85,7 +85,7 @@ Within the ``cp-demo`` directory, there is a single :devx-cp-demo:`script|script
 It generates the keys and certificates, brings up the Docker containers, and configures and validates the environment.
 You can run it with optional settings:
 
-- ``CLEAN``: controls whether certificates and the locally built |kconnect| image are regenerated in between runs
+- ``CLEAN``: controls whether certificates are regenerated
 - ``C3_KSQLDB_HTTPS``: controls whether |c3| and ksqlDB server use ``HTTP`` or ``HTTPS`` (default: ``false`` for ``HTTP``). This option is not supported with :gitpod_link:`Gitpod|`.
 - ``VIZ``: enables Elasticsearch and Kibana (default: ``true``)
 
@@ -429,59 +429,6 @@ Consumers
       :width: 500px
       :alt: image
 
-
-.. TODO: replace replicator with a different connector 
-.. |crep-full|
-.. -----------
-
-.. |crep-full| copies data from a source Kafka cluster to a
-.. destination Kafka cluster. The source and destination clusters are
-.. typically different clusters, but in this example, |crep| is doing
-.. intra-cluster replication, *i.e.*, the source and destination Kafka
-.. clusters are the same. As with the rest of the components in the
-.. solution, |crep-full| is also configured with security.
-
-.. #. View |crep| status and throughput in a dedicated view in |c3|.
-
-..    .. figure:: images/replicator_c3_view.png
-..       :alt: image
-
-.. #. **Consumers**: monitor throughput and latency of |crep-full|.
-..    |crep| is a |kconnect-long| source connector and has a corresponding consumer group ``connect-replicator``.
-
-..    .. figure:: images/replicator_consumer_group_list.png
-..       :alt: image
-
-.. #. View |crep| Consumer Lag.
-
-..    .. figure:: images/replicator_consumer_lag.png
-..       :alt: image
-
-.. #. View |crep| Consumption metrics.
-
-..    .. figure:: images/replicator_consumption.png
-..       :alt: image
-
-.. #. **Connect**: pause the |crep| connector in **Settings**
-..    by pressing the pause icon in the top right and wait for 10 seconds until it takes effect.  This stops
-..    consumption for the related consumer group.
-
-..    .. figure:: images/pause_connector_replicator.png
-..       :alt: image
-
-.. #. Observe that the ``connect-replicator`` consumer group has stopped
-..    consumption.
-
-..    .. figure:: images/replicator_stopped.png
-
-.. #. Restart the |crep| connector.
-
-.. #. Observe that the ``connect-replicator`` consumer group has resumed consumption. Notice several things:
-
-..    * Even though the consumer group `connect-replicator` was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
-..    * The latency peaks and then gradually decreases, because this is also relative to the produce timestamp.
-
-.. #. Next step: Learn more about |crep| with the :ref:`Replicator Tutorial <replicator>`.
 
 
 Security
