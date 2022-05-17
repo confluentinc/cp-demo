@@ -278,12 +278,7 @@ mirror Kafka topics from your on-prem cluster to |ccloud|.
       confluent kafka link create cp-cc-cluster-link \
          --cluster $CCLOUD_CLUSTER_ID \
          --source-cluster-id $CP_CLUSTER_ID \
-         --config-file ./scripts/ccloud/cluster-link-ccloud.properties \
-         --source-bootstrap-server 0.0.0.0
-
-   .. note::
-      The source bootstrap server is ``0.0.0.0`` because it is not needed
-      for a source-initiated cluster link.
+         --config-file ./scripts/ccloud/cluster-link-ccloud.properties
 
 #. Inspect the file ``scripts/ccloud/cluster-link-cp-example.properties`` and read the comments to understand what each property does.
    Copy the file to ``scripts/ccloud/cluster-link-cp.properties``
