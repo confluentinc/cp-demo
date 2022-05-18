@@ -7,7 +7,7 @@ Module 2: Hybrid Deployment to |ccloud| Tutorial
 Hybrid Deployment to |ccloud|
 =============================
 
-In a hybrid |ak-tm| deployment scenario, you can have both an on-prem Confluent Platform deployment as well as a
+In a hybrid |ak-tm| deployment scenario, you can have both an on-prem |cp| deployment as well as a
 `Confluent Cloud <https://confluent.cloud>`__ deployment.
 In this module, you will use `Cluster Linking <https://docs.confluent.io/cloud/current/multi-cloud/cluster-linking/index.html>`__
 and `Schema Linking <https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html>`__ to send data and schemas to
@@ -16,7 +16,7 @@ and `Schema Linking <https://docs.confluent.io/platform/current/schema-registry/
 .. figure:: images/cp-demo-overview-with-ccloud.svg
     :alt: image
 
-Before you begin this module, make sure the cp-demo ``start.sh`` script successfully completed and Confluent Platform is already running :ref:`(see the on-prem module) <cp-demo-run>`.
+Before you begin this module, make sure the cp-demo ``start.sh`` script successfully completed and |cp| is already running :ref:`(see the on-prem module) <cp-demo-run>`.
 
 
 Cost to Run
@@ -152,7 +152,7 @@ Set Up Confluent CLI and variables
       CCLOUD_CLUSTER_API_KEY=SZBKLMG61XK9NZAB
       CCLOUD_CLUSTER_API_SECRET=QTpi/A3Mt0Ohkk4fkaIsGR3ATQ5Q/F0lLowYo/UrsTr3AMsozxY7fjqxDdVwMJz02
 
-#. We will also need the cluster ID for the on-prem Confluent Platform cluster.
+#. We will also need the cluster ID for the on-prem |cp| cluster.
 
    .. code:: shell
 
@@ -170,7 +170,7 @@ Confluent Schema Registry is critical for evolving schemas alongside your busine
 With `Schema Linking <https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html>`__
 , you can easily export your schemas from your on-prem Schema Registry to |ccloud|.
 In this section, you will export the schema subjects ``wikipedia.parsed-value`` and ``wikipedia.parsed.count-by-domain-value``
-from Confluent Platform to Confluent Cloud with schema linking.
+from |cp| to |ccloud| with schema linking.
 These schema subjects will be exported to a new `schema context <https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html#what-is-a-schema-context>`__
 called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-demo:wikipedia.parsed-value`` and ``:.cp-demo:wikipedia.parsed.count-by-domain-value``.
 
@@ -206,7 +206,7 @@ called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-de
    .. note::
       The ``cURL`` command is used for educational purposes to emphasize that schema exporters are managed via REST API,
       but like usual, it is easier in practice to use the ``confluent`` CLI. Here is an equivallent command from the ``confluent`` CLI,
-      assuming the CLI user is logged into the source Confluent Platform and has proper authorization on the source Schema Registry cluster to create the exporter:
+      assuming the CLI user is logged into the source |cp| and has proper authorization on the source Schema Registry cluster to create the exporter:
 
       .. code:: shell
 
@@ -236,7 +236,7 @@ called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-de
       :.cp-demo:wikipedia.parsed-value                  
       :.cp-demo:wikipedia.parsed.count-by-domain-value
 
-Schema subjects have been successfully exported from Confluent Platform to 
+Schema subjects have been successfully exported from |cp| to 
 |ccloud| with schema linking! As schemas evolve on-prem, those changes will
 automatically propagate to |ccloud| as long as the exporter is running.
 
@@ -246,7 +246,7 @@ Mirror Data to |ccloud| with Cluster Linking
 --------------------------------------------
 
 In this section, you will create a source-initiated cluster link
-to mirror the topic ``wikipedia.parsed`` from Confluent Platform to |ccloud|.
+to mirror the topic ``wikipedia.parsed`` from |cp| to |ccloud|.
 For security reasons, most on-prem datacenters don't
 allow inbound connections,
 so Confluent recommends source-initiated cluster linking to easily and securely
@@ -293,7 +293,7 @@ mirror Kafka topics from your on-prem cluster to |ccloud|.
 
 
 #. From here, we will switch back and forth between using |ccloud|
-   and Confluent Platform. We can streamline this "context switching"
+   and |cp|. We can streamline this "context switching"
    with the ``confluent context`` CLI subcommand.
    Here let's create a context called "ccloud" from the current context.
 
@@ -302,7 +302,7 @@ mirror Kafka topics from your on-prem cluster to |ccloud|.
       confluent context update --name ccloud
 
 
-#. Next, log into Confluent Platform and create a context called "cp".
+#. Next, log into |cp| and create a context called "cp".
    To create a cluster link, the CLI user must have ``ClusterAdmin``
    privileges. For simplicity, sign in as a super user using the username **superUser**
    and password **superUser**
@@ -333,7 +333,7 @@ mirror Kafka topics from your on-prem cluster to |ccloud|.
          --kafka-cluster-id $CP_CLUSTER_ID
 
 
-#. Create the Confluent Platform half of the cluster link, still called **cp-cc-cluster-link**.
+#. Create the |cp| half of the cluster link, still called **cp-cc-cluster-link**.
 
    .. code:: shell
 
@@ -377,7 +377,7 @@ for more information.
 
 In this section, you will create a |ccloud| ksqlDB cluster to processes data from the ``wikipedia.parsed`` mirror topic.
 
-#. Log into the Confluent Cloud Console at https://confluent.cloud and navigate to the **cp-demo-env** environment and then to the **cp-demo-cluster** cluster within that environment.
+#. Log into the |ccloud| Console at https://confluent.cloud and navigate to the **cp-demo-env** environment and then to the **cp-demo-cluster** cluster within that environment.
 
 #. Select "ksqlDB" from the left side menu, click "Create cluster myself". Select "Global access". Name the cluster **cp-demo-ksql** and choose a cluster size of 1 CSU. It will take a minute or so to provision.
 
@@ -418,7 +418,7 @@ Metrics API
 Configure Confluent Health+ with the Telemetry Reporter
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#. Create a new ``Cloud`` API key and secret to authenticate to |ccloud|. These credentials will be used to configure the Telemetry Reporter in Confluent Platform for Health+, as well as to access the |ccloud| Metrics API directly.
+#. Create a new ``Cloud`` API key and secret to authenticate to |ccloud|. These credentials will be used to configure the Telemetry Reporter in |cp| for Health+, as well as to access the |ccloud| Metrics API directly.
 
    .. code:: shell
 

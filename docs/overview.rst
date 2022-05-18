@@ -1,4 +1,4 @@
-Confluent Platform Demo (cp-demo)
+|cp| Demo (cp-demo)
 =================================
 
 The ``cp-demo`` example builds a full |cp| deployment with an |ak-tm| event streaming application using `ksqlDB <https://ksqldb.io>`__ and `Kafka Streams <https://docs.confluent.io/platform/current/streams/index.html>`__ for stream processing, and all the components have security enabled end-to-end.

@@ -6,7 +6,7 @@ Module 1: On-Prem Tutorial
 .. _cp-demo-run:
 
 ====================
-Run on-prem Confluent Platform cluster
+Run on-prem |cp| cluster
 ====================
 
 ``cp-demo`` is a Docker environment and has all services running on one host.
