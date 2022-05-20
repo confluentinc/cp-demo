@@ -32,6 +32,11 @@ If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included cr
 
 .. include:: ../../examples/ccloud/docs/includes/ccloud-examples-terminate.rst
 
+#. Make sure that you're still using the ``ccloud`` CLI context.
+
+   .. code::
+
+      confluent context use ccloud
 
 #. Delete the |ccloud| service account you created for the cluster link. This will also delete all API keys associated with the account.
 
@@ -39,33 +44,12 @@ If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included cr
 
       confluent iam service-account delete ${SERVICE_ACCOUNT_ID}
 
-#. Destroy your |ccloud| environment. Go to https://confluent.cloud/environments and delete the environment "cp-demo-env" that you created. This will destroy all clusters and resources associated with the environment.
+#. Destroy your |ccloud| ksqlDB cluster. Go to https://confluent.cloud/environments -> Select **cp-demo-cluster** -> ksqlDB -> Select "delete".
 
-#. If you'd like to keep the on-prem cluster running, remove the cluster link that is mirroring data to |ccloud|.
+#. Destroy your |ccloud| cluster. Go to https://confluent.cloud/environments -> Select **cp-demo-cluster** -> Cluster Overview -> Cluster Settings -> Select "Delete cluster".
 
-   .. code-block:: text
+#. Destroy your |ccloud| environment. Go to https://confluent.cloud/environments and delete the environment "cp-demo-env" that you created.
 
-      confluent kafka link delete $CLUSTER_LINK_NAME \
-         --url https://localhost:8091/kafka --ca-cert-path scripts/security/snakeoil-ca-1.crt
-
-#. If you'd like to keep the on-prem cluster running, remove the schema exporter that is mirroring schemas to |ccloud|.
-
-   .. code-block:: text
-
-      confluent schema-registry exporter delete cp-cc-schema-exporter \
-         --url https://localhost:8091/kafka --ca-cert-path scripts/security/snakeoil-ca-1.crt
-
-
-#. If you'd like to keep the on-prem cluster running, disable Telemetry Reporter in both |ak| brokers.
-
-   .. code-block:: text
-
-      docker-compose exec kafka1 kafka-configs \
-        --bootstrap-server kafka1:12091 \
-        --alter \
-        --entity-type brokers \
-        --entity-default \
-        --delete-config confluent.telemetry.enabled,confluent.telemetry.api.key,confluent.telemetry.api.secret
 
 .. note::
    
