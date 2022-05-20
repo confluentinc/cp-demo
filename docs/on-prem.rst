@@ -5,9 +5,9 @@ Module 1: On-Prem Tutorial
 
 .. _cp-demo-run:
 
-====================
+========================
 Run on-prem |cp| cluster
-====================
+========================
 
 ``cp-demo`` is a Docker environment and has all services running on one host.
 It is meant exclusively to easily demo |CP|, but in production, do not deploy all |cp| services on a single host.
