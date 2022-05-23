@@ -1,26 +1,25 @@
 {
   "aggregations": [
       {
-          "agg": "SUM",
-          "metric": "io.confluent.kafka.server/received_bytes"
+          "metric": "io.confluent.kafka.server/cluster_link_mirror_topic_bytes"
       }
   ],
   "filter": {
       "filters": [
           {
-               "field": "metric.topic",
+               "field": "metric.link_name",
                "op": "EQ",
-               "value": "wikipedia.parsed.ccloud.replica"
+               "value": "cp-cc-cluster-link"
           },
           {
               "field": "resource.kafka.id",
               "op": "EQ",
-              "value": "${CCLOUD_CLUSTER_ID}"
+              "value": "<CCLOUD_CLUSTER_ID>"
           }
       ],
       "op": "AND"
   },
-  "intervals": ["${CURRENT_TIME_MINUS_1HR}/${CURRENT_TIME_PLUS_1HR}"],
+  "intervals": ["now-1h/now+1h"],
   "granularity": "PT1H",
   "group_by": [
       "metric.topic"
