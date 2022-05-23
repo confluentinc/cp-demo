@@ -27,17 +27,10 @@ Procedure:
     ```
     **Tip:** If you are using `zsh` run `autoload bashcompinit; bashcompinit` so that you can source the `settings.sh` file.
 
-1. Update `pip` setup tools and pip itself if necessary.
+1. Install dependencies with helper script.
 
     ```
-    pip install --upgrade setuptools
-    pip install --upgrade pip
-    ```
-
-1.  Use `pip install` to install the local `requirements.txt`.
-
-    ```
-    pip install -r requirements.txt
+    ./setup-venv.sh
     ```
 
 1.  Build the docs.
@@ -58,3 +51,9 @@ Procedure:
     ```
     deactivate
     ```
+
+1. Preview your changes in staging environment -- see [internal documentation](https://confluentinc.atlassian.net/wiki/spaces/DOC/pages/1679671102/Docs+Pipeline+Quick+Start#DocsPipelineQuickStart-Createstagingenvironmentfordocs-platformremotecomponents)
+
+    - Basically you make a pull request on https://github.com/confluentinc/docs-platform that changes the "cp_demo_BRANCH" variable in one of the makefiles
+    - This will automatically kick off a continuous integration job and give a staging URL where you can preview the site.
+    - Make sure there are no syntax warnings like `Bullet list ends without a blank line; unexpected unindent.` since those will be interpreted as errors by CI (undefined and unknown warnings are ok since those are usually Sphinx variables that are filled in at runtime)

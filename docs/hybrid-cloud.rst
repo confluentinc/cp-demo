@@ -296,6 +296,7 @@ called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-de
             https://localhost:8085/exporters
 
 
+
 #. Verify the schema exporter is running.
 
    .. code:: shell

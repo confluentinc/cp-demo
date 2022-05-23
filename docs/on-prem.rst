@@ -437,10 +437,13 @@ Security
 Overview
 ~~~~~~~~
 
+
 All components and clients in ``cp-demo`` make full use of |cp|'s extensive :ref:`security features <security>`.
 
 -  :ref:`Role-Based Access Control (RBAC) <rbac-overview>` for authorization. Give principals access to resources using role-bindings.
+
   -  RBAC is powered by the :ref:`Metadata Service (MDS) <rbac-mds-config>` which uses |csa| to connect to an OpenLDAP directory service. This enables group-based authorization for scalable access management.
+
 -  :ref:`SSL <kafka_ssl_authentication>` for encryption and mTLS for authentication. The example :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password. 
 -  |zk| is configured with :ref:`mTLS <zk-mtls>` and :ref:`SASL/DIGEST-MD5 <zk-auth-sasl>` authentication.
 -  :ref:`HTTPS for Control Center <https_settings>`.
@@ -491,7 +494,9 @@ End clients (non-CP clients):
 - If they are also using |sr|, authenticate to |sr| via LDAP.
 - If they are also using Confluent Monitoring interceptors, authenticate using mTLS via the broker SSL listener.
 -   Should never use the TOKEN listener which is meant only for internal communication between Confluent components.
+
   - If you wish to authenticate clients with username and password via LDAP, you would create a new SASL PLAIN client listener with Confluent's `LdapAuthenticateCallbackHandler <https://docs.confluent.io/platform/current/kafka/authentication_sasl/client-authentication-ldap.html>`__. This is omitted from the demo for simplicity.
+
 - See :devx-cp-demo:`client configuration|env_files/streams-demo.env/` used in the example by the ``streams-demo`` container running the |kstreams| application ``wikipedia-activity-monitor``.
 
 Broker Listeners
