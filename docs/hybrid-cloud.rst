@@ -47,7 +47,7 @@ Set Up |ccloud|
 
 #. Inside the "cp-demo-env" environment, create a **Dedicated** |ccloud| cluster named **cp-demo-cluster** in the cloud provider and region of your choice with default configurations. Wait until your cluster is in a running state before proceeding.
    
-   TODO: SCREENSHOT
+   .. figure:: images/running-state-cluster.png
 
    .. note::
       Cluster Linking requires a dedicated cluster
