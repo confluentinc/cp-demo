@@ -54,6 +54,6 @@ Procedure:
 
 1. Preview your changes in staging environment -- see [internal documentation](https://confluentinc.atlassian.net/wiki/spaces/DOC/pages/1679671102/Docs+Pipeline+Quick+Start#DocsPipelineQuickStart-Createstagingenvironmentfordocs-platformremotecomponents)
 
-    - Basically you make a pull request on https://github.com/confluentinc/docs-platform that changes the "cp_demo_BRANCH" variable in one of the makefiles
+    - Basically you make a pull request on https://github.com/confluentinc/docs-platform that changes the "cp_demo_BRANCH" variable in `docs-platform/settings.sh`
     - This will automatically kick off a continuous integration job and give a staging URL where you can preview the site.
     - Make sure there are no syntax warnings like `Bullet list ends without a blank line; unexpected unindent.` since those will be interpreted as errors by CI (undefined and unknown warnings are ok since those are usually Sphinx variables that are filled in at runtime)
