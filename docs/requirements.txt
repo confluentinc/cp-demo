@@ -2,7 +2,7 @@ Sphinx~=4.0.2
 
 # We need 0.2.5b1 as it fixes: Include fontawesome-webfont.woff2 in pip package
 sphinx_rtd_theme==0.2.5b1
-requests==2.18.4
+requests==2.20.0
 
 sphinxcontrib-httpdomain>=1.4.0
 sphinxcontrib-openapi==0.6.0
