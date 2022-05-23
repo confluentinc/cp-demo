@@ -52,12 +52,9 @@ services:
       - ./scripts/security:/etc/kafka/secrets
 
   tools:
-    image: localbuild/tools:${CONFLUENT_DOCKER_TAG}
+    image: cnfldemos/tools:0.3
     hostname: tools
     container_name: tools
-    build:
-      context: .
-      dockerfile: tools/Dockerfile
     volumes:
       - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets
@@ -268,6 +265,10 @@ services:
       KAFKA_KAFKA_REST_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
       KAFKA_KAFKA_REST_CLIENT_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
 
+      # Configure Cluster Link
+      # Encrypt credentials stored in Cluster Link
+      KAFKA_PASSWORD_ENCODER_SECRET: encoder-secret
+
   kafka2:
     image: ${REPOSITORY}/cp-server:${CONFLUENT_DOCKER_TAG}
     hostname: kafka2
@@ -447,6 +448,12 @@ services:
       KAFKA_KAFKA_REST_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'restAdmin:restAdmin'
       KAFKA_KAFKA_REST_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
       KAFKA_KAFKA_REST_CLIENT_CONFLUENT_METADATA_SERVER_URLS_MAX_AGE_MS: 60000
+
+      # Configure Cluster Linking
+      # Encrypt credentials stored in Cluster Link
+      KAFKA_PASSWORD_ENCODER_SECRET: encoder-secret
+
+
         
   connect:
     image: localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}
@@ -492,7 +499,7 @@ services:
       CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CLASSPATH: "/usr/share/java/kafka-connect-replicator/replicator-rest-extension-${CONNECTOR_VERSION}.jar:/usr/share/java/monitoring-interceptors/*"
+      CLASSPATH: "/usr/share/java/monitoring-interceptors/*"
 
       # Connect Worker
       CONNECT_SECURITY_PROTOCOL: SASL_SSL
@@ -576,10 +583,8 @@ services:
       CONNECT_ADMIN_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_ADMIN_SSL_KEY_PASSWORD: confluent
 
-      # io.confluent.connect.replicator.monitoring.ReplicatorMonitoringExtension - Confluent Replicator
       # io.confluent.connect.security.ConnectSecurityExtension - RBAC
       # io.confluent.connect.secretregistry.ConnectSecretRegistryExtension - Secret Registry
-      CONNECT_REST_EXTENSION_CLASSES: io.confluent.connect.replicator.monitoring.ReplicatorMonitoringExtension,io.confluent.connect.security.ConnectSecurityExtension,io.confluent.connect.secretregistry.ConnectSecretRegistryExtension
       CONNECT_REST_SERVLET_INITIALIZOR_CLASSES: 'io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler'
       CONNECT_PUBLIC_KEY_PATH: /tmp/conf/public.pem
 
@@ -608,11 +613,6 @@ services:
               password="connectAdmin" \
               metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
 
-      # KAFKA_OPTS required for ReplicatorMonitoringExtension
-      KAFKA_OPTS: -Djavax.net.ssl.trustStore=/etc/kafka/secrets/kafka.connect.truststore.jks
-                  -Djavax.net.ssl.trustStorePassword=confluent
-                  -Djavax.net.ssl.keyStore=/etc/kafka/secrets/kafka.connect.keystore.jks
-                  -Djavax.net.ssl.keyStorePassword=confluent
       CONNECT_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
 
       # Reduce Connect memory utilization
@@ -774,7 +774,7 @@ services:
     ports:
       - 8085:8085
     environment:
-      CUB_CLASSPATH: '/usr/share/java/confluent-security/schema-registry/*:/usr/share/java/schema-registry/*:/usr/share/java/cp-base-new/*'
+      CUB_CLASSPATH: '/usr/share/java/confluent-security/schema-registry/*:/usr/share/java/schema-registry/*:/usr/share/java/schema-registry-plugins/*:/usr/share/java/cp-base-new/*'
 
       SCHEMA_REGISTRY_HOST_NAME: schemaregistry
 
@@ -810,8 +810,9 @@ services:
 
       SCHEMA_REGISTRY_DEBUG: 'true'
 
+      # Enable security extension for RBAC and exporter extension for schema linking
+      SCHEMA_REGISTRY_SCHEMA_REGISTRY_RESOURCE_EXTENSION_CLASS: io.confluent.kafka.schemaregistry.security.SchemaRegistrySecurityResourceExtension,io.confluent.schema.exporter.SchemaExporterResourceExtension
       # Enable bearer token authentication which allows the identity of the Schema Registry end user to be propagated to Kafka for authorization
-      SCHEMA_REGISTRY_SCHEMA_REGISTRY_RESOURCE_EXTENSION_CLASS: io.confluent.kafka.schemaregistry.security.SchemaRegistrySecurityResourceExtension
       SCHEMA_REGISTRY_CONFLUENT_SCHEMA_REGISTRY_AUTHORIZER_CLASS: io.confluent.kafka.schemaregistry.security.authorizer.rbac.RbacAuthorizer
       SCHEMA_REGISTRY_REST_SERVLET_INITIALIZOR_CLASSES: io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler
       SCHEMA_REGISTRY_PUBLIC_KEY_PATH: /tmp/conf/public.pem
@@ -820,6 +821,12 @@ services:
       SCHEMA_REGISTRY_CONFLUENT_METADATA_BOOTSTRAP_SERVER_URLS: https://kafka1:8091,https://kafka2:8092
       SCHEMA_REGISTRY_CONFLUENT_METADATA_HTTP_AUTH_CREDENTIALS_PROVIDER: BASIC
       SCHEMA_REGISTRY_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: schemaregistryUser:schemaregistryUser
+
+      # Enable Schema Linking
+      SCHEMA_REGISTRY_PASSWORD_ENCODER_SECRET: encoder-secret
+      # Already included above, but including comment here for emphasis
+      # SCHEMA_REGISTRY_RESOURCE_EXTENSION_CLASS: io.confluent.schema.exporter.SchemaExporterResourceExtension
+      SCHEMA_REGISTRY_KAFKASTORE_UPDATE_HANDLERS: io.confluent.schema.exporter.storage.SchemaExporterUpdateHandler
 
   ksqldb-server:
     image: ${REPOSITORY}/cp-ksqldb-server:${CONFLUENT_DOCKER_TAG}

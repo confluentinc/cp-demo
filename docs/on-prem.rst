@@ -5,15 +5,16 @@ Module 1: On-Prem Tutorial
 
 .. _cp-demo-run:
 
-====================
-Run on-prem cluster
-====================
+========================
+Run on-prem |cp| cluster
+========================
 
 ``cp-demo`` is a Docker environment and has all services running on one host.
 It is meant exclusively to easily demo |CP|, but in production, do not deploy all |cp| services on a single host.
 
-Also, in production, |c3| should be deployed with a valid license and with its own dedicated metrics cluster, separate from the cluster with production data.
-Using a dedicated metrics cluster is more resilient because it continues to provide system health monitoring even if the production traffic cluster experiences issues.
+Also, in production, |c3| should be deployed with a valid license in
+`management mode <https://docs.confluent.io/platform/current/control-center/installation/configuration.html#mode>`__ in conjunction with
+`Confluent Health+ <https://docs.confluent.io/platform/current/health-plus/index.html#confluent-health>`__ for monitoring.
 
 If you prefer non-Docker examples, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
 
@@ -28,10 +29,10 @@ Prerequisites
 This example has been validated with:
 
 -  Docker engine version 20.10.12
--  Docker Compose version 2.2.3 with Docker Compose file format 2.3
--  Java version 1.8.0_92
--  MacOS 12.2.1 (note for `Ubuntu environments <https://github.com/confluentinc/cp-demo/issues/53>`__)
--  OpenSSL 1.1.1d
+-  Docker Compose version 2.4.1
+-  Java version 11.0.8
+-  Ubuntu 18.04
+-  OpenSSL 1.1.1
 -  git
 -  curl
 -  jq
@@ -66,9 +67,9 @@ Gitpod
 ~~~~~~
 
 This demo is enabled to run with Gitpod, but support for the Gitpod workflow is best effort from the `community <https://github.com/confluentinc/cp-demo/issues>`__.
-If you are using :gitpod_link:`Gitpod|`, the demo will automatically start after the Gitpod workspace is ready.
+If you are using :gitpod_link:`Gitpod|`, the demo will automatically start after the Gitpod workspace is ready. ``VIZ=false`` is used to save system resources.
 
-Login into |c3| (port ``9021``) or the Kibana dashboard (port ``5601``) by clicking on ``Open Browser`` option in the pop-up:
+Login into |c3| (port ``9021``) by clicking on ``Open Browser`` option in the pop-up:
 
 .. figure:: images/gitpod_port_popup.png
 
@@ -84,7 +85,7 @@ Within the ``cp-demo`` directory, there is a single :devx-cp-demo:`script|script
 It generates the keys and certificates, brings up the Docker containers, and configures and validates the environment.
 You can run it with optional settings:
 
-- ``CLEAN``: controls whether certificates and the locally built |kconnect| image are regenerated in between runs
+- ``CLEAN``: controls whether certificates are regenerated
 - ``C3_KSQLDB_HTTPS``: controls whether |c3| and ksqlDB server use ``HTTP`` or ``HTTPS`` (default: ``false`` for ``HTTP``). This option is not supported with :gitpod_link:`Gitpod|`.
 - ``VIZ``: enables Elasticsearch and Kibana (default: ``true``)
 
@@ -271,16 +272,15 @@ Topics
 |kconnect-long|
 ---------------
 
-This example runs three connectors:
+This example runs two connectors:
 
 - SSE source connector
 - Elasticsearch sink connector
-- |crep-full|
 
 They are running on a |kconnect| worker that is configured with |cp| security features.
 The |kconnect| worker's embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
 
-#. The |kconnect-long| Docker container is running a custom image. Its base image is ``cp-enterprise-replicator``, which bundles |kconnect| and |crep|, and on top of that, it has a specific set of connectors and transformations needed by ``cp-demo``. See :devx-cp-demo:`this Dockerfile|Dockerfile` for more details.
+#. The |kconnect-long| Docker container is running a custom image which has a specific set of connectors and transformations needed by ``cp-demo``. See :devx-cp-demo:`this Dockerfile|Dockerfile` for more details.
 
 #. |c3| uses the |kconnect-long| API to manage multiple :ref:`connect clusters <kafka_connect>`.  Click on "Connect".
 
@@ -291,14 +291,11 @@ The |kconnect| worker's embedded producer is configured to be idempotent, exactl
 #. Verify the connectors running in this example:
 
    - source connector ``wikipedia-sse``: view the example's SSE source connector :devx-cp-demo:`configuration file|scripts/connectors/submit_wikipedia_sse_config.sh`.
-   - source connector ``replicate-topic``: view the example's |crep| connector :devx-cp-demo:`configuration file|scripts/connectors/submit_replicator_config.sh`.
    - sink connector ``elasticsearch-ksqldb`` consuming from the Kafka topic ``WIKIPEDIABOT``: view the example's Elasticsearch sink connector :devx-cp-demo:`configuration file|scripts/connectors/submit_elastic_sink_config.sh`.
 
    .. figure:: images/connector_list.png
 
 #. Click any connector name to view or modify any details of the connector configuration and custom transforms.
-
-   .. figure:: images/connect_replicator_settings.png
 
 
 .. _ksql-demo-3:
@@ -433,58 +430,6 @@ Consumers
       :alt: image
 
 
-|crep-full|
------------
-
-|crep-full| copies data from a source Kafka cluster to a
-destination Kafka cluster. The source and destination clusters are
-typically different clusters, but in this example, |crep| is doing
-intra-cluster replication, *i.e.*, the source and destination Kafka
-clusters are the same. As with the rest of the components in the
-solution, |crep-full| is also configured with security.
-
-#. View |crep| status and throughput in a dedicated view in |c3|.
-
-   .. figure:: images/replicator_c3_view.png
-      :alt: image
-
-#. **Consumers**: monitor throughput and latency of |crep-full|.
-   |crep| is a |kconnect-long| source connector and has a corresponding consumer group ``connect-replicator``.
-
-   .. figure:: images/replicator_consumer_group_list.png
-      :alt: image
-
-#. View |crep| Consumer Lag.
-
-   .. figure:: images/replicator_consumer_lag.png
-      :alt: image
-
-#. View |crep| Consumption metrics.
-
-   .. figure:: images/replicator_consumption.png
-      :alt: image
-
-#. **Connect**: pause the |crep| connector in **Settings**
-   by pressing the pause icon in the top right and wait for 10 seconds until it takes effect.  This stops
-   consumption for the related consumer group.
-
-   .. figure:: images/pause_connector_replicator.png
-      :alt: image
-
-#. Observe that the ``connect-replicator`` consumer group has stopped
-   consumption.
-
-   .. figure:: images/replicator_stopped.png
-
-#. Restart the |crep| connector.
-
-#. Observe that the ``connect-replicator`` consumer group has resumed consumption. Notice several things:
-
-   * Even though the consumer group `connect-replicator` was not running for some of this time, all messages are shown as delivered. This is because all bars are time windows relative to produce timestamp.
-   * The latency peaks and then gradually decreases, because this is also relative to the produce timestamp.
-
-#. Next step: Learn more about |crep| with the :ref:`Replicator Tutorial <replicator>`.
-
 
 Security
 --------
@@ -492,12 +437,15 @@ Security
 Overview
 ~~~~~~~~
 
-All the |cp| components and clients in this example are enabled with many :ref:`security features <security>`.
 
--  :ref:`Metadata Service (MDS) <rbac-mds-config>` which is the central authority for authentication and authorization. It is configured with the |csa| and talks to LDAP to authenticate clients.
--  :ref:`SSL <kafka_ssl_authentication>` for encryption and mTLS. The example :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password. 
--  :ref:`Role-Based Access Control (RBAC) <rbac-overview>` for authorization. If a resource has no associated ACLs, then users are not allowed to access the resource, except super users.
--  |zk| is configured for :ref:`SSL <zk-mtls>` AND :ref:`SASL/DIGEST-MD5 <zk-auth-sasl>` (Note: no |crest| and |sr| TLS support with `trial licenses <https://docs.confluent.io/5.5.0/release-notes/index.html#schema-registry>`__).
+All components and clients in ``cp-demo`` make full use of |cp|'s extensive :ref:`security features <security>`.
+
+-  :ref:`Role-Based Access Control (RBAC) <rbac-overview>` for authorization. Give principals access to resources using role-bindings.
+
+   .. note:: RBAC is powered by the :ref:`Metadata Service (MDS) <rbac-mds-config>` which uses |csa| to connect to an OpenLDAP directory service. This enables group-based authorization for scalable access management.
+
+-  :ref:`SSL <kafka_ssl_authentication>` for encryption and mTLS for authentication. The example :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password. 
+-  |zk| is configured with :ref:`mTLS <zk-mtls>` and :ref:`SASL/DIGEST-MD5 <zk-auth-sasl>` authentication.
 -  :ref:`HTTPS for Control Center <https_settings>`.
 -  :ref:`HTTPS for Schema Registry <schemaregistry_security>`.
 -  :ref:`HTTPS for Connect <connect_security>`.
@@ -511,7 +459,6 @@ You can see each component's security configuration in the example's :devx-cp-de
     * If the ``PLAINTEXT`` security protocol is used, these ``ANONYMOUS`` usernames should not be configured as super users
     * Consider not even opening the ``PLAINTEXT`` port if ``SSL`` or ``SASL_SSL`` are configured
 
-There is an OpenLDAP server running in the example, and each Kafka broker in the demo is configured with |mds-long| and can talk to LDAP so that it can authenticate clients and |cp| services and clients.
 
 |zk| has two listener ports:
 
@@ -546,7 +493,10 @@ End clients (non-CP clients):
 - Authenticate using mTLS via the broker SSL listener.
 - If they are also using |sr|, authenticate to |sr| via LDAP.
 - If they are also using Confluent Monitoring interceptors, authenticate using mTLS via the broker SSL listener.
-- Should never use the TOKEN listener which is meant only for internal communication between Confluent components.
+-   Should never use the TOKEN listener which is meant only for internal communication between Confluent components.
+
+  - If you wish to authenticate clients with username and password via LDAP, you would create a new SASL PLAIN client listener with Confluent's `LdapAuthenticateCallbackHandler <https://docs.confluent.io/platform/current/kafka/authentication_sasl/client-authentication-ldap.html>`__. This is omitted from the demo for simplicity.
+
 - See :devx-cp-demo:`client configuration|env_files/streams-demo.env/` used in the example by the ``streams-demo`` container running the |kstreams| application ``wikipedia-activity-monitor``.
 
 Broker Listeners
@@ -924,16 +874,6 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
       docker-compose exec kafka1 kafka-topics \
          --describe \
          --topic wikipedia.parsed \
-         --bootstrap-server kafka1:9091 \
-         --command-config /etc/kafka/secrets/client_sasl_plain.config
-
-#. Describe the topic ``wikipedia.parsed.replica``, which is the topic that |crep| has replicated from ``wikipedia.parsed``. Notice that it also has enabled |sv|, because |crep| default is ``topic.config.sync=true`` (see |crep| `Destination Topics <https://docs.confluent.io/kafka-connect-replicator/current/configuration_options.html#destination-topics>`__).
-
-   .. sourcecode:: bash
-
-      docker-compose exec kafka1 kafka-topics \
-         --describe \
-         --topic wikipedia.parsed.replica \
          --bootstrap-server kafka1:9091 \
          --command-config /etc/kafka/secrets/client_sasl_plain.config
 
@@ -1452,7 +1392,7 @@ Metrics API
 
 .. include:: includes/metrics-api-intro.rst
 
-See :ref:`cp-demo-hybrid` for more information.
+See :ref:`cp-demo-hybrid` to play hands-on with the Metrics API.
 
 JMX
 ---
