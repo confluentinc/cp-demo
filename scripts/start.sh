@@ -12,19 +12,16 @@ preflight_checks || exit
 # Stop existing Docker containers
 ${DIR}/stop.sh
 
-# Regenerate certificates and the Connect or tools Docker image if any of the following conditions are true
-if [[ "$CLEAN" == "true" ]] || \
- ! [[ -f "${DIR}/security/controlCenterAndKsqlDBServer-ca1-signed.crt" ]] || \
- ! [[ $(docker images --format "{{.Repository}}:{{.Tag}}" localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}) =~ localbuild ]] || \
- ! [[ $(docker images --format "{{.Repository}}:{{.Tag}}" localbuild/tools:${CONFLUENT_DOCKER_TAG}) =~ localbuild ]] ;
-then
-  if [[ -z $CLEAN ]] || [[ "$CLEAN" == "false" ]] ; then
-    echo "INFO: Setting CLEAN=true because minimum conditions not met (existing certificates, Connect Docker image localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION}), tools Docker image localbuild/tools:${CONFLUENT_DOCKER_TAG})"
-  fi
-  CLEAN=true
+CLEAN=${CLEAN:-false}
+
+# Build Kafka Connect image with connector plugins
+build_connect_image
+
+# Set the CLEAN variable to true if cert doesn't exist
+if ! [[ -f "${DIR}/security/controlCenterAndKsqlDBServer-ca1-signed.crt" ]] || ! check_num_certs; then
+  echo "INFO: Running with CLEAN=true because instructed or certificates don't yet exist."
   clean_demo_env
-else
-  CLEAN=false
+  CLEAN=true
 fi
 
 echo
@@ -36,9 +33,15 @@ echo "  VIZ=$VIZ"
 echo "  C3_KSQLDB_HTTPS=$C3_KSQLDB_HTTPS"
 echo
 
+
 if [[ "$CLEAN" == "true" ]] ; then
-  create_certificates
+  create_certificates || exit 1
+  if [[ ! check_num_certs ]]; then
+    echo -e "\nERROR: Expected ~147 trusted certificates on the Kafka Connect server but got 1. Please troubleshoot and try again."
+    exit 1
+  fi
 fi
+
 
 #-------------------------------------------------------------------------------
 
@@ -50,18 +53,7 @@ if [[ $(docker-compose ps openldap | grep Exit) =~ "Exit" ]] ; then
   exit 1
 fi
 
-# Build custom tools image and connect image
-build_tools_image
-if [[ "$CLEAN" == "true" ]] ; then
-  build_connect_image || exit 1
-fi
 
-# Check number of certificates
-NUM_CERTS=$(docker-compose exec connect keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
-if [[ "$NUM_CERTS" -eq "1" ]]; then
-  echo -e "\nERROR: Connect image did not build properly.  Expected ~147 trusted certificates but got $NUM_CERTS. Please troubleshoot and try again."
-  exit 1
-fi
 
 # Bring up tools
 docker-compose up --no-recreate -d tools
@@ -134,16 +126,6 @@ echo -e "\nConfluent Control Center modifications:"
 ${DIR}/helper/control-center-modifications.sh
 echo
 
-
-# Register the same schema for the replicated topic wikipedia.parsed.replica as was created for the original topic wikipedia.parsed
-# In this case the replicated topic will register with the same schema ID as the original topic
-echo -e "\nRegister subject wikipedia.parsed.replica-value in Schema Registry"
-SCHEMA=$(docker exec schemaregistry curl -s -X GET --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed-value/versions/latest | jq .schema)
-docker-compose exec schemaregistry curl -X POST --cert /etc/kafka/secrets/schemaregistry.certificate.pem --key /etc/kafka/secrets/schemaregistry.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -H "Content-Type: application/vnd.schemaregistry.v1+json" --data "{\"schema\": $SCHEMA}" -u superUser:superUser https://schemaregistry:8085/subjects/wikipedia.parsed.replica-value/versions
-
-echo
-echo -e "\nStart Confluent Replicator to loopback to on-prem cluster:"
-${DIR}/connectors/submit_replicator_config.sh || exit 1
 
 #-------------------------------------------------------------------------------
 

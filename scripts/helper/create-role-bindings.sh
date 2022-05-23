@@ -70,7 +70,7 @@ confluent iam rbac role-binding create \
     --schema-registry-cluster-id $SR
 
 # ResourceOwner for groups and topics on broker
-for resource in Topic:_schemas Group:schema-registry
+for resource in Topic:_schemas Topic:_exporter_configs Topic:_exporter_states Group:schema-registry
 do
     confluent iam rbac role-binding create \
         --principal $SR_PRINCIPAL \
@@ -165,11 +165,6 @@ confluent iam rbac role-binding create \
     --prefix \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
-confluent iam rbac role-binding create \
-    --principal $CONNECTOR_PRINCIPAL \
-    --role ResourceOwner \
-    --resource Group:connect-replicator \
-    --kafka-cluster-id $KAFKA_CLUSTER_ID \
 
 echo "Creating role bindings for elasticsearch-ksqldb connector"
 

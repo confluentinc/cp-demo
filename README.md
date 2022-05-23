@@ -15,11 +15,10 @@ Wikimedia's EventStreams publishes a continuous stream of real-time edits happen
 Using Kafka Connect, a Kafka source connector `kafka-connect-sse` streams raw messages for the server sent events (SSE), and a custom Kafka Connect transform `kafka-connect-json-schema` transforms these messages and then the messages are written to a Kafka cluster.
 This example uses ksqlDB and a Kafka Streams application for data processing.
 Then a Kafka sink connector `kafka-connect-elasticsearch` streams the data out of Kafka and is materialized into Elasticsearch for analysis by Kibana.
-Confluent Replicator  is also copying messages from a topic to another topic in the same cluster.
 All data is using Confluent Schema Registry and Avro.
 Confluent Control Center is managing and monitoring the deployment.
 
-![image](docs/images/cp-demo-overview.jpg)
+![image](docs/images/cp-demo-overview-with-ccloud.svg)
 
 ## Documentation
 
