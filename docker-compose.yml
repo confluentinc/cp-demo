@@ -585,6 +585,7 @@ services:
 
       # io.confluent.connect.security.ConnectSecurityExtension - RBAC
       # io.confluent.connect.secretregistry.ConnectSecretRegistryExtension - Secret Registry
+      CONNECT_REST_EXTENSION_CLASSES: io.confluent.connect.security.ConnectSecurityExtension,io.confluent.connect.secretregistry.ConnectSecretRegistryExtension
       CONNECT_REST_SERVLET_INITIALIZOR_CLASSES: 'io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler'
       CONNECT_PUBLIC_KEY_PATH: /tmp/conf/public.pem
 
