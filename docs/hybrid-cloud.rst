@@ -234,7 +234,7 @@ called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-de
 
       confluent context update --name cp
 
-#. Inspect the schema exporter configuration file.
+#. Inspect the schema exporter configuration file at ``scripts/ccloud/schema-link-example.properties``.
 
    .. literalinclude:: ../scripts/ccloud/schema-link-example.properties
 
