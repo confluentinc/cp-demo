@@ -30,59 +30,89 @@ vscode:
     - ms-azuretools.vscode-docker
 
 ports:
+# control-center
+- port: 9021
+  onOpen: notify
+  visibility: public
+  name: Confluent Control Center
+  description: Confluent UI
+# kibana
+- port: 5601
+  onOpen: notify
+  name: Kibana
+  description: Dashboard UI for ElasticSearch
 # zookeeper
 - port: 2181
   onOpen: ignore
+  name: ZooKeeper
+  description: Manages Kafka cluster metadata
 - port: 2182
   onOpen: ignore
 # kafka1
 - port: 8091
   onOpen: ignore
+  name: mds 1
+  description: REST API server to manage Confluent
 - port: 9091
   onOpen: ignore
+  name: kafka 1 internal
+  description: Internal listener for broker to broker communication
 - port: 10091
   onOpen: ignore
+  name: token 1
+  description: token listener for internal security
 - port: 11091
   onOpen: ignore
+  name: mTLS 1
+  description: mTLS listener
 - port: 12091
   onOpen: ignore
+  name: clear text 1
+  description: clear text listener. Not secure. For testing only.
 # kafka2
 - port: 8092
   onOpen: ignore
+  name: mds 2
+  description: REST API server to manage Confluent
 - port: 9092
   onOpen: ignore
+  name: kafka 2 internal
+  description: Internal listener for broker to broker communication
 - port: 10092
   onOpen: ignore
+  name: token 2
+  description: token listener for internal security
 - port: 11092
   onOpen: ignore
+  name: mTLS 2
+  description: mTLS listener
 - port: 12092
   onOpen: ignore
+  name: clear text 2
+  description: clear text listener. Not secure. For testing only.
 # connect
 - port: 8083
   onOpen: ignore
-# elasticsearch
-- port: 9200
-  onOpen: ignore
-- port: 9300
-  onOpen: ignore
-# kibana
-- port: 5601
-  onOpen: notify
-# control-center
-- port: 9021
-  onOpen: notify
-  visibility: public
-- port: 9022
-  onOpen: ignore
+  name: Kafka Connect
+  description: Data ingress/egress
 # schemaregistry
 - port: 8085
   onOpen: ignore
+  name: Confluent Schema Registry
+  description: Ensure data quality with schema management
 # ksqldb-server
 - port: 8088
   onOpen: ignore
   visibility: public
-- port: 8089
-  onOpen: ignore
+  name: ksqlDB
+  description: Real time event streaming database
 # restproxy
 - port: 8086
+  onOpen: ignore
+  name: Confluent REST Proxy
+  description: Produce/consume events via HTTP
+# elasticsearch
+- port: 9200
+  onOpen: ignore
+- port: 9300
   onOpen: ignore
