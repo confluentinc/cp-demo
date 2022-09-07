@@ -14,7 +14,7 @@ CONNECT=connect-cluster
 SR=schema-registry
 KSQLDB=ksql-cluster
 C3=c3-cluster
-LICENSE_RESOURCE="Topic:_confluent-license"
+LICENSE_RESOURCE="Topic:_confluent-command"
 
 SUPER_USER=superUser
 SUPER_USER_PASSWORD=superUser
