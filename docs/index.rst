@@ -13,8 +13,8 @@ Scripted |cp| Demo
   :maxdepth: 2
   :titlesonly:
 
-  cp-demo Overview <overview>
-  On-Prem Tutorial <on-prem>
-  Hybrid Deployment to Confluent Cloud Tutorial <hybrid-cloud>
+  Overview <overview>
+  Deploy Confluent Platform Environment <on-prem>
+  Deploy Hybrid Confluent Platform and Cloud Environment <hybrid-cloud>
   Teardown <teardown>
   Troubleshooting <troubleshooting>

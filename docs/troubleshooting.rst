@@ -1,7 +1,7 @@
 .. _cp-demo-troubleshooting:
 
-Troubleshooting
-===============
+Troubleshooting the Scripted |cp| Demo
+======================================
 
 If the start script does not complete successfully, please go through the following troubleshooting steps.
 

@@ -1,10 +1,10 @@
 .. _cp-demo-teardown:
       
-Teardown
-========
+End the Scripted Demo
+=====================
 
-Tear Down On-prem
------------------
+Stop the |cp| Environment
+-------------------------
 
 #. Stop the consumer group ``app`` to stop consuming from topic
    ``wikipedia.parsed``. Note that the command below stops the consumers
@@ -25,8 +25,8 @@ Tear Down On-prem
 
 .. _cp-demo-ccloud-cleanup:
 
-Tear Down |ccloud|
-------------------
+Stop the |ccloud| Environment
+-----------------------------
 
 If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included creating resources in |ccloud|, follow the clean up procedure below to avoid unexpected |ccloud| charges.
 
