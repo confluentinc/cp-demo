@@ -1,13 +1,13 @@
 .. _cp-demo-hybrid:
 
-Module 2: Hybrid Deployment to |ccloud| Tutorial
-================================================
+Module 2: Deploy Hybrid |cp| and |ccloud| Environment
+=====================================================
 
 =============================
 Hybrid Deployment to |ccloud|
 =============================
 
-In a hybrid |ak-tm| deployment scenario, you can have both an on-prem |cp| deployment as well as a
+In a hybrid |ak-tm| deployment scenario, you can have both an on-premises |cp| deployment as well as a
 `Confluent Cloud <https://confluent.cloud>`__ deployment.
 In this module, you will use `Cluster Linking <https://docs.confluent.io/cloud/current/multi-cloud/cluster-linking/index.html>`__
 and `Schema Linking <https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html>`__ to send data and schemas to
@@ -174,7 +174,7 @@ Set Up Confluent CLI and variables
       CCLOUD_CLUSTER_API_KEY=SZBKLMG61XK9NZAB
       CCLOUD_CLUSTER_API_SECRET=QTpi/A3Mt0Ohkk4fkaIsGR3ATQ5Q/F0lLowYo/UrsTr3AMsozxY7fjqxDdVwMJz02
 
-#. We will also need the cluster ID for the on-prem |cp| cluster.
+#. We will also need the cluster ID for the on-premises |cp| cluster.
 
    .. code:: shell
 
@@ -201,7 +201,7 @@ Export Schemas to |ccloud| with Schema Linking
 
 Confluent Schema Registry is critical for evolving schemas alongside your business needs and ensuring high data quality.
 With `Schema Linking <https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html>`__
-, you can easily export your schemas from your on-prem Schema Registry to |ccloud|.
+, you can easily export your schemas from your on-premises Schema Registry to |ccloud|.
 In this section, you will export the schema subjects ``wikipedia.parsed-value`` and ``wikipedia.parsed.count-by-domain-value``
 from |cp| to |ccloud| with schema linking.
 These schema subjects will be exported to a new `schema context <https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html#what-is-a-schema-context>`__
@@ -248,7 +248,7 @@ called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-de
       scripts/ccloud/schema-link-example.properties > scripts/ccloud/schema-link.properties
 
 
-#. Create a schema exporter called "cp-cc-schema-exporter" for the on-prem Schema Registry.
+#. Create a schema exporter called "cp-cc-schema-exporter" for the on-premises Schema Registry.
 
 
 
@@ -330,7 +330,7 @@ called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-de
       :.cp-demo:wikipedia.parsed.count-by-domain-value
 
 Schema subjects have been successfully exported from |cp| to 
-|ccloud| with schema linking! As schemas evolve on-prem, those changes will
+|ccloud| with schema linking! As schemas evolve on-premises, those changes will
 automatically propagate to |ccloud| as long as the exporter is running.
 
 .. _cp-demo-cluster-linking:
@@ -340,10 +340,10 @@ Mirror Data to |ccloud| with Cluster Linking
 
 In this section, you will create a source-initiated cluster link
 to mirror the topic ``wikipedia.parsed`` from |cp| to |ccloud|.
-For security reasons, most on-prem datacenters don't
+For security reasons, most on-premises datacenters don't
 allow inbound connections,
 so Confluent recommends source-initiated cluster linking to easily and securely
-mirror Kafka topics from your on-prem cluster to |ccloud|.
+mirror Kafka topics from your on-premises cluster to |ccloud|.
 
 #. Verify that you're still using the ``ccloud`` CLI context.
 
@@ -453,7 +453,7 @@ mirror Kafka topics from your on-prem cluster to |ccloud|.
             wikipedia.parsed | jq
 
 You successfully created a source-initiated cluster link to seamlessly
-move data from on-prem to cloud in real time. Cluster linking opens up
+move data from on-premises to cloud in real time. Cluster linking opens up
 real-time hybrid cloud, multi-cloud, and disaster recovery use cases.
 See the `Cluster Linking documentation <https://docs.confluent.io/cloud/current/multi-cloud/overview.html>`__
 for more information.
@@ -540,7 +540,7 @@ Configure Confluent Health+ with the Telemetry Reporter
       METRICS_API_KEY=QX7X4VA4DFJTTOIA
       METRICS_API_SECRET=fjcDDyr0Nm84zZr77ku/AQqCKQOOmb35Ql68HQnb60VuU+xLKiu/n2UNQ0WYXp/D
 
-#. :ref:`Dynamically configure <kafka-dynamic-configurations>` the on-prem ``cp-demo`` cluster to use the Telemetry Reporter, which sends metrics to |ccloud|. This requires setting 3 configuration parameters: ``confluent.telemetry.enabled=true``, ``confluent.telemetry.api.key``, and ``confluent.telemetry.api.secret``.
+#. :ref:`Dynamically configure <kafka-dynamic-configurations>` the on-premises ``cp-demo`` cluster to use the Telemetry Reporter, which sends metrics to |ccloud|. This requires setting 3 configuration parameters: ``confluent.telemetry.enabled=true``, ``confluent.telemetry.api.key``, and ``confluent.telemetry.api.secret``.
 
    .. code-block:: text
 
@@ -576,7 +576,7 @@ Configure Confluent Health+ with the Telemetry Reporter
 Query Metrics
 ~~~~~~~~~~~~~
 
-#. First we will query the Metrics API for on-prem metrics. Here are the content of the query file :devx-cp-demo:`metrics query file|scripts/ccloud/metrics_query_onprem.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed`` in the on-prem cluster (for all queryable metrics examples, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__):
+#. First we will query the Metrics API for on-premises metrics. Here are the content of the query file :devx-cp-demo:`metrics query file|scripts/ccloud/metrics_query_onprem.json`, which requests ``io.confluent.kafka.server/received_bytes`` for the topic ``wikipedia.parsed`` in the on-premises cluster (for all queryable metrics examples, see `Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__):
 
    .. literalinclude:: ../scripts/ccloud/metrics_query_onprem.json
 
@@ -590,7 +590,7 @@ Query Metrics
            https://api.telemetry.confluent.cloud/v2/metrics/hosted-monitoring/query \
               | jq .
 
-#. Your output should resemble the output below, showing metrics for the on-prem topic ``wikipedia.parsed``:
+#. Your output should resemble the output below, showing metrics for the on-premises topic ``wikipedia.parsed``:
 
    .. code-block:: text
 

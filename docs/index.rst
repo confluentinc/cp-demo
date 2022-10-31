@@ -1,7 +1,13 @@
 .. _cp-demo:
   
-Confluent Platform Demo (cp-demo)
-=================================
+Scripted |cp| Demo
+==================
+
+.. raw:: html
+
+    <script type="text/javascript">
+        window.location = 'overview.html';
+    </script>
 
 .. toctree::
   :maxdepth: 2
