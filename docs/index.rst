@@ -16,5 +16,5 @@ Scripted |cp| Demo
   Overview <overview>
   Deploy Confluent Platform Environment <on-prem>
   Deploy Hybrid Confluent Platform and Cloud Environment <hybrid-cloud>
-  Teardown <teardown>
+  End Demo <teardown>
   Troubleshooting <troubleshooting>
