@@ -1,5 +1,5 @@
 The Confluent Cloud Metrics API is a REST API you can use to query timeseries metrics.
-You can use the Metrics API to get telemetry data for both the on-prem Confluent Platform cluster as well as the |ccloud| cluster.
+You can use the Metrics API to get telemetry data for both the on-premises Confluent Platform cluster as well as the |ccloud| cluster.
 
 -   On-prem metrics (enabled by Telemetry Reporter) using the endpoint https://api.telemetry.confluent.cloud/v2/metrics/hosted-monitoring/query
 

@@ -1,8 +1,8 @@
-|cp| Demo (cp-demo)
-=================================
+Scripted |cp| Demo
+==================
 
-The ``cp-demo`` example builds a full |cp| deployment with an |ak-tm| event streaming application using `ksqlDB <https://ksqldb.io>`__ and `Kafka Streams <https://docs.confluent.io/platform/current/streams/index.html>`__ for stream processing, and all the components have security enabled end-to-end.
-The tutorial includes a module to extend it into a hybrid deployment that runs Cluster Linking and Schema Linking to copy data and schemas from a local on-prem |ak| cluster to |ccloud|, a fully-managed service for |ak-tm|.
+The scripted |cp| demo (``cp-demo``) example builds a full |cp| deployment with an |ak-tm| event streaming application using `ksqlDB <https://ksqldb.io>`__ and :ref:`Kafka Streams <kafka_streams>` for stream processing, and all the components have security enabled end-to-end.
+The tutorial includes a module to extend it into a hybrid deployment that runs Cluster Linking and Schema Linking to copy data and schemas from a local on-premises |ak| cluster to |ccloud|, a fully-managed service for |ak-tm|.
 Follow the accompanying guided tutorial, broken down step-by-step, to learn how |ak| and |ccloud| work with |kconnect|, |sr-long|, |c3|, Cluster Linking, and security enabled end-to-end.
 
 ========
@@ -46,8 +46,8 @@ How to use this tutorial
 
 We suggest following the ``cp-demo`` tutorial in order:
 
-#. :ref:`cp-demo-on-prem-tutorial`: bring up the on-prem |ak| cluster and explore the different technical areas of |cp|
+#. :ref:`cp-demo-on-prem-tutorial`: bring up the on-premises |ak| cluster and explore the different technical areas of |cp|
 
-#. :ref:`cp-demo-hybrid`: create a cluster link to copy data from a local on-prem |ak| cluster to |ccloud|, and use the Metrics API to monitor both
+#. :ref:`cp-demo-hybrid`: create a cluster link to copy data from a local on-premises |ak| cluster to |ccloud|, and use the Metrics API to monitor both
 
-#. :ref:`cp-demo-teardown`: clean up your on-prem and |ccloud| environment
+#. :ref:`cp-demo-teardown`: clean up your on-premises and |ccloud| environment
