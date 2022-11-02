@@ -1,20 +1,20 @@
 .. _cp-demo-on-prem-tutorial:
 
-Module 1: On-Prem Tutorial
-==========================
+Module 1: Deploy |cp| Demo Environment Using Script
+===================================================
 
 .. _cp-demo-run:
 
-========================
-Run on-prem |cp| cluster
-========================
+============================
+Run on-premises |cp| cluster
+============================
 
 ``cp-demo`` is a Docker environment and has all services running on one host.
 It is meant exclusively to easily demo |CP|, but in production, do not deploy all |cp| services on a single host.
 
 Also, in production, |c3| should be deployed with a valid license in
-`management mode <https://docs.confluent.io/platform/current/control-center/installation/configuration.html#mode>`__ in conjunction with
-`Confluent Health+ <https://docs.confluent.io/platform/current/health-plus/index.html#confluent-health>`__ for monitoring.
+:ref:`management mode <mode_settings>` in conjunction with
+:ref:`Confluent Health+ <health-plus>` for monitoring.
 
 If you prefer non-Docker examples, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
 
@@ -113,7 +113,7 @@ You can run it with optional settings:
 
       VIZ=false ./scripts/start.sh
 
-#. After the start script completes, run through the pre-flight checks below and follow the guided tutorial through this on-prem deployment.
+#. After the start script completes, run through the pre-flight checks below and follow the guided tutorial through this on-premises deployment.
 
 
 Pre-flight Checks
@@ -1382,9 +1382,9 @@ Monitoring
 ==========
 
 This tutorial has demonstrated how |c3| helps users manage their |cp| deployment and how it provides monitoring capabilities for the cluster and applications.
-For a practical guide to optimizing your |ak| deployment for various service goals including throughput, latency, durability and availability, and useful metrics to monitor for performance and cluster health for on-prem |ak| clusters, see the `Optimizing Your Apache Kafka Deployment <https://www.confluent.io/white-paper/optimizing-your-apache-kafka-deployment/>`__ whitepaper.
+For a practical guide to optimizing your |ak| deployment for various service goals including throughput, latency, durability and availability, and useful metrics to monitor for performance and cluster health for on-premises |ak| clusters, see the `Optimizing Your Apache Kafka Deployment <https://www.confluent.io/white-paper/optimizing-your-apache-kafka-deployment/>`__ whitepaper.
 
-For most |cp| users the |c3| monitoring and integrations are sufficient for production usage in their on-prem |ak-tm| deployments.
+For most |cp| users the |c3| monitoring and integrations are sufficient for production usage in their on-premises |ak-tm| deployments.
 There are additional monitoring solutions for various use cases, as described below.
 
 Metrics API
