@@ -1,14 +1,20 @@
 .. _cp-demo:
   
-Confluent Platform Demo (cp-demo)
-=================================
+Scripted |cp| Demo
+==================
+
+.. raw:: html
+
+    <script type="text/javascript">
+        window.location = 'overview.html';
+    </script>
 
 .. toctree::
   :maxdepth: 2
   :titlesonly:
 
-  cp-demo Overview <overview>
-  On-Prem Tutorial <on-prem>
-  Hybrid Deployment to Confluent Cloud Tutorial <hybrid-cloud>
-  Teardown <teardown>
+  Overview <overview>
+  Deploy Confluent Platform Environment <on-prem>
+  Deploy Hybrid Confluent Platform and Cloud Environment <hybrid-cloud>
+  End Demo <teardown>
   Troubleshooting <troubleshooting>
