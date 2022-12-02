@@ -1,0 +1,6 @@
+# See go/codeowners - automatically generated for confluentinc/examples:
+DEVX team
+*	@confluentinc/devx
+
+Docs team
+*	@confluentinc/docs
