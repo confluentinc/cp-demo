@@ -59,7 +59,7 @@ Setup |ccloud| and CLI
 ccloud-stack
 ------------
 
-Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |ccloud|.  Executed with a single command, it uses the |ccloud| CLI to:
+Use the the :cloud:`ccloud-stack utility for Confluent Cloud|examples/ccloud/docs/ccloud-stack.html` for a quick, automated way to create resources in |ccloud|.  Executed with a single command, it uses the |ccloud| CLI to:
 
 -  Create a new environment.
 -  Create a new service account.
@@ -75,7 +75,7 @@ Use the :ref:`ccloud-stack` for a quick, automated way to create resources in |c
 
       curl -sS -o ccloud_library.sh https://raw.githubusercontent.com/confluentinc/examples/latest/utils/ccloud_library.sh
 
-#. Using ``ccloud_library.sh`` which you downloaded in the previous step, create a new ``ccloud-stack`` (see :ref:`ccloud-stack` for advanced options). It creates real resources in |ccloud| and takes a few minutes to complete.
+#. Using ``ccloud_library.sh`` which you downloaded in the previous step, create a new ``ccloud-stack`` (see the :cloud:`ccloud-stack utility for Confluent Cloud|examples/ccloud/docs/ccloud-stack.html` for advanced options). It creates real resources in |ccloud| and takes a few minutes to complete.
 
    .. note:: The ``true`` flag adds creation of a ksqlDB application in |ccloud|, which has hourly charges even if you are not actively using it.
 
