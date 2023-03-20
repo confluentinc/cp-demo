@@ -1005,7 +1005,7 @@ services:
 
 
   streams-demo:
-    image: cnfldemos/cp-demo-kstreams:0.0.10
+    image: cnfldemos/cp-demo-kstreams:0.0.11
     restart: always
     depends_on:
       schemaregistry:
