@@ -14,7 +14,7 @@ plugins {
 }
 
 group = 'io.confluent'
-version = '0.0.10'
+version = '0.0.11'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
@@ -22,7 +22,7 @@ def props = new Properties()
 file("../env_files/config.env").withInputStream { props.load(it) }
 
 ext {
-  cpVersion = props.getProperty("CONFLUENT") ?: '6.2.0'
+  cpVersion = props.getProperty("CONFLUENT") ?: '7.3.2'
 }
 
 repositories {
