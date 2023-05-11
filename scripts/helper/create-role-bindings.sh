@@ -242,7 +242,7 @@ confluent iam rbac role-binding create \
 
 confluent iam rbac role-binding create \
     --principal $KSQLDB_ADMIN \
-    --role DeveloperRead \
+    --role ResourceOwner \
     --resource Topic:wikipedia.parsed \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
@@ -330,7 +330,7 @@ confluent iam rbac role-binding create \
 
 confluent iam rbac role-binding create \
     --principal $KSQLDB_USER \
-    --role DeveloperRead \
+    --role ResourceOwner \
     --resource Topic:wikipedia.parsed \
     --kafka-cluster-id $KAFKA_CLUSTER_ID
 
