@@ -5,6 +5,8 @@ The scripted |cp| demo (``cp-demo``) example builds a full |cp| deployment with 
 The tutorial includes a module to extend it into a hybrid deployment that runs Cluster Linking and Schema Linking to copy data and schemas from a local on-premises |ak| cluster to |ccloud|, a fully-managed service for |ak-tm|.
 Follow the accompanying guided tutorial, broken down step-by-step, to learn how |ak| and |ccloud| work with |kconnect|, |sr-long|, |c3|, Cluster Linking, and security enabled end-to-end.
 
+.. include:: ../../../includes/cp-cta.rst
+
 ========
 Overview
 ========
