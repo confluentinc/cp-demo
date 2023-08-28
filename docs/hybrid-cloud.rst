@@ -258,9 +258,9 @@ called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-de
          --subjects "wikipedia.parsed*" \
          --context-name cp-demo \
          --context-type CUSTOM \
-         --sr-endpoint https://localhost:8085 \
+         --schema-registry-endpoint https://localhost:8085 \
          --ca-location scripts/security/snakeoil-ca-1.crt \
-         --config-file scripts/ccloud/schema-link.properties
+         --config scripts/ccloud/schema-link.properties
 
    Notice we can use a wildcard ``*`` to export multiple subjects.
 
@@ -302,7 +302,7 @@ called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-de
    .. code:: shell
 
       confluent schema-registry exporter get-status cp-cc-schema-exporter \
-         --sr-endpoint https://localhost:8085 \
+         --schema-registry-endpoint https://localhost:8085 \
          --ca-location scripts/security/snakeoil-ca-1.crt 
 
 
