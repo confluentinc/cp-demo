@@ -110,7 +110,13 @@ Set Up Confluent CLI and variables
                            | jq -r '.[] | select(.name | contains("cp-demo")) | .id') \
       && echo "Your cp-demo service account ID: $SERVICE_ACCOUNT_ID"
 
-#. Get the cluster ID and endpoint URL for your Schema Registry
+#. Enable Schema Registry in your |ccloud| environment, if you have not already done so.
+
+   .. code:: shell
+
+      confluent schema-registry cluster enable --cloud <cloud> --geo <geo>
+
+#. Get the ID and endpoint URL for your Schema Registry cluster.
 
    .. code:: shell
 
