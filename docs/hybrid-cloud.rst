@@ -197,7 +197,7 @@ Set Up Confluent CLI and variables
       .. code:: shell
 
          confluent login && \
-         confluent environment use $CC_SR_CLUSTER_ID && \
+         confluent environment use $CC_ENV && \
          confluent kafka cluster use $CCLOUD_CLUSTER_ID
 
 .. _cp-demo-schema-linking:
