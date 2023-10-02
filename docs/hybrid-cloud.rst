@@ -391,8 +391,9 @@ mirror Kafka topics from your on-premises cluster to |ccloud|.
 
       confluent iam rbac role-binding list \
          --principal User:$SERVICE_ACCOUNT_ID \
+         --cloud-cluster $CCLOUD_CLUSTER_ID \
+         --environment $CC_ENV \
          -o json | jq
-
 
 #. Inspect the file ``scripts/ccloud/cluster-link-ccloud.properties``
 
