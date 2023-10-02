@@ -57,7 +57,7 @@ Set Up |ccloud|
 Set Up Confluent CLI and variables
 ----------------------------------
 
-#. Install `Confluent CLI <https://docs.confluent.io/confluent-cli/current/install.html>`__ locally, version 2.14.0 or later (run ``confluent update`` if you already have it installed to update).
+#. `Install the Confluent CLI <https://docs.confluent.io/confluent-cli/current/install.html>`__ locally, v3.28.0 or later (run ``confluent update`` if you already have it installed to update).
 
    .. code:: 
 
@@ -70,7 +70,7 @@ Set Up Confluent CLI and variables
 
       confluent version
 
-#. Using the CLI, log in to |ccloud| with the command ``confluent login``, and use your |ccloud| username and password. The ``--save`` argument saves your |ccloud| user login credentials to the local ``~/.netrc`` file.
+#. Using the CLI, log in to |ccloud| with the command ``confluent login``, and use your |ccloud| username and password. The ``--save`` argument saves your |ccloud| user login credentials for future use.
 
    .. code:: shell
 
@@ -110,12 +110,18 @@ Set Up Confluent CLI and variables
                            | jq -r '.[] | select(.name | contains("cp-demo")) | .id') \
       && echo "Your cp-demo service account ID: $SERVICE_ACCOUNT_ID"
 
-#. Get the cluster ID and endpoint URL for your Schema Registry
+#. Enable Schema Registry in your |ccloud| environment, if you have not already done so.
 
    .. code:: shell
 
-      CC_SR_CLUSTER_ID=$(confluent sr cluster describe -o json | jq -r .cluster_id) \
-      && CC_SR_ENDPOINT=$(confluent sr cluster describe -o json | jq -r .endpoint_url) \
+      confluent schema-registry cluster enable --cloud <cloud> --geo <geo>
+
+#. Get the ID and endpoint URL for your Schema Registry cluster.
+
+   .. code:: shell
+
+      CC_SR_CLUSTER_ID=$(confluent schema-registry cluster describe -o json | jq -r .cluster_id) \
+      && CC_SR_ENDPOINT=$(confluent schema-registry cluster describe -o json | jq -r .endpoint_url) \
       && echo "Schema Registry Cluster ID: $CC_SR_CLUSTER_ID" \
       && echo "Schema Registry Endpoint: $CC_SR_ENDPOINT"
 
@@ -162,10 +168,10 @@ Set Up Confluent CLI and variables
 
       It may take a couple of minutes for the API key to be ready.
       Save the API key and secret. The secret is not retrievable later.
-      +---------+------------------------------------------------------------------+
-      | API Key | SZBKLMG61XK9NZAB                                                 |
+      +---------+-------------------------------------------------------------------+
+      | API Key | SZBKLMG61XK9NZAB                                                  |
       | Secret  | QTpi/A3Mt0Ohkk4fkaIsGR3ATQ5Q/F0lLowYo/UrsTr3AMsozxY7fjqxDdVwMJz02 |
-      +---------+------------------------------------------------------------------+
+      +---------+-------------------------------------------------------------------+
 
    Set variables to reference the Kafka credentials returned in the previous step.
 
@@ -191,7 +197,7 @@ Set Up Confluent CLI and variables
       .. code:: shell
 
          confluent login && \
-         confluent env use $CC_SR_CLUSTER_ID && \
+         confluent environment use $CC_ENV && \
          confluent kafka cluster use $CCLOUD_CLUSTER_ID
 
 .. _cp-demo-schema-linking:
@@ -258,9 +264,9 @@ called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-de
          --subjects "wikipedia.parsed*" \
          --context-name cp-demo \
          --context-type CUSTOM \
-         --sr-endpoint https://localhost:8085 \
+         --schema-registry-endpoint https://localhost:8085 \
          --ca-location scripts/security/snakeoil-ca-1.crt \
-         --config-file scripts/ccloud/schema-link.properties
+         --config scripts/ccloud/schema-link.properties
 
    Notice we can use a wildcard ``*`` to export multiple subjects.
 
@@ -302,7 +308,7 @@ called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-de
    .. code:: shell
 
       confluent schema-registry exporter get-status cp-cc-schema-exporter \
-         --sr-endpoint https://localhost:8085 \
+         --schema-registry-endpoint https://localhost:8085 \
          --ca-location scripts/security/snakeoil-ca-1.crt 
 
 
@@ -316,9 +322,7 @@ called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-de
 
    .. code:: shell
 
-      confluent sr subject list \
-         --api-key $SR_API_KEY --api-secret $SR_API_SECRET \
-         --prefix ":.cp-demo:"
+      confluent schema-registry subject list --prefix ":.cp-demo:"
 
    The output should resemble
 
@@ -380,7 +384,7 @@ mirror Kafka topics from your on-premises cluster to |ccloud|.
 
       confluent kafka link create cp-cc-cluster-link \
          --cluster $CCLOUD_CLUSTER_ID \
-         --source-cluster-id $CP_CLUSTER_ID \
+         --source-cluster $CP_CLUSTER_ID \
          --config-file ./scripts/ccloud/cluster-link-ccloud.properties
 
 #. Inspect the file ``scripts/ccloud/cluster-link-cp-example.properties`` and read the comments to understand what each property does.
@@ -418,7 +422,7 @@ mirror Kafka topics from your on-premises cluster to |ccloud|.
       confluent iam rbac role-binding create \
          --principal User:connectorSA \
          --role ClusterAdmin \
-         --kafka-cluster-id $CP_CLUSTER_ID
+         --kafka-cluster $CP_CLUSTER_ID
 
 
 #. Create the |cp| half of the cluster link, still called **cp-cc-cluster-link**.
@@ -427,9 +431,10 @@ mirror Kafka topics from your on-premises cluster to |ccloud|.
 
       confluent kafka link create cp-cc-cluster-link \
          --destination-bootstrap-server $CC_BOOTSTRAP_ENDPOINT \
-         --destination-cluster-id $CCLOUD_CLUSTER_ID \
-         --config-file ./scripts/ccloud/cluster-link-cp.properties \
-         --url https://localhost:8091/kafka --ca-cert-path scripts/security/snakeoil-ca-1.crt 
+         --destination-cluster $CCLOUD_CLUSTER_ID \
+         --config ./scripts/ccloud/cluster-link-cp.properties \
+         --url https://localhost:8091/kafka \
+         --ca-cert-path scripts/security/snakeoil-ca-1.crt 
 
 
 #. Switch contexts back to "ccloud" and create the mirror topic for ``wikipedia.parsed`` in |ccloud|.
@@ -447,8 +452,9 @@ mirror Kafka topics from your on-premises cluster to |ccloud|.
       confluent kafka topic consume \
          --api-key $CCLOUD_CLUSTER_API_KEY \
          --api-secret $CCLOUD_CLUSTER_API_SECRET \
-         --sr-endpoint $CC_SR_ENDPOINT/contexts/:.cp-demo: \
-         --sr-api-key $SR_API_KEY --sr-api-secret $SR_API_SECRET \
+         --schema-registry-endpoint $CC_SR_ENDPOINT/contexts/:.cp-demo: \
+         --schema-registry-api-key $SR_API_KEY \
+         --schema-registry-api-secret $SR_API_SECRET \
          --value-format avro \
             wikipedia.parsed | jq
 
