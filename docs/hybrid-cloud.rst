@@ -144,7 +144,7 @@ Set Up Confluent CLI and variables
           --principal User:$SERVICE_ACCOUNT_ID \
           --current-environment \
           --schema-registry-cluster $CC_SR_CLUSTER_ID \
-          --resource 'Subject:*'
+          --resource "Subject:*"
 
 #. Create a Schema Registry API key for the cp-demo service account.
 
