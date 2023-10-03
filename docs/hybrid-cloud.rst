@@ -127,7 +127,7 @@ Set Up Confluent CLI and variables
 
 #. Grant the ``ResourceOwner`` role to the cp-demo service account for all Schema subjects.
 
-   .. code:: shell
+   .. code:: text
 
       confluent iam rbac role-binding create \
          --role ResourceOwner \
