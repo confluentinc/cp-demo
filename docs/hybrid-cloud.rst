@@ -134,7 +134,7 @@ Set Up Confluent CLI and variables
          --principal User:$SERVICE_ACCOUNT_ID \
          --current-environment \
          --schema-registry-cluster $CC_SR_CLUSTER_ID \
-         --resource 'Subject:*'
+         --resource "Subject:*"
 
    Verify the role binding has been created by running:
 
