@@ -136,7 +136,7 @@ Set Up Confluent CLI and variables
          --schema-registry-cluster $CC_SR_CLUSTER_ID \
          --resource 'Subject:*'
 
-   Verify the role-binding has been created by running:
+   Verify the role binding has been created by running:
 
    .. code:: shell
 
