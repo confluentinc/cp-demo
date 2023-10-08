@@ -125,6 +125,26 @@ Set Up Confluent CLI and variables
       && echo "Schema Registry Cluster ID: $CC_SR_CLUSTER_ID" \
       && echo "Schema Registry Endpoint: $CC_SR_ENDPOINT"
 
+#. Grant the ``ResourceOwner`` role to the cp-demo service account for all Schema subjects.
+
+   .. code:: text
+
+      confluent iam rbac role-binding create \
+         --role ResourceOwner \
+         --principal User:$SERVICE_ACCOUNT_ID \
+         --current-environment \
+         --schema-registry-cluster $CC_SR_CLUSTER_ID \
+         --resource "Subject:*"
+
+   Verify the role binding has been created by running:
+
+   .. code:: shell
+
+      confluent iam rbac role-binding list \
+          --principal User:$SERVICE_ACCOUNT_ID \
+          --current-environment \
+          --schema-registry-cluster $CC_SR_CLUSTER_ID \
+          --resource "Subject:*"
 
 #. Create a Schema Registry API key for the cp-demo service account.
 
@@ -371,8 +391,9 @@ mirror Kafka topics from your on-premises cluster to |ccloud|.
 
       confluent iam rbac role-binding list \
          --principal User:$SERVICE_ACCOUNT_ID \
+         --cloud-cluster $CCLOUD_CLUSTER_ID \
+         --environment $CC_ENV \
          -o json | jq
-
 
 #. Inspect the file ``scripts/ccloud/cluster-link-ccloud.properties``
 
