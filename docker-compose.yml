@@ -269,6 +269,9 @@ services:
       # Encrypt credentials stored in Cluster Link
       KAFKA_PASSWORD_ENCODER_SECRET: encoder-secret
 
+      # Enable Consumer Lag emitter
+      KAFKA_CONFLUENT_CONSUMER_LAG_EMITTER_ENABLED: 'true'
+
   kafka2:
     image: ${REPOSITORY}/cp-server:${CONFLUENT_DOCKER_TAG}
     hostname: kafka2
@@ -453,6 +456,8 @@ services:
       # Encrypt credentials stored in Cluster Link
       KAFKA_PASSWORD_ENCODER_SECRET: encoder-secret
 
+      # Enable Consumer Lag emitter
+      KAFKA_CONFLUENT_CONSUMER_LAG_EMITTER_ENABLED: 'true'
 
         
   connect:
