@@ -30,7 +30,7 @@ Stop the |ccloud| Environment
 
 If you ran the :ref:`cp-demo-hybrid` portion of this tutorial, which included creating resources in |ccloud|, follow the clean up procedure below to avoid unexpected |ccloud| charges.
 
-.. include:: ../../examples/ccloud/docs/includes/ccloud-examples-terminate.rst
+.. include:: ../../includes/ccloud-examples-terminate.rst
 
 #. Make sure that you're still using the ``ccloud`` CLI context.
 
