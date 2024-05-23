@@ -10,8 +10,8 @@ Hybrid Deployment to |ccloud|
 In a hybrid |ak-tm| deployment scenario, you can have both an on-premises |cp| deployment as well as a
 `Confluent Cloud <https://confluent.cloud>`__ deployment.
 In this module, you will use `Cluster Linking <https://docs.confluent.io/cloud/current/multi-cloud/cluster-linking/index.html>`__
-and `Schema Linking <https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html>`__ to send data and schemas to
-|ccloud|, and monitor both deployments with `Confluent Health+ <https://docs.confluent.io/platform/current/health-plus/index.html#confluent-health>`__ and the `Confluent Cloud Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__.
+and :platform:`Schema Linking|schema-registry/schema-linking-cp.html` to send data and schemas to
+|ccloud|, and monitor both deployments with :platform:`Confluent Health+|health-plus/index.html#confluent-health` and the `Confluent Cloud Metrics API <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html>`__.
 
 .. figure:: images/cp-demo-overview-with-ccloud.svg
     :alt: image
@@ -25,7 +25,7 @@ Cost to Run
 Caution
 ~~~~~~~
 
-.. include:: ../../examples/ccloud/docs/includes/ccloud-examples-caution.rst
+.. include:: ../../../includes/ccloud-examples-caution.rst
 
 |ccloud| Promo Code
 ~~~~~~~~~~~~~~~~~~~
@@ -206,11 +206,11 @@ Export Schemas to |ccloud| with Schema Linking
 ----------------------------------------------
 
 Confluent Schema Registry is critical for evolving schemas alongside your business needs and ensuring high data quality.
-With `Schema Linking <https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html>`__
+With :platform:`Schema Linking|schema-registry/schema-linking-cp.html`
 , you can easily export your schemas from your on-premises Schema Registry to |ccloud|.
 In this section, you will export the schema subjects ``wikipedia.parsed-value`` and ``wikipedia.parsed.count-by-domain-value``
 from |cp| to |ccloud| with schema linking.
-These schema subjects will be exported to a new `schema context <https://docs.confluent.io/platform/current/schema-registry/schema-linking-cp.html#what-is-a-schema-context>`__
+These schema subjects will be exported to a new :platform:`schema context|schema-registry/schema-linking-cp.html#what-is-a-schema-context`
 called "cp-demo", so their qualified subject names in |ccloud| will be ``:.cp-demo:wikipedia.parsed-value`` and ``:.cp-demo:wikipedia.parsed.count-by-domain-value``.
 
 

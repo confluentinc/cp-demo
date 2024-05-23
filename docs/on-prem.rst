@@ -101,7 +101,7 @@ You can run it with optional settings:
 
       CLEAN=true ./scripts/start.sh
 
-#. ``cp-demo`` supports access to the |c3| GUI via either ``http://`` (the default) or secure ``https://``, the latter employing a self-signed CA and certificates generated during deployment. In order to run ksqlDB queries from |c3| later in this tutorial, both ksqlDB and |c3| must be running in either ``http`` or ``https`` `mode <https://docs.confluent.io/platform/current/ksqldb/integrate-ksql-with-confluent-control-center.html#configuration-settings-for-ksqldb-and-c3-short>`__. To run ``cp-demo`` in ``https`` mode, set ``C3_KSQLDB_HTTPS=true`` when starting ``cp-demo``:
+#. ``cp-demo`` supports access to the |c3| GUI via either ``http://`` (the default) or secure ``https://``, the latter employing a self-signed CA and certificates generated during deployment. In order to run ksqlDB queries from |c3| later in this tutorial, both ksqlDB and |c3| must be running in either ``http`` or ``https`` :platform:`mode|ksqldb/integrate-ksql-with-confluent-control-center.html#configuration-settings-for-ksqldb-and-c3-short`. To run ``cp-demo`` in ``https`` mode, set ``C3_KSQLDB_HTTPS=true`` when starting ``cp-demo``:
 
    .. sourcecode:: bash
 
@@ -373,7 +373,7 @@ Consumers
 
 #. |c3| enables you to monitor consumer lag and throughput performance. Consumer lag is the topic's high water mark (latest offset for the topic that has been written) minus the current consumer offset (latest offset read for that topic by that consumer group). Keep in mind the topic's write rate and consumer group's read rate when you consider the significance the consumer lag's size. Click on "Consumers".
 
-#. Consumer lag is available on a `per-consumer basis <https://docs.confluent.io/platform/current/control-center/consumers.html#view-consumer-lag-details-for-a-consumer-group>`__, including the embedded Connect consumers for sink connectors (e.g., ``connect-elasticsearch-ksqldb``), ksqlDB queries (e.g., consumer groups whose names start with ``_confluent-ksql-ksql-clusterquery_``), console consumers (e.g., ``WIKIPEDIANOBOT-consumer``), etc.  Consumer lag is also available on a `per-topic basis <https://docs.confluent.io/platform/current/control-center/topics/view.html#view-consumer-lag-for-a-topic>`__.
+#. Consumer lag is available on a :platform:`per-consumer basis|control-center/consumers.html#view-consumer-lag-details-for-a-consumer-group`, including the embedded Connect consumers for sink connectors (e.g., ``connect-elasticsearch-ksqldb``), ksqlDB queries (e.g., consumer groups whose names start with ``_confluent-ksql-ksql-clusterquery_``), console consumers (e.g., ``WIKIPEDIANOBOT-consumer``), etc.  Consumer lag is also available on a :platform:`per-topic basis|control-center/topics/view.html#view-consumer-lag-for-a-topic`.
 
    .. figure:: images/consumer_group_list.png
       :alt: image
@@ -388,7 +388,7 @@ Consumers
    .. figure:: images/activity-monitor-consumer.png
       :alt: image
 
-#. Consumption metrics are available on a `per-consumer basis <https://docs.confluent.io/platform/current/control-center/consumers.html#view-consumption-details-for-a-consumer-group>`__. These consumption charts are only populated if `Confluent Monitoring Interceptors <https://docs.confluent.io/platform/current/control-center/installation/clients.html>`__ are configured, as they are in this example. You can view ``% messages consumed`` and ``end-to-end latency``.  View consumption metrics for the persistent ksqlDB "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_5`` in the consumer group list.
+#. Consumption metrics are available on a :platform:`per-consumer basis|control-center/consumers.html#view-consumption-details-for-a-consumer-group`. These consumption charts are only populated if :platform:`Confluent Monitoring Interceptors|control-center/installation/clients.html` are configured, as they are in this example. You can view ``% messages consumed`` and ``end-to-end latency``.  View consumption metrics for the persistent ksqlDB "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_5`` in the consumer group list.
 
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumption.png
       :alt: image
@@ -495,7 +495,7 @@ End clients (non-CP clients):
 - If they are also using Confluent Monitoring interceptors, authenticate using mTLS via the broker SSL listener.
 -   Should never use the TOKEN listener which is meant only for internal communication between Confluent components.
 
-  - If you wish to authenticate clients with username and password via LDAP, you would create a new SASL PLAIN client listener with Confluent's `LdapAuthenticateCallbackHandler <https://docs.confluent.io/platform/current/kafka/authentication_sasl/client-authentication-ldap.html>`__. This is omitted from the demo for simplicity.
+  - If you wish to authenticate clients with username and password via LDAP, you would create a new SASL PLAIN client listener with Confluent's :platform:`LdapAuthenticateCallbackHandler|kafka/authentication_sasl/client-authentication-ldap.html`. This is omitted from the demo for simplicity.
 
 - See :devx-cp-demo:`client configuration|env_files/streams-demo.env/` used in the example by the ``streams-demo`` container running the |kstreams| application ``wikipedia-activity-monitor``.
 

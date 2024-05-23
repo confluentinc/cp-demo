@@ -9,7 +9,7 @@ You can use the Metrics API to get telemetry data for both the on-premises Confl
 - See the `Confluent Cloud Metrics API Reference <https://api.telemetry.confluent.cloud/docs>`__ for more information.
 
 
-The Metrics API and Telemetry Reporter powers `Health+ <https://docs.confluent.io/platform/current/health-plus/index.html>`__, the fully-managed monitoring
+The Metrics API and Telemetry Reporter powers :platform:`Health+|health-plus/index.html`, the fully-managed monitoring
 solution for Confluent Platform. You can enable Health+ for free and add premium capabilities as you see fit.
 
 Popular `third-party monitoring tools <https://docs.confluent.io/cloud/current/monitoring/metrics-api.html#integrate-with-third-party-monitoring>`__
