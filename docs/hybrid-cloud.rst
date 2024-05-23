@@ -25,7 +25,7 @@ Cost to Run
 Caution
 ~~~~~~~
 
-.. include:: ../../../includes/ccloud-examples-caution.rst
+.. include:: ../../includes/ccloud-examples-caution.rst
 
 |ccloud| Promo Code
 ~~~~~~~~~~~~~~~~~~~
