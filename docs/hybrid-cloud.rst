@@ -654,6 +654,6 @@ Query Metrics
 Cleanup
 -------
 
-.. include:: ../../includes/ccloud-examples-terminate.rst
+.. include:: ../../../includes/ccloud-examples-terminate.rst
 
 Follow the clean up procedure in :ref:`cp-demo-ccloud-cleanup` to avoid unexpected |ccloud| charges.
