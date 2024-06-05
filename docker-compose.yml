@@ -755,6 +755,10 @@ services:
       # Used by Control Center to connect to the Admin API for Self Balancing Clusters
       CONTROL_CENTER_STREAMS_CPREST_URL: "https://kafka1:8091,https://kafka2:8092"
 
+      CONTROL_CENTER_MAIL_ENABLED: true
+      CONTROL_CENTER_MAIL_HOST_NAME: fake-smtp-server
+      CONTROL_CENTER_MAIL_PORT: 1025
+
   schemaregistry:
     image: ${REPOSITORY}/cp-schema-registry:${CONFLUENT_DOCKER_TAG}
     container_name: schemaregistry
@@ -1019,3 +1023,9 @@ services:
     environment:
       KAFKA_REPLICATION_FACTOR: 2
   
+  fake-smtp-server:
+    image: haravich/fake-smtp-server
+    hostname: fake-smtp-server
+    ports:
+      - 1025:1025
+      - 1080:1080
