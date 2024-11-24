@@ -400,7 +400,7 @@ html_theme_options = {
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -612,10 +612,34 @@ def create_redirects(app, exception):
             raise RuntimeError("Target redirect path does not exist: {}".format(dest_abs))
 
 import requests
-url = 'https://web-wp.confluent.io/wp-admin/admin-ajax.php?action=get_confluent_navigation'
-headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
-result = requests.get(url, headers=headers)
-#print(result.content.decode())
-html_context = {
-    'confluent_navigation': result.content.decode()
-}
+from bs4 import BeautifulSoup
+
+url = 'https://docs.confluent.io/platform/current/overview.html'
+
+# Send a GET request to fetch the page content
+response = requests.get(url)
+response.raise_for_status()  # Ensure the request was successful
+
+# Parse the HTML content
+soup = BeautifulSoup(response.text, 'html.parser')
+
+# Find the left-hand navigation section
+# Inspect the page and update the class or tag as needed
+left_nav = soup.find('nav', {'class': 'wy-nav-side'})
+
+# Store the HTML content of the navigation in a variable
+confluent_navigation = left_nav.decode_contents() if left_nav else None
+
+if confluent_navigation:
+    print("Navigation HTML successfully extracted!")
+else:
+    print("Left-hand navigation not found.")
+
+# DOO
+# url = 'https://docs.confluent.io/wp-admin/admin-ajax.php?action=get_confluent_navigation'
+# headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+# result = requests.get(url, headers=headers, verify=False)
+# #print(result.content.decode())
+# html_context = {
+#     'confluent_navigation': result.content.decode()
+# }
