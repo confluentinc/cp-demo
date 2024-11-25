@@ -1,24 +1,23 @@
 .. _cp-demo-on-prem-tutorial:
-
-Module 1: Deploy |cp| Demo Environment Using Script
-===================================================
-
 .. _cp-demo-run:
 
-============================
-Run on-premises |cp| cluster
-============================
+Module 1: Deploy the |cp| Demo Environment
+===========================================
 
 ``cp-demo`` is a Docker environment and has all services running on one host.
-It is meant exclusively to easily demo |CP|, but in production, do not deploy all |cp| services on a single host.
+The one-host environment is exclusively designed for an easy demo |cp|.
+In production, you should not deploy all |cp| services on a single host as shown in ``cp-demo``.
 
-Also, in production, |c3| should be deployed with a valid license in
-:ref:`management mode <mode_settings>` in conjunction with
+Also, in production, you should deploy |c3| with a valid license in
+:ref:`reduced infrastructure mode <mode_settings>` in conjunction with
 :ref:`Confluent Health+ <health-plus>` for monitoring.
 
-If you prefer non-Docker examples, please go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
+If you prefer non-Docker examples, go to `confluentinc/examples GitHub repository <https://github.com/confluentinc/examples>`__.
 
-After you run through the guided tutorial below, apply the concepts you learn here to build your own event streaming pipeline in |ccloud|, a fully managed, cloud-native event streaming platform powered by |ak|. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``CPDEMO50`` to receive an additional $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
+After you complete the guided tutorial, you can apply the concepts you learn to build your
+own event streaming pipeline in |ccloud|, a fully managed, cloud-native event streaming platform powered
+by |ak|. When you sign up for `Confluent Cloud <https://confluent.cloud>`__, use the promo code ``CPDEMO50``
+to receive $50 free usage (`details <https://www.confluent.io/confluent-cloud-promo-disclaimer>`__).
 
 
 .. _cp-demo-prereqs:
@@ -26,7 +25,7 @@ After you run through the guided tutorial below, apply the concepts you learn he
 Prerequisites
 -------------
 
-This example has been validated with:
+This example was validated in an environment with:
 
 -  Docker engine version 20.10.12
 -  Docker Compose version 2.4.1
@@ -45,10 +44,13 @@ You can run this demo locally with Docker or in a cloud IDE with :gitpod_link:`G
 Docker
 ~~~~~~
 
-This demo has been validated with Docker as described in :ref:`cp-demo-prereqs`.
+This demo was validated with Docker as described in :ref:`cp-demo-prereqs`.
 If you are using Docker:
 
-#. In Docker's advanced `settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated to Docker to at least 8 GB (default is 2 GB) and ensure Docker is allocated at least 2 CPU cores.
+#. In Docker's advanced `settings
+   <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory
+   dedicated to Docker to at least 8 GB (default is 2 GB) and allocate Docker at
+   least 2 CPU cores.
 
 #. Clone the `confluentinc/cp-demo GitHub repository <https://github.com/confluentinc/cp-demo>`__:
 
@@ -66,8 +68,8 @@ If you are using Docker:
 Gitpod
 ~~~~~~
 
-This demo is enabled to run with Gitpod, but support for the Gitpod workflow is best effort from the `community <https://github.com/confluentinc/cp-demo/issues>`__.
-If you are using :gitpod_link:`Gitpod|`, the demo will automatically start after the Gitpod workspace is ready. ``VIZ=false`` is used to save system resources.
+You can run the demo with Gitpod, but support for the Gitpod workflow is best effort from the `community <https://github.com/confluentinc/cp-demo/issues>`__.
+If you use :gitpod_link:`Gitpod|`, the demo will automatically start after the Gitpod workspace is ready. ``VIZ=false`` is used to save system resources.
 
 Login into |c3| (port ``9021``) by clicking on ``Open Browser`` option in the pop-up:
 
@@ -78,61 +80,102 @@ or by selecting ``Remote Explorer`` on the left sidebar and then clicking on the
 .. figure:: images/gitpod_port_explorer.png
 
 
-Start
------
+Begin with start.sh
+----------------------------
 
-Within the ``cp-demo`` directory, there is a single :devx-cp-demo:`script|scripts/start.sh` that runs the ``cp-demo`` workflow end-to-end.
-It generates the keys and certificates, brings up the Docker containers, and configures and validates the environment.
-You can run it with optional settings:
+Within the ``cp-demo`` directory, there is a ``startup.sh``
+:devx-cp-demo:`script|scripts/start.sh` that runs the demo's workflow
+end-to-end. The script generates the keys and certificates, brings up the Docker
+containers using Docker Compose, and configures and validates the environment.
+You can run ``script.sh`` with the following options:
 
-- ``CLEAN``: controls whether certificates are regenerated
-- ``C3_KSQLDB_HTTPS``: controls whether |c3| and ksqlDB server use ``HTTP`` or ``HTTPS`` (default: ``false`` for ``HTTP``). This option is not supported with :gitpod_link:`Gitpod|`.
-- ``VIZ``: enables Elasticsearch and Kibana (default: ``true``)
+.. list-table:: Title
 
-#. To run ``cp-demo`` the first time with defaults, run the following command. The very first run downloads all the required Docker images (~15 minutes) and sets up the environment (~5 minutes).
+   * - ``CLEAN``
+     - Controls whether the environment regenerates certificates.
+   * - ``C3_KSQLDB_HTTPS``
+     - Controls whether |c3| and |ksql-cloud| server use ``HTTP`` or ``HTTPS``.
+       ``false`` is the default for ``HTTP``. The ``C3_KSQLDB_HTTPS``  option is
+       not supported with :gitpod_link:`Gitpod|` does not support this option.
+   * - ``VIZ``
+     - Enables Elasticsearch and Kibana, ``true`` by default.
 
-   .. sourcecode:: bash
 
-      ./scripts/start.sh
+To run demo with defaults, use the ``start.sh`` command:
 
-#. On subsequent runs, if you have not deleted the generated certificates and the locally built |kconnect| image, they will be reused. To force them to be rebuilt, you can set ``CLEAN=true``.
+.. sourcecode:: bash
 
-   .. sourcecode:: bash
+   ./scripts/start.sh
 
-      CLEAN=true ./scripts/start.sh
+On first run, the script takes approximately 15 minutes to download Docker images and approximately 5 minutes for environment set up.
 
-#. ``cp-demo`` supports access to the |c3| GUI via either ``http://`` (the default) or secure ``https://``, the latter employing a self-signed CA and certificates generated during deployment. In order to run ksqlDB queries from |c3| later in this tutorial, both ksqlDB and |c3| must be running in either ``http`` or ``https`` `mode <https://docs.confluent.io/platform/current/ksqldb/integrate-ksql-with-confluent-control-center.html#configuration-settings-for-ksqldb-and-c3-short>`__. To run ``cp-demo`` in ``https`` mode, set ``C3_KSQLDB_HTTPS=true`` when starting ``cp-demo``:
+On future runs, the script takes less time because it reuses the generated
+certificates and the locally built |kconnect| image. To force the script to
+rebuild these as well, set ``CLEAN=true`` when you call the script.
 
-   .. sourcecode:: bash
+.. sourcecode:: bash
 
-      C3_KSQLDB_HTTPS=true ./scripts/start.sh
+   CLEAN=true ./scripts/start.sh
 
-#. Elasticsearch and Kibana increase localhost memory requirements for ``cp-demo``. For users who want to run ``cp-demo`` with a smaller memory footprint, opt-out of these components by setting ``VIZ=false`` when starting ``cp-demo``.
+By default, the demo supports access to the |c3| GUI via ``http://``, but you
+can also use the  secure ``https://`` protocol. The latter employs a self-signed CA and certificates
+generated during deployment.
+
+To run |ksql-cloud| queries from |c3| later in this tutorial, both |ksql-cloud|
+and |c3| must be running in either ``http`` or ``https``
+:platform:`mode|ksqldb/integrate-ksql-with-confluent-control-center.html#configuration-settings-for-ksqldb-and-c3-short`.
+To run the demo in ``https`` mode, set ``C3_KSQLDB_HTTPS=true`` with the
+``start.sh`` command:
+
+.. sourcecode:: bash
+
+   C3_KSQLDB_HTTPS=true ./scripts/start.sh
+
+
+Elasticsearch and Kibana increase the demo's localhost memory requirements.
+For users who want to run with a smaller memory footprint, opt-out
+of these components by setting ``VIZ=false`` when starting ``start.sh``.
 
    .. sourcecode:: bash
 
       VIZ=false ./scripts/start.sh
 
-#. After the start script completes, run through the pre-flight checks below and follow the guided tutorial through this on-premises deployment.
+
+If you have gotten this far without starting the demo, start it now. After the
+script completes, run through the pre-flight checks below and follow the guided
+tutorial through this on-premises deployment.
 
 
-Pre-flight Checks
+Pre-flight checks
 -----------------
 
-Before going through the tutorial, check that the environment has started correctly.
-If any of these pre-flight checks fails, consult the :ref:`cp-demo-troubleshooting` section.
+After running the ``setup.sh`` script, verify your environment started correctly.
+If any of these pre-flight checks fails, consult the
+:ref:`cp-demo-troubleshooting` section.
 
-#. Verify the status of the Docker containers show ``Up`` state.
+Review
 
-   .. code-block:: bash
+View the full |cp| configuration in the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
 
-        docker-compose ps
+View the |kstreams| application configuration in the :devx-cp-demo:`client configuration|env_files/streams-demo.env` file, set with security parameters to the |ak| cluster and |sr|.
 
-   Your output should resemble:
+
+
+Check the Docker container status
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Verify the status of the Docker containers show ``Up`` state.
+
+.. code-block:: bash
+
+   docker-compose ps
+
+Your output should resemble:
 
    .. code-block:: text
 
-                 Name                          Command                  State                                           Ports                                     
+                 Name                          Command                  State                                           Ports
       ------------------------------------------------------------------------------------------------------------------------------------------------------------
       connect                       bash -c sleep 10 && cp /us ...   Up             0.0.0.0:8083->8083/tcp, 9092/tcp
       control-center                /etc/confluent/docker/run        Up (healthy)   0.0.0.0:9021->9021/tcp, 0.0.0.0:9022->9022/tcp
@@ -156,18 +199,14 @@ If any of these pre-flight checks fails, consult the :ref:`cp-demo-troubleshooti
 
    .. figure:: images/kibana-dashboard.png
 
-#. View the full |cp| configuration in the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
-
-#. View the |kstreams| application configuration in the :devx-cp-demo:`client configuration|env_files/streams-demo.env` file, set with security parameters to the |ak| cluster and |sr|.
-
 .. _cp-demo-guide:
 
-===============
-Guided Tutorial
-===============
 
-Log into |c3| 
--------------
+Guided tutorial
+---------------
+
+Log into |c3|
+~~~~~~~~~~~~~~
 
 #. If you ran ``cp-demo`` with ``C3_KSQLDB_HTTPS=false`` (which is the default), log into the |c3| GUI from a web browser at the following URL:
 
@@ -199,8 +238,8 @@ Log into |c3|
       :width: 500px
 
 
-Brokers 
--------
+Brokers
+~~~~~~~
 
 #. Select the cluster named "Kafka Raleigh".
 
@@ -221,7 +260,7 @@ Brokers
 
 
 Topics
-------
+~~~~~~
 
 #. |c3| can manage topics in a Kafka cluster. Click on "Topics".
 
@@ -270,7 +309,7 @@ Topics
          :alt: image
 
 |kconnect-long|
----------------
+~~~~~~~~~~~~~~~
 
 This example runs two connectors:
 
@@ -300,68 +339,68 @@ The |kconnect| worker's embedded producer is configured to be idempotent, exactl
 
 .. _ksql-demo-3:
 
-ksqlDB
-------
+|ksql-cloud|
+~~~~~~~~~~~~
 
-In this example, ksqlDB is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the :devx-cp-demo:`ksqlDB command file|scripts/ksqlDB/statements.sql`.
+In this example, |ksql-cloud| is authenticated and authorized to connect to the secured Kafka cluster, and it is already running queries as defined in the :devx-cp-demo:`ksqlDB command file|scripts/ksqlDB/statements.sql`.
 Its embedded producer is configured to be idempotent, exactly-once in order semantics per partition (in the event of an error that causes a producer retry, the same message—which is still sent by the producer multiple times—will only be written to the Kafka log on the broker once).
 
 #. In the navigation bar, click **ksqlDB**.
 
-#. From the list of ksqlDB applications, select ``wikipedia``.
+#. From the list of |ksql-cloud|  applications, select ``wikipedia``.
 
    .. figure:: images/ksql_link.png
       :alt: image
 
-#. View the ksqlDB Flow to see the streams and tables created in the example, and how they relate to one another.
+#. View the |ksql-cloud| Flow to see the streams and tables created in the example, and how they relate to one another.
 
    .. figure:: images/ksqldb_flow.png
       :alt: image
 
-#. Use |c3| to interact with ksqlDB, or run ksqlDB CLI to get to the ksqlDB CLI prompt.
+#. Use |c3| to interact with ksqlDB, or run |ksql-cloud|  CLI to get to the |ksql-cloud|  CLI prompt.
 
    .. sourcecode:: bash
 
         docker-compose exec ksqldb-cli bash -c 'ksql -u ksqlDBUser -p ksqlDBUser http://ksqldb-server:8088'
 
-#. View the existing ksqlDB streams. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``)
+#. View the existing |ksql-cloud|  streams. (If you are using the |ksql-cloud|  CLI, at the ``ksql>`` prompt type ``SHOW STREAMS;``)
 
    .. figure:: images/ksql_streams_list.png
       :alt: image
 
-#. Click on ``WIKIPEDIA`` to describe the schema (fields or columns) of an existing ksqlDB stream. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``DESCRIBE WIKIPEDIA;``)
+#. Click on ``WIKIPEDIA`` to describe the schema (fields or columns) of an existing |ksql-cloud|  stream. (If you are using the |ksql-cloud|  CLI, at the ``ksql>`` prompt type ``DESCRIBE WIKIPEDIA;``)
 
    .. figure:: images/wikipedia_describe.png
       :width: 600px
       :alt: image
 
-#. View the existing ksqlDB tables. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``). One table is called ``WIKIPEDIA_COUNT_GT_1``, which counts occurrences within a `tumbling window <https://docs.ksqldb.io/en/latest/concepts/time-and-windows-in-ksqldb-queries/#tumbling-window>`__.
+#. View the existing |ksql-cloud|  tables. (If you are using the |ksql-cloud| CLI, at the ``ksql>`` prompt type ``SHOW TABLES;``). One table is called ``WIKIPEDIA_COUNT_GT_1``, which counts occurrences within a :ref:`tumbling window <ksqldb-time-and-windows-tumbling-window>`.
 
    .. figure:: images/ksql_tables_list.png
       :alt: image
 
-#. View the existing ksqlDB queries, which are continuously running. (If you are using the ksqlDB CLI, at the ``ksql>`` prompt type ``SHOW QUERIES;``).
+#. View the existing |ksql-cloud| queries, which are continuously running. (If you are using the |ksql-cloud| CLI, at the ``ksql>`` prompt type ``SHOW QUERIES;``).
 
    .. figure:: images/ksql_queries_list.png
       :alt: image
 
-#. View messages from different ksqlDB streams and tables. Click on your stream of choice and then click **Query stream** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA EMIT CHANGES;``, and it shows results for newly arriving data.
+#. View messages from different |ksql-cloud| streams and tables. Click on your stream of choice and then click **Query stream** to open the Query Editor. The editor shows a pre-populated query, like ``select * from WIKIPEDIA EMIT CHANGES;``, and it shows results for newly arriving data.
 
    .. figure:: images/ksql_query_topic.png
       :width: 600px
 
-#. Click **ksqlDB Editor** and run the ``SHOW PROPERTIES;`` statement. You can see the configured ksqlDB server properties and check these values with the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
+#. Click **ksqlDB Editor** and run the ``SHOW PROPERTIES;`` statement. You can see the configured |ksql-cloud| server properties and check these values with the :devx-cp-demo:`docker-compose.yml|docker-compose.yml` file.
 
    .. figure:: images/ksql_properties.png
       :alt: image
 
-#. The `ksqlDB processing log <https://docs.ksqldb.io/en/latest/reference/processing-log/>`__ captures per-record errors during processing to help developers debug their ksqlDB queries. In this example, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the ksqlDB editor run the following "bad" query for 20 seconds:
+#. The :ref:`ksqlDB processing log <ksqldb-reference-processing-log>` captures per-record errors during processing to help developers debug their |ksql-cloud| queries. In this example, the processing log uses mutual TLS (mTLS) authentication, as configured in the custom :devx-cp-demo:`log4j properties file|scripts/helper/log4j-secure.properties`, to write entries into a Kafka topic. To see it in action, in the |ksql-cloud| editor run the following "bad" query for 20 seconds:
 
    .. sourcecode:: bash
 
       SELECT 1/0 FROM wikipedia EMIT CHANGES;
 
-   No records should be returned from this query. ksqlDB writes errors into the processing log for each record. View the processing log topic ``ksql-clusterksql_processing_log`` with topic inspection (jump to offset 0/partition 0) or the corresponding ksqlDB stream ``KSQL_PROCESSING_LOG`` with the ksqlDB editor (set ``auto.offset.reset=earliest``).
+   No records should be returned from this query. |ksql-cloud| writes errors into the processing log for each record. View the processing log topic ``ksql-clusterksql_processing_log`` with topic inspection (jump to offset 0/partition 0) or the corresponding |ksql-cloud| stream ``KSQL_PROCESSING_LOG`` with the |ksql-cloud| editor (set ``auto.offset.reset=earliest``).
 
    .. sourcecode:: bash
 
@@ -369,16 +408,16 @@ Its embedded producer is configured to be idempotent, exactly-once in order sema
 
 
 Consumers
----------
+~~~~~~~~~
 
 #. |c3| enables you to monitor consumer lag and throughput performance. Consumer lag is the topic's high water mark (latest offset for the topic that has been written) minus the current consumer offset (latest offset read for that topic by that consumer group). Keep in mind the topic's write rate and consumer group's read rate when you consider the significance the consumer lag's size. Click on "Consumers".
 
-#. Consumer lag is available on a `per-consumer basis <https://docs.confluent.io/platform/current/control-center/consumers.html#view-consumer-lag-details-for-a-consumer-group>`__, including the embedded Connect consumers for sink connectors (e.g., ``connect-elasticsearch-ksqldb``), ksqlDB queries (e.g., consumer groups whose names start with ``_confluent-ksql-ksql-clusterquery_``), console consumers (e.g., ``WIKIPEDIANOBOT-consumer``), etc.  Consumer lag is also available on a `per-topic basis <https://docs.confluent.io/platform/current/control-center/topics/view.html#view-consumer-lag-for-a-topic>`__.
+#. Consumer lag is available on a :platform:`per-consumer basis|control-center/consumers.html#view-consumer-lag-details-for-a-consumer-group`, including the embedded Connect consumers for sink connectors (e.g., ``connect-elasticsearch-ksqldb``), |ksql-cloud| queries (e.g., consumer groups whose names start with ``_confluent-ksql-ksql-clusterquery_``), console consumers (e.g., ``WIKIPEDIANOBOT-consumer``), etc.  Consumer lag is also available on a :platform:`per-topic basis|control-center/topics/view.html#view-consumer-lag-for-a-topic`.
 
    .. figure:: images/consumer_group_list.png
       :alt: image
 
-#. View consumer lag for the persistent ksqlDB "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_5`` in the consumer group list.
+#. View consumer lag for the persistent |ksql-cloud| "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_5`` in the consumer group list.
 
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumer_lag.png
       :alt: image
@@ -388,7 +427,7 @@ Consumers
    .. figure:: images/activity-monitor-consumer.png
       :alt: image
 
-#. Consumption metrics are available on a `per-consumer basis <https://docs.confluent.io/platform/current/control-center/consumers.html#view-consumption-details-for-a-consumer-group>`__. These consumption charts are only populated if `Confluent Monitoring Interceptors <https://docs.confluent.io/platform/current/control-center/installation/clients.html>`__ are configured, as they are in this example. You can view ``% messages consumed`` and ``end-to-end latency``.  View consumption metrics for the persistent ksqlDB "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_5`` in the consumer group list.
+#. Consumption metrics are available on a :platform:`per-consumer basis|control-center/consumers.html#view-consumption-details-for-a-consumer-group`. These consumption charts are only populated if :platform:`Confluent Monitoring Interceptors|control-center/installation/clients.html` are configured, as they are in this example. You can view ``% messages consumed`` and ``end-to-end latency``.  View consumption metrics for the persistent |ksql-cloud| "Create Stream As Select" query ``CSAS_WIKIPEDIABOT``, which is displayed as ``_confluent-ksql-ksql-clusterquery_CSAS_WIKIPEDIABOT_5`` in the consumer group list.
 
    .. figure:: images/ksql_query_CSAS_WIKIPEDIABOT_consumption.png
       :alt: image
@@ -401,7 +440,7 @@ Consumers
 
 #. Let this consumer group run for 2 minutes until |c3|
    shows the consumer group ``app`` with steady consumption.
-   This consumer group ``app`` has a single consumer ``consumer_app_1`` consuming all of the partitions in the topic ``wikipedia.parsed``. 
+   This consumer group ``app`` has a single consumer ``consumer_app_1`` consuming all of the partitions in the topic ``wikipedia.parsed``.
 
    .. figure:: images/consumer_start_one.png
       :alt: image
@@ -434,17 +473,13 @@ Consumers
 Security
 --------
 
-Overview
-~~~~~~~~
-
-
 All components and clients in ``cp-demo`` make full use of |cp|'s extensive :ref:`security features <security>`.
 
 -  :ref:`Role-Based Access Control (RBAC) <rbac-overview>` for authorization. Give principals access to resources using role-bindings.
 
    .. note:: RBAC is powered by the :ref:`Metadata Service (MDS) <rbac-mds-config>` which uses |csa| to connect to an OpenLDAP directory service. This enables group-based authorization for scalable access management.
 
--  :ref:`SSL <kafka_ssl_authentication>` for encryption and mTLS for authentication. The example :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password. 
+-  :ref:`SSL <kafka_ssl_authentication>` for encryption and mTLS for authentication. The example :devx-cp-demo:`automatically generates|scripts/security/certs-create.sh` SSL certificates and creates keystores, truststores, and secures them with a password.
 -  |zk| is configured with :ref:`mTLS <zk-mtls>` and :ref:`SASL/DIGEST-MD5 <zk-auth-sasl>` authentication.
 -  :ref:`HTTPS for Control Center <https_settings>`.
 -  :ref:`HTTPS for Schema Registry <schemaregistry_security>`.
@@ -495,11 +530,13 @@ End clients (non-CP clients):
 - If they are also using Confluent Monitoring interceptors, authenticate using mTLS via the broker SSL listener.
 -   Should never use the TOKEN listener which is meant only for internal communication between Confluent components.
 
-  - If you wish to authenticate clients with username and password via LDAP, you would create a new SASL PLAIN client listener with Confluent's `LdapAuthenticateCallbackHandler <https://docs.confluent.io/platform/current/kafka/authentication_sasl/client-authentication-ldap.html>`__. This is omitted from the demo for simplicity.
+.. note::
+
+   If you wish to authenticate clients with username and password via LDAP, you would create a new SASL PLAIN client listener with Confluent's :platform:`LdapAuthenticateCallbackHandler|kafka/authentication_sasl/client-authentication-ldap.html`. This is omitted from the demo for simplicity.
 
 - See :devx-cp-demo:`client configuration|env_files/streams-demo.env/` used in the example by the ``streams-demo`` container running the |kstreams| application ``wikipedia-activity-monitor``.
 
-Broker Listeners
+Broker listeners
 ~~~~~~~~~~~~~~~~
 
 #. Verify the ports on which the Kafka brokers are listening with the
@@ -689,7 +726,7 @@ Authorization with RBAC
 #. Next step: Learn more about security with the :ref:`Security Tutorial <security_tutorial>`.
 
 
-Data Governance with |sr|
+Data governance with |sr|
 -------------------------
 
 All the applications and connectors used in this example are configured to automatically read and write Avro-formatted data, leveraging the :ref:`Confluent Schema Registry <schemaregistry_intro>`.
@@ -803,7 +840,7 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
 
    .. figure:: images/schema1.png
     :alt: image
-   
+
    You may alternatively request the schema via the command line:
 
    .. code-block:: text
@@ -840,8 +877,8 @@ The security in place between |sr| and the end clients, e.g. ``appSA``, is as fo
    .. sourcecode:: bash
 
       Topic: users	PartitionCount: 2	ReplicationFactor: 2	Configs: confluent.value.schema.validation=true
-	      Topic: users	Partition: 0	Leader: 1	Replicas: 1,2	Isr: 1,2	Offline: 
-	      Topic: users	Partition: 1	Leader: 2	Replicas: 2,1	Isr: 2,1	Offline: 
+	      Topic: users	Partition: 0	Leader: 1	Replicas: 1,2	Isr: 1,2	Offline:
+	      Topic: users	Partition: 1	Leader: 2	Replicas: 2,1	Isr: 2,1	Offline:
 
 #. Now produce a non-Avro message to this topic using ``kafka-console-producer``.
 
@@ -930,7 +967,7 @@ For the next few steps, use the |crest| that is running as a standalone service.
           --principal User:appSA \
           --role DeveloperWrite \
           --resource Topic:users \
-          --kafka-cluster-id $KAFKA_CLUSTER_ID" 
+          --kafka-cluster-id $KAFKA_CLUSTER_ID"
 
 #. Again try to produce a message to the topic ``users``. It should pass this time.
 
@@ -999,12 +1036,12 @@ For the next few steps, use the |crest| that is running as a standalone service.
          --cacert /etc/kafka/secrets/snakeoil-ca-1.crt \
          -u appSA:appSA \
          https://restproxy:8086/consumers/my_avro_consumer/instances/my_consumer_instance/records
-  
+
    Your output should resemble:
 
    .. code-block:: text
 
-        {"error_code":40301,"message":"Not authorized to access group: my_avro_consumer"} 
+        {"error_code":40301,"message":"Not authorized to access group: my_avro_consumer"}
 
 #. Create a role binding for the client permitting it access to the consumer group ``my_avro_consumer``.
 
@@ -1188,7 +1225,7 @@ For the next few steps, use the |crest| that is embedded on the |ak| brokers. On
       "wikipedia.parsed.count-by-domain"
       "wikipedia.parsed.replica"
 
-Failed Broker
+Failed broker
 -------------
 
 To simulate a failed broker, stop the Docker container running one of
@@ -1200,7 +1237,7 @@ the two Kafka brokers.
 
           docker-compose stop kafka2
 
-#. After a few minutes, observe the Broker summary show that the number of brokers 
+#. After a few minutes, observe the Broker summary show that the number of brokers
    has decreased from 2 to 1, and there are many under replicated
    partitions.
 
@@ -1377,9 +1414,9 @@ Before running this section:
            --admin.config /etc/kafka/secrets/client_sasl_plain.config \
            --verbose | grep "IsInIsr: false"
 
-==========
+
 Monitoring
-==========
+-----------
 
 This tutorial has demonstrated how |c3| helps users manage their |cp| deployment and how it provides monitoring capabilities for the cluster and applications.
 For a practical guide to optimizing your |ak| deployment for various service goals including throughput, latency, durability and availability, and useful metrics to monitor for performance and cluster health for on-premises |ak| clusters, see the `Optimizing Your Apache Kafka Deployment <https://www.confluent.io/white-paper/optimizing-your-apache-kafka-deployment/>`__ whitepaper.
@@ -1388,14 +1425,14 @@ For most |cp| users the |c3| monitoring and integrations are sufficient for prod
 There are additional monitoring solutions for various use cases, as described below.
 
 Metrics API
------------
+~~~~~~~~~~~
 
 .. include:: includes/metrics-api-intro.rst
 
 See :ref:`cp-demo-hybrid` to play hands-on with the Metrics API.
 
 JMX
----
+~~~
 
 Some users wish to integrate with other monitoring solutions like Prometheus, Grafana, Datadog, and Splunk.
 The following JMX-based monitoring stacks help users setup a 'single pane of glass' monitoring solution for all their organization's services and applications, including |ak|.
@@ -1435,3 +1472,10 @@ Here are some examples of monitoring stacks that integrate with |cp|:
    .. figure:: images/monitoring/datadog-dashboard.png
       :alt: image
       :width: 500px
+
+Related content
+----------------
+
+- :ref:`scripted-demo`
+- :ref:`cp-demo-hybrid`
+- :ref:`cp-demo-teardown`
