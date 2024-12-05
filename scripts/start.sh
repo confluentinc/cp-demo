@@ -18,7 +18,7 @@ CLEAN=${CLEAN:-false}
 build_connect_image
 
 # Set the CLEAN variable to true if cert doesn't exist
-if ! [[ -f "${DIR}/security/controlCenterAndKsqlDBServer-ca1-signed.crt" ]] || ! check_num_certs; then
+if ! [[ -f "${DIR}/security/controlCenterAndKsqlDBServer-ca1-signed.crt" ]] || ! check_truststore_valid; then
   echo "INFO: Running with CLEAN=true because instructed or certificates don't yet exist."
   clean_demo_env
   CLEAN=true
@@ -36,8 +36,8 @@ echo
 
 if [[ "$CLEAN" == "true" ]] ; then
   create_certificates || exit 1
-  if [[ ! check_num_certs ]]; then
-    echo -e "\nERROR: Expected ~147 trusted certificates on the Kafka Connect server but got 1. Please troubleshoot and try again."
+  if ! check_truststore_valid; then
+    echo -e "\nERROR: Expected valid trusted certificates on the Kafka Connect server. Please troubleshoot and try again."
     exit 1
   fi
 fi
