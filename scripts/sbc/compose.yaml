@@ -5,7 +5,7 @@
 #
 # This feature is being used to parameterize some values within this file.  In this directory is also
 # a .env file, which is actually a symbolic link to <examples-root>/utils/config.env.  That file
-# contains values which get substituted here when docker-compose parses this file.
+# contains values which get substituted here when docker compose parses this file.
 #
 # If you'd like to view the compose.yaml file rendered with its environment variable substitutions
 # you can execute the `docker compose config` command.  Take note that some demos provide additional
@@ -25,7 +25,7 @@ services:
       - ./scripts/security/keypair:/tmp/conf
       - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets
-    command: 'bash -c ''if [ ! -f /etc/kafka/secrets/kafka.kafka3.keystore.jks ]; then echo "ERROR: Did not find SSL certificates in /etc/kafka/secrets/ (did you remember to run ./scripts/start.sh instead of docker compose up -d?)" && exit 1 ; else /etc/confluent/docker/run ; fi'''
+    command: "bash -c 'if [ ! -f /etc/kafka/secrets/kafka.kafka3.keystore.jks ]; then echo "ERROR: Did not find SSL certificates in /etc/kafka/secrets/ (did you remember to run ./scripts/start.sh instead of docker compose up -d?)" && exit 1 ; else /etc/confluent/docker/run ; fi'"
     ports:
       - 8093:8093
       - 9093:9093
@@ -34,7 +34,7 @@ services:
       - 12093:12093
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2182
-      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
+      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: 'true'
 
       # Broker uses TLSv1.2 by-default for ZooKeeper TLS connections
       # See note for ZOOKEEPER_SSL_ENABLED_PROTOCOLS regarding TLS 1.3 support
@@ -49,7 +49,7 @@ services:
       KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka3.truststore.jks
       KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: confluent
       KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_TYPE: JKS
-      KAFKA_ZOOKEEPER_SET_ACL: "true"
+      KAFKA_ZOOKEEPER_SET_ACL: 'true'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:SASL_PLAINTEXT,TOKEN:SASL_SSL,SSL:SSL,CLEAR:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka3:9093,TOKEN://kafka3:10093,SSL://kafka3:11093,CLEAR://kafka3:12093
@@ -67,19 +67,19 @@ services:
 
       KAFKA_LISTENER_NAME_INTERNAL_SASL_ENABLED_MECHANISMS: PLAIN
       KAFKA_LISTENER_NAME_INTERNAL_PLAIN_SASL_JAAS_CONFIG: |
-        org.apache.kafka.common.security.plain.PlainLoginModule required \
-        username="admin" \
-        password="admin-secret" \
-        user_admin="admin-secret" \
-        user_mds="mds-secret";
+              org.apache.kafka.common.security.plain.PlainLoginModule required \
+              username="admin" \
+              password="admin-secret" \
+              user_admin="admin-secret" \
+              user_mds="mds-secret";
 
       # Configure TOKEN listener for Confluent Platform components and impersonation
       KAFKA_LISTENER_NAME_TOKEN_OAUTHBEARER_SASL_SERVER_CALLBACK_HANDLER_CLASS: io.confluent.kafka.server.plugins.auth.token.TokenBearerValidatorCallbackHandler
       KAFKA_LISTENER_NAME_TOKEN_OAUTHBEARER_SASL_LOGIN_CALLBACK_HANDLER_CLASS: io.confluent.kafka.server.plugins.auth.token.TokenBearerServerLoginCallbackHandler
       KAFKA_LISTENER_NAME_TOKEN_SASL_ENABLED_MECHANISMS: OAUTHBEARER
       KAFKA_LISTENER_NAME_TOKEN_OAUTHBEARER_SASL_JAAS_CONFIG: |
-        org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-        publicKeyPath="/tmp/conf/public.pem";
+              org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
+              publicKeyPath="/tmp/conf/public.pem";
 
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
       KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 2
@@ -89,8 +89,8 @@ services:
       KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 2
       KAFKA_CONFLUENT_BALANCER_HEAL_BROKER_FAILURE_THRESHOLD_MS: 30000
 
-      KAFKA_DELETE_TOPIC_ENABLE: "true"
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_DELETE_TOPIC_ENABLE: 'true'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
       KAFKA_DEFAULT_REPLICATION_FACTOR: 2
 
       # Confluent Metrics Reporter
@@ -98,15 +98,14 @@ services:
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 2
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka1:9091,kafka2:9092
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SASL_PLAINTEXT
-      CONFLUENT_METRICS_REPORTER_SASL_JAAS_CONFIG:
-        "org.apache.kafka.common.security.plain.PlainLoginModule required \
+      CONFLUENT_METRICS_REPORTER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
         username=\"admin\" \
         password=\"admin-secret\";"
       CONFLUENT_METRICS_REPORTER_SASL_MECHANISM: PLAIN
       CONFLUENT_METRICS_REPORTER_MAX_REQUEST_SIZE: 10485760
       # To avoid race condition with control-center
       # CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: 'false'
-      CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: "true"
+      CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: 'true'
 
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka3.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka3_keystore_creds
@@ -122,7 +121,7 @@ services:
       # Schema Validation
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: https://schemaregistry:8085
       KAFKA_CONFLUENT_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
-      KAFKA_CONFLUENT_BASIC_AUTH_USER_INFO: "superUser:superUser"
+      KAFKA_CONFLUENT_BASIC_AUTH_USER_INFO: 'superUser:superUser'
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka3.truststore.jks
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_PASSWORD: confluent
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
