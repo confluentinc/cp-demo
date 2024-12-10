@@ -11,7 +11,7 @@ source ${SBCDIR}/../env.sh
 
 (cd $SBCDIR/../security && ./certs-create-per-user.sh kafka3) || exit 1
 
-docker-compose -f $SBCDIR/../../docker-compose.yml -f $SBCDIR/docker-compose.yml up -d kafka3
+docker compose -f $SBCDIR/../../compose.yaml -f $SBCDIR/compose.yaml up -d kafka3
 
 # verify SBC responds with an add-broker balance plan
 MAX_WAIT=120
