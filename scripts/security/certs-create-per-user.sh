@@ -70,5 +70,5 @@ echo "confluent" > ${i}_truststore_creds
 #   echo "GET /" | openssl s_client -connect localhost:8085/subjects -cert client.certificate.pem -key client.key -tls1
 keytool -export -alias $i -file $i.der -keystore kafka.$i.keystore.jks -storepass confluent
 openssl x509 -inform der -in $i.der -out $i.certificate.pem
-keytool -importkeystore -srckeystore kafka.$i.keystore.jks -destkeystore $i.keystore.p12 -deststoretype PKCS12 -deststorepass confluent -srcstorepass confluent -noprompt
+keytool -importkeystore -alias $i -srckeystore kafka.$i.keystore.jks -destkeystore $i.keystore.p12 -deststoretype PKCS12 -deststorepass confluent -srcstorepass confluent -noprompt
 openssl pkcs12 -in $i.keystore.p12 -nodes -nocerts -out $i.key -passin pass:confluent
