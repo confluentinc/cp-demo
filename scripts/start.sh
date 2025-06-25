@@ -63,7 +63,7 @@ docker-compose exec tools bash -c "cp /etc/kafka/secrets/snakeoil-ca-1.crt /usr/
 
 
 # Bring up base kafka cluster
-docker-compose up --no-recreate -d zookeeper kafka1 kafka2
+docker-compose up --no-recreate -d kafka1 kafka2
 
 # Verify MDS has started
 MAX_WAIT=150
