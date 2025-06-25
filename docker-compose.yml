@@ -13,44 +13,6 @@
 ---
 services:
 
-  zookeeper:
-    image: ${REPOSITORY}/cp-zookeeper:${CONFLUENT_DOCKER_TAG}
-    restart: always
-    hostname: zookeeper
-    container_name: zookeeper
-    healthcheck:
-      test: echo srvr | nc zookeeper 2181 || exit 1
-      retries: 20
-      interval: 10s
-    ports:
-      - 2181:2181
-      - 2182:2182
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_SECURE_CLIENT_PORT: 2182
-      ZOOKEEPER_SERVER_CNXN_FACTORY: org.apache.zookeeper.server.NettyServerCnxnFactory
-      ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.zookeeper.keystore.jks
-      ZOOKEEPER_SSL_KEYSTORE_PASSWORD: confluent
-      ZOOKEEPER_SSL_KEYSTORE_TYPE: PKCS12
-      ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.zookeeper.truststore.jks
-      ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: confluent
-      ZOOKEEPER_SSL_TRUSTSTORE_TYPE: JKS
-
-      # TLS 1.2 is the tested-default - TLS 1.3 has not been tested for production
-      # You can evaluate TLS 1.3 for ZooKeeper by uncommenting the following two properties
-      # and setting KAFKA_ZOOKEEPER_SSL_PROTOCOL on brokers
-      #ZOOKEEPER_SSL_ENABLED_PROTOCOLS: TLSv1.3,TLSv1.2
-      #ZOOKEEPER_SSL_QUORUM_ENABLED_PROTOCOLS: TLSv1.3,TLSv1.2
-
-      ZOOKEEPER_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
-      ZOOKEEPER_SSL_CLIENT_AUTH: need
-      ZOOKEEPER_AUTH_PROVIDER_X509: org.apache.zookeeper.server.auth.X509AuthenticationProvider
-      ZOOKEEPER_AUTH_PROVIDER_SASL: org.apache.zookeeper.server.auth.SASLAuthenticationProvider
-      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_jaas.conf
-    volumes:
-      - ./scripts/security:/etc/kafka/secrets
-
   tools:
     image: cnfldemos/tools:0.3
     hostname: tools
@@ -85,8 +47,6 @@ services:
       retries: 25
       start_period: 20s
     depends_on:
-      zookeeper:
-        condition: service_healthy
       openldap:
         condition: service_started
     volumes:
@@ -101,23 +61,6 @@ services:
       - 11091:11091
       - 12091:12091
     environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2182
-      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: 'true'
-
-      # Broker uses TLSv1.2 by-default for ZooKeeper TLS connections
-      # See note for ZOOKEEPER_SSL_ENABLED_PROTOCOLS regarding TLS 1.3 support
-      # Uncomment the following property to evaluate TLS 1.3 for Broker<->ZooKeeper
-      #KAFKA_ZOOKEEPER_SSL_PROTOCOL: TLSv1.3
-
-      KAFKA_ZOOKEEPER_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
-      KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
-      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka1.keystore.jks
-      KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: confluent
-      KAFKA_ZOOKEEPER_SSL_KEYSTORE_TYPE: PKCS12
-      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka1.truststore.jks
-      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: confluent
-      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_TYPE: JKS
-      KAFKA_ZOOKEEPER_SET_ACL: 'true'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:SASL_PLAINTEXT,TOKEN:SASL_SSL,SSL:SSL,CLEAR:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka1:9091,TOKEN://kafka1:10091,SSL://kafka1:11091,CLEAR://kafka1:12091
@@ -223,7 +166,7 @@ services:
 
       # Configure Confluent Server Authorizer
       KAFKA_AUTHORIZER_CLASS_NAME: io.confluent.kafka.security.authorizer.ConfluentServerAuthorizer
-      KAFKA_CONFLUENT_AUTHORIZER_ACCESS_RULE_PROVIDERS: CONFLUENT,ZK_ACL
+      KAFKA_CONFLUENT_AUTHORIZER_ACCESS_RULE_PROVIDERS: CONFLUENT
 
       # Configure MDS to talk to AD/LDAP
       KAFKA_LDAP_JAVA_NAMING_FACTORY_INITIAL: com.sun.jndi.ldap.LdapCtxFactory
@@ -279,8 +222,6 @@ services:
       retries: 25
       start_period: 20s
     depends_on:
-      zookeeper:
-        condition: service_started
       openldap:
         condition: service_started
     volumes:
@@ -295,23 +236,6 @@ services:
       - 11092:11092
       - 12092:12092
     environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2182
-      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: 'true'
-
-      # Broker uses TLSv1.2 by-default for ZooKeeper TLS connections
-      # See note for ZOOKEEPER_SSL_ENABLED_PROTOCOLS regarding TLS 1.3 support
-      # Uncomment the following property to evaluate TLS 1.3 for Broker<->ZooKeeper
-      #KAFKA_ZOOKEEPER_SSL_PROTOCOL: TLSv1.3
-
-      KAFKA_ZOOKEEPER_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
-      KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
-      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka2.keystore.jks
-      KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: confluent
-      KAFKA_ZOOKEEPER_SSL_KEYSTORE_TYPE: PKCS12
-      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka2.truststore.jks
-      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: confluent
-      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_TYPE: JKS
-      KAFKA_ZOOKEEPER_SET_ACL: 'true'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:SASL_PLAINTEXT,TOKEN:SASL_SSL,SSL:SSL,CLEAR:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka2:9092,TOKEN://kafka2:10092,SSL://kafka2:11092,CLEAR://kafka2:12092
@@ -407,7 +331,7 @@ services:
 
       # Configure Confluent Server Authorizer
       KAFKA_AUTHORIZER_CLASS_NAME: io.confluent.kafka.security.authorizer.ConfluentServerAuthorizer
-      KAFKA_CONFLUENT_AUTHORIZER_ACCESS_RULE_PROVIDERS: CONFLUENT,ZK_ACL
+      KAFKA_CONFLUENT_AUTHORIZER_ACCESS_RULE_PROVIDERS: CONFLUENT
 
       # Configure MDS to talk to AD/LDAP
       KAFKA_LDAP_JAVA_NAMING_FACTORY_INITIAL: com.sun.jndi.ldap.LdapCtxFactory
