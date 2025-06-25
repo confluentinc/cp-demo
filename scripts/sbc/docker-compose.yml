@@ -20,7 +20,6 @@ services:
     hostname: kafka3
     container_name: kafka3
     depends_on:
-      - zookeeper
       - openldap
     volumes:
       - ./scripts/security/keypair:/tmp/conf
@@ -34,23 +33,6 @@ services:
       - 11093:11093
       - 12093:12093
     environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2182
-      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: 'true'
-
-      # Broker uses TLSv1.2 by-default for ZooKeeper TLS connections
-      # See note for ZOOKEEPER_SSL_ENABLED_PROTOCOLS regarding TLS 1.3 support
-      # Uncomment the following property to evaluate TLS 1.3 for Broker<->ZooKeeper
-      #KAFKA_ZOOKEEPER_SSL_PROTOCOL: TLSv1.3
-
-      KAFKA_ZOOKEEPER_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
-      KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
-      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka3.keystore.jks
-      KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: confluent
-      KAFKA_ZOOKEEPER_SSL_KEYSTORE_TYPE: PKCS12
-      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka3.truststore.jks
-      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: confluent
-      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_TYPE: JKS
-      KAFKA_ZOOKEEPER_SET_ACL: 'true'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:SASL_PLAINTEXT,TOKEN:SASL_SSL,SSL:SSL,CLEAR:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka3:9093,TOKEN://kafka3:10093,SSL://kafka3:11093,CLEAR://kafka3:12093
