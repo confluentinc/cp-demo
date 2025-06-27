@@ -1,15 +1,15 @@
-# docker-compose supports environment variable substitution with the ${VARIABLE-NAME} syntax.
+# Docker Compose supports environment variable substitution with the ${VARIABLE-NAME} syntax.
 # Environment variables can be sourced in a variety of ways.  One of those ways is through
 # a well known '.env' file located in the same folder as the docker-compose.yml file.  See the Docker
 # documentation for details: https://docs.docker.com/compose/environment-variables/#the-env-file
 # 
 # This feature is being used to parameterize some values within this file.  In this directory is also
 # a .env file, which is actually a symbolic link to <examples-root>/utils/config.env.  That file
-# contains values which get substituted here when docker-compose parses this file.
+# contains values which get substituted here when Docker Compose parses this file.
 #
 # If you'd like to view the docker-compose.yml file rendered with its environment variable substitutions
-# you can execute the `docker-compose config` command.  Take note that some demos provide additional 
-# environment variable values by exporting them in a script prior to running `docker-compose up`.
+# you can execute the `docker compose config` command.  Take note that some demos provide additional 
+# environment variable values by exporting them in a script prior to running `docker compose up`.
 ---
 services:
 
@@ -93,7 +93,7 @@ services:
       - ./scripts/security/keypair:/tmp/conf
       - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets
-    command: "bash -c 'if [ ! -f /etc/kafka/secrets/kafka.kafka1.keystore.jks ]; then echo \"ERROR: Did not find SSL certificates in /etc/kafka/secrets/ (did you remember to run ./scripts/start.sh instead of docker-compose up -d?)\" && exit 1 ; else /etc/confluent/docker/run ; fi'"
+    command: "bash -c 'if [ ! -f /etc/kafka/secrets/kafka.kafka1.keystore.jks ]; then echo \"ERROR: Did not find SSL certificates in /etc/kafka/secrets/ (did you remember to run ./scripts/start.sh instead of docker compose up -d?)\" && exit 1 ; else /etc/confluent/docker/run ; fi'"
     ports:
       - 8091:8091
       - 9091:9091
@@ -287,7 +287,7 @@ services:
       - ./scripts/security/keypair:/tmp/conf
       - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets
-    command: "bash -c 'if [ ! -f /etc/kafka/secrets/kafka.kafka2.keystore.jks ]; then echo \"ERROR: Did not find SSL certificates in /etc/kafka/secrets/ (did you remember to run ./scripts/start.sh instead of docker-compose up -d?)\" && exit 1 ; else /etc/confluent/docker/run ; fi'"
+    command: "bash -c 'if [ ! -f /etc/kafka/secrets/kafka.kafka2.keystore.jks ]; then echo \"ERROR: Did not find SSL certificates in /etc/kafka/secrets/ (did you remember to run ./scripts/start.sh instead of docker compose up -d?)\" && exit 1 ; else /etc/confluent/docker/run ; fi'"
     ports:
       - 8092:8092
       - 9092:9092

@@ -88,7 +88,7 @@ confluent api-key create --service-account $SERVICE_ACCOUNT_ID --resource $CC_SR
 # Create schema exporter aka schema link on the CP side
 # schema linking with confluent CLI not supported for CP yet
 # confluent schema-registry exporter create <exporter-name> --subjects ":*:" --config-file ~/config.txt
-docker-compose exec schemaregistry \
+docker compose exec schemaregistry \
   schema-exporter --create --name cp-cc-schema-exporter --subjects ":wikipedia*:" \
     --config-file /tmp/schema-link.properties \
     --schema.registry.url  https://schemaregistry:8085/
