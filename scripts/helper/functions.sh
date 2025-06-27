@@ -38,7 +38,7 @@ verify_installed()
 preflight_checks()
 {
   # Verify appropriate tools are installed on host
-  for cmd in curl jq docker-compose keytool docker openssl xargs awk; do
+  for cmd in curl jq keytool docker openssl xargs awk; do
     verify_installed $cmd || exit 1
   done
 
@@ -68,7 +68,7 @@ preflight_checks()
 poststart_checks()
 {
   # Verify no containers have Exited
-  if [[ $(docker-compose ps | grep Exit) ]]; then
+  if [[ $(docker compose ps | grep Exit) ]]; then
     echo -e "\nWARNING: at least one Docker container unexpectedly exited. Please troubleshoot, see https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/troubleshooting.html"
   fi
 
@@ -192,7 +192,7 @@ build_viz()
   echo
   echo "VIZ=true: running Elasticsearch, Elasticsearch sink connector, and Kibana"
 
-  docker-compose up --no-recreate -d elasticsearch kibana
+  docker compose up --no-recreate -d elasticsearch kibana
 
   # Verify Elasticsearch is ready
   MAX_WAIT=240

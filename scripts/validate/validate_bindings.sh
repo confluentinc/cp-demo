@@ -32,7 +32,7 @@ CLIENT_PRINCIPAL="User:appSA"
 BADAPP="User:badapp"
 LISTEN_PRINCIPAL="User:clientListen"
 
-docker-compose exec tools bash -c ". /tmp/helper/functions.sh ; mds_login $MDS_URL ${SUPER_USER} ${SUPER_USER_PASSWORD}"
+docker compose exec tools bash -c ". /tmp/helper/functions.sh ; mds_login $MDS_URL ${SUPER_USER} ${SUPER_USER_PASSWORD}"
 
 ################################## Run through permutations #############################
 
@@ -40,7 +40,7 @@ for p in $SUPER_USER_PRINCIPAL $CONNECT_ADMIN $CONNECTOR_SUBMITTER $CONNECTOR_PR
   for c in " " " --schema-registry-cluster-id $SR" " --connect-cluster-id $CONNECT" " --ksql-cluster-id $KSQLDB"; do
     echo
     echo "Showing bindings for principal $p and --kafka-cluster-id $KAFKA_CLUSTER_ID $c"
-    docker-compose exec tools confluent iam rbac role-binding list --principal $p --kafka-cluster-id $KAFKA_CLUSTER_ID $c -o json
+    docker compose exec tools confluent iam rbac role-binding list --principal $p --kafka-cluster-id $KAFKA_CLUSTER_ID $c -o json
     echo
   done
 done
