@@ -112,14 +112,14 @@ clean_demo_env()
 
 }
 
-check_num_certs() {
+check_truststore_valid() {
   local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
   NUM_CERTS=$(docker run --rm -v $DIR/../security:/etc/kafka/secrets localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} \
-    keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l)
+    keytool --list --keystore /etc/kafka/secrets/kafka.connect.truststore.jks --storepass confluent | grep trusted | wc -l | xargs)
   if [[ "$NUM_CERTS" -eq "1" ]]; then
-    return 1
+    return 0
   fi
-  return 0
+  return 1
 }
 
 create_certificates()
