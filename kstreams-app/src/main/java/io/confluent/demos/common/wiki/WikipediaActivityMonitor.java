@@ -116,6 +116,7 @@ class WikipediaActivityMonitor {
     builder.<String, GenericRecord>stream(INPUT_TOPIC)
        // INPUT_TOPIC has no key so use domain as the key
        .map((key, value) -> new KeyValue<>(((GenericRecord)value.get(META)).get(META_DOMAIN).toString(), value))
+       .filter((key, value) -> !key.equals("canary")) // https://github.com/confluentinc/cp-demo/issues/451 filter canary records
        .filter((key, value) -> !(boolean)value.get(BOT))
        .groupByKey()
        .count()
