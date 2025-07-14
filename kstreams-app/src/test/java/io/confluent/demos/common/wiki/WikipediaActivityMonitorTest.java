@@ -130,6 +130,8 @@ public class WikipediaActivityMonitorTest {
         metadata1.put("domain", "commons.wikimedia.org");
         final GenericRecord metadata2 = new GenericData.Record(KsqlDataSourceSchema_META.SCHEMA$);
         metadata2.put("domain", "en.wikipedia.org");
+        final GenericRecord metadata3 = new GenericData.Record(KsqlDataSourceSchema_META.SCHEMA$);
+        metadata3.put("domain", "canary");
 
         cloneRecord(testRecord)
                 .map(c -> with(
@@ -153,6 +155,9 @@ public class WikipediaActivityMonitorTest {
         cloneRecord(testRecord)
                 .map(c -> with(c, WikipediaActivityMonitor.META, metadata1))
                 .ifPresent(inputValues::add);
+        cloneRecord(testRecord)
+                .map(c -> with(c, WikipediaActivityMonitor.META, metadata3))
+                .ifPresent(inputValues::add);
 
         inputTopic.pipeKeyValueList(inputValues
                         .stream()
@@ -165,9 +170,7 @@ public class WikipediaActivityMonitorTest {
             .stream().map(kv -> kv.value).collect(Collectors.toList());
 
         assertThat((long)counts.size())
-            .isEqualTo(inputValues
-                    .stream()
-                    .filter(gr -> !(boolean) gr.get(WikipediaActivityMonitor.BOT)).count());
+            .isEqualTo(4);
 
         assertThat(counts).extracting("domain", "editCount")
                 .containsExactly(
