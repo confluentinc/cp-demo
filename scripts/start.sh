@@ -175,14 +175,14 @@ fi
 echo
 echo -e "\nAvailable LDAP users:"
 #docker-compose exec openldap ldapsearch -x -h localhost -b dc=confluentdemo,dc=io -D "cn=admin,dc=confluentdemo,dc=io" -w admin | grep uid:
-curl -u mds:mds -X POST "https://localhost:8091/security/1.0/principals/User%3Amds/roles/UserAdmin" \
+docker-compose exec kafka1 curl -u mds:mds -X POST "https://kafka1:8091/security/1.0/principals/User%3Amds/roles/UserAdmin" \
   -H "accept: application/json" -H "Content-Type: application/json" \
   -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}" \
-  --cacert ${DIR}/security/snakeoil-ca-1.crt --tlsv1.2
-curl -u mds:mds -X POST "https://localhost:8091/security/1.0/rbac/principals" --silent \
+  --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --tlsv1.3
+docker-compose exec kafka1 curl -u mds:mds -X POST "https://kafka1:8091/security/1.0/rbac/principals" --silent \
   -H "accept: application/json"  -H "Content-Type: application/json" \
   -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}" \
-  --cacert ${DIR}/security/snakeoil-ca-1.crt --tlsv1.2 | jq '.[]'
+  --cacert /etc/kafka/secrets/snakeoil-ca-1.crt --tlsv1.3 | jq '.[]'
 
 # Do poststart_checks
 poststart_checks

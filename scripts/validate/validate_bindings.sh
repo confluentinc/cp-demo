@@ -3,7 +3,7 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 ################################## GET KAFKA CLUSTER ID ########################
-KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
+KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.3 --cacert ${DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
 if [ -z "$KAFKA_CLUSTER_ID" ]; then
     echo "Failed to retrieve Kafka cluster id"
     exit 1

@@ -37,10 +37,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2182
       KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: 'true'
 
-      # Broker uses TLSv1.2 by-default for ZooKeeper TLS connections
-      # See note for ZOOKEEPER_SSL_ENABLED_PROTOCOLS regarding TLS 1.3 support
-      # Uncomment the following property to evaluate TLS 1.3 for Broker<->ZooKeeper
-      #KAFKA_ZOOKEEPER_SSL_PROTOCOL: TLSv1.3
+      KAFKA_ZOOKEEPER_SSL_PROTOCOL: TLSv1.3
 
       KAFKA_ZOOKEEPER_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
       KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty

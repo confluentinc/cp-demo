@@ -10,7 +10,7 @@ export CCLOUD_CLUSTER_ID=$(confluent kafka cluster list -o json | jq -r '.[] | s
 confluent kafka cluster use $CCLOUD_CLUSTER_ID
 
 # Get CP Cluster ID
-export CP_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ./scripts/security/snakeoil-ca-1.crt | jq -r ".id")
+export CP_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.3 --cacert ./scripts/security/snakeoil-ca-1.crt | jq -r ".id")
 
 # Name the cluster link
 export CLUSTER_LINK_NAME=cp-cc-cluster-link
