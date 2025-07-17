@@ -88,6 +88,12 @@ docker-compose exec kafka1 kafka-configs \
 # Bring up more containers
 docker-compose up --no-recreate -d schemaregistry connect control-center
 
+# https://confluentinc.atlassian.net/browse/KSQL-13533 impacts CP 7.8.2 -> 7.9.x.
+# copy monitoring-interceptors from connect image to ksqlDB
+# remove this for CP 8.0+ where monitoring-interceptors are removed/deprecated
+docker cp connect:/usr/share/java/monitoring-interceptors scripts/ksqlDB/
+mv scripts/ksqlDB/monitoring-interceptors/monitoring-interceptors-*.jar scripts/ksqlDB/monitoring-interceptors/monitoring-interceptors.jar
+
 echo
 echo -e "Create topics in Kafka cluster:"
 docker-compose exec tools bash -c "/tmp/helper/create-topics.sh" || exit 1

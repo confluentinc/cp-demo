@@ -846,6 +846,7 @@ services:
       - ./scripts/security/keypair:/tmp/conf
       - ./scripts/helper:/tmp/helper
       - ./scripts/security:/etc/kafka/secrets
+      - ./scripts/ksqlDB/monitoring-interceptors/monitoring-interceptors.jar:/usr/share/java/ksqldb-server/monitoring-interceptors.jar
     ports:
       - 8088:8088
       - 8089:8089
