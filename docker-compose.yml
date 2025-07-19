@@ -452,7 +452,6 @@ services:
       CONNECT_PRODUCER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.keystore.jks
       CONNECT_PRODUCER_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_PRODUCER_SSL_KEY_PASSWORD: confluent
-      CONNECT_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.truststore.jks
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_PASSWORD: confluent
@@ -467,7 +466,6 @@ services:
       CONNECT_CONSUMER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.keystore.jks
       CONNECT_CONSUMER_SSL_KEYSTORE_PASSWORD: confluent
       CONNECT_CONSUMER_SSL_KEY_PASSWORD: confluent
-      CONNECT_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.connect.truststore.jks
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_PASSWORD: confluent
@@ -894,23 +892,6 @@ services:
 
       KSQL_KSQL_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
       KSQL_KSQL_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: ksqlDBAdmin:ksqlDBAdmin
-
-      # Confluent Monitoring Interceptors for Control Center streams monitoring
-      KSQL_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
-      KSQL_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"    
-      KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.controlCenterAndKsqlDBServer.truststore.jks
-      KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SSL_TRUSTSTORE_PASSWORD: confluent
-      KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.controlCenterAndKsqlDBServer.keystore.jks
-      KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEYSTORE_PASSWORD: confluent
-      KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SSL_KEY_PASSWORD: confluent
-      KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SECURITY_PROTOCOL: SASL_SSL
-      KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SASL_MECHANISM: OAUTHBEARER
-      KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SASL_LOGIN_CALLBACK_HANDLER_CLASS: io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler
-      KSQL_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: |
-              org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required \
-              username="ksqlDBAdmin" \
-              password="ksqlDBAdmin" \
-              metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
 
   ksqldb-cli:
     image: ${REPOSITORY}/cp-ksqldb-cli:${CONFLUENT_DOCKER_TAG}
