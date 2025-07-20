@@ -728,6 +728,9 @@ services:
       # Used by Control Center to connect to the Admin API for Self Balancing Clusters
       CONTROL_CENTER_STREAMS_CPREST_URL: "https://kafka1:8091,https://kafka2:8092"
 
+      # Enable email alerts
+      CONTROL_CENTER_MAIL_ENABLED: true
+
       # prometheus and alertmanager
       CONTROL_CENTER_PROMETHEUS_ENABLE: true
       CONTROL_CENTER_PROMETHEUS_URL: http://prometheus:9090
