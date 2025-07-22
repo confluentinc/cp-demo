@@ -16,7 +16,6 @@ DATA=$( cat << EOF
     "transforms.parseJSON.json.schema.location": "Url",
     "transforms.parseJSON.json.schema.url": "https://raw.githubusercontent.com/wikimedia/mediawiki-event-schemas/master/jsonschema/mediawiki/recentchange/1.0.0.json",
     "transforms.parseJSON.json.schema.validation.enabled": "false",
-    "producer.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor",
     "value.converter": "io.confluent.connect.avro.AvroConverter",
     "value.converter.schema.registry.url": "https://schemaregistry:8085",
     "value.converter.schema.registry.ssl.truststore.location": "/etc/kafka/secrets/kafka.client.truststore.jks",
