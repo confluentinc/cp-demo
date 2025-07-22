@@ -682,11 +682,6 @@ services:
       CONTROL_CENTER_REPLICATION_FACTOR: 2
       CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
 
-      # Needed to overcome TLS cipher issues in armeria lib shipped up to and including CP 7.9.2.
-      # https://confluentinc.atlassian.net/browse/MMA-16363
-      # https://support.confluent.io/hc/en-us/articles/4410231496468-How-to-bypass-Control-Center-IllegalStateException-on-TLS-cipher-suites-enabled
-      CONTROL_CENTER_OPTS: "-Dcom.linecorp.armeria.tlsAllowUnsafeCiphers=true"
-
       # Control Center uses Kafka Streams to process metrics
       CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SSL
       CONTROL_CENTER_STREAMS_SASL_MECHANISM: OAUTHBEARER
