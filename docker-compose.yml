@@ -165,7 +165,6 @@ services:
       KAFKA_CONFLUENT_BASIC_AUTH_USER_INFO: 'superUser:superUser'
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka1.truststore.jks
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_PASSWORD: confluent
-      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
 
       # MDS
       KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 2
@@ -350,7 +349,6 @@ services:
       KAFKA_CONFLUENT_BASIC_AUTH_USER_INFO: 'superUser:superUser'
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka2.truststore.jks
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_PASSWORD: confluent
-      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
 
       # MDS
       KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 2
