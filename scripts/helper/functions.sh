@@ -143,7 +143,7 @@ create_certificates()
   echo -e "INFO: Adding default java certificates to kafka.connect.truststore.jks to reach to Wikipedia over HTTPS"
   docker run --name cert-runner -u root -v $DIR/../security:/etc/kafka/secrets  \
     localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} \
-      keytool -importkeystore -srckeystore /usr/lib/jvm/zulu11-ca/lib/security/cacerts \
+      keytool -importkeystore -srckeystore /usr/lib/jvm/temurin-21-jdk/lib/security/cacerts \
         -srcstorepass changeit -destkeystore /etc/kafka/secrets/kafka.connect.truststore.jks \
         -deststorepass confluent -keypass confluent
   

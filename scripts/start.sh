@@ -63,7 +63,7 @@ docker-compose exec tools bash -c "cp /etc/kafka/secrets/snakeoil-ca-1.crt /usr/
 
 
 # Bring up base kafka cluster
-docker-compose up --no-recreate -d zookeeper kafka1 kafka2
+docker-compose up --no-recreate -d kafka1 kafka2
 
 # Verify MDS has started
 MAX_WAIT=150
@@ -87,12 +87,6 @@ docker-compose exec kafka1 kafka-configs \
 
 # Bring up more containers
 docker-compose up --no-recreate -d schemaregistry connect control-center
-
-# https://confluentinc.atlassian.net/browse/KSQL-13533 impacts CP 7.8.2 -> 7.9.x.
-# copy monitoring-interceptors from connect image to ksqlDB
-# remove this for CP 8.0+ where monitoring-interceptors are removed/deprecated
-docker cp connect:/usr/share/java/monitoring-interceptors scripts/ksqlDB/
-mv scripts/ksqlDB/monitoring-interceptors/monitoring-interceptors-*.jar scripts/ksqlDB/monitoring-interceptors/monitoring-interceptors.jar
 
 echo
 echo -e "Create topics in Kafka cluster:"
