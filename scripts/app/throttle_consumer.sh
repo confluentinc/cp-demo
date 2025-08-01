@@ -18,11 +18,11 @@ fi
 
 CONSUMER_GROUP="app"
 
-echo "docker-compose exec kafka1 kafka-configs --bootstrap-server kafka1:12091 --entity-type clients --entity-name consumer_app_$ID --alter $CONFIG"
-docker-compose exec kafka1 bash -c "kafka-configs --bootstrap-server kafka1:12091 --entity-type clients --entity-name consumer_app_$ID --alter $CONFIG"
+echo "docker compose exec kafka1 kafka-configs --bootstrap-server kafka1:12091 --entity-type clients --entity-name consumer_app_$ID --alter $CONFIG"
+docker compose exec kafka1 bash -c "kafka-configs --bootstrap-server kafka1:12091 --entity-type clients --entity-name consumer_app_$ID --alter $CONFIG"
 
-echo "docker-compose exec kafka1 kafka-configs --bootstrap-server kafka1:12091 --entity-type clients --describe"
-docker-compose exec kafka1 bash -c 'kafka-configs --bootstrap-server kafka1:12091 --entity-type clients --describe'
+echo "docker compose exec kafka1 kafka-configs --bootstrap-server kafka1:12091 --entity-type clients --describe"
+docker compose exec kafka1 bash -c 'kafka-configs --bootstrap-server kafka1:12091 --entity-type clients --describe'
 
-echo "docker-compose exec kafka1 kafka-consumer-groups --bootstrap-server kafka1:12091 --describe --group $CONSUMER_GROUP"
-docker-compose exec kafka1 kafka-consumer-groups --bootstrap-server kafka1:12091 --describe --group $CONSUMER_GROUP
+echo "docker compose exec kafka1 kafka-consumer-groups --bootstrap-server kafka1:12091 --describe --group $CONSUMER_GROUP"
+docker compose exec kafka1 kafka-consumer-groups --bootstrap-server kafka1:12091 --describe --group $CONSUMER_GROUP

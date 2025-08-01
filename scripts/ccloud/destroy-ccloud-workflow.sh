@@ -38,10 +38,10 @@ fi
 
 ## TODO delete CP cluster link
 # echo "Deleting Cluster Link to Confluent Cloud"
-# docker-compose exec connect curl -XDELETE --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectorSubmitter:connectorSubmitter https://connect:8083/connectors/replicate-topic-to-ccloud
+# docker compose exec connect curl -XDELETE --cert /etc/kafka/secrets/connect.certificate.pem --key /etc/kafka/secrets/connect.key --tlsv1.2 --cacert /etc/kafka/secrets/snakeoil-ca-1.crt -u connectorSubmitter:connectorSubmitter https://connect:8083/connectors/replicate-topic-to-ccloud
 
 echo "Unconfiguring Telemetry Reporter"
-docker-compose exec kafka1 kafka-configs \
+docker compose exec kafka1 kafka-configs \
   --bootstrap-server kafka1:12091 \
   --alter \
   --entity-type brokers \
