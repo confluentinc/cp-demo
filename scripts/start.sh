@@ -46,9 +46,9 @@ fi
 #-------------------------------------------------------------------------------
 
 # Bring up openldap
-docker-compose up --no-recreate -d openldap
+docker compose up --no-recreate -d openldap
 sleep 5
-if [[ $(docker-compose ps openldap | grep Exit) =~ "Exit" ]] ; then
+if [[ $(docker compose ps openldap | grep Exit) =~ "Exit" ]] ; then
   echo "ERROR: openldap container could not start. Troubleshoot and try again. For troubleshooting instructions see https://docs.confluent.io/platform/current/tutorials/cp-demo/docs/troubleshooting.html"
   exit 1
 fi
@@ -56,14 +56,14 @@ fi
 
 
 # Bring up tools
-docker-compose up --no-recreate -d tools
+docker compose up --no-recreate -d tools
 
 # Add root CA to container (obviates need for supplying it at CLI login '--ca-cert-path')
-docker-compose exec tools bash -c "cp /etc/kafka/secrets/snakeoil-ca-1.crt /usr/local/share/ca-certificates && /usr/sbin/update-ca-certificates"
+docker compose exec tools bash -c "cp /etc/kafka/secrets/snakeoil-ca-1.crt /usr/local/share/ca-certificates && /usr/sbin/update-ca-certificates"
 
 
 # Bring up base kafka cluster
-docker-compose up --no-recreate -d zookeeper kafka1 kafka2
+docker compose up --no-recreate -d zookeeper kafka1 kafka2
 
 # Verify MDS has started
 MAX_WAIT=150
@@ -72,10 +72,10 @@ retry $MAX_WAIT host_check_up kafka1 || exit 1
 retry $MAX_WAIT host_check_up kafka2 || exit 1
 
 echo "Creating role bindings for principals"
-docker-compose exec tools bash -c "/tmp/helper/create-role-bindings.sh" || exit 1
+docker compose exec tools bash -c "/tmp/helper/create-role-bindings.sh" || exit 1
 
 # Workaround for setting min ISR on topic _confluent-metadata-auth
-docker-compose exec kafka1 kafka-configs \
+docker compose exec kafka1 kafka-configs \
    --bootstrap-server kafka1:12091 \
    --entity-type topics \
    --entity-name _confluent-metadata-auth \
@@ -86,11 +86,11 @@ docker-compose exec kafka1 kafka-configs \
 
 
 # Bring up more containers
-docker-compose up --no-recreate -d schemaregistry connect control-center
+docker compose up --no-recreate -d schemaregistry connect control-center
 
 echo
 echo -e "Create topics in Kafka cluster:"
-docker-compose exec tools bash -c "/tmp/helper/create-topics.sh" || exit 1
+docker compose exec tools bash -c "/tmp/helper/create-topics.sh" || exit 1
 
 # Verify Kafka Connect Worker has started
 MAX_WAIT=240
@@ -130,7 +130,7 @@ echo
 #-------------------------------------------------------------------------------
 
 # Start more containers
-docker-compose up --no-recreate -d ksqldb-server ksqldb-cli restproxy
+docker compose up --no-recreate -d ksqldb-server ksqldb-cli restproxy
 
 # Verify ksqlDB server has started
 echo
@@ -153,7 +153,7 @@ ${DIR}/consumers/listen_WIKIPEDIA_COUNT_GT_1.sh
 echo
 echo
 echo "Start the Kafka Streams application wikipedia-activity-monitor"
-docker-compose up --no-recreate -d streams-demo
+docker compose up --no-recreate -d streams-demo
 echo "..."
 
 
@@ -161,14 +161,14 @@ echo "..."
 
 
 # Verify Docker containers started
-if [[ $(docker-compose ps) =~ "Exit 137" ]]; then
-  echo -e "\nERROR: At least one Docker container did not start properly, see 'docker-compose ps'. Did you increase the memory available to Docker to at least 8 GB (default is 2 GB)?\n"
+if [[ $(docker compose ps) =~ "Exit 137" ]]; then
+  echo -e "\nERROR: At least one Docker container did not start properly, see 'docker compose ps'. Did you increase the memory available to Docker to at least 8 GB (default is 2 GB)?\n"
   exit 1
 fi
 
 echo
 echo -e "\nAvailable LDAP users:"
-#docker-compose exec openldap ldapsearch -x -h localhost -b dc=confluentdemo,dc=io -D "cn=admin,dc=confluentdemo,dc=io" -w admin | grep uid:
+#docker compose exec openldap ldapsearch -x -h localhost -b dc=confluentdemo,dc=io -D "cn=admin,dc=confluentdemo,dc=io" -w admin | grep uid:
 curl -u mds:mds -X POST "https://localhost:8091/security/1.0/principals/User%3Amds/roles/UserAdmin" \
   -H "accept: application/json" -H "Content-Type: application/json" \
   -d "{\"clusters\":{\"kafka-cluster\":\"does_not_matter\"}}" \
