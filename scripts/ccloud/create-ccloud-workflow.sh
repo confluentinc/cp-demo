@@ -42,7 +42,7 @@ sleep 90
 # KAFKA_CLUSTER_ID=$(curl -s https://localhost:8091/v1/metadata/id --tlsv1.2 --cacert ${VALIDATE_DIR}/../security/snakeoil-ca-1.crt | jq -r ".id")
 # CONNECT=connect-cluster
 # ${VALIDATE_DIR}/../helper/refresh_mds_login.sh
-# docker-compose exec tools bash -c "confluent iam rbac role-binding create \
+# docker compose exec tools bash -c "confluent iam rbac role-binding create \
 #     --principal $CONNECTOR_SUBMITTER \
 #     --role ResourceOwner \
 #     --resource Connector:replicate-topic-to-ccloud \
@@ -67,7 +67,7 @@ export METRICS_API_SECRET=$(echo "$CREDENTIALS" | jq -r .secret)
 # Enable Confluent Telemetry Reporter
 echo
 echo "Enabling Confluent Telemetry Reporter cluster-wide to send metrics to Confluent Cloud"
-docker-compose exec kafka1 kafka-configs \
+docker compose exec kafka1 kafka-configs \
   --bootstrap-server kafka1:12091 \
   --alter \
   --entity-type brokers \
@@ -80,8 +80,8 @@ sleep 90
 
 # Query Metrics API
 
-CURRENT_TIME_MINUS_1HR=$(docker-compose exec tools date -Is -d '-1 hour' | tr -d '\r')
-CURRENT_TIME_PLUS_1HR=$(docker-compose exec tools date -Is -d '+1 hour' | tr -d '\r')
+CURRENT_TIME_MINUS_1HR=$(docker compose exec tools date -Is -d '-1 hour' | tr -d '\r')
+CURRENT_TIME_PLUS_1HR=$(docker compose exec tools date -Is -d '+1 hour' | tr -d '\r')
 echo
 echo "CURRENT_TIME_MINUS_1HR=$CURRENT_TIME_MINUS_1HR"
 echo "CURRENT_TIME_PLUS_1HR=$CURRENT_TIME_PLUS_1HR"
