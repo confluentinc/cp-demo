@@ -28,7 +28,7 @@ RUN confluent-hub install --no-prompt cjmatta/kafka-connect-sse:1.0
 RUN confluent-hub install --no-prompt jcustenborder/kafka-connect-json-schema:0.2.5
 
 # Install Elasticsearch connector
-RUN confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:11.0.0
+RUN confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:15.0.0
 
 
 # Stage 2 -- copy jars
