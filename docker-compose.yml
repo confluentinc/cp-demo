@@ -622,7 +622,7 @@ services:
       KIBANA_AUTOCOMPLETETERMINATEAFTER: 2500000
 
   prometheus:
-    image: confluentinc/cp-enterprise-prometheus:2.2.0
+    image: confluentinc/cp-enterprise-prometheus:8.0.2
     hostname: cp-enterprise-prometheus
     container_name: prometheus
     volumes:
@@ -634,7 +634,7 @@ services:
       SHOULD_LOG_TO_FILE: false
 
   alertmanager:
-    image: confluentinc/cp-enterprise-alertmanager:2.2.0
+    image: confluentinc/cp-enterprise-alertmanager:8.0.2
     hostname: cp-enterprise-alertmanager
     container_name: alertmanager
     depends_on:
