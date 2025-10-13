@@ -22,13 +22,13 @@ FROM $REPOSITORY/cp-server-connect:$CP_VERSION AS install-connectors
 ENV CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
 
 # Install SSE connector
-RUN confluent-hub install --no-prompt cjmatta/kafka-connect-sse:1.0
+RUN confluent-hub install --no-prompt cjmatta/kafka-connect-sse:1.4
 
 # Install FromJson transformation
 RUN confluent-hub install --no-prompt jcustenborder/kafka-connect-json-schema:0.2.5
 
 # Install Elasticsearch connector
-RUN confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:11.0.0
+RUN confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:15.0.1
 
 
 # Stage 2 -- copy jars
