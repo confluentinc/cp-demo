@@ -864,7 +864,7 @@ services:
       - 8088:8088
       - 8089:8089
     environment:
-      UB_CLASSPATH: '/usr/share/java/confluent-security/ksql/*:/usr/share/java/ksqldb-server/*:/usr/share/java/cp-base-new/*'
+      UB_CLASSPATH: '/usr/share/java/confluent-security/ksql/*:/usr/share/java/ksqldb/*:/usr/share/java/cp-base-new/*'
 
       KSQL_LOG4J_ROOT_LOGLEVEL: INFO
 
@@ -875,7 +875,7 @@ services:
       # For Demo purposes: improve resource utilization and avoid timeouts
       KSQL_KSQL_STREAMS_NUM_STREAM_THREADS: 1
 
-      KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/tmp/helper/log4j-secure.properties"
+      KSQL_LOG4J_OPTS: "-Dlog4j.configurationFile=file:/tmp/helper/log4j2-secure.yaml"
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_REPLICATION_FACTOR: 2
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: 'true'
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: 'true'
