@@ -129,11 +129,11 @@ create_certificates()
   # Generate keys and certificates used for SSL
   echo -e "Generate keys and certificates used for SSL (see ${DIR}/security)"
   # Install findutils to be able to use 'xargs' in the certs-create.sh script
-  docker run -v ${DIR}/../security/:/etc/kafka/secrets/ -u0 $REPOSITORY/cp-server:${CONFLUENT_DOCKER_TAG} bash -c "yum -y install findutils; cd /etc/kafka/secrets && ./certs-create.sh && chown -R $(id -u $USER):$(id -g $USER) /etc/kafka/secrets"
-  
+  docker run -v ${DIR}/../security/:/etc/kafka/secrets/ -u0 $REPOSITORY/cp-base-new:${CONFLUENT_DOCKER_TAG} bash -c "cd /etc/kafka/secrets && ./certs-create.sh && chown -R $(id -u $USER):$(id -g $USER) /etc/kafka/secrets"
+
   # Generating public and private keys for token signing
   echo "Generating public and private keys for token signing"
-  docker run -v ${DIR}/../security/:/etc/kafka/secrets/ -u0 $REPOSITORY/cp-server:${CONFLUENT_DOCKER_TAG} bash -c "mkdir -p /etc/kafka/secrets/keypair; openssl genrsa -out /etc/kafka/secrets/keypair/keypair.pem 2048; openssl rsa -in /etc/kafka/secrets/keypair/keypair.pem -outform PEM -pubout -out /etc/kafka/secrets/keypair/public.pem && chown -R $(id -u $USER):$(id -g $USER) /etc/kafka/secrets/keypair"
+  docker run -v ${DIR}/../security/:/etc/kafka/secrets/ -u0 $REPOSITORY/cp-base-new:${CONFLUENT_DOCKER_TAG} bash -c "mkdir -p /etc/kafka/secrets/keypair; openssl genrsa -out /etc/kafka/secrets/keypair/keypair.pem 2048; openssl rsa -in /etc/kafka/secrets/keypair/keypair.pem -outform PEM -pubout -out /etc/kafka/secrets/keypair/public.pem && chown -R $(id -u $USER):$(id -g $USER) /etc/kafka/secrets/keypair"
 
   # Enable Docker appuser to read files when created by a different UID
   echo -e "Setting insecure permissions on some files in ${DIR}/../security for demo purposes\n"
@@ -143,10 +143,10 @@ create_certificates()
   echo -e "INFO: Adding default java certificates to kafka.connect.truststore.jks to reach to Wikipedia over HTTPS"
   docker run --name cert-runner -u root -v $DIR/../security:/etc/kafka/secrets  \
     localbuild/connect:${CONFLUENT_DOCKER_TAG}-${CONNECTOR_VERSION} \
-      keytool -importkeystore -srckeystore /usr/lib/jvm/temurin-21-jdk/lib/security/cacerts \
+      keytool -importkeystore -srckeystore /usr/lib/jvm/temurin-21-jre/lib/security/cacerts \
         -srcstorepass changeit -destkeystore /etc/kafka/secrets/kafka.connect.truststore.jks \
         -deststorepass confluent -keypass confluent
-  
+
   docker cp cert-runner:/etc/kafka/secrets/kafka.connect.truststore.jks ${DIR}/../security/kafka.connect.truststore.jks
   docker rm cert-runner
 }
