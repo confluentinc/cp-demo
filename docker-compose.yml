@@ -928,7 +928,7 @@ services:
       KSQL_KSQL_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: ksqlDBAdmin:ksqlDBAdmin
 
   ksqldb-cli:
-    image: ${REPOSITORY}/cp-ksqldb-cli:${CONFLUENT_DOCKER_TAG}
+    image: ${REPOSITORY}/cp-ksqldb-server:${CONFLUENT_DOCKER_TAG}
     container_name: ksqldb-cli
     depends_on:
       ksqldb-server:
