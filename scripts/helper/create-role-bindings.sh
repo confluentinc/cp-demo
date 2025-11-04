@@ -117,6 +117,20 @@ do
         --kafka-cluster-id $KAFKA_CLUSTER_ID
 done
 
+for role in DeveloperRead DeveloperWrite
+do
+    confluent iam rbac role-binding create \
+        --principal $CONNECT_ADMIN \
+        --role $role \
+        --resource $LICENSE_RESOURCE \
+        --kafka-cluster-id $KAFKA_CLUSTER_ID
+    confluent iam rbac role-binding create \
+        --principal $CONNECTOR_PRINCIPAL \
+        --role $role \
+        --resource $LICENSE_RESOURCE \
+        --kafka-cluster-id $KAFKA_CLUSTER_ID
+done
+
 ################################### Connectors ###################################
 echo "Creating role bindings for wikipedia-sse connector"
 
