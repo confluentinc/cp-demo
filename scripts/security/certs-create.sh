@@ -18,7 +18,18 @@ openssl req -new -x509 -keyout snakeoil-ca-1.key -out snakeoil-ca-1.crt -days 36
 #
 # This is necessary as browsers never prompt to trust certificates for this kind of wss:// connection, see https://stackoverflow.com/a/23036270/452210 .
 #
-users=(kafka1 kafka2 client schemaregistry restproxy connect connectorSA controlCenterAndKsqlDBServer ksqlDBUser appSA badapp clientListen mds)
+users=(client schemaregistry restproxy connect connectorSA controlCenterAndKsqlDBServer ksqlDBUser appSA badapp clientListen mds)
+
+# Suppose this script is run in the following manner
+# cd /etc/kafka/secrets && ./certs-create.sh
+BROKER_FILE="brokers.txt"
+
+while IFS= read -r broker; do
+    # Skip empty lines
+    [[ -z "$broker" ]] && continue
+    users+=("$broker")
+done < "$BROKER_FILE"
+
 echo "Creating certificates"
 printf '%s\0' "${users[@]}" | xargs -0 -I{} -n1 -P15 sh -c './certs-create-per-user.sh "$1" > "certs-create-$1.log" 2>&1 && echo "Created certificates for $1"' -- {}
 echo "Creating certificates completed"
