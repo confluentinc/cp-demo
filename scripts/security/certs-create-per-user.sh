@@ -26,7 +26,8 @@ if [[ "$i" == "mds" ]]; then
 
 	dns_index=3  # start after DNS.1 and DNS.2
 
-	while IFS= read -r broker; do
+	while IFS= read -r broker || [[ -n "$broker" ]]; do
+		[[ -z "$broker" ]] && continue
 		DNS_ALT_NAMES=$(printf '%s\nDNS.%d = %s' "$DNS_ALT_NAMES" "$dns_index" "$broker")
 		((dns_index++))
 	done < "$BROKER_FILES"

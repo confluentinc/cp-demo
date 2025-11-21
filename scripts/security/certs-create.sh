@@ -24,7 +24,7 @@ users=(client schemaregistry restproxy connect connectorSA controlCenterAndKsqlD
 # cd /etc/kafka/secrets && ./certs-create.sh
 BROKER_FILE="brokers.txt"
 
-while IFS= read -r broker; do
+while IFS= read -r broker || [[ -n "$broker" ]]; do
     # Skip empty lines
     [[ -z "$broker" ]] && continue
     users+=("$broker")
