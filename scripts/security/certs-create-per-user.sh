@@ -22,7 +22,15 @@ keytool -keystore kafka.$i.keystore.jks -alias $i -certreq -file $i.csr -storepa
 # Enables 'confluent login --ca-cert-path /etc/kafka/secrets/snakeoil-ca-1.crt --url https://kafka1:8091'
 DNS_ALT_NAMES=$(printf '%s\n' "DNS.1 = $i" "DNS.2 = localhost")
 if [[ "$i" == "mds" ]]; then
-  DNS_ALT_NAMES=$(printf '%s\n' "$DNS_ALT_NAMES" "DNS.3 = kafka1" "DNS.4 = kafka2")
+	BROKER_FILES="brokers.txt"
+
+	dns_index=3  # start after DNS.1 and DNS.2
+
+	while IFS= read -r broker || [[ -n "$broker" ]]; do
+		[[ -z "$broker" ]] && continue
+		DNS_ALT_NAMES=$(printf '%s\nDNS.%d = %s' "$DNS_ALT_NAMES" "$dns_index" "$broker")
+		((dns_index++))
+	done < "$BROKER_FILES"
 fi
 # control-center and ksqldb-server share a certificate
 if [[ "$i" == "controlCenterAndKsqlDBServer" ]]; then
