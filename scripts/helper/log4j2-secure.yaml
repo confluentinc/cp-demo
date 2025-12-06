@@ -1,0 +1,45 @@
+Configuration:
+  status: WARN
+
+  Appenders:
+    Console:
+      name: stdout
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "[%d] %p %m (%c)%n"
+
+    Kafka:
+      name: kafka_appender
+      topic: ksql-clusterksql_processing_log
+      syncSend: false
+      Property:
+        - name: bootstrap.servers
+          value: "kafka1:11091,kafka2:11092"
+        - name: security.protocol
+          value: "SSL"
+        - name: ssl.keystore.type
+          value: "JKS"
+        - name: ssl.truststore.location
+          value: "/etc/kafka/secrets/kafka.controlCenterAndKsqlDBServer.truststore.jks"
+        - name: ssl.truststore.password
+          value: "confluent"
+        - name: ssl.keystore.location
+          value: "/etc/kafka/secrets/kafka.controlCenterAndKsqlDBServer.keystore.jks"
+        - name: ssl.keystore.password
+          value: "confluent"
+      JsonLayout:
+        compact: true
+        eventEol: true
+
+  Loggers:
+    Logger:
+      name: processing
+      level: error
+      additivity: false
+      AppenderRef:
+        - ref: kafka_appender
+
+    Root:
+      level: info
+      AppenderRef:
+        - ref: stdout
