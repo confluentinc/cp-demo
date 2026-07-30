@@ -1,0 +1,4 @@
+127.0.0.1 kafka1
+127.0.0.1 kafka2
+127.0.0.1 lkc-test1.kafka1
+127.0.0.1 lkc-test2.kafka1

@@ -1,7 +1,14 @@
 #!/bin/bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+# config.env unconditionally sets CONFLUENT_DOCKER_TAG (it's release-automation-managed), which
+# clobbers any override already exported by the caller (e.g. CONFLUENT_DOCKER_TAG=master-latest-ubi9
+# ./scripts/start.sh, per the multi-tenant TENANT-listener wiki). Preserve a caller override across it.
+_CONFLUENT_DOCKER_TAG_OVERRIDE="${CONFLUENT_DOCKER_TAG:-}"
 source ${DIR}/../env_files/config.env
+export CONFLUENT_DOCKER_TAG=${_CONFLUENT_DOCKER_TAG_OVERRIDE:-$CONFLUENT_DOCKER_TAG}
+unset _CONFLUENT_DOCKER_TAG_OVERRIDE
 
 #-------------------------------------------------------------------------------
 
